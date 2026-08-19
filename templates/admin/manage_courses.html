@@ -1,0 +1,748 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Courses - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     MANAGE COURSES - Premium Theme
+     ============================================ */
+  .manage-courses {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue, #2563EB);
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+  }
+
+  .btn-create {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-create:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.3);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-create i {
+    font-size: 0.9em;
+  }
+
+  /* Stats Row - FIXED: No sum with pipe */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  .stat-mini {
+    background: var(--white, #FFFFFF);
+    padding: 16px 18px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .stat-mini:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-2px);
+  }
+
+  .stat-mini .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .stat-mini .stat-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+  }
+
+  .stat-mini .stat-icon.green {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .stat-mini .stat-icon.purple {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7C3AED;
+  }
+
+  .stat-mini .stat-icon.orange {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .stat-mini .stat-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    line-height: 1.2;
+  }
+
+  .stat-mini .stat-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Table Container */
+  .table-wrapper {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .table-wrapper:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    padding: 0 4px 4px 0;
+  }
+
+  .course-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .course-table thead {
+    background: var(--bg, #F8FAFC);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  .course-table thead th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94A3B8);
+    white-space: nowrap;
+  }
+
+  .course-table tbody tr {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .course-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .course-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.02);
+  }
+
+  .course-table tbody td {
+    padding: 14px 20px;
+    vertical-align: middle;
+    color: var(--text, #1E293B);
+  }
+
+  .course-code-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .course-code-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    color: var(--blue, #2563EB);
+    border: 1px solid rgba(37, 99, 235, 0.06);
+    letter-spacing: 0.03em;
+    font-family: 'Inter', monospace;
+  }
+
+  .course-name {
+    font-weight: 600;
+    color: var(--navy, #0F172A);
+  }
+
+  .course-description {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .count-badge.notes {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+  }
+
+  .count-badge.students {
+    background: rgba(5, 150, 105, 0.06);
+    color: #059669;
+  }
+
+  .count-badge i {
+    font-size: 0.7rem;
+  }
+
+  /* Action Buttons */
+  .action-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm, 8px);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    font-size: 0.8rem;
+  }
+
+  .btn-action i {
+    font-size: 0.8rem;
+  }
+
+  .btn-edit {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+  }
+
+  .btn-edit:hover {
+    background: rgba(37, 99, 235, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .btn-delete {
+    background: rgba(239, 68, 68, 0.06);
+    color: #EF4444;
+  }
+
+  .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .btn-view {
+    background: rgba(124, 58, 237, 0.06);
+    color: #7C3AED;
+  }
+
+  .btn-view:hover {
+    background: rgba(124, 58, 237, 0.12);
+    transform: translateY(-1px);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    color: var(--text-muted, #94A3B8);
+    opacity: 0.2;
+    margin-bottom: 12px;
+  }
+
+  .empty-state h3 {
+    font-size: 1.1rem;
+    color: var(--text, #1E293B);
+    margin-bottom: 4px;
+  }
+
+  .empty-state p {
+    color: var(--text-light, #64748B);
+    font-size: 0.9rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .page-header-left {
+      width: 100%;
+    }
+
+    .btn-create {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-mini {
+      padding: 12px 14px;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1.1rem;
+    }
+
+    .course-table thead th {
+      padding: 10px 14px;
+      font-size: 0.65rem;
+    }
+
+    .course-table tbody td {
+      padding: 10px 14px;
+      font-size: 0.82rem;
+    }
+
+    .course-code-badge {
+      font-size: 0.65rem;
+      padding: 3px 10px;
+    }
+
+    .course-description {
+      max-width: 120px;
+    }
+
+    .count-badge {
+      font-size: 0.65rem;
+      padding: 1px 10px;
+    }
+
+    .action-group {
+      gap: 4px;
+    }
+
+    .btn-action {
+      width: 28px;
+      height: 28px;
+      font-size: 0.7rem;
+    }
+
+    .btn-action i {
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-mini {
+      padding: 10px 12px;
+    }
+
+    .stat-mini .stat-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 0.9rem;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1rem;
+    }
+
+    .stat-mini .stat-label {
+      font-size: 0.6rem;
+    }
+
+    .course-table thead th {
+      padding: 6px 8px;
+      font-size: 0.55rem;
+    }
+
+    .course-table tbody td {
+      padding: 8px 8px;
+      font-size: 0.75rem;
+    }
+
+    .course-code-cell {
+      gap: 6px;
+    }
+
+    .course-code-badge {
+      font-size: 0.6rem;
+      padding: 2px 8px;
+    }
+
+    .course-description {
+      max-width: 80px;
+    }
+
+    .course-name {
+      font-size: 0.8rem;
+    }
+
+    .count-badge {
+      font-size: 0.6rem;
+      padding: 1px 8px;
+    }
+
+    .count-badge i {
+      font-size: 0.6rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .table-wrapper {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .course-table thead {
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .course-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .course-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.04);
+  }
+
+  [data-theme="dark"] .course-name {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .stat-mini {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-code-badge {
+    background: rgba(37, 99, 235, 0.12);
+    border-color: rgba(37, 99, 235, 0.08);
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .count-badge.notes {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .count-badge.students {
+    background: rgba(5, 150, 105, 0.08);
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .btn-edit {
+    background: rgba(37, 99, 235, 0.08);
+  }
+
+  [data-theme="dark"] .btn-edit:hover {
+    background: rgba(37, 99, 235, 0.16);
+  }
+
+  [data-theme="dark"] .btn-delete {
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.16);
+  }
+
+  [data-theme="dark"] .btn-view {
+    background: rgba(124, 58, 237, 0.08);
+  }
+
+  [data-theme="dark"] .btn-view:hover {
+    background: rgba(124, 58, 237, 0.16);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .empty-state h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-description {
+    color: var(--text-muted, #94A3B8);
+  }
+</style>
+
+<div class="manage-courses">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon">
+        <i class="fas fa-book"></i>
+      </div>
+      <div>
+        <h1>Manage <span>Courses</span></h1>
+        <p class="subtitle">Create and manage all courses in the platform</p>
+      </div>
+    </div>
+    <a href="{{ url_for('create_course') }}" class="btn-create">
+      <i class="fas fa-plus"></i> Create Course
+    </a>
+  </div>
+
+  <!-- Stats Row - FIXED: No more sum with pipe! -->
+  <div class="stats-row">
+    <div class="stat-mini">
+      <div class="stat-icon blue"><i class="fas fa-book"></i></div>
+      <div>
+        <div class="stat-number">{{ courses|length }}</div>
+        <div class="stat-label">Total Courses</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon green"><i class="fas fa-users"></i></div>
+      <div>
+        {% set total_students = 0 %}
+        {% for course in courses %}
+          {% set total_students = total_students + course.students|length %}
+        {% endfor %}
+        <div class="stat-number">{{ total_students }}</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon purple"><i class="fas fa-file-alt"></i></div>
+      <div>
+        {% set total_notes = 0 %}
+        {% for course in courses %}
+          {% set total_notes = total_notes + course.notes|length %}
+        {% endfor %}
+        <div class="stat-number">{{ total_notes }}</div>
+        <div class="stat-label">Total Notes</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon orange"><i class="fas fa-puzzle-piece"></i></div>
+      <div>
+        {% set total_quizzes = 0 %}
+        {% for course in courses %}
+          {% set total_quizzes = total_quizzes + course.quiz_groups|length %}
+        {% endfor %}
+        <div class="stat-number">{{ total_quizzes }}</div>
+        <div class="stat-label">Total Quizzes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <div class="table-scroll">
+      <table class="course-table">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Description</th>
+            <th>Notes</th>
+            <th>Students</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for course in courses %}
+            <tr>
+              <td>
+                <div class="course-code-cell">
+                  <span class="course-code-badge">
+                    <i class="fas fa-hashtag"></i> {{ course.code }}
+                  </span>
+                  <span class="course-name">{{ course.name }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="course-description" title="{{ course.description or '' }}">
+                  {{ course.description|truncate(50) or '—' }}
+                </span>
+              </td>
+              <td>
+                <span class="count-badge notes">
+                  <i class="fas fa-file-alt"></i> {{ course.notes|length }}
+                </span>
+              </td>
+              <td>
+                <span class="count-badge students">
+                  <i class="fas fa-users"></i> {{ course.students|length }}
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <div class="action-group" style="justify-content: flex-end;">
+                  <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn-action btn-view" title="View Course">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <form method="POST" action="{{ url_for('delete_course', course_id=course.id) }}" style="display: inline;">
+                    <button type="submit" class="btn-action btn-delete confirm-delete" title="Delete Course">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <i class="fas fa-book"></i>
+                  <h3>No courses available</h3>
+                  <p>Create your first course to get started.</p>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Confirm delete
+    document.querySelectorAll('.confirm-delete').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (!confirm('Are you sure you want to delete this course? This will also delete all associated notes, quizzes, and assignments. This action cannot be undone.')) {
+          e.preventDefault();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

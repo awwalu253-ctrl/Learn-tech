@@ -1,0 +1,656 @@
+{% extends "base.html" %}
+
+{% block title %}Quizzes - Awwalu Devs{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ============================================
+   STUDENT QUIZZES - Premium Theme
+   ============================================ */
+:root {
+    --navy: #0F172A;
+    --blue: #2563EB;
+    --cyan: #22D3EE;
+    --bg: #F8FAFC;
+    --text: #1E293B;
+    --text-light: #64748B;
+    --text-muted: #94A3B8;
+    --white: #FFFFFF;
+    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.student-quizzes {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue, #2563EB);
+    font-size: 1.3rem;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.page-header h1 span {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+}
+
+/* Stats Row */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+}
+
+.stat-mini {
+    background: var(--white, #FFFFFF);
+    padding: 16px 18px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: var(--transition);
+}
+
+.stat-mini:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.stat-mini .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.stat-mini .stat-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue);
+}
+
+.stat-mini .stat-icon.green {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+}
+
+.stat-mini .stat-icon.orange {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+}
+
+.stat-mini .stat-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.2;
+}
+
+.stat-mini .stat-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Quiz Grid */
+.quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+
+.quiz-card {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm);
+    padding: 22px 20px 20px;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.quiz-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-color: rgba(37, 99, 235, 0.06);
+}
+
+.quiz-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.quiz-card-header h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.quiz-course-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: rgba(15, 23, 42, 0.04);
+    padding: 2px 12px;
+    border-radius: 100px;
+    white-space: nowrap;
+}
+
+.quiz-description {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin: 0 0 14px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.quiz-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.quiz-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.quiz-meta i {
+    font-size: 0.8rem;
+}
+
+/* Quiz Result */
+.quiz-result {
+    background: rgba(37, 99, 235, 0.04);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.quiz-result .score-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+.quiz-result .score-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.quiz-result .score-value.excellent {
+    color: #059669;
+}
+
+.quiz-result .score-value.good {
+    color: #F59E0B;
+}
+
+.quiz-result .score-value.needs-improvement {
+    color: #EF4444;
+}
+
+.quiz-result .score-detail {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status-badge.completed {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+}
+
+.status-badge.pending {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue);
+}
+
+.status-badge.locked {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+}
+
+/* Buttons */
+.btn-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
+    color: var(--white);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--blue);
+    border: 2px solid rgba(37, 99, 235, 0.15);
+}
+
+.btn-outline:hover {
+    background: rgba(37, 99, 235, 0.04);
+    border-color: var(--blue);
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #059669, #34D399);
+    color: var(--white);
+    box-shadow: 0 2px 12px rgba(5, 150, 105, 0.12);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(5, 150, 105, 0.2);
+    color: var(--white);
+}
+
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-disabled:hover {
+    transform: none !important;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    grid-column: 1 / -1;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--text-muted);
+    opacity: 0.2;
+    margin-bottom: 12px;
+}
+
+.empty-state h3 {
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.empty-state p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+/* Animations */
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .stat-mini {
+        padding: 12px 14px;
+    }
+
+    .stat-mini .stat-number {
+        font-size: 1.1rem;
+    }
+
+    .quiz-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-card {
+        padding: 18px 16px 16px;
+    }
+
+    .quiz-card-header h3 {
+        font-size: 0.95rem;
+    }
+
+    .btn-block {
+        font-size: 0.8rem;
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .stat-mini {
+        padding: 10px 12px;
+    }
+
+    .stat-mini .stat-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .stat-mini .stat-number {
+        font-size: 1rem;
+    }
+
+    .stat-mini .stat-label {
+        font-size: 0.6rem;
+    }
+
+    .quiz-card {
+        padding: 14px 12px 14px;
+    }
+
+    .quiz-card-header h3 {
+        font-size: 0.85rem;
+    }
+
+    .quiz-description {
+        font-size: 0.8rem;
+    }
+
+    .quiz-meta {
+        font-size: 0.7rem;
+        gap: 10px;
+    }
+
+    .quiz-result .score-value {
+        font-size: 1rem;
+    }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .stat-mini {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .stat-mini .stat-number {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .quiz-card {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .quiz-card:hover {
+    border-color: rgba(37, 99, 235, 0.1);
+}
+
+[data-theme="dark"] .quiz-card-header h3 {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .quiz-description {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .quiz-result {
+    background: rgba(37, 99, 235, 0.06);
+}
+
+[data-theme="dark"] .empty-state {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .empty-state h3 {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="student-quizzes">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon">
+                <i class="fas fa-puzzle-piece"></i>
+            </div>
+            <div>
+                <h1>My <span>Quizzes</span></h1>
+                <p class="subtitle">Test your knowledge and track your progress</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-mini">
+            <div class="stat-icon blue"><i class="fas fa-puzzle-piece"></i></div>
+            <div>
+                {% set total_quizzes = quiz_data|length %}
+                <div class="stat-number">{{ total_quizzes }}</div>
+                <div class="stat-label">Available Quizzes</div>
+            </div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+            <div>
+                {% set completed = 0 %}
+                {% for data in quiz_data %}
+                    {% if data.has_attempted %}
+                        {% set completed = completed + 1 %}
+                    {% endif %}
+                {% endfor %}
+                <div class="stat-number">{{ completed }}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+            <div>
+                {% set pending = 0 %}
+                {% for data in quiz_data %}
+                    {% if not data.has_attempted %}
+                        {% set pending = pending + 1 %}
+                    {% endif %}
+                {% endfor %}
+                <div class="stat-number">{{ pending }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Grid -->
+    <div class="quiz-grid">
+        {% for data in quiz_data %}
+            <div class="quiz-card">
+                <div class="quiz-card-header">
+                    <h3>{{ data.quiz.title }}</h3>
+                    <span class="quiz-course-badge">{{ data.quiz.course.name }}</span>
+                </div>
+                
+                <p class="quiz-description">{{ data.quiz.description or 'No description available.' }}</p>
+                
+                <div class="quiz-meta">
+                    <span><i class="fas fa-question-circle"></i> {{ data.quiz.questions|length }} Questions</span>
+                    {% if data.quiz.time_limit > 0 %}
+                        <span><i class="fas fa-clock"></i> {{ data.quiz.time_limit }} min</span>
+                    {% endif %}
+                </div>
+
+                {% if data.has_attempted %}
+                    <!-- Quiz Result -->
+                    <div class="quiz-result">
+                        <div>
+                            <span class="score-label">Your Score:</span>
+                            {% if data.score and data.score.score is defined %}
+                                <span class="score-value 
+                                    {% if data.score.score >= 70 %}excellent
+                                    {% elif data.score.score >= 40 %}good
+                                    {% else %}needs-improvement{% endif %}">
+                                    {{ data.score.score }}%
+                                </span>
+                                <span class="score-detail">({{ data.score.correct }}/{{ data.score.total }})</span>
+                            {% else %}
+                                <span class="score-value">-</span>
+                            {% endif %}
+                        </div>
+                        <span class="status-badge completed">
+                            <i class="fas fa-check-circle"></i> Completed
+                        </span>
+                    </div>
+                    
+                    <a href="{{ url_for('quiz_result', quiz_id=data.quiz.id) }}" class="btn-block btn-outline">
+                        <i class="fas fa-chart-bar"></i> View Results
+                    </a>
+                {% else %}
+                    <!-- Take Quiz Button -->
+                    <a href="{{ url_for('take_quiz', quiz_id=data.quiz.id) }}" class="btn-block btn-primary">
+                        <i class="fas fa-play"></i> Start Quiz
+                    </a>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-puzzle-piece"></i>
+                <h3>No quizzes available</h3>
+                <p>Quizzes will appear here when your instructors add them to your courses.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

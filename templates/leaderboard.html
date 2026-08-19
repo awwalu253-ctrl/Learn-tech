@@ -1,0 +1,805 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     LEADERBOARD - Premium Theme
+     ============================================ */
+  .leaderboard-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F59E0B;
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+  }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  .stat-mini {
+    background: var(--white, #FFFFFF);
+    padding: 16px 18px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .stat-mini:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-2px);
+  }
+
+  .stat-mini .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .stat-mini .stat-icon.gold {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .stat-mini .stat-icon.purple {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7C3AED;
+  }
+
+  .stat-mini .stat-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+  }
+
+  .stat-mini .stat-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    line-height: 1.2;
+  }
+
+  .stat-mini .stat-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Leaderboard Container */
+  .leaderboard-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .leaderboard-container:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  /* Header Row */
+  .leaderboard-header {
+    display: grid;
+    grid-template-columns: 70px 1fr 100px 1fr;
+    padding: 14px 24px;
+    background: var(--bg, #F8FAFC);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .leaderboard-header .rank { text-align: center; }
+  .leaderboard-header .score { text-align: center; }
+  .leaderboard-header .details { text-align: right; }
+
+  /* Row */
+  .leaderboard-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 100px 1fr;
+    padding: 14px 24px;
+    align-items: center;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .leaderboard-row:last-child {
+    border-bottom: none;
+  }
+
+  .leaderboard-row:hover {
+    background: rgba(37, 99, 235, 0.02);
+  }
+
+  .leaderboard-row.highlight-row {
+    background: rgba(245, 158, 11, 0.04);
+    border-left: 3px solid #F59E0B;
+    position: relative;
+  }
+
+  .leaderboard-row.highlight-row::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #F59E0B, #EF4444);
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* Rank */
+  .rank {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-light, #64748B);
+  }
+
+  .rank .rank-number {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .rank .gold {
+    color: #F59E0B;
+    font-size: 1.4rem;
+  }
+
+  .rank .silver {
+    color: #94A3B8;
+    font-size: 1.3rem;
+  }
+
+  .rank .bronze {
+    color: #D97706;
+    font-size: 1.3rem;
+  }
+
+  /* Student Info */
+  .student-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .student-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .student-avatar.gold-bg {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+  }
+
+  .student-avatar.silver-bg {
+    background: linear-gradient(135deg, #94A3B8, #64748B);
+  }
+
+  .student-avatar.bronze-bg {
+    background: linear-gradient(135deg, #D97706, #F59E0B);
+  }
+
+  .student-avatar.default-bg {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+  }
+
+  .student-avatar.highlight-bg {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    box-shadow: 0 2px 12px rgba(245, 158, 11, 0.25);
+  }
+
+  .student-name {
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    font-size: 0.9rem;
+  }
+
+  .student-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 10px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    color: white;
+  }
+
+  .student-badge.you {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+  }
+
+  /* Score */
+  .score {
+    text-align: center;
+  }
+
+  .score-value {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .score-value.excellent {
+    color: #059669;
+  }
+
+  .score-value.good {
+    color: #7C3AED;
+  }
+
+  .score-value.needs-improvement {
+    color: #F59E0B;
+  }
+
+  .score-value.poor {
+    color: #EF4444;
+  }
+
+  /* Details */
+  .details {
+    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .detail-item {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94A3B8);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg, #F8FAFC);
+    padding: 2px 10px;
+    border-radius: 100px;
+  }
+
+  .detail-item i {
+    font-size: 0.65rem;
+    color: #7C3AED;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--text-muted, #94A3B8);
+    opacity: 0.2;
+    margin-bottom: 16px;
+  }
+
+  .empty-state p {
+    color: var(--text-light, #64748B);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .empty-state .text-muted {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+
+  /* Your Rank Banner */
+  .your-rank-banner {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    border: 1px solid rgba(245, 158, 11, 0.12);
+    border-radius: var(--radius-sm, 10px);
+    padding: 14px 20px;
+    margin: 16px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .your-rank-banner .rank-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .your-rank-banner .rank-label i {
+    color: #F59E0B;
+  }
+
+  .your-rank-banner .rank-position {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #F59E0B;
+  }
+
+  .your-rank-banner .rank-score {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-light, #64748B);
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .leaderboard-row {
+    animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+  }
+
+  .leaderboard-row:nth-child(1) { animation-delay: 0.05s; }
+  .leaderboard-row:nth-child(2) { animation-delay: 0.08s; }
+  .leaderboard-row:nth-child(3) { animation-delay: 0.11s; }
+  .leaderboard-row:nth-child(4) { animation-delay: 0.14s; }
+  .leaderboard-row:nth-child(5) { animation-delay: 0.17s; }
+  .leaderboard-row:nth-child(6) { animation-delay: 0.20s; }
+  .leaderboard-row:nth-child(7) { animation-delay: 0.23s; }
+  .leaderboard-row:nth-child(8) { animation-delay: 0.26s; }
+  .leaderboard-row:nth-child(9) { animation-delay: 0.29s; }
+  .leaderboard-row:nth-child(10) { animation-delay: 0.32s; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .page-header-left {
+      width: 100%;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-mini {
+      padding: 12px 14px;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1.1rem;
+    }
+
+    .leaderboard-header {
+      display: none;
+    }
+
+    .leaderboard-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    }
+
+    .leaderboard-row:last-child {
+      border-bottom: none;
+    }
+
+    .rank {
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rank .rank-number {
+      font-size: 0.8rem;
+    }
+
+    .student-info {
+      padding-left: 0;
+    }
+
+    .score {
+      text-align: left;
+      padding-left: 0;
+    }
+
+    .details {
+      text-align: left;
+      justify-content: flex-start;
+      padding-left: 0;
+    }
+
+    .leaderboard-row.highlight-row {
+      border-left: 3px solid #F59E0B;
+    }
+
+    .leaderboard-row.highlight-row::after {
+      display: none;
+    }
+
+    .your-rank-banner {
+      margin: 12px 0 0;
+      padding: 12px 16px;
+    }
+
+    .your-rank-banner .rank-position {
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-mini {
+      padding: 10px 12px;
+    }
+
+    .stat-mini .stat-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 0.9rem;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1rem;
+    }
+
+    .stat-mini .stat-label {
+      font-size: 0.6rem;
+    }
+
+    .leaderboard-row {
+      padding: 14px 14px;
+      gap: 4px;
+    }
+
+    .student-avatar {
+      width: 28px;
+      height: 28px;
+      font-size: 0.7rem;
+    }
+
+    .student-name {
+      font-size: 0.82rem;
+    }
+
+    .student-badge {
+      font-size: 0.5rem;
+      padding: 1px 8px;
+    }
+
+    .score-value {
+      font-size: 0.9rem;
+    }
+
+    .detail-item {
+      font-size: 0.65rem;
+      padding: 1px 8px;
+    }
+
+    .rank .gold,
+    .rank .silver,
+    .rank .bronze {
+      font-size: 1.1rem;
+    }
+
+    .your-rank-banner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .your-rank-banner .rank-label {
+      font-size: 0.78rem;
+    }
+
+    .your-rank-banner .rank-position {
+      font-size: 0.95rem;
+    }
+
+    .your-rank-banner .rank-score {
+      font-size: 0.82rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .leaderboard-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .leaderboard-header {
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .leaderboard-row {
+    border-bottom-color: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .leaderboard-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .leaderboard-row.highlight-row {
+    background: rgba(245, 158, 11, 0.06);
+  }
+
+  [data-theme="dark"] .student-name {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .stat-mini {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .detail-item {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .rank .rank-number {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .score-value.excellent {
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .score-value.good {
+    color: #A78BFA;
+  }
+
+  [data-theme="dark"] .score-value.needs-improvement {
+    color: #F59E0B;
+  }
+
+  [data-theme="dark"] .score-value.poor {
+    color: #F87171;
+  }
+
+  [data-theme="dark"] .your-rank-banner {
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.08);
+  }
+
+  [data-theme="dark"] .your-rank-banner .rank-label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .student-avatar.default-bg {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+  }
+</style>
+
+<div class="leaderboard-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <div>
+        <h1><span>Leaderboard</span></h1>
+        <p class="subtitle">See how you rank among your peers</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-mini">
+      <div class="stat-icon gold"><i class="fas fa-trophy"></i></div>
+      <div>
+        <div class="stat-number">{{ student_scores|length }}</div>
+        <div class="stat-label">Participants</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon purple"><i class="fas fa-puzzle-piece"></i></div>
+      <div>
+        <div class="stat-number">{{ student_scores|sum(attribute='total_questions') if student_scores else 0 }}</div>
+        <div class="stat-label">Total Questions</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon blue"><i class="fas fa-star"></i></div>
+      <div>
+        <div class="stat-number">
+          {% if student_scores %}
+            {{ (student_scores|map(attribute='score')|sum / student_scores|length)|round(0) }}%
+          {% else %}
+            0%
+          {% endif %}
+        </div>
+        <div class="stat-label">Average Score</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="leaderboard-container">
+    <div class="leaderboard-header">
+      <div class="rank">Rank</div>
+      <div class="student-info">Student</div>
+      <div class="score">Score</div>
+      <div class="details">Details</div>
+    </div>
+
+    {% for data in student_scores %}
+      <div class="leaderboard-row {% if data.student.id == current_user.id %}highlight-row{% endif %}">
+        <div class="rank">
+          {% if loop.index == 1 %}
+            <i class="fas fa-crown gold"></i>
+          {% elif loop.index == 2 %}
+            <i class="fas fa-medal silver"></i>
+          {% elif loop.index == 3 %}
+            <i class="fas fa-medal bronze"></i>
+          {% else %}
+            <span class="rank-number">#{{ loop.index }}</span>
+          {% endif %}
+        </div>
+        <div class="student-info">
+          {% set avatar_class = 'default-bg' %}
+          {% if loop.index == 1 %}{% set avatar_class = 'gold-bg' %}
+          {% elif loop.index == 2 %}{% set avatar_class = 'silver-bg' %}
+          {% elif loop.index == 3 %}{% set avatar_class = 'bronze-bg' %}
+          {% elif data.student.id == current_user.id %}{% set avatar_class = 'highlight-bg' %}
+          {% endif %}
+          <div class="student-avatar {{ avatar_class }}">
+            {{ data.student.username[0]|upper }}
+          </div>
+          <span class="student-name">{{ data.student.username }}</span>
+          {% if data.student.id == current_user.id %}
+            <span class="student-badge you">You</span>
+          {% endif %}
+        </div>
+        <div class="score">
+          <span class="score-value 
+            {% if data.score >= 70 %}excellent
+            {% elif data.score >= 50 %}good
+            {% elif data.score >= 30 %}needs-improvement
+            {% else %}poor{% endif %}">
+            {{ data.score }}%
+          </span>
+        </div>
+        <div class="details">
+          <span class="detail-item"><i class="fas fa-question-circle"></i> {{ data.total_questions }}</span>
+          <span class="detail-item"><i class="fas fa-book"></i> {{ data.course_count }}</span>
+        </div>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-trophy"></i>
+        <p>No quiz data available yet.</p>
+        <p class="text-muted">Take some quizzes to appear on the leaderboard!</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

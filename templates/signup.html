@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Awwalu Devs{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ============================================
+   SIGNUP PAGE - Premium Navy + Electric Blue Theme
+   ============================================ */
+:root {
+    --navy: #0F172A;
+    --blue: #2563EB;
+    --cyan: #22D3EE;
+    --bg: #F8FAFC;
+    --text: #1E293B;
+    --text-light: #64748B;
+    --text-muted: #94A3B8;
+    --white: #FFFFFF;
+    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.auth-page {
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    background: var(--bg);
+}
+
+.auth-container {
+    max-width: 520px;
+    width: 100%;
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 40px 36px 36px;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.auth-container:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+.auth-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-icon {
+    font-size: 2.8rem;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.auth-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.auth-header p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin: 4px 0 0;
+}
+
+/* Form */
+.auth-form .form-group {
+    margin-bottom: 16px;
+}
+
+.auth-form label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.auth-form label i {
+    color: var(--blue);
+    width: 18px;
+    font-size: 0.9rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid rgba(15, 23, 42, 0.06);
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.95rem;
+    background: var(--bg);
+    color: var(--text);
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.06);
+    background: var(--white);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+/* Course Selection */
+.courses-checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 4px 2px;
+}
+
+.courses-checkbox-grid::-webkit-scrollbar {
+    width: 4px;
+}
+
+.courses-checkbox-grid::-webkit-scrollbar-track {
+    background: var(--bg);
+    border-radius: 4px;
+}
+
+.courses-checkbox-grid::-webkit-scrollbar-thumb {
+    background: var(--blue);
+    border-radius: 4px;
+}
+
+.checkbox-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 2px solid rgba(15, 23, 42, 0.04);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--bg);
+}
+
+.checkbox-card:hover {
+    border-color: var(--blue);
+    background: rgba(37, 99, 235, 0.02);
+}
+
+.checkbox-card input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--blue);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkbox-card input[type="checkbox"]:checked {
+    accent-color: var(--blue);
+}
+
+.checkbox-label {
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: var(--text);
+    flex: 1;
+}
+
+.checkbox-code {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: rgba(15, 23, 42, 0.04);
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.03em;
+}
+
+.no-courses {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 12px 0;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.3);
+    color: var(--white);
+}
+
+.btn-block {
+    width: 100%;
+    justify-content: center;
+    padding: 14px;
+    font-size: 1rem;
+}
+
+/* Footer */
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.auth-footer a {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.auth-footer a:hover {
+    color: var(--cyan);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 28px 20px 24px;
+    }
+    
+    .auth-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .courses-checkbox-grid {
+        grid-template-columns: 1fr;
+        max-height: 160px;
+    }
+    
+    .checkbox-card {
+        padding: 8px 12px;
+    }
+    
+    .checkbox-label {
+        font-size: 0.8rem;
+    }
+    
+    .auth-form label {
+        font-size: 0.8rem;
+    }
+    
+    .form-control {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-block {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .auth-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .auth-header h2 {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .auth-header p {
+    color: var(--text-muted, #94A3B8);
+}
+
+[data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .form-control:focus {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--blue);
+}
+
+[data-theme="dark"] .checkbox-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .checkbox-card:hover {
+    background: rgba(37, 99, 235, 0.06);
+    border-color: var(--blue);
+}
+
+[data-theme="dark"] .checkbox-label {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .auth-footer {
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .auth-footer p {
+    color: var(--text-muted, #94A3B8);
+}
+
+[data-theme="dark"] .auth-form label {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .btn-primary {
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+}
+
+[data-theme="dark"] .btn-primary:hover {
+    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.25);
+}
+
+[data-theme="dark"] .auth-page {
+    background: var(--bg, #0F172A);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h2>Create Account</h2>
+            <p>Join Awwalu Devs and start learning today</p>
+        </div>
+        
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-user"></i> Username
+                </label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    class="form-control" 
+                    placeholder="Choose a unique username" 
+                    required
+                    autocomplete="username"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i> Email Address
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-control" 
+                    placeholder="Enter your email address" 
+                    required
+                    autocomplete="email"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-control" 
+                    placeholder="Create a password (min 6 characters)" 
+                    required
+                    autocomplete="new-password"
+                    minlength="6"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">
+                    <i class="fas fa-check-circle"></i> Confirm Password
+                </label>
+                <input 
+                    type="password" 
+                    id="confirm_password" 
+                    name="confirm_password" 
+                    class="form-control" 
+                    placeholder="Confirm your password" 
+                    required
+                    autocomplete="new-password"
+                    minlength="6"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-book"></i> Select Courses
+                    <span style="font-weight: 400; font-size: 0.75rem; color: var(--text-muted);">
+                        (Select at least one)
+                    </span>
+                </label>
+                <div class="courses-checkbox-grid">
+                    {% for course in courses %}
+                        <label class="checkbox-card">
+                            <input type="checkbox" name="courses" value="{{ course.id }}">
+                            <span class="checkbox-label">{{ course.name }}</span>
+                            <span class="checkbox-code">{{ course.code }}</span>
+                        </label>
+                    {% else %}
+                        <div class="no-courses">
+                            <i class="fas fa-info-circle"></i> No courses available yet. Please check back later.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password matching validation
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    confirmPassword.addEventListener('input', function() {
+        if (this.value.length > 0 && this.value !== password.value) {
+            this.style.borderColor = '#EF4444';
+            this.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.06)';
+        } else if (this.value.length > 0 && this.value === password.value) {
+            this.style.borderColor = '#059669';
+            this.style.boxShadow = '0 0 0 4px rgba(5, 150, 105, 0.06)';
+        } else {
+            this.style.borderColor = '';
+            this.style.boxShadow = '';
+        }
+    });
+    
+    password.addEventListener('input', function() {
+        if (confirmPassword.value.length > 0 && this.value !== confirmPassword.value) {
+            confirmPassword.style.borderColor = '#EF4444';
+            confirmPassword.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.06)';
+        } else if (confirmPassword.value.length > 0 && this.value === confirmPassword.value) {
+            confirmPassword.style.borderColor = '#059669';
+            confirmPassword.style.boxShadow = '0 0 0 4px rgba(5, 150, 105, 0.06)';
+        }
+    });
+    
+    // Course selection - at least one required
+    const form = document.querySelector('.auth-form');
+    form.addEventListener('submit', function(e) {
+        const checked = document.querySelectorAll('input[name="courses"]:checked');
+        if (checked.length === 0) {
+            e.preventDefault();
+            const courseSection = document.querySelector('.courses-checkbox-grid');
+            courseSection.style.border = '2px solid #EF4444';
+            courseSection.style.borderRadius = '8px';
+            courseSection.style.padding = '4px';
+            
+            // Show message
+            let msg = document.querySelector('.course-error-msg');
+            if (!msg) {
+                msg = document.createElement('p');
+                msg.className = 'course-error-msg';
+                msg.style.color = '#EF4444';
+                msg.style.fontSize = '0.8rem';
+                msg.style.marginTop = '6px';
+                msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select at least one course';
+                courseSection.parentNode.appendChild(msg);
+            }
+            
+            setTimeout(() => {
+                courseSection.style.border = '';
+                courseSection.style.padding = '';
+                if (msg) msg.remove();
+            }, 3000);
+        }
+    });
+});
+</script>
+{% endblock %}

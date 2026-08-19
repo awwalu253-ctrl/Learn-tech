@@ -1,0 +1,1110 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Notes - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+    /* ============================================
+     MANAGE NOTES - Premium Theme
+     ============================================ */
+    .manage-notes-page {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    /* Header */
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .page-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm, 10px);
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--blue, #2563EB);
+        font-size: 1.3rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--navy, #0F172A);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    .page-header h1 span {
+        background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header .subtitle {
+        font-size: 0.85rem;
+        color: var(--text-light, #64748B);
+        margin: 2px 0 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-create {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        border-radius: 60px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+        color: var(--white, #FFFFFF);
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+        box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+        color: var(--white, #FFFFFF);
+    }
+
+    .btn-create i {
+        font-size: 0.9em;
+    }
+
+    /* Stats Row */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+    }
+
+    .stat-mini {
+        background: var(--white, #FFFFFF);
+        padding: 16px 18px;
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(15, 23, 42, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition, 0.3s ease);
+    }
+
+    .stat-mini:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+        transform: translateY(-2px);
+    }
+
+    .stat-mini .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm, 8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .stat-mini .stat-icon.blue {
+        background: rgba(37, 99, 235, 0.08);
+        color: var(--blue, #2563EB);
+    }
+
+    .stat-mini .stat-icon.green {
+        background: rgba(5, 150, 105, 0.08);
+        color: #059669;
+    }
+
+    .stat-mini .stat-icon.purple {
+        background: rgba(124, 58, 237, 0.08);
+        color: #7C3AED;
+    }
+
+    .stat-mini .stat-icon.orange {
+        background: rgba(245, 158, 11, 0.08);
+        color: #F59E0B;
+    }
+
+    .stat-mini .stat-number {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--navy, #0F172A);
+        line-height: 1.2;
+    }
+
+    .stat-mini .stat-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-muted, #94A3B8);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    /* Search & Filter */
+    .search-filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+        background: var(--white, #FFFFFF);
+        padding: 16px 20px;
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(15, 23, 42, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    }
+
+    .search-filter-bar .search-wrapper {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+    }
+
+    .search-filter-bar .search-wrapper i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted, #94A3B8);
+        font-size: 0.9rem;
+    }
+
+    .search-filter-bar .search-wrapper input {
+        width: 100%;
+        padding: 10px 14px 10px 40px;
+        border-radius: var(--radius-sm, 10px);
+        border: 1.5px solid rgba(15, 23, 42, 0.06);
+        background: var(--bg, #F8FAFC);
+        font-size: 0.85rem;
+        font-family: 'Inter', sans-serif;
+        color: var(--text, #1E293B);
+        transition: var(--transition, 0.3s ease);
+        outline: none;
+    }
+
+    .search-filter-bar .search-wrapper input:focus {
+        border-color: var(--blue, #2563EB);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.06);
+        background: var(--white, #FFFFFF);
+    }
+
+    .search-filter-bar .search-wrapper input::placeholder {
+        color: var(--text-muted, #94A3B8);
+    }
+
+    .search-filter-bar .filter-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .search-filter-bar .filter-group select {
+        padding: 10px 14px;
+        padding-right: 36px;
+        border-radius: var(--radius-sm, 10px);
+        border: 1.5px solid rgba(15, 23, 42, 0.06);
+        background: var(--bg, #F8FAFC);
+        font-size: 0.85rem;
+        font-family: 'Inter', sans-serif;
+        color: var(--text, #1E293B);
+        transition: var(--transition, 0.3s ease);
+        outline: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        cursor: pointer;
+        min-width: 140px;
+    }
+
+    .search-filter-bar .filter-group select:focus {
+        border-color: var(--blue, #2563EB);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.06);
+        background: var(--white, #FFFFFF);
+    }
+
+    .search-filter-bar .filter-group select option {
+        padding: 6px;
+    }
+
+    /* Table Container */
+    .table-wrapper {
+        background: var(--white, #FFFFFF);
+        border-radius: var(--radius, 16px);
+        border: 1px solid rgba(15, 23, 42, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+        overflow: hidden;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+        transition: var(--transition, 0.3s ease);
+    }
+
+    .table-wrapper:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    }
+
+    .table-scroll {
+        overflow-x: auto;
+        padding: 0 4px 4px 0;
+    }
+
+    .notes-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .notes-table thead {
+        background: var(--bg, #F8FAFC);
+        border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    }
+
+    .notes-table thead th {
+        padding: 14px 20px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted, #94A3B8);
+        white-space: nowrap;
+    }
+
+    .notes-table tbody tr {
+        border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+        transition: var(--transition, 0.3s ease);
+    }
+
+    .notes-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .notes-table tbody tr:hover {
+        background: rgba(37, 99, 235, 0.02);
+    }
+
+    .notes-table tbody td {
+        padding: 14px 20px;
+        vertical-align: middle;
+        color: var(--text, #1E293B);
+    }
+
+    /* Note Title Cell */
+    .note-title-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .note-icon-box {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-sm, 8px);
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--blue, #2563EB);
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .note-title {
+        font-weight: 600;
+        color: var(--navy, #0F172A);
+    }
+
+    .note-title a {
+        color: var(--navy, #0F172A);
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+    }
+
+    .note-title a:hover {
+        color: var(--blue, #2563EB);
+    }
+
+    .badge-new-sm {
+        font-size: 0.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 1px 8px;
+        border-radius: 100px;
+        background: linear-gradient(135deg, #059669, #34D399);
+        color: white;
+        margin-left: 6px;
+    }
+
+    /* Course Tag */
+    .course-tag {
+        display: inline-block;
+        padding: 2px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        background: rgba(37, 99, 235, 0.06);
+        color: var(--blue, #2563EB);
+        border: 1px solid rgba(37, 99, 235, 0.06);
+    }
+
+    /* Tag Badge */
+    .tag-badge-sm {
+        display: inline-block;
+        padding: 2px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        background: rgba(124, 58, 237, 0.06);
+        color: #7C3AED;
+        border: 1px solid rgba(124, 58, 237, 0.06);
+    }
+
+    .no-tag {
+        font-size: 0.75rem;
+        color: var(--text-muted, #94A3B8);
+    }
+
+    /* Author */
+    .author-name {
+        font-size: 0.82rem;
+        color: var(--text-light, #64748B);
+    }
+
+    /* Date */
+    .date-text {
+        font-size: 0.78rem;
+        color: var(--text-light, #64748B);
+        white-space: nowrap;
+    }
+
+    /* Action Buttons */
+    .action-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-sm, 8px);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition, 0.3s ease);
+        text-decoration: none;
+        font-size: 0.8rem;
+    }
+
+    .btn-action i {
+        font-size: 0.8rem;
+    }
+
+    .btn-view {
+        background: rgba(37, 99, 235, 0.06);
+        color: var(--blue, #2563EB);
+    }
+
+    .btn-view:hover {
+        background: rgba(37, 99, 235, 0.12);
+        transform: translateY(-1px);
+    }
+
+    .btn-edit {
+        background: rgba(245, 158, 11, 0.06);
+        color: #F59E0B;
+    }
+
+    .btn-edit:hover {
+        background: rgba(245, 158, 11, 0.12);
+        transform: translateY(-1px);
+    }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.06);
+        color: #EF4444;
+    }
+
+    .btn-delete:hover {
+        background: rgba(239, 68, 68, 0.12);
+        transform: translateY(-1px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        color: var(--text-muted, #94A3B8);
+        opacity: 0.2;
+        margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+        font-size: 1.1rem;
+        color: var(--text, #1E293B);
+        margin-bottom: 4px;
+    }
+
+    .empty-state p {
+        color: var(--text-light, #64748B);
+        font-size: 0.9rem;
+    }
+
+    .empty-state .empty-cta {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 8px 20px;
+        border-radius: 60px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+        color: var(--white, #FFFFFF);
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+    }
+
+    .empty-state .empty-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+    }
+
+    /* No Results */
+    .no-results {
+        text-align: center;
+        padding: 30px 20px;
+        color: var(--text-muted, #94A3B8);
+    }
+
+    .no-results i {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        opacity: 0.3;
+    }
+
+    .no-results p {
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .page-header-left {
+            width: 100%;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .btn-create {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-mini {
+            padding: 12px 14px;
+        }
+
+        .stat-mini .stat-number {
+            font-size: 1.1rem;
+        }
+
+        .search-filter-bar {
+            flex-direction: column;
+            padding: 14px 16px;
+        }
+
+        .search-filter-bar .search-wrapper {
+            min-width: unset;
+        }
+
+        .search-filter-bar .filter-group {
+            flex-direction: column;
+        }
+
+        .search-filter-bar .filter-group select {
+            width: 100%;
+            min-width: unset;
+        }
+
+        .notes-table thead th {
+            padding: 10px 14px;
+            font-size: 0.6rem;
+        }
+
+        .notes-table tbody td {
+            padding: 10px 14px;
+            font-size: 0.8rem;
+        }
+
+        .note-icon-box {
+            width: 28px;
+            height: 28px;
+            font-size: 0.7rem;
+        }
+
+        .course-tag,
+        .tag-badge-sm {
+            font-size: 0.6rem;
+            padding: 1px 10px;
+        }
+
+        .action-group {
+            gap: 4px;
+        }
+
+        .btn-action {
+            width: 28px;
+            height: 28px;
+            font-size: 0.7rem;
+        }
+
+        .btn-action i {
+            font-size: 0.7rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 1.2rem;
+        }
+
+        .page-header-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-mini {
+            padding: 10px 12px;
+        }
+
+        .stat-mini .stat-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+
+        .stat-mini .stat-number {
+            font-size: 1rem;
+        }
+
+        .stat-mini .stat-label {
+            font-size: 0.6rem;
+        }
+
+        .notes-table thead th {
+            padding: 6px 8px;
+            font-size: 0.5rem;
+        }
+
+        .notes-table tbody td {
+            padding: 8px 8px;
+            font-size: 0.7rem;
+        }
+
+        .note-title-cell {
+            gap: 6px;
+        }
+
+        .note-icon-box {
+            width: 24px;
+            height: 24px;
+            font-size: 0.6rem;
+        }
+
+        .note-title {
+            font-size: 0.8rem;
+        }
+
+        .badge-new-sm {
+            font-size: 0.45rem;
+            padding: 0 6px;
+        }
+
+        .author-name {
+            font-size: 0.7rem;
+        }
+
+        .date-text {
+            font-size: 0.65rem;
+        }
+
+        .btn-action {
+            width: 24px;
+            height: 24px;
+            font-size: 0.6rem;
+        }
+
+        .btn-action i {
+            font-size: 0.6rem;
+        }
+
+        .empty-state {
+            padding: 32px 16px;
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+        }
+
+        .empty-state h3 {
+            font-size: 0.95rem;
+        }
+
+        .empty-state p {
+            font-size: 0.82rem;
+        }
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] .stat-mini {
+        background: var(--white, #1E293B);
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .stat-mini .stat-number {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .table-wrapper {
+        background: var(--white, #1E293B);
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .notes-table thead {
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .notes-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    [data-theme="dark"] .notes-table tbody tr:hover {
+        background: rgba(37, 99, 235, 0.04);
+    }
+
+    [data-theme="dark"] .note-title {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .note-title a {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .note-title a:hover {
+        color: var(--cyan, #22D3EE);
+    }
+
+    [data-theme="dark"] .search-filter-bar {
+        background: var(--white, #1E293B);
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .search-filter-bar .search-wrapper input {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.06);
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .search-filter-bar .search-wrapper input:focus {
+        border-color: var(--cyan, #22D3EE);
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.06);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .search-filter-bar .search-wrapper input::placeholder {
+        color: var(--text-muted, #64748B);
+    }
+
+    [data-theme="dark"] .search-filter-bar .filter-group select {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.06);
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .search-filter-bar .filter-group select:focus {
+        border-color: var(--cyan, #22D3EE);
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.06);
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .search-filter-bar .filter-group select option {
+        background: var(--white, #1E293B);
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .course-tag {
+        background: rgba(37, 99, 235, 0.08);
+        border-color: rgba(37, 99, 235, 0.06);
+        color: var(--cyan, #22D3EE);
+    }
+
+    [data-theme="dark"] .tag-badge-sm {
+        background: rgba(124, 58, 237, 0.08);
+        border-color: rgba(124, 58, 237, 0.06);
+        color: #A78BFA;
+    }
+
+    [data-theme="dark"] .btn-view {
+        background: rgba(37, 99, 235, 0.08);
+    }
+
+    [data-theme="dark"] .btn-view:hover {
+        background: rgba(37, 99, 235, 0.16);
+    }
+
+    [data-theme="dark"] .btn-edit {
+        background: rgba(245, 158, 11, 0.08);
+    }
+
+    [data-theme="dark"] .btn-edit:hover {
+        background: rgba(245, 158, 11, 0.16);
+    }
+
+    [data-theme="dark"] .btn-delete {
+        background: rgba(239, 68, 68, 0.08);
+    }
+
+    [data-theme="dark"] .btn-delete:hover {
+        background: rgba(239, 68, 68, 0.16);
+    }
+
+    [data-theme="dark"] .page-header h1 {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .empty-state h3 {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .empty-state p {
+        color: var(--text-muted, #64748B);
+    }
+
+    [data-theme="dark"] .note-icon-box {
+        background: rgba(37, 99, 235, 0.12);
+    }
+
+    [data-theme="dark"] .author-name {
+        color: var(--text-muted, #64748B);
+    }
+
+    [data-theme="dark"] .date-text {
+        color: var(--text-muted, #64748B);
+    }
+
+    [data-theme="dark"] .no-tag {
+        color: var(--text-muted, #64748B);
+    }
+
+    [data-theme="dark"] .badge-new-sm {
+        background: linear-gradient(135deg, #059669, #34D399);
+    }
+</style>
+
+<div class="manage-notes-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div>
+                <h1>Manage <span>Notes</span></h1>
+                <p class="subtitle">View and manage all course notes</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('post_note') }}" class="btn-create">
+                <i class="fas fa-plus"></i> Post New Note
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-mini">
+            <div class="stat-icon blue"><i class="fas fa-file-alt"></i></div>
+            <div>
+                <div class="stat-number">{{ notes|length }}</div>
+                <div class="stat-label">Total Notes</div>
+            </div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="stat-number">{{ notes|selectattr('is_new')|list|length if notes else 0 }}</div>
+                <div class="stat-label">New</div>
+            </div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-icon purple"><i class="fas fa-tag"></i></div>
+            <div>
+                <div class="stat-number">{{ notes|selectattr('tag_id', 'ne', '')|list|length if notes else 0 }}</div>
+                <div class="stat-label">Tagged</div>
+            </div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-icon orange"><i class="fas fa-paperclip"></i></div>
+            <div>
+                <div class="stat-number">{{ notes|selectattr('file_path', 'defined')|selectattr('file_path', 'ne',
+                    '')|list|length if notes else 0 }}</div>
+                <div class="stat-label">With Files</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="search-filter-bar">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search notes by title or content...">
+        </div>
+        <div class="filter-group">
+            <select id="courseFilter">
+                <option value="">All Courses</option>
+                {% for course in courses %}
+                <option value="{{ course.id }}">{{ course.name }} ({{ course.code }})</option>
+                {% endfor %}
+            </select>
+            <select id="tagFilter">
+                <option value="">All Tags</option>
+                {% for tag in tags %}
+                <option value="{{ tag.id }}">{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <div class="table-scroll">
+            <table class="notes-table" id="notesTable">
+                <thead>
+                    <tr>
+                        <th>Note</th>
+                        <th>Course</th>
+                        <th>Tag</th>
+                        <th>Author</th>
+                        <th>Created</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="notesBody">
+                    {% for note in notes %}
+                    <tr class="note-row" data-course="{{ note.course_id }}" data-tag="{{ note.tag_id or '' }}">
+                        <td>
+                            <div class="note-title-cell">
+                                <div class="note-icon-box">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div>
+                                    <div class="note-title">
+                                        <a href="{{ url_for('view_note', note_id=note.id) }}">{{ note.title }}</a>
+                                        {% if note.is_new() %}
+                                        <span class="badge-new-sm">New</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="course-tag">{{ note.course.name }}</span>
+                        </td>
+                        <td>
+                            {% if note.tag %}
+                            <span class="tag-badge-sm">#{{ note.tag.name }}</span>
+                            {% else %}
+                            <span class="no-tag">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="author-name">{{ note.author.username if note.author else 'Unknown' }}</span>
+                        </td>
+                        <td>
+                            <span class="date-text">{{ note.created_at.strftime('%b %d, %Y') }}</span>
+                        </td>
+                        <td style="text-align: right;">
+                            <div class="action-group" style="justify-content: flex-end;">
+                                <a href="{{ url_for('view_note', note_id=note.id) }}" class="btn-action btn-view"
+                                    title="View Note">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                </a>
+                                <a href="{{ url_for('edit_note', note_id=note.id) }}" class="btn-action btn-edit"
+                                    title="Edit Note">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('delete_note', note_id=note.id) }}"
+                                    style="display: inline;">
+                                    <button type="submit" class="btn-action btn-delete confirm-delete"
+                                        title="Delete Note">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-file-alt"></i>
+                                <h3>No notes available</h3>
+                                <p>Create your first note to get started.</p>
+                                <a href="{{ url_for('post_note') }}" class="empty-cta">
+                                    <i class="fas fa-plus"></i> Post Your First Note
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const courseFilter = document.getElementById('courseFilter');
+        const tagFilter = document.getElementById('tagFilter');
+        const rows = document.querySelectorAll('.note-row');
+        const tbody = document.getElementById('notesBody');
+
+        function filterTable() {
+            const query = searchInput.value.toLowerCase().trim();
+            const courseId = courseFilter.value;
+            const tagId = tagFilter.value;
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const rowCourse = row.dataset.course;
+                const rowTag = row.dataset.tag;
+                let show = true;
+
+                if (query && !text.includes(query)) {
+                    show = false;
+                }
+
+                if (courseId && rowCourse !== courseId) {
+                    show = false;
+                }
+
+                if (tagId && rowTag !== tagId) {
+                    show = false;
+                }
+
+                row.style.display = show ? '' : 'none';
+                if (show) visibleCount++;
+            });
+
+            // Show/hide no results message
+            let noResults = document.getElementById('noResults');
+            if (visibleCount === 0 && rows.length > 0) {
+                if (!noResults) {
+                    noResults = document.createElement('tr');
+                    noResults.id = 'noResults';
+                    noResults.innerHTML = `
+            <td colspan="6">
+              <div class="no-results">
+                <i class="fas fa-search"></i>
+                <p>No notes match your search criteria.</p>
+              </div>
+            </td>
+          `;
+                    tbody.appendChild(noResults);
+                }
+                noResults.style.display = '';
+            } else if (noResults) {
+                noResults.style.display = 'none';
+            }
+        }
+
+        searchInput.addEventListener('input', filterTable);
+        courseFilter.addEventListener('change', filterTable);
+        tagFilter.addEventListener('change', filterTable);
+
+        // Confirm delete
+        document.querySelectorAll('.confirm-delete').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                if (!confirm('Are you sure you want to delete this note? This action cannot be undone.')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

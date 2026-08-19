@@ -1,0 +1,835 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Assignment - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     SUBMIT ASSIGNMENT - Premium Theme
+     ============================================ */
+  .submit-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Container */
+  .submit-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 40px 40px 36px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    opacity: 0.6;
+  }
+
+  .submit-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  /* Header */
+  .submit-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .submit-header .icon-wrapper {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #F59E0B;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .submit-container:hover .icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.08);
+  }
+
+  .submit-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+  }
+
+  .submit-header h2 span {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .submit-header .assignment-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    margin: 0 0 4px;
+  }
+
+  .submit-header .assignment-meta {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 0;
+  }
+
+  .submit-header .assignment-meta i {
+    color: #F59E0B;
+  }
+
+  .submit-header .assignment-meta .due-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  .submit-header .assignment-meta .due-badge.soon {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .submit-header .assignment-meta .due-badge.overdue {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+  }
+
+  /* Info Box */
+  .info-box {
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.06);
+    border-radius: var(--radius-sm, 10px);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .info-box i {
+    color: var(--blue, #2563EB);
+    font-size: 1.1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .info-box .info-text {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    line-height: 1.6;
+  }
+
+  .info-box .info-text strong {
+    color: var(--navy, #0F172A);
+  }
+
+  /* Form */
+  .submit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-group label i {
+    color: #F59E0B;
+    font-size: 0.85rem;
+    width: 18px;
+    text-align: center;
+  }
+
+  .form-group label .required {
+    color: #EF4444;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .form-group label .optional {
+    font-weight: 400;
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.7rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+    appearance: none;
+  }
+
+  .form-control:focus {
+    border-color: #F59E0B;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.08);
+    background: var(--white, #FFFFFF);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 150px;
+    line-height: 1.8;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Character Counter */
+  .char-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.7rem;
+    color: var(--text-muted, #94A3B8);
+    margin-top: 4px;
+  }
+
+  .char-counter .count {
+    font-weight: 600;
+  }
+
+  .char-counter .count.warning {
+    color: #F59E0B;
+  }
+
+  .char-counter .count.danger {
+    color: #EF4444;
+  }
+
+  /* File Upload */
+  .file-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .file-upload-wrapper input[type="file"] {
+    display: none;
+  }
+
+  .file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 20px;
+    border: 2px dashed rgba(15, 23, 42, 0.06);
+    border-radius: var(--radius-sm, 10px);
+    background: var(--bg, #F8FAFC);
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-align: center;
+  }
+
+  .file-upload-label:hover {
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.02);
+  }
+
+  .file-upload-label i {
+    font-size: 2rem;
+    color: #F59E0B;
+  }
+
+  .file-upload-label .upload-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text, #1E293B);
+  }
+
+  .file-upload-label .upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .file-upload-label .file-name {
+    font-size: 0.82rem;
+    color: #059669;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  .file-upload-label .file-name.has-file {
+    color: #059669;
+  }
+
+  .file-upload-label.dragover {
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.04);
+    transform: scale(1.01);
+  }
+
+  .text-muted {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94A3B8);
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(245, 158, 11, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    margin-top: 8px;
+  }
+
+  .btn-outline:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: #F59E0B;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline i {
+    color: #F59E0B;
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .submit-container {
+      padding: 28px 20px 24px;
+    }
+
+    .submit-header .icon-wrapper {
+      width: 56px;
+      height: 56px;
+      font-size: 1.5rem;
+    }
+
+    .submit-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .submit-header .assignment-title {
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+    }
+
+    .file-upload-label {
+      padding: 24px 16px;
+    }
+
+    .file-upload-label i {
+      font-size: 1.6rem;
+    }
+
+    .btn {
+      padding: 11px 20px;
+      font-size: 0.85rem;
+    }
+
+    .info-box {
+      padding: 12px 14px;
+    }
+
+    .info-box .info-text {
+      font-size: 0.82rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .submit-container {
+      padding: 20px 14px 18px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .submit-header .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      font-size: 1.3rem;
+    }
+
+    .submit-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .submit-header .assignment-title {
+      font-size: 0.88rem;
+    }
+
+    .submit-header .assignment-meta {
+      font-size: 0.78rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+    }
+
+    .form-control {
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+
+    textarea.form-control {
+      min-height: 100px;
+    }
+
+    .file-upload-label {
+      padding: 20px 12px;
+    }
+
+    .file-upload-label i {
+      font-size: 1.4rem;
+    }
+
+    .file-upload-label .upload-text {
+      font-size: 0.82rem;
+    }
+
+    .file-upload-label .upload-hint {
+      font-size: 0.7rem;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      font-size: 0.82rem;
+    }
+
+    .info-box {
+      padding: 10px 12px;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .info-box .info-text {
+      font-size: 0.78rem;
+    }
+
+    .submit-header .assignment-meta .due-badge {
+      font-size: 0.6rem;
+      padding: 1px 8px;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .submit-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .submit-container::before {
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+  }
+
+  [data-theme="dark"] .submit-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .submit-header .assignment-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .submit-header .icon-wrapper {
+    background: rgba(245, 158, 11, 0.12);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: #F59E0B;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .file-upload-label {
+    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .file-upload-label:hover {
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.04);
+  }
+
+  [data-theme="dark"] .file-upload-label .upload-text {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .file-upload-label.dragover {
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.06);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: #F59E0B;
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: #F59E0B;
+  }
+
+  [data-theme="dark"] .text-muted {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .info-box {
+    background: rgba(37, 99, 235, 0.06);
+    border-color: rgba(37, 99, 235, 0.08);
+  }
+
+  [data-theme="dark"] .info-box .info-text {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .info-box .info-text strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .char-counter {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .submit-header .assignment-meta .due-badge.soon {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  [data-theme="dark"] .submit-header .assignment-meta .due-badge.overdue {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+  }
+
+  [data-theme="dark"] .btn-primary {
+    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.12);
+  }
+
+  [data-theme="dark"] .btn-primary:hover {
+    box-shadow: 0 4px 28px rgba(245, 158, 11, 0.2);
+  }
+</style>
+
+<div class="submit-page">
+  <div class="submit-container">
+    <!-- Header -->
+    <div class="submit-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-upload"></i>
+      </div>
+      <h2>Submit <span>Assignment</span></h2>
+      <p class="assignment-title">{{ assignment.title }}</p>
+      <p class="assignment-meta">
+        <i class="fas fa-book"></i> {{ assignment.course.name }} &nbsp;•&nbsp;
+        <i class="fas fa-calendar"></i> Due: {{ assignment.due_date.strftime('%b %d, %Y %H:%M') }}
+        {% set now = None %}
+        {% set is_overdue = assignment.due_date < now if now else False %}
+        {% set is_soon = not is_overdue and (assignment.due_date - now).days <= 3 if now else False %}
+        {% if is_overdue %}
+          <span class="due-badge overdue"><i class="fas fa-exclamation-circle"></i> Overdue</span>
+        {% elif is_soon %}
+          <span class="due-badge soon"><i class="fas fa-clock"></i> Due Soon!</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <i class="fas fa-info-circle"></i>
+      <div class="info-text">
+        <strong>Instructions:</strong> Write your answer in the text area below. 
+        You may also attach a file if needed. Make sure to review your submission before submitting.
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" class="submit-form" id="submitForm" novalidate>
+      <!-- Answer -->
+      <div class="form-group">
+        <label for="content">
+          <i class="fas fa-file-alt"></i> Your Answer
+          <span class="required">*</span>
+        </label>
+        <textarea 
+          id="content" 
+          name="content" 
+          class="form-control" 
+          rows="8" 
+          placeholder="Write your answer here..." 
+          required
+          maxlength="5000"
+        ></textarea>
+        <div class="char-counter">
+          <span class="count" id="charCount">0</span> / 5000
+        </div>
+      </div>
+
+      <!-- File Upload -->
+      <div class="form-group">
+        <label for="file">
+          <i class="fas fa-paperclip"></i> Attach File
+          <span class="optional">(Optional)</span>
+        </label>
+        <div class="file-upload-wrapper">
+          <input type="file" id="file" name="file" class="file-upload-input">
+          <label for="file" class="file-upload-label" id="fileLabel">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span class="upload-text">Choose a file or drag it here</span>
+            <span class="upload-hint">PDF, Images, DOC, DOCX, TXT, ZIP</span>
+            <span class="file-name" id="fileName">No file chosen</span>
+          </label>
+          <span class="text-muted">Maximum file size: 16MB</span>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fas fa-check"></i> Submit Assignment
+      </button>
+
+      <a href="{{ url_for('student_assignments') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Assignments
+      </a>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('submitForm');
+    const contentInput = document.getElementById('content');
+    const charCount = document.getElementById('charCount');
+    const submitBtn = document.getElementById('submitBtn');
+    const fileInput = document.getElementById('file');
+    const fileName = document.getElementById('fileName');
+    const fileLabel = document.getElementById('fileLabel');
+
+    // Character counter
+    if (contentInput && charCount) {
+      contentInput.addEventListener('input', function() {
+        const len = this.value.length;
+        charCount.textContent = len;
+        charCount.className = 'count' + (len > 4500 ? ' warning' : '') + (len >= 5000 ? ' danger' : '');
+      });
+    }
+
+    // File upload handling
+    if (fileInput) {
+      fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          const file = this.files[0];
+          const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+
+          if (file.size > 16 * 1024 * 1024) {
+            alert('File is too large. Maximum size is 16MB.');
+            this.value = '';
+            fileName.textContent = 'No file chosen';
+            fileName.classList.remove('has-file');
+            const uploadText = fileLabel.querySelector('.upload-text');
+            uploadText.textContent = 'Choose a file or drag it here';
+            return;
+          }
+
+          const nameParts = file.name.split('.');
+          const ext = nameParts.pop();
+          const name = nameParts.join('.');
+          const displayName = name.length > 25 ? name.substring(0, 22) + '…' : name;
+          fileName.textContent = `${displayName}.${ext} (${sizeMB}MB)`;
+          fileName.classList.add('has-file');
+
+          const uploadText = fileLabel.querySelector('.upload-text');
+          uploadText.textContent = 'File selected ✓';
+        } else {
+          fileName.textContent = 'No file chosen';
+          fileName.classList.remove('has-file');
+          const uploadText = fileLabel.querySelector('.upload-text');
+          uploadText.textContent = 'Choose a file or drag it here';
+        }
+      });
+
+      // Drag and drop support
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileLabel.addEventListener(eventName, function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+
+      fileLabel.addEventListener('dragover', function() {
+        this.classList.add('dragover');
+      });
+
+      fileLabel.addEventListener('dragleave', function() {
+        this.classList.remove('dragover');
+      });
+
+      fileLabel.addEventListener('drop', function(e) {
+        this.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) {
+          fileInput.files = files;
+          fileInput.dispatchEvent(new Event('change'));
+        }
+      });
+
+      fileLabel.addEventListener('click', function(e) {
+        if (e.target === this || e.target.closest('i') || e.target.closest('span')) {
+          fileInput.click();
+        }
+      });
+    }
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+      const content = contentInput.value.trim();
+
+      if (!content) {
+        e.preventDefault();
+        contentInput.classList.add('error');
+        alert('Please write your answer before submitting.');
+        contentInput.focus();
+        return;
+      }
+
+      // Confirm submission
+      const fileNameText = fileName.textContent;
+      if (fileNameText && fileNameText !== 'No file chosen') {
+        if (!confirm('You have attached a file. Are you ready to submit your assignment?')) {
+          e.preventDefault();
+          return;
+        }
+      } else {
+        if (!confirm('Are you sure you want to submit your assignment without an attached file?')) {
+          e.preventDefault();
+          return;
+        }
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    });
+
+    // Remove error on input
+    contentInput.addEventListener('input', function() {
+      this.classList.remove('error');
+    });
+  });
+</script>
+{% endblock %}

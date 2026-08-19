@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Announcements - Awwalu Devs{% endblock %}
+
+{% block extra_css %}
+<style>
+.announcements-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.page-header {
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.page-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+.page-header h1 i {
+    color: var(--blue, #2563EB);
+}
+
+.page-header p {
+    color: var(--text-light, #64748B);
+    margin: 4px 0 0;
+}
+
+.announcement-item {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.announcement-item:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    border-color: rgba(37, 99, 235, 0.06);
+}
+
+.announcement-item.pinned {
+    border-left: 4px solid #F59E0B;
+    background: rgba(245, 158, 11, 0.02);
+}
+
+.announcement-item .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.announcement-item .header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pin-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+}
+
+.announcement-item .meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.announcement-item .content {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin: 10px 0 0;
+}
+
+.announcement-item .content p {
+    margin: 0 0 10px;
+}
+
+.announcement-item .content p:last-child {
+    margin-bottom: 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--text-muted);
+    opacity: 0.2;
+    margin-bottom: 12px;
+}
+
+.empty-state h3 {
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.empty-state p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.announcement-item:nth-child(1) { animation-delay: 0.05s; }
+.announcement-item:nth-child(2) { animation-delay: 0.10s; }
+.announcement-item:nth-child(3) { animation-delay: 0.15s; }
+
+@media (max-width: 768px) {
+    .announcements-page {
+        padding: 0 4px;
+    }
+    
+    .announcement-item {
+        padding: 18px 16px;
+    }
+    
+    .announcement-item .header {
+        flex-direction: column;
+    }
+    
+    .announcement-item .header h2 {
+        font-size: 1rem;
+    }
+    
+    .announcement-item .meta {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .announcement-item {
+        padding: 14px 12px;
+    }
+    
+    .announcement-item .header h2 {
+        font-size: 0.9rem;
+    }
+    
+    .announcement-item .content {
+        font-size: 0.85rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="announcements-page">
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-bullhorn"></i> Announcements
+        </h1>
+        <p>Stay updated with the latest news and updates</p>
+    </div>
+
+    {% if announcements %}
+        {% for announcement in announcements %}
+            <div class="announcement-item {% if announcement.is_pinned %}pinned{% endif %}">
+                <div class="header">
+                    <h2>
+                        {{ announcement.title }}
+                        {% if announcement.is_pinned %}
+                            <span class="pin-label"><i class="fas fa-thumbtack"></i> Pinned</span>
+                        {% endif %}
+                    </h2>
+                    <div class="meta">
+                        <span><i class="fas fa-calendar"></i> {{ announcement.created_at.strftime('%b %d, %Y') }}</span>
+                        <span><i class="fas fa-clock"></i> {{ announcement.created_at.strftime('%I:%M %p') }}</span>
+                    </div>
+                </div>
+                <div class="content">
+                    {{ announcement.content|safe }}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-bullhorn"></i>
+            <h3>No announcements yet</h3>
+            <p>Check back later for updates from your instructors.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

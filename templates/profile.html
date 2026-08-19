@@ -1,0 +1,704 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     PROFILE PAGE - Premium Theme
+     ============================================ */
+  .profile-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .page-header h1 i {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+    color: var(--text-light, #64748B);
+    margin: 4px 0 0 44px;
+  }
+
+  /* Profile Grid */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  /* ============================================
+     PROFILE CARD (Left)
+     ============================================ */
+  .profile-card {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    padding: 32px 24px 28px;
+    text-align: center;
+    transition: var(--transition, 0.3s ease);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    opacity: 0.6;
+  }
+
+  .profile-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .profile-avatar {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.2);
+    position: relative;
+  }
+
+  .profile-avatar .status-dot {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #059669;
+    border: 3px solid var(--white, #FFFFFF);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
+  }
+
+  .profile-card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0 0 2px;
+  }
+
+  .profile-card .profile-email {
+    font-size: 0.9rem;
+    color: var(--text-light, #64748B);
+    margin: 0 0 16px;
+  }
+
+  .profile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .badge-admin {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(34, 211, 238, 0.06));
+    color: var(--blue, #2563EB);
+    border: 1px solid rgba(37, 99, 235, 0.08);
+  }
+
+  .badge-student {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7C3AED;
+    border: 1px solid rgba(124, 58, 237, 0.06);
+  }
+
+  .badge-success {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.06);
+  }
+
+  .badge-warning {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.06);
+  }
+
+  .badge i {
+    font-size: 0.65rem;
+  }
+
+  /* Profile Stats */
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-item .stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--navy, #0F172A);
+    line-height: 1.2;
+    background: linear-gradient(135deg, var(--navy, #0F172A), var(--blue, #2563EB));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ============================================
+     SETTINGS CARDS (Right)
+     ============================================ */
+  .profile-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .settings-card {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    padding: 24px 28px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .settings-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .settings-card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .settings-card h3 i {
+    color: var(--blue, #2563EB);
+    font-size: 1.1rem;
+    width: 24px;
+    text-align: center;
+  }
+
+  .settings-card p {
+    font-size: 0.88rem;
+    color: var(--text-light, #64748B);
+    margin: 0 0 16px;
+    padding-left: 34px;
+  }
+
+  .settings-card .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 22px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+    margin-left: 34px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .btn-outline:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: var(--blue, #2563EB);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline i {
+    color: var(--blue, #2563EB);
+  }
+
+  /* Account Info Items */
+  .info-items {
+    padding-left: 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .info-item .info-label {
+    color: var(--text-light, #64748B);
+    font-weight: 500;
+  }
+
+  .info-item .info-value {
+    color: var(--text, #1E293B);
+    font-weight: 500;
+  }
+
+  .info-item .info-value.text-success {
+    color: #059669;
+  }
+
+  .info-item .info-value.text-warning {
+    color: #F59E0B;
+  }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 992px) {
+    .profile-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .profile-card {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .profile-settings {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 1.3rem;
+    }
+
+    .page-header p {
+      margin-left: 0;
+    }
+
+    .profile-card {
+      padding: 24px 16px 20px;
+    }
+
+    .profile-avatar {
+      width: 76px;
+      height: 76px;
+      font-size: 2.2rem;
+    }
+
+    .profile-avatar .status-dot {
+      width: 14px;
+      height: 14px;
+    }
+
+    .settings-card {
+      padding: 20px 18px;
+    }
+
+    .settings-card p,
+    .settings-card .btn,
+    .info-items {
+      padding-left: 0;
+    }
+
+    .settings-card h3 {
+      font-size: 0.95rem;
+    }
+
+    .settings-card .btn {
+      margin-left: 0;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .info-item {
+      flex-direction: column;
+      gap: 2px;
+      padding: 6px 0;
+    }
+
+    .profile-stats {
+      gap: 4px;
+    }
+
+    .stat-item .stat-value {
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .profile-card {
+      padding: 20px 14px 16px;
+    }
+
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      font-size: 1.8rem;
+    }
+
+    .profile-avatar .status-dot {
+      width: 12px;
+      height: 12px;
+    }
+
+    .profile-card h2 {
+      font-size: 1.1rem;
+    }
+
+    .profile-badges {
+      gap: 6px;
+    }
+
+    .badge {
+      font-size: 0.6rem;
+      padding: 3px 10px;
+    }
+
+    .profile-stats {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stat-item .stat-value {
+      font-size: 1.1rem;
+    }
+
+    .stat-item .stat-label {
+      font-size: 0.55rem;
+    }
+
+    .settings-card {
+      padding: 16px 14px;
+    }
+
+    .settings-card h3 {
+      font-size: 0.9rem;
+    }
+
+    .settings-card p {
+      font-size: 0.82rem;
+    }
+
+    .settings-card .btn {
+      font-size: 0.78rem;
+      padding: 8px 16px;
+    }
+
+    .info-item {
+      font-size: 0.82rem;
+    }
+  }
+
+  /* ============================================
+     DARK MODE
+     ============================================ */
+  [data-theme="dark"] .profile-card {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .profile-card h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .stat-item .stat-value {
+    background: linear-gradient(135deg, var(--white, #FFFFFF), var(--blue, #2563EB));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  [data-theme="dark"] .settings-card {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .settings-card h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .settings-card h3 i {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .info-item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  }
+
+  [data-theme="dark"] .info-item .info-value {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .profile-card::before {
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .badge-admin {
+    background: rgba(37, 99, 235, 0.15);
+    border-color: rgba(37, 99, 235, 0.1);
+  }
+
+  [data-theme="dark"] .badge-student {
+    background: rgba(124, 58, 237, 0.12);
+    border-color: rgba(124, 58, 237, 0.08);
+  }
+
+  [data-theme="dark"] .badge-success {
+    background: rgba(5, 150, 105, 0.12);
+    border-color: rgba(5, 150, 105, 0.08);
+  }
+
+  [data-theme="dark"] .badge-warning {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.08);
+  }
+
+  [data-theme="dark"] .profile-avatar {
+    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.15);
+  }
+
+  [data-theme="dark"] .profile-avatar .status-dot {
+    border-color: var(--white, #1E293B);
+  }
+</style>
+
+<div class="profile-page">
+  <!-- Header -->
+  <div class="page-header">
+    <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+    <p>Manage your account settings and preferences</p>
+  </div>
+
+  <!-- Profile Grid -->
+  <div class="profile-grid">
+    <!-- Left: Profile Card -->
+    <div class="profile-card">
+      <div class="profile-avatar">
+        <i class="fas fa-user"></i>
+        <span class="status-dot"></span>
+      </div>
+
+      <h2>{{ current_user.username }}</h2>
+      <p class="profile-email">{{ current_user.email }}</p>
+
+      <div class="profile-badges">
+        <span class="badge {% if current_user.is_admin() %}badge-admin{% else %}badge-student{% endif %}">
+          <i class="fas fa-{% if current_user.is_admin() %}shield-alt{% else %}graduation-cap{% endif %}"></i>
+          {{ current_user.role|title }}
+        </span>
+        {% if current_user.is_approved %}
+          <span class="badge badge-success">
+            <i class="fas fa-check-circle"></i> Approved
+          </span>
+        {% else %}
+          <span class="badge badge-warning">
+            <i class="fas fa-clock"></i> Pending
+          </span>
+        {% endif %}
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat-item">
+          <span class="stat-value">{{ current_user.enrolled_courses|length }}</span>
+          <span class="stat-label">Courses</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ current_user.quiz_answers|length }}</span>
+          <span class="stat-label">Quizzes</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ current_user.submissions|length }}</span>
+          <span class="stat-label">Assignments</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Settings -->
+    <div class="profile-settings">
+      <!-- Password -->
+      <div class="settings-card">
+        <h3><i class="fas fa-lock"></i> Password</h3>
+        <p>Change your password to keep your account secure.</p>
+        <a href="{{ url_for('change_password') }}" class="btn btn-primary">
+          <i class="fas fa-key"></i> Change Password
+        </a>
+      </div>
+
+      <!-- Theme -->
+      <div class="settings-card">
+        <h3><i class="fas fa-palette"></i> Theme</h3>
+        <p>Switch between light and dark mode for your preference.</p>
+        <button id="darkModeToggle" class="btn btn-outline">
+          <i class="fas fa-moon"></i> Toggle Dark Mode
+        </button>
+      </div>
+
+      <!-- Account Info -->
+      <div class="settings-card">
+        <h3><i class="fas fa-info-circle"></i> Account Info</h3>
+        <div class="info-items">
+          <div class="info-item">
+            <span class="info-label">Joined</span>
+            <span class="info-value">{{ current_user.created_at.strftime('%B %d, %Y') }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Role</span>
+            <span class="info-value">{{ current_user.role|title }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status</span>
+            <span class="info-value {% if current_user.is_approved %}text-success{% else %}text-warning{% endif %}">
+              {{ 'Approved' if current_user.is_approved else 'Pending Approval' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('darkModeToggle');
+    if (toggle) {
+      toggle.addEventListener('click', function() {
+        fetch('{{ url_for("toggle_dark_mode") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.dark_mode) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            toggle.innerHTML = '<i class="fas fa-sun"></i> Toggle Dark Mode';
+          } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+            toggle.innerHTML = '<i class="fas fa-moon"></i> Toggle Dark Mode';
+          }
+        })
+        .catch(error => {
+          console.error('Error toggling dark mode:', error);
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

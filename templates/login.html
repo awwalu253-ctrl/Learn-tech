@@ -1,0 +1,689 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     LOGIN PAGE - Premium Theme
+     ============================================ */
+  .login-page {
+    min-height: calc(100vh - var(--nav-height, 68px) - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bg, #F8FAFC);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background decoration */
+  .login-page::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .login-page::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -15%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Container */
+  .login-container {
+    max-width: 440px;
+    width: 100%;
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 40px 36px 36px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    opacity: 0.6;
+  }
+
+  .login-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  /* Header */
+  .login-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .login-header .icon-wrapper {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--blue, #2563EB);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .login-container:hover .icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+  }
+
+  .login-header h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+  }
+
+  .login-header h2 span {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .login-header p {
+    font-size: 0.9rem;
+    color: var(--text-light, #64748B);
+    margin: 0;
+  }
+
+  /* Form */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-group label i {
+    color: var(--blue, #2563EB);
+    font-size: 0.85rem;
+    width: 18px;
+    text-align: center;
+  }
+
+  .form-group .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .form-group .input-wrapper input {
+    width: 100%;
+    padding: 12px 16px;
+    padding-right: 48px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+  }
+
+  .form-group .input-wrapper input:focus {
+    border-color: var(--blue, #2563EB);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    background: var(--white, #FFFFFF);
+  }
+
+  .form-group .input-wrapper input::placeholder {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  .form-group .input-wrapper input.error {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  .form-group .input-wrapper input.error:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  }
+
+  .form-group .input-wrapper .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted, #94A3B8);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: var(--transition, 0.3s ease);
+    font-size: 0.9rem;
+  }
+
+  .form-group .input-wrapper .toggle-password:hover {
+    color: var(--text, #1E293B);
+    background: rgba(15, 23, 42, 0.04);
+  }
+
+  .form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2px;
+  }
+
+  .form-options .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-light, #64748B);
+    cursor: pointer;
+  }
+
+  .form-options .remember-me input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--blue, #2563EB);
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  .form-options .forgot-link {
+    font-size: 0.82rem;
+    color: var(--blue, #2563EB);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .form-options .forgot-link:hover {
+    color: var(--cyan, #22D3EE);
+  }
+
+  /* Submit Button */
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-submit:active {
+    transform: translateY(0);
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-submit .spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .btn-submit.loading .spinner {
+    display: inline-block;
+  }
+
+  .btn-submit.loading .btn-text {
+    display: none;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Footer */
+  .login-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  .login-footer p {
+    font-size: 0.88rem;
+    color: var(--text-light, #64748B);
+    margin: 0;
+  }
+
+  .login-footer p a {
+    color: var(--blue, #2563EB);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .login-footer p a:hover {
+    color: var(--cyan, #22D3EE);
+  }
+
+  /* Error message */
+  .error-message {
+    font-size: 0.78rem;
+    color: #EF4444;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .error-message i {
+    font-size: 0.7rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .login-page {
+      padding: 30px 16px;
+    }
+
+    .login-container {
+      padding: 32px 24px 28px;
+    }
+
+    .login-header .icon-wrapper {
+      width: 60px;
+      height: 60px;
+      font-size: 1.6rem;
+    }
+
+    .login-header h2 {
+      font-size: 1.4rem;
+    }
+
+    .form-group .input-wrapper input {
+      padding: 11px 14px;
+      padding-right: 44px;
+      font-size: 0.85rem;
+    }
+
+    .btn-submit {
+      padding: 12px 24px;
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .login-container {
+      padding: 24px 16px 20px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .login-header .icon-wrapper {
+      width: 52px;
+      height: 52px;
+      font-size: 1.4rem;
+    }
+
+    .login-header h2 {
+      font-size: 1.2rem;
+    }
+
+    .login-header p {
+      font-size: 0.82rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+    }
+
+    .form-group .input-wrapper input {
+      padding: 10px 12px;
+      padding-right: 40px;
+      font-size: 0.82rem;
+    }
+
+    .form-options .remember-me {
+      font-size: 0.78rem;
+    }
+
+    .form-options .forgot-link {
+      font-size: 0.78rem;
+    }
+
+    .btn-submit {
+      padding: 11px 20px;
+      font-size: 0.82rem;
+    }
+
+    .login-footer p {
+      font-size: 0.82rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .login-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .login-container::before {
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+  }
+
+  [data-theme="dark"] .login-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .login-header .icon-wrapper {
+    background: rgba(37, 99, 235, 0.12);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper input {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper input:focus {
+    border-color: var(--cyan, #22D3EE);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper input::placeholder {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper .toggle-password {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper .toggle-password:hover {
+    color: var(--white, #FFFFFF);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .form-options .remember-me {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .form-options .forgot-link {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .form-options .forgot-link:hover {
+    color: var(--blue, #2563EB);
+  }
+
+  [data-theme="dark"] .login-footer {
+    border-top-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .login-footer p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .login-footer p a {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .login-footer p a:hover {
+    color: var(--blue, #2563EB);
+  }
+
+  [data-theme="dark"] .login-page::before {
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+  }
+
+  [data-theme="dark"] .login-page::after {
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
+  }
+
+  [data-theme="dark"] .btn-submit {
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.12);
+  }
+
+  [data-theme="dark"] .btn-submit:hover {
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.2);
+  }
+</style>
+
+<div class="login-page">
+  <div class="login-container">
+    <!-- Header -->
+    <div class="login-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-graduation-cap"></i>
+      </div>
+      <h2>Welcome <span>Back</span></h2>
+      <p>Login to continue your learning journey</p>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" class="login-form" id="loginForm" novalidate>
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username"><i class="fas fa-user"></i> Username</label>
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            class="form-control" 
+            placeholder="Enter your username" 
+            required
+            autofocus
+            autocomplete="username"
+          >
+        </div>
+        <div class="error-message" id="usernameError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Please enter your username
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password"><i class="fas fa-lock"></i> Password</label>
+        <div class="input-wrapper">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-control" 
+            placeholder="Enter your password" 
+            required
+            autocomplete="current-password"
+          >
+          <button type="button" class="toggle-password" onclick="togglePassword('password')" aria-label="Toggle password visibility">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="error-message" id="passwordError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Please enter your password
+        </div>
+      </div>
+
+      <!-- Options -->
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" name="remember" id="remember">
+          Remember me
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Login</span>
+        <span class="spinner"></span>
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const usernameError = document.getElementById('usernameError');
+    const passwordError = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Toggle password visibility
+    window.togglePassword = function(inputId) {
+      const input = document.getElementById(inputId);
+      const btn = input.parentElement.querySelector('.toggle-password');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '<i class="fas fa-eye"></i>';
+      }
+    };
+
+    // Remove error on input
+    username.addEventListener('input', function() {
+      this.classList.remove('error');
+      usernameError.style.display = 'none';
+    });
+
+    password.addEventListener('input', function() {
+      this.classList.remove('error');
+      passwordError.style.display = 'none';
+    });
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+
+      // Validate username
+      if (!username.value.trim()) {
+        username.classList.add('error');
+        usernameError.style.display = 'flex';
+        isValid = false;
+      }
+
+      // Validate password
+      if (!password.value.trim()) {
+        password.classList.add('error');
+        passwordError.style.display = 'flex';
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        // Focus first error
+        if (username.classList.contains('error')) {
+          username.focus();
+        } else if (password.classList.contains('error')) {
+          password.focus();
+        }
+        return;
+      }
+
+      // Show loading state
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+    });
+
+    // Enter key support for toggle button
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.setAttribute('role', 'button');
+      btn.setAttribute('tabindex', '0');
+      btn.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.click();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

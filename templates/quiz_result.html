@@ -1,0 +1,696 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Results - {{ quiz.title }} - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     QUIZ RESULTS - Premium Theme
+     ============================================ */
+  .results-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Container */
+  .results-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 40px 40px 36px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .results-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #7C3AED, #EC4899);
+    opacity: 0.6;
+  }
+
+  .results-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  /* Header */
+  .results-header {
+    margin-bottom: 28px;
+  }
+
+  .results-header .icon-wrapper {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(236, 72, 153, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #7C3AED;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .results-container:hover .icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+  }
+
+  .results-header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0 0 4px;
+  }
+
+  .results-header h1 span {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .results-header .quiz-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    margin: 0 0 2px;
+  }
+
+  .results-header .course-name {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 0;
+  }
+
+  .results-header .course-name i {
+    color: #7C3AED;
+    margin-right: 4px;
+  }
+
+  /* Score Display */
+  .score-display {
+    background: var(--bg, #F8FAFC);
+    border-radius: var(--radius, 14px);
+    padding: 32px 24px 28px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .score-display:hover {
+    border-color: rgba(124, 58, 237, 0.06);
+  }
+
+  .score-circle {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--white, #FFFFFF);
+    position: relative;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .score-circle.excellent {
+    background: linear-gradient(135deg, #059669, #34D399);
+    box-shadow: 0 4px 24px rgba(5, 150, 105, 0.3);
+  }
+
+  .score-circle.good {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    box-shadow: 0 4px 24px rgba(124, 58, 237, 0.3);
+  }
+
+  .score-circle.needs-improvement {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    box-shadow: 0 4px 24px rgba(245, 158, 11, 0.3);
+  }
+
+  .score-circle .score-number {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--white, #FFFFFF);
+    letter-spacing: -0.02em;
+  }
+
+  .score-circle .score-percent {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    margin-left: 2px;
+  }
+
+  /* Score ring animation */
+  .score-ring {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .score-ring-inner {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: rgba(255, 255, 255, 0.5);
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .score-details {
+    text-align: center;
+  }
+
+  .score-details .score-label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin-bottom: 2px;
+  }
+
+  .score-details .score-label i {
+    margin-right: 6px;
+  }
+
+  .score-details .score-label.excellent i {
+    color: #059669;
+  }
+
+  .score-details .score-label.good i {
+    color: #7C3AED;
+  }
+
+  .score-details .score-label.needs-improvement i {
+    color: #F59E0B;
+  }
+
+  .score-details .score-breakdown {
+    font-size: 0.9rem;
+    color: var(--text-light, #64748B);
+  }
+
+  .score-details .score-breakdown strong {
+    color: var(--navy, #0F172A);
+    font-weight: 700;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-item {
+    background: var(--bg, #F8FAFC);
+    border-radius: var(--radius-sm, 10px);
+    padding: 14px 12px;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .stat-item:hover {
+    border-color: rgba(124, 58, 237, 0.06);
+  }
+
+  .stat-item .stat-value {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+  }
+
+  .stat-item .stat-value.correct {
+    color: #059669;
+  }
+
+  .stat-item .stat-value.incorrect {
+    color: #EF4444;
+  }
+
+  .stat-item .stat-value.percent {
+    color: #7C3AED;
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Actions */
+  .result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(124, 58, 237, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(124, 58, 237, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+  }
+
+  .btn-outline:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: #7C3AED;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline i {
+    color: #7C3AED;
+  }
+
+  .btn-outline-success {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+  }
+
+  .btn-outline-success:hover {
+    background: rgba(5, 150, 105, 0.04);
+    border-color: #059669;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline-success i {
+    color: #059669;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .score-circle {
+    animation: scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+  }
+
+  /* Confetti effect */
+  .confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+  }
+
+  .confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% {
+      transform: translateY(-10px) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .results-container {
+      padding: 28px 20px 24px;
+    }
+
+    .results-header .icon-wrapper {
+      width: 60px;
+      height: 60px;
+      font-size: 1.6rem;
+    }
+
+    .results-header h1 {
+      font-size: 1.1rem;
+    }
+
+    .results-header .quiz-title {
+      font-size: 1rem;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      font-size: 2.2rem;
+    }
+
+    .score-circle .score-number {
+      font-size: 2.2rem;
+    }
+
+    .score-circle .score-percent {
+      font-size: 1rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat-item .stat-value {
+      font-size: 1.1rem;
+    }
+
+    .result-actions {
+      flex-direction: column;
+    }
+
+    .result-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .results-container {
+      padding: 20px 14px 18px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .results-header .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      font-size: 1.3rem;
+    }
+
+    .results-header h1 {
+      font-size: 1rem;
+    }
+
+    .results-header .quiz-title {
+      font-size: 0.9rem;
+    }
+
+    .score-display {
+      padding: 20px 16px 18px;
+    }
+
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      font-size: 1.8rem;
+    }
+
+    .score-circle .score-number {
+      font-size: 1.8rem;
+    }
+
+    .score-circle .score-percent {
+      font-size: 0.9rem;
+    }
+
+    .score-details .score-label {
+      font-size: 0.95rem;
+    }
+
+    .score-details .score-breakdown {
+      font-size: 0.82rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .stat-item {
+      padding: 10px 8px;
+    }
+
+    .stat-item .stat-value {
+      font-size: 1rem;
+    }
+
+    .stat-item .stat-label {
+      font-size: 0.6rem;
+    }
+
+    .btn {
+      font-size: 0.82rem;
+      padding: 9px 16px;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .results-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .results-container::before {
+    background: linear-gradient(90deg, #7C3AED, #EC4899);
+  }
+
+  [data-theme="dark"] .results-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .results-header .quiz-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .results-header .icon-wrapper {
+    background: rgba(124, 58, 237, 0.12);
+  }
+
+  [data-theme="dark"] .score-display {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .score-details .score-label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .score-details .score-breakdown {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .score-details .score-breakdown strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .stat-item {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-item .stat-value {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .stat-item .stat-value.correct {
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .stat-item .stat-value.incorrect {
+    color: #F87171;
+  }
+
+  [data-theme="dark"] .stat-item .stat-value.percent {
+    color: #A78BFA;
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: #7C3AED;
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: #7C3AED;
+  }
+
+  [data-theme="dark"] .btn-outline-success {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline-success:hover {
+    background: rgba(5, 150, 105, 0.06);
+    border-color: #34D399;
+  }
+
+  [data-theme="dark"] .btn-outline-success i {
+    color: #34D399;
+  }
+</style>
+
+<div class="results-page">
+  <div class="results-container">
+    <!-- Header -->
+    <div class="results-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <h1>Quiz <span>Results</span></h1>
+      <p class="quiz-title">{{ quiz.title }}</p>
+      <p class="course-name"><i class="fas fa-book"></i> {{ quiz.course.name }}</p>
+    </div>
+
+    <!-- Score -->
+    <div class="score-display">
+      <div class="score-circle {% if score >= 70 %}excellent{% elif score >= 40 %}good{% else %}needs-improvement{% endif %}">
+        <span class="score-number">{{ score }}</span>
+        <span class="score-percent">%</span>
+        <div class="score-ring"></div>
+        <div class="score-ring-inner"></div>
+      </div>
+      <div class="score-details">
+        <span class="score-label {% if score >= 70 %}excellent{% elif score >= 40 %}good{% else %}needs-improvement{% endif %}">
+          {% if score >= 70 %}
+            <i class="fas fa-star"></i> Excellent!
+          {% elif score >= 40 %}
+            <i class="fas fa-thumbs-up"></i> Good Job!
+          {% else %}
+            <i class="fas fa-book"></i> Keep Learning!
+          {% endif %}
+        </span>
+        <span class="score-breakdown">
+          <strong>{{ correct }}</strong> out of <strong>{{ total }}</strong> correct answers
+        </span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-value correct">{{ correct }}</span>
+        <span class="stat-label">Correct</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value incorrect">{{ total - correct }}</span>
+        <span class="stat-label">Incorrect</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value percent">{{ score }}%</span>
+        <span class="stat-label">Score</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="result-actions">
+      <a href="{{ url_for('student_quizzes') }}" class="btn btn-primary">
+        <i class="fas fa-list"></i> All Quizzes
+      </a>
+      <a href="{{ url_for('view_course', course_id=quiz.course_id) }}" class="btn btn-outline">
+        <i class="fas fa-book"></i> Back to Course
+      </a>
+      <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-success">
+        <i class="fas fa-trophy"></i> Leaderboard
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Confetti for excellent scores -->
+{% if score >= 70 %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const colors = ['#7C3AED', '#EC4899', '#22D3EE', '#2563EB', '#F59E0B', '#059669', '#EF4444'];
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+
+    for (let i = 0; i < 80; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.width = (Math.random() * 6 + 4) + 'px';
+      confetti.style.height = (Math.random() * 6 + 4) + 'px';
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      confetti.style.animationDelay = (Math.random() * 2) + 's';
+      container.appendChild(confetti);
+    }
+
+    // Remove confetti after animation
+    setTimeout(() => {
+      container.remove();
+    }, 5000);
+  });
+</script>
+{% endif %}
+{% endblock %}

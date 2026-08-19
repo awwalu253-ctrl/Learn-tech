@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Approval - Awwalu Devs{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-container glass-morphism text-center">
+        <div class="auth-header">
+            <i class="fas fa-clock auth-icon" style="color: var(--warning);"></i>
+            <h2>Account Pending Approval</h2>
+            <p>Your account is waiting for admin approval</p>
+        </div>
+        
+        <div class="pending-content">
+            <div class="pending-icon">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <h3>Thank you for registering!</h3>
+            <p>Your account has been created successfully. An admin needs to approve your account before you can access the courses.</p>
+            <p class="text-muted">You will receive a notification once your account is approved.</p>
+            
+            <div class="pending-actions">
+                <a href="{{ url_for('logout') }}" class="btn btn-outline">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Check Status
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,903 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.name }} - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     COURSE VIEW - Premium Theme
+     ============================================ */
+  .course-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .course-header {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .course-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    opacity: 0.6;
+  }
+
+  .course-header:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .course-header-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .course-header-info {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .course-header-info h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .course-header-info h1 i {
+    color: var(--blue, #2563EB);
+  }
+
+  .course-header-info .course-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+  }
+
+  .course-header-info .course-meta .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg, #F8FAFC);
+    padding: 2px 12px;
+    border-radius: 100px;
+  }
+
+  .course-header-info .course-meta .meta-item i {
+    color: var(--blue, #2563EB);
+    font-size: 0.75rem;
+  }
+
+  .course-header-info .course-meta .course-code {
+    font-weight: 600;
+    color: var(--blue, #2563EB);
+    background: rgba(37, 99, 235, 0.06);
+    padding: 2px 14px;
+    border-radius: 100px;
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.03em;
+  }
+
+  .course-progress-large {
+    margin-top: 12px;
+    max-width: 400px;
+  }
+
+  .course-progress-large .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-light, #64748B);
+    margin-bottom: 4px;
+  }
+
+  .course-progress-large .progress-label .percentage {
+    color: var(--blue, #2563EB);
+  }
+
+  .course-progress-large .progress-track {
+    height: 6px;
+    background: rgba(15, 23, 42, 0.06);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .course-progress-large .progress-track .fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 0%;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    flex-shrink: 0;
+  }
+
+  .btn-back:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: var(--blue, #2563EB);
+    transform: translateY(-2px);
+  }
+
+  .btn-back i {
+    color: var(--blue, #2563EB);
+  }
+
+  /* Course Content */
+  .course-content {
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+  }
+
+  /* Notes Section */
+  .notes-section {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    padding: 24px 28px 28px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .notes-section:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .section-header h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-header h2 i {
+    color: var(--blue, #2563EB);
+  }
+
+  .section-header .note-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    background: var(--bg, #F8FAFC);
+    padding: 2px 12px;
+    border-radius: 100px;
+  }
+
+  .search-filter {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .search-filter .form-control {
+    padding: 8px 14px;
+    border-radius: var(--radius-sm, 8px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+    min-width: 150px;
+  }
+
+  .search-filter .form-control:focus {
+    border-color: var(--blue, #2563EB);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.06);
+    background: var(--white, #FFFFFF);
+  }
+
+  .search-filter .form-control::placeholder {
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .search-filter select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 34px;
+    cursor: pointer;
+    min-width: 120px;
+  }
+
+  .search-filter select.form-control option {
+    padding: 6px;
+  }
+
+  /* Notes List */
+  .notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .note-item {
+    background: var(--bg, #F8FAFC);
+    border-radius: var(--radius-sm, 10px);
+    padding: 18px 20px;
+    border: 1px solid rgba(15, 23, 42, 0.03);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .note-item:hover {
+    background: var(--white, #FFFFFF);
+    border-color: rgba(37, 99, 235, 0.06);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    transform: translateX(4px);
+  }
+
+  .note-item-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .note-item-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--navy, #0F172A);
+    margin: 0;
+  }
+
+  .note-item-header h3 a {
+    color: var(--navy, #0F172A);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .note-item-header h3 a:hover {
+    color: var(--blue, #2563EB);
+  }
+
+  .note-item-header .badge-new {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 10px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, #059669, #34D399);
+    color: white;
+    margin-left: 6px;
+  }
+
+  .note-item-header .note-date {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94A3B8);
+    white-space: nowrap;
+  }
+
+  .note-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .note-item-meta .tag-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--blue, #2563EB);
+    background: rgba(37, 99, 235, 0.06);
+    padding: 1px 12px;
+    border-radius: 100px;
+    border: 1px solid rgba(37, 99, 235, 0.06);
+  }
+
+  .note-item-meta .file-indicator {
+    font-size: 0.7rem;
+    color: #059669;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .note-item-meta .file-indicator i {
+    font-size: 0.65rem;
+  }
+
+  .note-item-meta .note-author {
+    font-size: 0.7rem;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .note-item-actions {
+    margin-top: 2px;
+  }
+
+  .btn-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary-sm {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
+  }
+
+  .btn-primary-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
+    color: var(--white, #FFFFFF);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    color: var(--text-muted, #94A3B8);
+    opacity: 0.2;
+    margin-bottom: 12px;
+  }
+
+  .empty-state p {
+    color: var(--text-light, #64748B);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .empty-state .text-muted {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .no-results i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    opacity: 0.3;
+  }
+
+  .no-results p {
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .course-header {
+      padding: 20px 18px;
+    }
+
+    .course-header-top {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .course-header-info h1 {
+      font-size: 1.2rem;
+    }
+
+    .course-header-info .course-meta {
+      gap: 8px;
+    }
+
+    .course-header-info .course-meta .meta-item {
+      font-size: 0.75rem;
+      padding: 1px 10px;
+    }
+
+    .btn-back {
+      align-self: flex-start;
+    }
+
+    .course-progress-large {
+      max-width: 100%;
+    }
+
+    .notes-section {
+      padding: 18px 14px 20px;
+    }
+
+    .section-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .section-header h2 {
+      font-size: 0.95rem;
+    }
+
+    .search-filter {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .search-filter .form-control {
+      width: 100%;
+      min-width: unset;
+    }
+
+    .note-item {
+      padding: 14px 14px;
+    }
+
+    .note-item-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .note-item-header h3 {
+      font-size: 0.88rem;
+    }
+
+    .note-item-header .note-date {
+      font-size: 0.7rem;
+    }
+
+    .note-item-meta {
+      gap: 6px;
+    }
+
+    .note-item-meta .tag-badge,
+    .note-item-meta .file-indicator,
+    .note-item-meta .note-author {
+      font-size: 0.65rem;
+    }
+
+    .btn-sm {
+      font-size: 0.72rem;
+      padding: 5px 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .course-header {
+      padding: 16px 12px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .course-header-info h1 {
+      font-size: 1.05rem;
+    }
+
+    .course-header-info .course-meta .meta-item {
+      font-size: 0.7rem;
+    }
+
+    .course-header-info .course-meta .course-code {
+      font-size: 0.7rem;
+      padding: 1px 10px;
+    }
+
+    .course-progress-large .progress-label {
+      font-size: 0.7rem;
+    }
+
+    .notes-section {
+      padding: 14px 10px 16px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .section-header h2 {
+      font-size: 0.88rem;
+    }
+
+    .section-header .note-count {
+      font-size: 0.6rem;
+    }
+
+    .search-filter .form-control {
+      font-size: 0.78rem;
+      padding: 7px 12px;
+    }
+
+    .note-item {
+      padding: 12px 10px;
+    }
+
+    .note-item-header h3 {
+      font-size: 0.82rem;
+    }
+
+    .note-item-header .badge-new {
+      font-size: 0.5rem;
+      padding: 0 8px;
+    }
+
+    .note-item-meta .tag-badge,
+    .note-item-meta .file-indicator,
+    .note-item-meta .note-author {
+      font-size: 0.6rem;
+    }
+
+    .btn-sm {
+      font-size: 0.68rem;
+      padding: 4px 10px;
+    }
+
+    .empty-state i {
+      font-size: 2rem;
+    }
+
+    .empty-state p {
+      font-size: 0.85rem;
+    }
+
+    .btn-back {
+      font-size: 0.78rem;
+      padding: 7px 16px;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .course-header {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .course-header::before {
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+  }
+
+  [data-theme="dark"] .course-header-info h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-header-info .course-meta .meta-item {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .course-header-info .course-meta .course-code {
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .notes-section {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .section-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .section-header .note-count {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .search-filter .form-control {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .search-filter .form-control:focus {
+    border-color: var(--cyan, #22D3EE);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.06);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .search-filter .form-control::placeholder {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .search-filter select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  [data-theme="dark"] .search-filter select.form-control option {
+    background: var(--white, #1E293B);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .note-item {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.03);
+  }
+
+  [data-theme="dark"] .note-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(37, 99, 235, 0.1);
+  }
+
+  [data-theme="dark"] .note-item-header h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .note-item-header h3 a {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .note-item-header h3 a:hover {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .note-item-header .note-date {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .note-item-meta .tag-badge {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.06);
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .note-item-meta .note-author {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .btn-back {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-back:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .btn-back i {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .course-progress-large .progress-track {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  [data-theme="dark"] .course-progress-large .progress-label .percentage {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .note-item-header .badge-new {
+    background: linear-gradient(135deg, #059669, #34D399);
+  }
+
+  [data-theme="dark"] .btn-primary-sm {
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
+  }
+
+  [data-theme="dark"] .btn-primary-sm:hover {
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
+  }
+</style>
+
+<div class="course-page">
+  <!-- Header -->
+  <div class="course-header">
+    <div class="course-header-top">
+      <div class="course-header-info">
+        <h1>
+          <i class="fas fa-book"></i>
+          {{ course.name }}
+        </h1>
+        <div class="course-meta">
+          <span class="course-code">{{ course.code }}</span>
+          <span class="meta-item"><i class="fas fa-file-alt"></i> {{ notes|length }} notes</span>
+          <span class="meta-item"><i class="fas fa-user"></i> {{ course.students|length }} students</span>
+          {% if course.quiz_groups %}
+            <span class="meta-item"><i class="fas fa-puzzle-piece"></i> {{ course.quiz_groups|length }} quizzes</span>
+          {% endif %}
+        </div>
+        <div class="course-progress-large">
+          <div class="progress-label">
+            <span>Progress</span>
+            <span class="percentage">{{ progress }}%</span>
+          </div>
+          <div class="progress-track">
+            <div class="fill" style="width: {{ progress }}%;"></div>
+          </div>
+        </div>
+      </div>
+      <a href="{{ url_for('student_courses') }}" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Back to Courses
+      </a>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="course-content">
+    <div class="notes-section">
+      <!-- Section Header -->
+      <div class="section-header">
+        <h2>
+          <i class="fas fa-file-alt"></i>
+          Course Notes
+          <span class="note-count">{{ notes|length }}</span>
+        </h2>
+        <div class="search-filter">
+          <input type="text" id="searchInput" placeholder="Search notes..." class="form-control">
+          <select id="tagFilter" class="form-control">
+            <option value="">All Tags</option>
+            {% for tag in tags %}
+              <option value="{{ tag.id }}">{{ tag.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <!-- Notes List -->
+      <div class="notes-list" id="notesList">
+        {% for note in notes %}
+          <div class="note-item searchable-item" data-tag="{{ note.tag_id }}">
+            <div class="note-item-header">
+              <h3>
+                <a href="{{ url_for('view_note', note_id=note.id) }}">{{ note.title }}</a>
+                {% if note.is_new() %}
+                  <span class="badge-new">NEW</span>
+                {% endif %}
+              </h3>
+              <span class="note-date">{{ note.created_at.strftime('%b %d, %Y') }}</span>
+            </div>
+            <div class="note-item-meta">
+              {% if note.tag %}
+                <span class="tag-badge">#{{ note.tag.name }}</span>
+              {% endif %}
+              {% if note.file_path %}
+                <span class="file-indicator"><i class="fas fa-paperclip"></i> Attached</span>
+              {% endif %}
+              <span class="note-author">By {{ note.author.username if note.author else 'Unknown' }}</span>
+            </div>
+            <div class="note-item-actions">
+              <a href="{{ url_for('view_note', note_id=note.id) }}" class="btn-sm btn-primary-sm">
+                <i class="fas fa-eye"></i> Read
+              </a>
+            </div>
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <i class="fas fa-file-alt"></i>
+            <p>No notes available for this course yet.</p>
+            <p class="text-muted">Check back later for new learning materials.</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- No Results Message (hidden by default) -->
+      <div id="noResults" class="no-results" style="display: none;">
+        <i class="fas fa-search"></i>
+        <p>No notes match your search criteria.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const tagFilter = document.getElementById('tagFilter');
+    const noteItems = document.querySelectorAll('.note-item');
+    const noResults = document.getElementById('noResults');
+    const notesList = document.getElementById('notesList');
+
+    function filterNotes() {
+      const query = searchInput.value.toLowerCase().trim();
+      const tagId = tagFilter.value;
+      let visibleCount = 0;
+
+      noteItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        const itemTag = item.dataset.tag;
+        let show = true;
+
+        if (query && !text.includes(query)) {
+          show = false;
+        }
+
+        if (tagId && itemTag !== tagId) {
+          show = false;
+        }
+
+        item.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0 && noteItems.length > 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+    }
+
+    searchInput.addEventListener('input', filterNotes);
+    tagFilter.addEventListener('change', filterNotes);
+
+    // Animate progress bar
+    const fill = document.querySelector('.course-progress-large .fill');
+    if (fill) {
+      const target = fill.style.width;
+      fill.style.width = '0%';
+      setTimeout(() => {
+        fill.style.width = target;
+      }, 400);
+    }
+  });
+</script>
+{% endblock %}

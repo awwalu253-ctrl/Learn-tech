@@ -1,0 +1,500 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     404 ERROR PAGE - Premium Theme
+     ============================================ */
+  .error-page {
+    min-height: calc(100vh - var(--nav-height, 68px) - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bg, #F8FAFC);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Animated background blobs */
+  .error-page::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: floatBlob 20s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  .error-page::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -15%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: floatBlob 25s ease-in-out infinite alternate-reverse;
+    pointer-events: none;
+  }
+
+  @keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(40px, -30px) scale(1.1); }
+  }
+
+  /* Container */
+  .error-container {
+    max-width: 520px;
+    width: 100%;
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 48px 40px 40px;
+    text-align: center;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeScale 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .error-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    opacity: 0.6;
+  }
+
+  .error-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    transform: translateY(-4px);
+  }
+
+  /* Error Icon */
+  .error-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #F59E0B;
+    transition: var(--transition, 0.3s ease);
+    position: relative;
+  }
+
+  .error-icon::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px dashed rgba(245, 158, 11, 0.15);
+    animation: spin 20s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .error-container:hover .error-icon {
+    transform: scale(1.04) rotate(-4deg);
+    box-shadow: 0 4px 30px rgba(245, 158, 11, 0.08);
+  }
+
+  /* Numbers */
+  .error-number {
+    font-size: 6rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 8px;
+    position: relative;
+  }
+
+  .error-number .zero {
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .error-number .zero:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .error-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .error-message {
+    font-size: 0.95rem;
+    color: var(--text-light, #64748B);
+    margin: 0 0 28px;
+    line-height: 1.7;
+  }
+
+  .error-message .emoji {
+    display: inline-block;
+    animation: wave 2s ease-in-out infinite;
+  }
+
+  @keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+  }
+
+  /* Suggestions */
+  .error-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+    padding: 16px 20px;
+    background: var(--bg, #F8FAFC);
+    border-radius: var(--radius-sm, 10px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    text-align: left;
+  }
+
+  .error-suggestions .suggestion-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94A3B8);
+    margin-bottom: 4px;
+  }
+
+  .error-suggestions .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+  }
+
+  .error-suggestions .suggestion-item i {
+    color: #F59E0B;
+    font-size: 0.8rem;
+    width: 20px;
+    text-align: center;
+  }
+
+  .error-suggestions .suggestion-item a {
+    color: var(--blue, #2563EB);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .error-suggestions .suggestion-item a:hover {
+    color: var(--cyan, #22D3EE);
+    text-decoration: underline;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 32px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    margin-left: 8px;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: var(--blue, #2563EB);
+    transform: translateY(-3px);
+  }
+
+  .btn-secondary i {
+    color: var(--blue, #2563EB);
+  }
+
+  .error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  /* Animations */
+  @keyframes fadeScale {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .error-container {
+      padding: 36px 28px 32px;
+    }
+
+    .error-icon {
+      width: 80px;
+      height: 80px;
+      font-size: 2.4rem;
+    }
+
+    .error-number {
+      font-size: 4.5rem;
+    }
+
+    .error-title {
+      font-size: 1.3rem;
+    }
+
+    .error-message {
+      font-size: 0.88rem;
+    }
+
+    .error-suggestions {
+      padding: 14px 16px;
+    }
+
+    .error-suggestions .suggestion-item {
+      font-size: 0.8rem;
+    }
+
+    .btn {
+      font-size: 0.85rem;
+      padding: 10px 24px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .error-container {
+      padding: 28px 18px 24px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .error-icon {
+      width: 64px;
+      height: 64px;
+      font-size: 1.8rem;
+    }
+
+    .error-number {
+      font-size: 3.5rem;
+    }
+
+    .error-title {
+      font-size: 1.1rem;
+    }
+
+    .error-message {
+      font-size: 0.82rem;
+    }
+
+    .error-suggestions {
+      padding: 10px 14px;
+    }
+
+    .error-suggestions .suggestion-item {
+      font-size: 0.75rem;
+    }
+
+    .error-suggestions .suggestion-item i {
+      width: 16px;
+      font-size: 0.7rem;
+    }
+
+    .btn {
+      font-size: 0.82rem;
+      padding: 9px 18px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-secondary {
+      margin-left: 0;
+    }
+
+    .error-actions {
+      flex-direction: column;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .error-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .error-container::before {
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+  }
+
+  [data-theme="dark"] .error-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .error-icon {
+    background: rgba(245, 158, 11, 0.12);
+  }
+
+  [data-theme="dark"] .error-number {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  [data-theme="dark"] .error-suggestions {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .error-suggestions .suggestion-item {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .error-suggestions .suggestion-item a {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .error-suggestions .suggestion-item a:hover {
+    color: var(--blue, #2563EB);
+  }
+
+  [data-theme="dark"] .btn-secondary {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .btn-secondary i {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .error-page::before {
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+  }
+
+  [data-theme="dark"] .error-page::after {
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
+  }
+
+  [data-theme="dark"] .error-icon::after {
+    border-color: rgba(245, 158, 11, 0.08);
+  }
+</style>
+
+<div class="error-page">
+  <div class="error-container">
+    <!-- Icon -->
+    <div class="error-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+
+    <!-- Error Number -->
+    <div class="error-number">
+      4<span class="zero">0</span>4
+    </div>
+
+    <!-- Title -->
+    <h2 class="error-title">Page Not Found</h2>
+
+    <!-- Message -->
+    <p class="error-message">
+      <span class="emoji">🔍</span> 
+      The page you are looking for doesn't exist or has been moved.
+    </p>
+
+    <!-- Suggestions -->
+    <div class="error-suggestions">
+      <span class="suggestion-label"><i class="fas fa-lightbulb"></i> You might want to:</span>
+      <span class="suggestion-item">
+        <i class="fas fa-home"></i>
+        Go to the <a href="{{ url_for('index') }}">homepage</a>
+      </span>
+      <span class="suggestion-item">
+        <i class="fas fa-arrow-left"></i>
+        Use the <a href="javascript:history.back()">back button</a> to return
+      </span>
+      <span class="suggestion-item">
+        <i class="fas fa-search"></i>
+        Check the URL for any typos
+      </span>
+    </div>
+
+    <!-- Actions -->
+    <div class="error-actions">
+      <a href="{{ url_for('index') }}" class="btn btn-primary">
+        <i class="fas fa-home"></i> Go Home
+      </a>
+      <a href="javascript:history.back()" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Go Back
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

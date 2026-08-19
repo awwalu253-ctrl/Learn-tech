@@ -1,0 +1,1475 @@
+<!-- This is your redesigned admin_dashboard.html template -->
+<!-- Extends base.html (your base template remains unchanged) -->
+
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Awwalu Devs{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ============================================
+     PREMIUM THEME: Navy + Electric Blue
+     ============================================ */
+  :root {
+    --navy: #0F172A;
+    --blue: #2563EB;
+    --cyan: #22D3EE;
+    --bg: #F8FAFC;
+    --text: #1E293B;
+    --text-light: #64748B;
+    --text-muted: #94A3B8;
+    --white: #FFFFFF;
+    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.12);
+    --shadow-xl: 0 30px 80px rgba(15, 23, 42, 0.16);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ============================================
+     DASHBOARD CONTAINER
+     ============================================ */
+  .admin-dashboard {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+  }
+
+  /* ============================================
+     TOP WELCOME BANNER
+     ============================================ */
+  .welcome-banner {
+    background: var(--navy);
+    border-radius: var(--radius);
+    padding: 32px 40px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    opacity: 0;
+    animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .welcome-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: 0;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .welcome-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .welcome-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .welcome-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.4rem;
+    font-weight: 700;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+    flex-shrink: 0;
+  }
+
+  .welcome-text h1 {
+    color: var(--white);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .welcome-text h1 span {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .welcome-text .welcome-subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    margin: 2px 0 0;
+  }
+
+  .welcome-text .welcome-subtitle strong {
+    color: var(--cyan);
+    font-weight: 600;
+  }
+
+  .welcome-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-welcome {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-welcome i {
+    font-size: 0.9em;
+  }
+
+  .btn-welcome-primary {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+  }
+
+  .btn-welcome-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(37, 99, 235, 0.35);
+  }
+
+  .btn-welcome-outline {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-welcome-outline:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .last-updated {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .last-updated i {
+    font-size: 0.65rem;
+  }
+
+  /* ============================================
+     STATS ROW
+     ============================================ */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--white);
+    padding: 18px 16px 16px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-xs);
+    text-align: center;
+    transition: var(--transition);
+    opacity: 0;
+    animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card:nth-child(1) { animation-delay: 0.05s; }
+  .stat-card:nth-child(2) { animation-delay: 0.10s; }
+  .stat-card:nth-child(3) { animation-delay: 0.15s; }
+  .stat-card:nth-child(4) { animation-delay: 0.20s; }
+  .stat-card:nth-child(5) { animation-delay: 0.25s; }
+  .stat-card:nth-child(6) { animation-delay: 0.30s; }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(37, 99, 235, 0.08);
+  }
+
+  .stat-card:hover::before {
+    opacity: 1;
+  }
+
+  .stat-card.has-alert::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #EF4444;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .stat-icon {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    display: inline-block;
+  }
+
+  .stat-card:nth-child(1) .stat-icon { color: var(--blue); }
+  .stat-card:nth-child(2) .stat-icon { color: #EF4444; }
+  .stat-card:nth-child(3) .stat-icon { color: #7C3AED; }
+  .stat-card:nth-child(4) .stat-icon { color: #059669; }
+  .stat-card:nth-child(5) .stat-icon { color: #EC4899; }
+  .stat-card:nth-child(6) .stat-icon { color: #F59E0B; }
+
+  .stat-number {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+
+  .stat-change {
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 100px;
+  }
+
+  .stat-change.positive {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.08);
+  }
+
+  .stat-change.neutral {
+    color: var(--text-muted);
+    background: rgba(15, 23, 42, 0.04);
+  }
+
+  .stat-change.alert {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.08);
+    animation: pulse-text 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  /* ============================================
+     MAIN GRID
+     ============================================ */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 24px 24px 28px;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-xs);
+    transition: var(--transition);
+    opacity: 0;
+    animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+  }
+
+  .card:hover {
+    border-color: rgba(37, 99, 235, 0.06);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .card-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .card-header h3 i {
+    color: var(--blue);
+    font-size: 1.1em;
+  }
+
+  .card-header .card-link {
+    font-size: 0.8rem;
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+  }
+
+  .card-header .card-link:hover {
+    color: var(--cyan);
+  }
+
+  /* ============================================
+     QUICK ACTIONS GRID
+     ============================================ */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 18px 12px 16px;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    color: var(--text);
+    position: relative;
+  }
+
+  .quick-action:hover {
+    background: var(--white);
+    border-color: rgba(37, 99, 235, 0.12);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+  }
+
+  .quick-action i {
+    font-size: 1.5rem;
+    color: var(--blue);
+    transition: var(--transition);
+  }
+
+  .quick-action:hover i {
+    color: var(--cyan);
+    transform: scale(1.05);
+  }
+
+  .quick-action span {
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  .quick-action .badge-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #EF4444;
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    border: 2px solid var(--white);
+    animation: pulse-badge 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  /* ============================================
+     ACTIVITY LIST
+     ============================================ */
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    transition: var(--transition);
+  }
+
+  .activity-item:hover {
+    background: rgba(37, 99, 235, 0.03);
+    transform: translateX(4px);
+  }
+
+  .activity-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .activity-dot.blue { background: var(--blue); }
+  .activity-dot.purple { background: #7C3AED; }
+  .activity-dot.green { background: #059669; }
+  .activity-dot.orange { background: #F59E0B; }
+  .activity-dot.red { background: #EF4444; }
+
+  .activity-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .activity-info .title {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+
+  .activity-info .title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .activity-info .title a:hover {
+    color: var(--blue);
+  }
+
+  .activity-info .meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .activity-info .meta .tag {
+    font-size: 0.6rem;
+    padding: 1px 8px;
+    border-radius: 100px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .tag-note { background: rgba(37, 99, 235, 0.08); color: var(--blue); }
+  .tag-quiz { background: rgba(124, 58, 237, 0.08); color: #7C3AED; }
+  .tag-assignment { background: rgba(245, 158, 11, 0.08); color: #F59E0B; }
+  .tag-new { background: rgba(5, 150, 105, 0.08); color: #059669; }
+
+  .activity-time {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 30px 16px;
+  }
+
+  .empty-state i {
+    font-size: 2rem;
+    color: var(--text-muted);
+    opacity: 0.3;
+  }
+
+  .empty-state p {
+    color: var(--text-light);
+    margin: 8px 0 0;
+    font-size: 0.9rem;
+  }
+
+  .empty-state .empty-cta {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 20px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .empty-state .empty-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+  }
+
+  /* ============================================
+     COURSE PROGRESS
+     ============================================ */
+  .course-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .course-item .course-name {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .course-item .course-name .code {
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  .course-item .progress-track {
+    height: 4px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .course-item .progress-track .fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 0%;
+  }
+
+  .course-item .course-stats {
+    display: flex;
+    gap: 16px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ============================================
+     PENDING APPROVALS
+     ============================================ */
+  .pending-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-bulk-approve {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.7rem;
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.06);
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+  }
+
+  .btn-bulk-approve:hover {
+    background: #059669;
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  .btn-bulk-approve i {
+    font-size: 0.65rem;
+  }
+
+  .pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pending-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    transition: var(--transition);
+  }
+
+  .pending-item:hover {
+    background: rgba(37, 99, 235, 0.03);
+  }
+
+  .pending-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .pending-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pending-info .name {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .pending-info .course {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .pending-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .pending-actions .btn-sm {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+
+  .btn-approve {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+  }
+
+  .btn-approve:hover {
+    background: #059669;
+    color: white;
+  }
+
+  .btn-reject {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+  }
+
+  .btn-reject:hover {
+    background: #EF4444;
+    color: white;
+  }
+
+  /* ============================================
+     SUPER ADMIN PANEL
+     ============================================ */
+  .super-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .super-stat {
+    text-align: center;
+    padding: 14px 12px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+  }
+
+  .super-stat:hover {
+    background: rgba(37, 99, 235, 0.04);
+    transform: translateY(-2px);
+  }
+
+  .super-stat .number {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+
+  .super-stat .number.blue { color: var(--blue); }
+  .super-stat .number.green { color: #059669; }
+  .super-stat .number.orange { color: #F59E0B; }
+  .super-stat .number.purple { color: #7C3AED; }
+
+  .super-stat .label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeSlideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 1200px) {
+    .stats-row {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 992px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .admin-dashboard {
+      padding: 16px 12px 40px;
+    }
+
+    .welcome-banner {
+      padding: 24px 20px;
+    }
+
+    .welcome-content {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .welcome-left {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .welcome-text h1 {
+      font-size: 1.3rem;
+    }
+
+    .welcome-actions {
+      justify-content: center;
+    }
+
+    .btn-welcome {
+      font-size: 0.8rem;
+      padding: 8px 16px;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-card {
+      padding: 14px 10px 12px;
+    }
+
+    .stat-number {
+      font-size: 1.3rem;
+    }
+
+    .quick-actions {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .quick-action {
+      padding: 14px 8px 12px;
+    }
+
+    .quick-action i {
+      font-size: 1.2rem;
+    }
+
+    .quick-action span {
+      font-size: 0.75rem;
+    }
+
+    .card {
+      padding: 18px 16px 20px;
+    }
+
+    .pending-header-actions {
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .quick-actions {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .super-panel-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .welcome-avatar {
+      width: 44px;
+      height: 44px;
+      font-size: 1rem;
+    }
+
+    .welcome-text h1 {
+      font-size: 1.1rem;
+    }
+
+    .pending-item {
+      flex-wrap: wrap;
+    }
+
+    .pending-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+
+  /* ============================================
+     DARK MODE OVERRIDES
+     ============================================ */
+  [data-theme="dark"] .admin-dashboard {
+    background: var(--bg);
+  }
+
+  [data-theme="dark"] .stat-card {
+    background: var(--white);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-card .stat-number {
+    color: var(--white);
+  }
+
+  [data-theme="dark"] .card {
+    background: var(--white);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .card-header h3 {
+    color: var(--white);
+  }
+
+  [data-theme="dark"] .quick-action {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .quick-action:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(37, 99, 235, 0.1);
+  }
+
+  [data-theme="dark"] .quick-action span {
+    color: var(--text-muted);
+  }
+
+  [data-theme="dark"] .activity-item {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .activity-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .activity-info .title {
+    color: var(--white);
+  }
+
+  [data-theme="dark"] .activity-info .title a {
+    color: var(--white);
+  }
+
+  [data-theme="dark"] .activity-info .title a:hover {
+    color: var(--cyan);
+  }
+
+  [data-theme="dark"] .pending-item {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .pending-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .pending-info .name {
+    color: var(--white);
+  }
+
+  [data-theme="dark"] .super-stat {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .super-stat:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .super-stat .number {
+    color: var(--white);
+  }
+
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-muted);
+  }
+
+  [data-theme="dark"] .stat-change.neutral {
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .course-item .course-name {
+    color: var(--white);
+  }
+
+  [data-theme="dark"] .course-item .course-name .code {
+    color: var(--text-muted);
+  }
+
+  [data-theme="dark"] .course-item .course-stats {
+    color: var(--text-muted);
+  }
+
+  [data-theme="dark"] .tag-note { background: rgba(37, 99, 235, 0.12); color: var(--cyan); }
+  [data-theme="dark"] .tag-quiz { background: rgba(124, 58, 237, 0.12); color: #A78BFA; }
+  [data-theme="dark"] .tag-assignment { background: rgba(245, 158, 11, 0.12); color: #F59E0B; }
+  [data-theme="dark"] .tag-new { background: rgba(5, 150, 105, 0.12); color: #34D399; }
+
+  [data-theme="dark"] .btn-bulk-approve {
+    background: rgba(5, 150, 105, 0.08);
+    color: #34D399;
+    border-color: rgba(5, 150, 105, 0.06);
+  }
+
+  [data-theme="dark"] .btn-bulk-approve:hover {
+    background: #059669;
+    color: white;
+  }
+
+  [data-theme="dark"] .stat-card .stat-change.alert {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .quick-action .badge-count {
+    border-color: var(--white);
+  }
+
+  [data-theme="dark"] .welcome-banner {
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+  <!-- ============================== -->
+  <!-- WELCOME BANNER -->
+  <!-- ============================== -->
+  <div class="welcome-banner">
+    <div class="welcome-content">
+      <div class="welcome-left">
+        <div class="welcome-avatar">
+          {{ current_user.username[0]|upper }}
+        </div>
+        <div class="welcome-text">
+          <h1>Welcome back, <span>{{ current_user.username }}</span></h1>
+          <p class="welcome-subtitle">
+            Here's what's happening with your courses today
+            {% if pending_approvals > 0 %}
+              · <strong>{{ pending_approvals }} pending approval{{ 's' if pending_approvals > 1 }}</strong>
+            {% endif %}
+          </p>
+          <div class="last-updated">
+            <i class="fas fa-sync-alt"></i>
+            Last updated: {{ now.strftime('%I:%M %p') if now else 'Just now' }}
+          </div>
+        </div>
+      </div>
+      <div class="welcome-actions">
+        <a href="{{ url_for('post_note') }}" class="btn-welcome btn-welcome-primary">
+          <i class="fas fa-plus"></i> New Note
+        </a>
+        <a href="{{ url_for('create_quiz_group') }}" class="btn-welcome btn-welcome-outline">
+          <i class="fas fa-plus"></i> New Quiz
+        </a>
+        <a href="{{ url_for('create_assignment') }}" class="btn-welcome btn-welcome-outline">
+          <i class="fas fa-plus"></i> New Assignment
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================== -->
+  <!-- STATS ROW -->
+  <!-- ============================== -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-number">{{ total_students }}</div>
+      <div class="stat-label">Total Students</div>
+      <div class="stat-change positive"><i class="fas fa-arrow-up"></i> Active</div>
+    </div>
+    <div class="stat-card {% if pending_approvals > 0 %}has-alert{% endif %}">
+      <div class="stat-icon"><i class="fas fa-clock"></i></div>
+      <div class="stat-number">{{ pending_approvals }}</div>
+      <div class="stat-label">Pending Approvals</div>
+      <div class="stat-change {% if pending_approvals > 0 %}alert{% else %}neutral{% endif %}">
+        {% if pending_approvals > 0 %}
+          <i class="fas fa-exclamation-circle"></i> Needs action
+        {% else %}
+          <i class="fas fa-check-circle"></i> All clear
+        {% endif %}
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-book"></i></div>
+      <div class="stat-number">{{ total_courses }}</div>
+      <div class="stat-label">Active Courses</div>
+      <div class="stat-change positive"><i class="fas fa-check"></i> {{ courses|length if courses else 0 }} managed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+      <div class="stat-number">{{ total_notes }}</div>
+      <div class="stat-label">Notes Published</div>
+      <div class="stat-change positive"><i class="fas fa-file"></i> Active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-puzzle-piece"></i></div>
+      <div class="stat-number">{{ total_quizzes }}</div>
+      <div class="stat-label">Quizzes</div>
+      <div class="stat-change neutral"><i class="fas fa-check"></i> Active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+      <div class="stat-number">{{ total_assignments }}</div>
+      <div class="stat-label">Assignments</div>
+      <div class="stat-change neutral"><i class="fas fa-check"></i> Active</div>
+    </div>
+  </div>
+
+  <!-- ============================== -->
+  <!-- MAIN GRID -->
+  <!-- ============================== -->
+  <div class="dashboard-grid">
+    <!-- LEFT: Quick Actions -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Click to perform</span>
+      </div>
+      <div class="quick-actions">
+        <!-- Create/Post Actions -->
+        <a href="{{ url_for('post_note') }}" class="quick-action">
+          <i class="fas fa-plus-circle"></i>
+          <span>Post Note</span>
+        </a>
+        <a href="{{ url_for('create_quiz_group') }}" class="quick-action">
+          <i class="fas fa-plus-circle"></i>
+          <span>Create Quiz</span>
+        </a>
+        <a href="{{ url_for('create_assignment') }}" class="quick-action">
+          <i class="fas fa-plus-circle"></i>
+          <span>Create Assignment</span>
+        </a>
+
+        <!-- Manage Actions -->
+        <a href="{{ url_for('manage_notes') }}" class="quick-action">
+          <i class="fas fa-file-alt"></i>
+          <span>Manage Notes</span>
+          {% if total_notes > 0 %}
+            <span class="badge-count">{{ total_notes }}</span>
+          {% endif %}
+        </a>
+        <a href="{{ url_for('manage_quizzes') }}" class="quick-action">
+          <i class="fas fa-list"></i>
+          <span>Manage Quizzes</span>
+        </a>
+        <a href="{{ url_for('manage_assignments') }}" class="quick-action">
+          <i class="fas fa-list-ul"></i>
+          <span>Manage Assignments</span>
+        </a>
+        <a href="{{ url_for('manage_students') }}" class="quick-action">
+          <i class="fas fa-users"></i>
+          <span>Manage Students</span>
+          {% if pending_approvals > 0 %}
+            <span class="badge-count">{{ pending_approvals }}</span>
+          {% endif %}
+        </a>
+
+        <!-- New: Announcements & Export -->
+        <a href="{{ url_for('manage_announcements') }}" class="quick-action">
+          <i class="fas fa-bullhorn"></i>
+          <span>Announcements</span>
+        </a>
+        <a href="{{ url_for('export_page') }}" class="quick-action">
+          <i class="fas fa-file-export"></i>
+          <span>Export Reports</span>
+        </a>
+
+        <!-- Super Admin Actions -->
+        {% if current_user.is_super_admin() %}
+          <a href="{{ url_for('manage_courses') }}" class="quick-action">
+            <i class="fas fa-book"></i>
+            <span>Manage Courses</span>
+          </a>
+          <a href="{{ url_for('manage_admins') }}" class="quick-action">
+            <i class="fas fa-users-cog"></i>
+            <span>Manage Admins</span>
+          </a>
+        {% endif %}
+
+        <!-- Settings Actions -->
+        <a href="{{ url_for('manage_tags') }}" class="quick-action">
+          <i class="fas fa-tags"></i>
+          <span>Manage Tags</span>
+        </a>
+        <a href="{{ url_for('change_password') }}" class="quick-action">
+          <i class="fas fa-key"></i>
+          <span>Change Password</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Recent Activity -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-clock"></i> Recent Activity</h3>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Latest updates</span>
+      </div>
+      <div class="activity-list">
+        {% if recent_notes %}
+          {% for note in recent_notes[:5] %}
+            <div class="activity-item">
+              <span class="activity-dot blue"></span>
+              <div class="activity-info">
+                <div class="title">
+                  <a href="{{ url_for('edit_note', note_id=note.id) }}">{{ note.title }}</a>
+                </div>
+                <div class="meta">
+                  <span>{{ note.course.name }}</span>
+                  <span class="tag tag-note">Note</span>
+                  {% if note.is_new() %}
+                    <span class="tag tag-new">NEW</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="activity-time">{{ note.created_at.strftime('%b %d') }}</div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {% if recent_quizzes %}
+          {% for quiz in recent_quizzes[:5] %}
+            <div class="activity-item">
+              <span class="activity-dot purple"></span>
+              <div class="activity-info">
+                <div class="title">
+                  <a href="{{ url_for('edit_quiz_group', quiz_id=quiz.id) }}">{{ quiz.title }}</a>
+                </div>
+                <div class="meta">
+                  <span>{{ quiz.course.name }}</span>
+                  <span class="tag tag-quiz">Quiz</span>
+                </div>
+              </div>
+              <div class="activity-time">{{ quiz.created_at.strftime('%b %d') }}</div>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {% if not recent_notes and not recent_quizzes %}
+          <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>No recent activity yet</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">Start by creating your first note or quiz!</p>
+            <a href="{{ url_for('post_note') }}" class="empty-cta">
+              <i class="fas fa-plus"></i> Create Your First Note
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================== -->
+  <!-- COURSE PROGRESS -->
+  <!-- ============================== -->
+  <div class="card" style="margin-bottom: 20px;">
+    <div class="card-header">
+      <h3><i class="fas fa-chart-line"></i> Course Progress Overview</h3>
+      {% if current_user.is_super_admin() %}
+        <a href="{{ url_for('manage_courses') }}" class="card-link">
+          View All <i class="fas fa-arrow-right"></i>
+        </a>
+      {% endif %}
+    </div>
+    <div class="course-progress">
+      {% if courses %}
+        {% for course in courses %}
+          <div class="course-item">
+            <div class="course-name">
+              <span>{{ course.name }}</span>
+              <span class="code">{{ course.code }}</span>
+            </div>
+            <div class="progress-track">
+              {# Calculate progress based on notes, quizzes, and assignments #}
+              {% set total_items = course.notes|length + course.quiz_groups|length + course.assignments|length %}
+              {% set target_items = 30 %} {# Target: 10 notes + 10 quizzes + 10 assignments #}
+              {% set progress_pct = (total_items / target_items * 100) if total_items > 0 else 0 %}
+              <div class="fill" style="width: {{ progress_pct if progress_pct <= 100 else 100 }}%;"></div>
+            </div>
+            <div class="course-stats">
+              <span><i class="fas fa-file-alt"></i> {{ course.notes|length }} notes</span>
+              <span><i class="fas fa-users"></i> {{ course.students|length }} students</span>
+              <span><i class="fas fa-puzzle-piece"></i> {{ course.quiz_groups|length }} quizzes</span>
+              <span><i class="fas fa-tasks"></i> {{ course.assignments|length }} assignments</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="fas fa-book" style="opacity:0.2;"></i>
+          <p>No courses available</p>
+          {% if current_user.is_super_admin() %}
+            <a href="{{ url_for('create_course') }}" class="empty-cta">
+              <i class="fas fa-plus"></i> Create Your First Course
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ============================== -->
+  <!-- PENDING APPROVALS -->
+  <!-- ============================== -->
+  {% if pending_approvals > 0 %}
+    <div class="card" style="border-color: rgba(239, 68, 68, 0.12); margin-bottom: 20px;">
+      <div class="card-header">
+        <h3><i class="fas fa-user-clock" style="color: #EF4444;"></i> Pending Student Approvals</h3>
+        <div class="pending-header-actions">
+          <form method="POST" action="{{ url_for('bulk_approve_students') }}" style="display:inline;">
+            <button type="submit" class="btn-bulk-approve" onclick="return confirm('Approve all pending students?')">
+              <i class="fas fa-check-double"></i> Bulk Approve
+            </button>
+          </form>
+          <a href="{{ url_for('manage_students') }}" class="card-link">
+            View All <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+      <div class="pending-list">
+        {% for student in pending[:5] %}
+          <div class="pending-item">
+            <div class="pending-avatar">{{ student.username[0]|upper }}</div>
+            <div class="pending-info">
+              <div class="name">{{ student.username }}</div>
+              <div class="course">
+                Requested: {% for c in student.enrolled_courses[:2] %}{{ c.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                {% if student.enrolled_courses|length > 2 %} +{{ student.enrolled_courses|length - 2 }} more{% endif %}
+              </div>
+            </div>
+            <div class="pending-actions">
+              <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display:inline;">
+                <button type="submit" class="btn-sm btn-approve"><i class="fas fa-check"></i></button>
+              </form>
+              <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-sm btn-reject"><i class="fas fa-times"></i></a>
+            </div>
+          </div>
+        {% endfor %}
+        {% if pending|length > 5 %}
+          <div style="text-align:center; margin-top:6px;">
+            <a href="{{ url_for('manage_students') }}" style="font-size:0.8rem; color:var(--blue); text-decoration:none;">
+              View all {{ pending|length }} pending approvals →
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- ============================== -->
+  <!-- SUPER ADMIN PANEL -->
+  <!-- ============================== -->
+  {% if current_user.is_super_admin() %}
+    <div class="card" style="border-color: rgba(124, 58, 237, 0.12);">
+      <div class="card-header">
+        <h3><i class="fas fa-crown" style="color: #7C3AED;"></i> Super Admin Panel</h3>
+        <span style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#7C3AED; background:rgba(124,58,237,0.08); padding:4px 14px; border-radius:100px;">
+          <i class="fas fa-crown"></i> Super Admin
+        </span>
+      </div>
+      <div class="super-panel-grid">
+        <div class="super-stat">
+          <div class="number blue">{{ admin_count if admin_count is defined else 0 }}</div>
+          <div class="label">Admins</div>
+        </div>
+        <div class="super-stat">
+          <div class="number green">{{ total_courses }}</div>
+          <div class="label">Total Courses</div>
+        </div>
+        <div class="super-stat">
+          <div class="number orange">{{ total_notes }}</div>
+          <div class="label">Total Notes</div>
+        </div>
+        <div class="super-stat">
+          <div class="number purple">{{ tag_count if tag_count is defined else 0 }}</div>
+          <div class="label">Tags</div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate progress bars
+  const fills = document.querySelectorAll('.progress-track .fill');
+  fills.forEach(bar => {
+    const target = bar.style.width;
+    bar.style.width = '0%';
+    setTimeout(() => {
+      bar.style.width = target;
+    }, 200);
+  });
+
+  // Auto-dismiss flash messages
+  setTimeout(() => {
+    document.querySelectorAll('.flash-message').forEach(msg => {
+      msg.style.opacity = '0';
+      msg.style.transform = 'translateX(20px)';
+      setTimeout(() => msg.remove(), 300);
+    });
+  }, 5000);
+
+  // Live clock update for "Last updated"
+  function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+    const hour12 = now.getHours() % 12 || 12;
+    const timeStr = `${String(hour12).padStart(2, '0')}:${minutes} ${ampm}`;
+    
+    const updatedEl = document.querySelector('.last-updated');
+    if (updatedEl) {
+      updatedEl.innerHTML = `<i class="fas fa-sync-alt"></i> Last updated: ${timeStr}`;
+    }
+  }
+
+  // Update clock every 30 seconds
+  setInterval(updateClock, 30000);
+
+  // Confirm bulk approve
+  document.querySelectorAll('.btn-bulk-approve').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      if (!confirm('Are you sure you want to approve all pending students?')) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  // Confirm individual reject
+  document.querySelectorAll('.btn-reject').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      if (!confirm('Are you sure you want to reject this student?')) {
+        e.preventDefault();
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

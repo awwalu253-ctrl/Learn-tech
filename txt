@@ -1,0 +1,55 @@
+Teachingsite/
+├── backend/
+│   ├── app.py                    # Your main application
+│   ├── requirements.txt
+│   ├── templates/                ← Templates go HERE
+│   │   ├── base.html
+│   │   ├── login.html
+│   │   ├── signup.html
+│   │   ├── index.html
+│   │   ├── student_dashboard.html
+│   │   ├── course.html
+│   │   ├── view_note.html
+│   │   ├── student_quizzes.html
+│   │   ├── take_quiz_group.html
+│   │   ├── quiz_result.html
+│   │   ├── student_assignments.html
+│   │   ├── student_submit_assignment.html
+│   │   ├── leaderboard.html
+│   │   ├── profile.html
+│   │   ├── change_password.html
+│   │   ├── pending_approval.html
+│   │   ├── 404.html
+│   │   ├── 500.html
+│   │   └── admin/
+│   │       ├── dashboard.html
+│   │       ├── manage_courses.html
+│   │       ├── create_course.html
+│   │       ├── manage_admins.html
+│   │       ├── create_admin.html
+│   │       ├── edit_admin.html
+│   │       ├── manage_students.html
+│   │       ├── reject_user.html
+│   │       ├── manage_quizzes.html
+│   │       ├── create_quiz_group.html
+│   │       ├── edit_quiz_group.html
+│   │       ├── manage_assignments.html
+│   │       ├── create_assignment.html
+│   │       ├── edit_assignment.html
+│   │       ├── view_submissions.html
+│   │       ├── grade_submission.html
+│   │       ├── post_note.html
+│   │       ├── edit_note.html
+│   │       └── manage_tags.html
+│   ├── static/                  ← Static files go HERE
+│   │   ├── css/
+│   │   │   └── style.css
+│   │   ├── js/
+│   │   │   └── main.js
+│   │   └── uploads/
+│   └── teachingsite.db         ← Database (optional, can be in parent)
+│
+├── database/
+│   └── teachingsite.db         ← Or keep database here
+│
+└── .env

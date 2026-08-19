@@ -1,0 +1,799 @@
+{% extends "base.html" %}
+
+{% block title %}My Courses - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     MY COURSES - Premium Theme
+     ============================================ */
+  .my-courses {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue, #2563EB);
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+  }
+
+  /* Stats Row - FIXED: No selectattr on methods */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  .stat-mini {
+    background: var(--white, #FFFFFF);
+    padding: 16px 18px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .stat-mini:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-2px);
+  }
+
+  .stat-mini .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .stat-mini .stat-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+  }
+
+  .stat-mini .stat-icon.green {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .stat-mini .stat-icon.orange {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .stat-mini .stat-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    line-height: 1.2;
+  }
+
+  .stat-mini .stat-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Tab Navigation */
+  .tab-nav {
+    display: flex;
+    gap: 4px;
+    background: var(--white, #FFFFFF);
+    padding: 4px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-sm, 10px);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-light, #64748B);
+    background: transparent;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+  }
+
+  .tab-btn:hover {
+    color: var(--text, #1E293B);
+    background: rgba(15, 23, 42, 0.02);
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.15);
+  }
+
+  .tab-btn .tab-badge {
+    display: inline-block;
+    padding: 0 8px;
+    border-radius: 100px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.2);
+    color: inherit;
+    margin-left: 6px;
+  }
+
+  .tab-btn.active .tab-badge {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Tab Content */
+  .tab-content {
+    display: none;
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .tab-content .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .tab-content .section-header h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0;
+  }
+
+  .tab-content .section-header .section-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    background: var(--bg, #F8FAFC);
+    padding: 2px 12px;
+    border-radius: 100px;
+  }
+
+  /* Course Grid */
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .course-card {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    padding: 22px 20px 20px;
+    transition: var(--transition, 0.3s ease);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .course-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-4px);
+    border-color: rgba(37, 99, 235, 0.06);
+  }
+
+  .course-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .course-card-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .course-card-header .course-code {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    background: rgba(15, 23, 42, 0.04);
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  .course-description {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    line-height: 1.6;
+    margin: 0 0 14px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Progress in card */
+  .course-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .course-progress .progress-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(15, 23, 42, 0.06);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .course-progress .progress-track .fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    width: 0%;
+  }
+
+  .course-progress .progress-text {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--blue, #2563EB);
+    min-width: 40px;
+    text-align: right;
+  }
+
+  .course-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  .btn-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 18px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-sm i {
+    font-size: 0.8em;
+  }
+
+  .btn-primary-sm {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
+  }
+
+  .btn-primary-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-success-sm {
+    background: linear-gradient(135deg, #059669, #34D399);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 12px rgba(5, 150, 105, 0.12);
+  }
+
+  .btn-success-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(5, 150, 105, 0.2);
+    color: var(--white, #FFFFFF);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    grid-column: 1 / -1;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    color: var(--text-muted, #94A3B8);
+    opacity: 0.2;
+    margin-bottom: 12px;
+  }
+
+  .empty-state p {
+    color: var(--text-light, #64748B);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .empty-state p:last-child {
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  .empty-state .text-muted {
+    color: var(--text-muted, #94A3B8);
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .page-header-left {
+      width: 100%;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-mini {
+      padding: 12px 14px;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1.1rem;
+    }
+
+    .tab-nav {
+      flex-direction: column;
+      gap: 4px;
+      padding: 4px;
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    .tab-btn .tab-badge {
+      float: none;
+    }
+
+    .course-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .course-card {
+      padding: 18px 16px 16px;
+    }
+
+    .course-card-header h3 {
+      font-size: 0.92rem;
+    }
+
+    .btn-sm {
+      font-size: 0.75rem;
+      padding: 6px 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-mini {
+      padding: 10px 12px;
+    }
+
+    .stat-mini .stat-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 0.9rem;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1rem;
+    }
+
+    .stat-mini .stat-label {
+      font-size: 0.6rem;
+    }
+
+    .tab-btn {
+      font-size: 0.78rem;
+      padding: 8px 12px;
+    }
+
+    .course-card {
+      padding: 14px 12px 14px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .course-card-header h3 {
+      font-size: 0.85rem;
+    }
+
+    .course-description {
+      font-size: 0.8rem;
+    }
+
+    .course-progress .progress-text {
+      font-size: 0.7rem;
+      min-width: 34px;
+    }
+
+    .btn-sm {
+      font-size: 0.7rem;
+      padding: 5px 12px;
+    }
+
+    .empty-state {
+      padding: 32px 16px;
+    }
+
+    .empty-state i {
+      font-size: 2rem;
+    }
+
+    .empty-state p {
+      font-size: 0.85rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .stat-mini {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .tab-nav {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .tab-btn {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .tab-btn:hover {
+    color: var(--white, #FFFFFF);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .tab-btn.active {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-card {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .course-card:hover {
+    border-color: rgba(37, 99, 235, 0.1);
+  }
+
+  [data-theme="dark"] .course-card-header h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-card-header .course-code {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .course-description {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .course-progress .progress-track {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  [data-theme="dark"] .course-progress .progress-text {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .course-actions {
+    border-top-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .empty-state {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .tab-content .section-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .tab-content .section-header .section-count {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted, #64748B);
+  }
+</style>
+
+<div class="my-courses">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon">
+        <i class="fas fa-book"></i>
+      </div>
+      <div>
+        <h1>My <span>Courses</span></h1>
+        <p class="subtitle">Browse and manage your learning journey</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats - FIXED: No selectattr on methods -->
+  <div class="stats-row">
+    <div class="stat-mini">
+      <div class="stat-icon blue"><i class="fas fa-book"></i></div>
+      <div>
+        <div class="stat-number">{{ courses|length }}</div>
+        <div class="stat-label">Enrolled</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+      <div>
+        {% set in_progress = 0 %}
+        {% for course in courses %}
+          {% if course.get_progress_for_student(current_user.id) > 0 %}
+            {% set in_progress = in_progress + 1 %}
+          {% endif %}
+        {% endfor %}
+        <div class="stat-number">{{ in_progress }}</div>
+        <div class="stat-label">In Progress</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+      <div>
+        <div class="stat-number">{{ available_courses|length }}</div>
+        <div class="stat-label">Available</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-nav" role="tablist">
+    <button class="tab-btn active" data-target="enrolled" role="tab">
+      Enrolled Courses
+      <span class="tab-badge">{{ courses|length }}</span>
+    </button>
+    <button class="tab-btn" data-target="available" role="tab">
+      Available Courses
+      <span class="tab-badge">{{ available_courses|length }}</span>
+    </button>
+  </div>
+
+  <!-- Enrolled Tab -->
+  <div id="enrolled" class="tab-content active" role="tabpanel">
+    <div class="section-header">
+      <h2>Your Enrolled Courses</h2>
+      <span class="section-count">{{ courses|length }}</span>
+    </div>
+    <div class="course-grid">
+      {% for course in courses %}
+        <div class="course-card">
+          <div class="course-card-header">
+            <h3>{{ course.name }}</h3>
+            <span class="course-code">{{ course.code }}</span>
+          </div>
+          <p class="course-description">{{ course.description or 'No description available.' }}</p>
+          <div class="course-progress">
+            <div class="progress-track">
+              <div class="fill" style="width: {{ course.get_progress_for_student(current_user.id) }}%;"></div>
+            </div>
+            <span class="progress-text">{{ course.get_progress_for_student(current_user.id) }}%</span>
+          </div>
+          <div class="course-actions">
+            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn-sm btn-primary-sm">
+              <i class="fas fa-eye"></i> View Course
+            </a>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="fas fa-book-open"></i>
+          <p>You are not enrolled in any courses yet.</p>
+          <p class="text-muted">Browse available courses and request access.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Available Tab -->
+  <div id="available" class="tab-content" role="tabpanel">
+    <div class="section-header">
+      <h2>Available Courses</h2>
+      <span class="section-count">{{ available_courses|length }}</span>
+    </div>
+    <div class="course-grid">
+      {% for course in available_courses %}
+        <div class="course-card">
+          <div class="course-card-header">
+            <h3>{{ course.name }}</h3>
+            <span class="course-code">{{ course.code }}</span>
+          </div>
+          <p class="course-description">{{ course.description or 'No description available.' }}</p>
+          <div class="course-actions">
+            <form method="POST" action="{{ url_for('request_course', course_id=course.id) }}">
+              <button type="submit" class="btn-sm btn-success-sm">
+                <i class="fas fa-plus"></i> Request Access
+              </button>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="fas fa-check-circle"></i>
+          <p>All courses are available!</p>
+          <p class="text-muted">You are enrolled in all available courses.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = {
+      enrolled: document.getElementById('enrolled'),
+      available: document.getElementById('available')
+    };
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        const target = this.dataset.target;
+
+        // Update tabs
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+
+        // Update content
+        Object.keys(contents).forEach(key => {
+          contents[key].classList.remove('active');
+        });
+        if (contents[target]) {
+          contents[target].classList.add('active');
+        }
+      });
+    });
+
+    // Animate progress bars on load
+    const fills = document.querySelectorAll('.progress-track .fill');
+    fills.forEach(bar => {
+      const target = bar.style.width;
+      bar.style.width = '0%';
+      setTimeout(() => {
+        bar.style.width = target;
+      }, 300);
+    });
+  });
+</script>
+{% endblock %}

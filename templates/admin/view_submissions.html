@@ -1,0 +1,877 @@
+{% extends "base.html" %}
+
+{% block title %}Submissions - {{ assignment.title }} - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     SUBMISSIONS - Premium Theme
+     ============================================ */
+  .submissions-page {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    padding: 24px 32px;
+    margin-bottom: 28px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #7C3AED, #EC4899);
+    opacity: 0.6;
+  }
+
+  .page-header:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .page-header-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .page-header-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(236, 72, 153, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7C3AED;
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header-meta {
+    margin-top: 2px;
+  }
+
+  .page-header-meta .assignment-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    margin: 0;
+  }
+
+  .page-header-meta .assignment-title i {
+    color: #7C3AED;
+    margin-right: 4px;
+  }
+
+  .page-header-meta .course-info {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+  }
+
+  .page-header-meta .course-info i {
+    color: #7C3AED;
+    margin-right: 4px;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    flex-shrink: 0;
+  }
+
+  .btn-back:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: #7C3AED;
+    transform: translateY(-2px);
+  }
+
+  .btn-back i {
+    color: #7C3AED;
+  }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  .stat-mini {
+    background: var(--white, #FFFFFF);
+    padding: 16px 18px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .stat-mini:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-2px);
+  }
+
+  .stat-mini .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .stat-mini .stat-icon.purple {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7C3AED;
+  }
+
+  .stat-mini .stat-icon.green {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .stat-mini .stat-icon.orange {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .stat-mini .stat-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+  }
+
+  .stat-mini .stat-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    line-height: 1.2;
+  }
+
+  .stat-mini .stat-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Table Container */
+  .table-wrapper {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .table-wrapper:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    padding: 0 4px 4px 0;
+  }
+
+  .submission-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .submission-table thead {
+    background: var(--bg, #F8FAFC);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  .submission-table thead th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94A3B8);
+    white-space: nowrap;
+  }
+
+  .submission-table tbody tr {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .submission-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .submission-table tbody tr:hover {
+    background: rgba(124, 58, 237, 0.02);
+  }
+
+  .submission-table tbody td {
+    padding: 14px 20px;
+    vertical-align: middle;
+    color: var(--text, #1E293B);
+  }
+
+  /* Student Cell */
+  .student-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .student-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .student-name {
+    font-weight: 600;
+    color: var(--navy, #0F172A);
+  }
+
+  /* Content Preview */
+  .content-preview {
+    font-size: 0.82rem;
+    color: var(--text-light, #64748B);
+    max-width: 180px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Attachment Link */
+  .attachment-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    color: var(--blue, #2563EB);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .attachment-link:hover {
+    color: var(--cyan, #22D3EE);
+    text-decoration: underline;
+  }
+
+  .attachment-link i {
+    font-size: 0.7rem;
+  }
+
+  .no-attachment {
+    font-size: 0.78rem;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  /* Status Badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .status-badge.graded {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.06);
+  }
+
+  .status-badge.pending {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.06);
+  }
+
+  /* Score */
+  .score-display {
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  .score-display.graded {
+    color: #059669;
+  }
+
+  .score-display.pending {
+    color: var(--text-muted, #94A3B8);
+  }
+
+  /* Action Button */
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm, 8px);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    font-size: 0.8rem;
+    background: rgba(124, 58, 237, 0.06);
+    color: #7C3AED;
+  }
+
+  .btn-action:hover {
+    background: rgba(124, 58, 237, 0.12);
+    transform: translateY(-1px);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    color: var(--text-muted, #94A3B8);
+    opacity: 0.2;
+    margin-bottom: 12px;
+  }
+
+  .empty-state h3 {
+    font-size: 1.1rem;
+    color: var(--text, #1E293B);
+    margin-bottom: 4px;
+  }
+
+  .empty-state p {
+    color: var(--text-light, #64748B);
+    font-size: 0.9rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .page-header-top {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .btn-back {
+      align-self: flex-start;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 20px 18px;
+    }
+
+    .page-header-info {
+      flex-wrap: wrap;
+    }
+
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-meta .assignment-title {
+      font-size: 0.92rem;
+    }
+
+    .page-header-meta .course-info {
+      font-size: 0.78rem;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-mini {
+      padding: 12px 14px;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1.1rem;
+    }
+
+    .submission-table thead th {
+      padding: 10px 14px;
+      font-size: 0.6rem;
+    }
+
+    .submission-table tbody td {
+      padding: 10px 14px;
+      font-size: 0.8rem;
+    }
+
+    .student-avatar {
+      width: 28px;
+      height: 28px;
+      font-size: 0.65rem;
+    }
+
+    .content-preview {
+      max-width: 100px;
+    }
+
+    .status-badge {
+      font-size: 0.6rem;
+      padding: 2px 10px;
+    }
+
+    .btn-action {
+      width: 28px;
+      height: 28px;
+      font-size: 0.7rem;
+    }
+
+    .btn-back {
+      font-size: 0.78rem;
+      padding: 7px 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header {
+      padding: 16px 12px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .page-header-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1rem;
+    }
+
+    .page-header-meta .assignment-title {
+      font-size: 0.85rem;
+    }
+
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-mini {
+      padding: 10px 12px;
+    }
+
+    .stat-mini .stat-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 0.9rem;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1rem;
+    }
+
+    .stat-mini .stat-label {
+      font-size: 0.6rem;
+    }
+
+    .submission-table thead th {
+      padding: 6px 8px;
+      font-size: 0.5rem;
+    }
+
+    .submission-table tbody td {
+      padding: 8px 8px;
+      font-size: 0.7rem;
+    }
+
+    .student-avatar {
+      width: 24px;
+      height: 24px;
+      font-size: 0.55rem;
+    }
+
+    .student-name {
+      font-size: 0.75rem;
+    }
+
+    .content-preview {
+      max-width: 60px;
+      font-size: 0.7rem;
+    }
+
+    .attachment-link {
+      font-size: 0.7rem;
+    }
+
+    .status-badge {
+      font-size: 0.55rem;
+      padding: 1px 8px;
+    }
+
+    .score-display {
+      font-size: 0.75rem;
+    }
+
+    .btn-action {
+      width: 24px;
+      height: 24px;
+      font-size: 0.6rem;
+    }
+
+    .empty-state {
+      padding: 32px 16px;
+    }
+
+    .empty-state i {
+      font-size: 2rem;
+    }
+
+    .empty-state h3 {
+      font-size: 0.95rem;
+    }
+
+    .empty-state p {
+      font-size: 0.82rem;
+    }
+
+    .btn-back {
+      font-size: 0.72rem;
+      padding: 6px 12px;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .page-header {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .page-header::before {
+    background: linear-gradient(90deg, #7C3AED, #EC4899);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .page-header-meta .assignment-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .stat-mini {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .table-wrapper {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .submission-table thead {
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .submission-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .submission-table tbody tr:hover {
+    background: rgba(124, 58, 237, 0.04);
+  }
+
+  [data-theme="dark"] .student-name {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .content-preview {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .attachment-link {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .attachment-link:hover {
+    color: var(--blue, #2563EB);
+  }
+
+  [data-theme="dark"] .status-badge.graded {
+    background: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.06);
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .status-badge.pending {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.06);
+    color: #F59E0B;
+  }
+
+  [data-theme="dark"] .score-display.graded {
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .btn-action {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7C3AED;
+  }
+
+  [data-theme="dark"] .btn-action:hover {
+    background: rgba(124, 58, 237, 0.16);
+  }
+
+  [data-theme="dark"] .btn-back {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-back:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: #7C3AED;
+  }
+
+  [data-theme="dark"] .btn-back i {
+    color: #7C3AED;
+  }
+
+  [data-theme="dark"] .empty-state h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .page-header-meta .course-info {
+    color: var(--text-muted, #64748B);
+  }
+</style>
+
+<div class="submissions-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-top">
+      <div class="page-header-info">
+        <div class="page-header-icon">
+          <i class="fas fa-file-subtitle"></i>
+        </div>
+        <div>
+          <h1><span>Submissions</span></h1>
+          <div class="page-header-meta">
+            <p class="assignment-title">
+              <i class="fas fa-file-alt"></i> {{ assignment.title }}
+            </p>
+            <p class="course-info">
+              <i class="fas fa-book"></i> {{ assignment.course.name }} &nbsp;•&nbsp;
+              <i class="fas fa-calendar"></i> Due: {{ assignment.due_date.strftime('%b %d, %Y %H:%M') }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <a href="{{ url_for('manage_assignments') }}" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Back to Assignments
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-mini">
+      <div class="stat-icon purple"><i class="fas fa-file-subtitle"></i></div>
+      <div>
+        <div class="stat-number">{{ submissions|length }}</div>
+        <div class="stat-label">Total Submissions</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+      <div>
+        <div class="stat-number">{{ submissions|selectattr('is_graded', 'equalto', true)|list|length }}</div>
+        <div class="stat-label">Graded</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+      <div>
+        <div class="stat-number">{{ submissions|rejectattr('is_graded', 'equalto', true)|list|length }}</div>
+        <div class="stat-label">Pending</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon blue"><i class="fas fa-paperclip"></i></div>
+      <div>
+        <div class="stat-number">{{ submissions|selectattr('file_path', 'defined')|selectattr('file_path', 'ne', '')|list|length }}</div>
+        <div class="stat-label">With Attachments</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <div class="table-scroll">
+      <table class="submission-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Submitted</th>
+            <th>Content</th>
+            <th>Attachment</th>
+            <th>Status</th>
+            <th>Score</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for submission in submissions %}
+            <tr>
+              <td>
+                <div class="student-cell">
+                  <div class="student-avatar">{{ submission.student.username[0]|upper }}</div>
+                  <span class="student-name">{{ submission.student.username }}</span>
+                </div>
+              </td>
+              <td>
+                <span style="font-size:0.78rem;color:var(--text-light, #64748B);">
+                  {{ submission.submitted_at.strftime('%b %d, %Y %H:%M') }}
+                </span>
+              </td>
+              <td>
+                <span class="content-preview" title="{{ submission.content or '' }}">
+                  {{ submission.content|truncate(50) or '—' }}
+                </span>
+              </td>
+              <td>
+                {% if submission.file_path %}
+                  <a href="{{ url_for('uploaded_file', filename=submission.file_path) }}" target="_blank" class="attachment-link">
+                    <i class="fas fa-paperclip"></i> {{ submission.file_name or 'Download' }}
+                  </a>
+                {% else %}
+                  <span class="no-attachment">—</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="status-badge {% if submission.is_graded %}graded{% else %}pending{% endif %}">
+                  <i class="fas fa-{% if submission.is_graded %}check-circle{% else %}clock{% endif %}"></i>
+                  {{ 'Graded' if submission.is_graded else 'Pending' }}
+                </span>
+              </td>
+              <td>
+                {% if submission.is_graded %}
+                  <span class="score-display graded">{{ submission.score }}/{{ assignment.max_score }}</span>
+                {% else %}
+                  <span class="score-display pending">—</span>
+                {% endif %}
+              </td>
+              <td style="text-align: right;">
+                <a href="{{ url_for('grade_submission', submission_id=submission.id) }}" class="btn-action" title="Grade Submission">
+                  <i class="fas fa-gavel"></i>
+                </a>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <i class="fas fa-file-subtitle"></i>
+                  <h3>No submissions yet</h3>
+                  <p>Students haven't submitted any work for this assignment yet.</p>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

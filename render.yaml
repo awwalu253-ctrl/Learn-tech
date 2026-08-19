@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: awwalu-devs-backend
+    runtime: python
+    plan: free
+    buildCommand: |
+      cd backend
+      pip install -r requirements.txt
+    startCommand: |
+      cd backend
+      gunicorn app:app -c gunicorn.conf.py
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: awwalu-devs-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_DEBUG
+        value: False
+      - key: RENDER
+        value: true
+
+databases:
+  - name: awwalu-devs-db
+    plan: free
+    databaseName: awwalu_devs_db
+    user: awwalu_devs_user

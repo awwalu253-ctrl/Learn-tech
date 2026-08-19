@@ -1,0 +1,997 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Note - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     EDIT NOTE - Premium Theme
+     ============================================ */
+  .edit-note-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Container */
+  .note-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 40px 40px 36px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .note-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    opacity: 0.6;
+  }
+
+  .note-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  /* Header */
+  .note-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .note-header .icon-wrapper {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--blue, #2563EB);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .note-container:hover .icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+  }
+
+  .note-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+  }
+
+  .note-header h2 span {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .note-header .note-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    margin: 0 0 2px;
+  }
+
+  .note-header .note-title i {
+    color: var(--blue, #2563EB);
+    margin-right: 4px;
+  }
+
+  .note-header p {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 0;
+  }
+
+  /* Info Box */
+  .info-box {
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.06);
+    border-radius: var(--radius-sm, 10px);
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .info-box i {
+    color: var(--blue, #2563EB);
+    font-size: 1rem;
+  }
+
+  .info-box .info-text {
+    font-size: 0.82rem;
+    color: var(--text-light, #64748B);
+  }
+
+  /* Form */
+  .note-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-group label i {
+    color: var(--blue, #2563EB);
+    font-size: 0.85rem;
+    width: 18px;
+    text-align: center;
+  }
+
+  .form-group label .required {
+    color: #EF4444;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .form-group label .optional {
+    font-weight: 400;
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.7rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+    appearance: none;
+  }
+
+  .form-control:focus {
+    border-color: var(--blue, #2563EB);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    background: var(--white, #FFFFFF);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  .form-control.error {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  .form-control.error:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 160px;
+    line-height: 1.7;
+    font-family: 'Inter', sans-serif;
+  }
+
+  select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  select.form-control option {
+    padding: 8px;
+  }
+
+  /* Character Counter */
+  .char-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.7rem;
+    color: var(--text-muted, #94A3B8);
+    margin-top: 4px;
+  }
+
+  .char-counter .count {
+    font-weight: 600;
+  }
+
+  .char-counter .count.warning {
+    color: #F59E0B;
+  }
+
+  .char-counter .count.danger {
+    color: #EF4444;
+  }
+
+  .error-message {
+    font-size: 0.78rem;
+    color: #EF4444;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .error-message i {
+    font-size: 0.7rem;
+  }
+
+  /* Current Attachment */
+  .current-attachment {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(5, 150, 105, 0.04);
+    border: 1px solid rgba(5, 150, 105, 0.06);
+    border-radius: var(--radius-sm, 8px);
+  }
+
+  .current-attachment i {
+    color: #059669;
+    font-size: 1rem;
+  }
+
+  .current-attachment a {
+    font-weight: 500;
+    color: var(--blue, #2563EB);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .current-attachment a:hover {
+    color: var(--cyan, #22D3EE);
+    text-decoration: underline;
+  }
+
+  .current-attachment .file-size {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94A3B8);
+    margin-left: auto;
+  }
+
+  /* File Upload */
+  .file-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .file-upload-wrapper input[type="file"] {
+    display: none;
+  }
+
+  .file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 20px;
+    border: 2px dashed rgba(15, 23, 42, 0.06);
+    border-radius: var(--radius-sm, 10px);
+    background: var(--bg, #F8FAFC);
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-align: center;
+  }
+
+  .file-upload-label:hover {
+    border-color: var(--blue, #2563EB);
+    background: rgba(37, 99, 235, 0.02);
+  }
+
+  .file-upload-label i {
+    font-size: 2rem;
+    color: var(--blue, #2563EB);
+  }
+
+  .file-upload-label .upload-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text, #1E293B);
+  }
+
+  .file-upload-label .upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .file-upload-label .file-name {
+    font-size: 0.82rem;
+    color: #059669;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  .file-upload-label .file-name.has-file {
+    color: #059669;
+  }
+
+  .file-upload-label.dragover {
+    border-color: var(--blue, #2563EB);
+    background: rgba(37, 99, 235, 0.04);
+    transform: scale(1.01);
+  }
+
+  .text-muted {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94A3B8);
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    margin-top: 8px;
+  }
+
+  .btn-outline:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: var(--blue, #2563EB);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline i {
+    color: var(--blue, #2563EB);
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .note-container {
+      padding: 28px 20px 24px;
+    }
+
+    .note-header .icon-wrapper {
+      width: 56px;
+      height: 56px;
+      font-size: 1.5rem;
+    }
+
+    .note-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .note-header .note-title {
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+    }
+
+    .file-upload-label {
+      padding: 24px 16px;
+    }
+
+    .file-upload-label i {
+      font-size: 1.6rem;
+    }
+
+    .btn {
+      padding: 11px 20px;
+      font-size: 0.85rem;
+    }
+
+    .info-box {
+      padding: 10px 14px;
+    }
+
+    .info-box .info-text {
+      font-size: 0.78rem;
+    }
+
+    .current-attachment {
+      padding: 10px 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .note-container {
+      padding: 20px 14px 18px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .note-header .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      font-size: 1.3rem;
+    }
+
+    .note-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .note-header .note-title {
+      font-size: 0.88rem;
+    }
+
+    .note-header p {
+      font-size: 0.78rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+    }
+
+    .form-control {
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+
+    textarea.form-control {
+      min-height: 100px;
+    }
+
+    .file-upload-label {
+      padding: 20px 12px;
+    }
+
+    .file-upload-label i {
+      font-size: 1.4rem;
+    }
+
+    .file-upload-label .upload-text {
+      font-size: 0.82rem;
+    }
+
+    .file-upload-label .upload-hint {
+      font-size: 0.7rem;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      font-size: 0.82rem;
+    }
+
+    .info-box {
+      flex-direction: column;
+      text-align: center;
+      padding: 8px 12px;
+    }
+
+    .info-box .info-text {
+      font-size: 0.75rem;
+    }
+
+    .current-attachment {
+      flex-direction: column;
+      text-align: center;
+      gap: 4px;
+    }
+
+    .current-attachment .file-size {
+      margin-left: 0;
+    }
+
+    select.form-control {
+      background-position: right 12px center;
+      padding-right: 34px;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .note-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .note-container::before {
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+  }
+
+  [data-theme="dark"] .note-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .note-header .note-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .note-header .icon-wrapper {
+    background: rgba(37, 99, 235, 0.12);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: var(--cyan, #22D3EE);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  [data-theme="dark"] select.form-control option {
+    background: var(--white, #1E293B);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .file-upload-label {
+    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .file-upload-label:hover {
+    border-color: var(--cyan, #22D3EE);
+    background: rgba(37, 99, 235, 0.04);
+  }
+
+  [data-theme="dark"] .file-upload-label .upload-text {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .file-upload-label.dragover {
+    border-color: var(--cyan, #22D3EE);
+    background: rgba(37, 99, 235, 0.06);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .text-muted {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .info-box {
+    background: rgba(37, 99, 235, 0.06);
+    border-color: rgba(37, 99, 235, 0.08);
+  }
+
+  [data-theme="dark"] .info-box .info-text {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .char-counter {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .current-attachment {
+    background: rgba(5, 150, 105, 0.06);
+    border-color: rgba(5, 150, 105, 0.08);
+  }
+
+  [data-theme="dark"] .current-attachment a {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .current-attachment a:hover {
+    color: var(--blue, #2563EB);
+  }
+
+  [data-theme="dark"] .note-header p {
+    color: var(--text-muted, #64748B);
+  }
+</style>
+
+<div class="edit-note-page">
+  <div class="note-container">
+    <!-- Header -->
+    <div class="note-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-edit"></i>
+      </div>
+      <h2>Edit <span>Note</span></h2>
+      <p class="note-title">
+        <i class="fas fa-file-alt"></i> {{ note.title }}
+      </p>
+      <p>Update note content and settings</p>
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <i class="fas fa-info-circle"></i>
+      <span class="info-text">
+        Update the note details. Changes will be visible to students immediately.
+      </span>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" class="note-form" id="noteForm" novalidate>
+      <!-- Title -->
+      <div class="form-group">
+        <label for="title">
+          <i class="fas fa-heading"></i> Note Title
+          <span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="title" 
+          name="title" 
+          class="form-control" 
+          value="{{ note.title }}" 
+          required
+          maxlength="200"
+          autofocus
+        >
+        <div class="char-counter">
+          <span class="count" id="titleCount">{{ note.title|length }}</span> / 200
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="form-group">
+        <label for="content">
+          <i class="fas fa-align-left"></i> Content
+          <span class="required">*</span>
+        </label>
+        <textarea 
+          id="content" 
+          name="content" 
+          class="form-control" 
+          rows="10" 
+          required
+          maxlength="10000"
+        >{{ note.content }}</textarea>
+        <div class="char-counter">
+          <span class="count" id="contentCount">{{ note.content|length }}</span> / 10000
+        </div>
+      </div>
+
+      <!-- Course -->
+      <div class="form-group">
+        <label for="course_id">
+          <i class="fas fa-book"></i> Course
+          <span class="required">*</span>
+        </label>
+        <select id="course_id" name="course_id" class="form-control" required>
+          {% for course in courses %}
+            <option value="{{ course.id }}" {% if course.id == note.course_id %}selected{% endif %}>
+              {{ course.name }} ({{ course.code }})
+            </option>
+          {% endfor %}
+        </select>
+        <div class="error-message" id="courseError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Please select a course
+        </div>
+      </div>
+
+      <!-- Tag -->
+      <div class="form-group">
+        <label for="tag_id">
+          <i class="fas fa-tag"></i> Tag
+          <span class="optional">(Optional)</span>
+        </label>
+        <select id="tag_id" name="tag_id" class="form-control">
+          <option value="">Select a tag</option>
+          {% for tag in tags %}
+            <option value="{{ tag.id }}" {% if tag.id == note.tag_id %}selected{% endif %}>
+              {{ tag.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Current Attachment -->
+      {% if note.file_path %}
+        <div class="form-group">
+          <label><i class="fas fa-paperclip"></i> Current Attachment</label>
+          <div class="current-attachment">
+            <i class="fas fa-file"></i>
+            <a href="{{ url_for('uploaded_file', filename=note.file_path) }}" target="_blank">
+              {{ note.file_name or 'Download Attachment' }}
+            </a>
+            <span class="file-size">
+              <i class="fas fa-check-circle" style="color:#059669;"></i> Attached
+            </span>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- File Upload -->
+      <div class="form-group">
+        <label for="file">
+          <i class="fas fa-cloud-upload-alt"></i> Replace Attachment
+          <span class="optional">(Optional)</span>
+        </label>
+        <div class="file-upload-wrapper">
+          <input type="file" id="file" name="file" class="file-upload-input">
+          <label for="file" class="file-upload-label" id="fileLabel">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span class="upload-text">Choose a file or drag it here</span>
+            <span class="upload-hint">PDF, Images, DOC, DOCX, TXT, ZIP</span>
+            <span class="file-name" id="fileName">No file chosen</span>
+          </label>
+          <span class="text-muted">Maximum file size: 16MB</span>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fas fa-save"></i> Update Note
+      </button>
+
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('noteForm');
+    const title = document.getElementById('title');
+    const content = document.getElementById('content');
+    const courseSelect = document.getElementById('course_id');
+    const titleCount = document.getElementById('titleCount');
+    const contentCount = document.getElementById('contentCount');
+    const courseError = document.getElementById('courseError');
+    const submitBtn = document.getElementById('submitBtn');
+    const fileInput = document.getElementById('file');
+    const fileName = document.getElementById('fileName');
+    const fileLabel = document.getElementById('fileLabel');
+
+    // Character counters
+    if (title && titleCount) {
+      title.addEventListener('input', function() {
+        const len = this.value.length;
+        titleCount.textContent = len;
+        titleCount.className = 'count' + (len > 180 ? ' warning' : '') + (len >= 200 ? ' danger' : '');
+      });
+    }
+
+    if (content && contentCount) {
+      content.addEventListener('input', function() {
+        const len = this.value.length;
+        contentCount.textContent = len;
+        contentCount.className = 'count' + (len > 9000 ? ' warning' : '') + (len >= 10000 ? ' danger' : '');
+      });
+    }
+
+    // File upload handling
+    if (fileInput) {
+      fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          const file = this.files[0];
+          const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+
+          if (file.size > 16 * 1024 * 1024) {
+            alert('File is too large. Maximum size is 16MB.');
+            this.value = '';
+            fileName.textContent = 'No file chosen';
+            fileName.classList.remove('has-file');
+            const uploadText = fileLabel.querySelector('.upload-text');
+            uploadText.textContent = 'Choose a file or drag it here';
+            return;
+          }
+
+          const nameParts = file.name.split('.');
+          const ext = nameParts.pop();
+          const name = nameParts.join('.');
+          const displayName = name.length > 25 ? name.substring(0, 22) + '…' : name;
+          fileName.textContent = `${displayName}.${ext} (${sizeMB}MB)`;
+          fileName.classList.add('has-file');
+
+          const uploadText = fileLabel.querySelector('.upload-text');
+          uploadText.textContent = 'File selected ✓';
+        } else {
+          fileName.textContent = 'No file chosen';
+          fileName.classList.remove('has-file');
+          const uploadText = fileLabel.querySelector('.upload-text');
+          uploadText.textContent = 'Choose a file or drag it here';
+        }
+      });
+
+      // Drag and drop support
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileLabel.addEventListener(eventName, function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+
+      fileLabel.addEventListener('dragover', function() {
+        this.classList.add('dragover');
+      });
+
+      fileLabel.addEventListener('dragleave', function() {
+        this.classList.remove('dragover');
+      });
+
+      fileLabel.addEventListener('drop', function(e) {
+        this.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) {
+          fileInput.files = files;
+          fileInput.dispatchEvent(new Event('change'));
+        }
+      });
+
+      fileLabel.addEventListener('click', function(e) {
+        if (e.target === this || e.target.closest('i') || e.target.closest('span')) {
+          fileInput.click();
+        }
+      });
+    }
+
+    // Auto-resize textarea
+    if (content) {
+      content.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 500) + 'px';
+      });
+    }
+
+    // Remove error on change
+    courseSelect.addEventListener('change', function() {
+      this.classList.remove('error');
+      courseError.style.display = 'none';
+    });
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+
+      // Validate title
+      if (!title.value.trim()) {
+        title.classList.add('error');
+        isValid = false;
+      } else {
+        title.classList.remove('error');
+      }
+
+      // Validate content
+      if (!content.value.trim()) {
+        content.classList.add('error');
+        isValid = false;
+      } else {
+        content.classList.remove('error');
+      }
+
+      // Validate course
+      if (!courseSelect.value) {
+        courseSelect.classList.add('error');
+        courseError.style.display = 'flex';
+        isValid = false;
+      } else {
+        courseSelect.classList.remove('error');
+        courseError.style.display = 'none';
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        if (title.classList.contains('error')) {
+          title.focus();
+        } else if (content.classList.contains('error')) {
+          content.focus();
+        } else if (courseSelect.classList.contains('error')) {
+          courseSelect.focus();
+        }
+        return;
+      }
+
+      // Confirm update
+      if (!confirm(`Update note "${title.value.trim()}"?`)) {
+        e.preventDefault();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    });
+  });
+</script>
+{% endblock %}

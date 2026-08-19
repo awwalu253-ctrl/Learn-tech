@@ -1,0 +1,605 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Admins - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     MANAGE ADMINS - Premium Theme
+     ============================================ */
+  .manage-admins {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue, #2563EB);
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+  }
+
+  .btn-create {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-create:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.3);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-create i {
+    font-size: 0.9em;
+  }
+
+  /* Table Container */
+  .table-wrapper {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .table-wrapper:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    padding: 0 4px 4px 0;
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .admin-table thead {
+    background: var(--bg, #F8FAFC);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  .admin-table thead th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94A3B8);
+    white-space: nowrap;
+  }
+
+  .admin-table tbody tr {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .admin-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .admin-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.02);
+  }
+
+  .admin-table tbody td {
+    padding: 14px 20px;
+    vertical-align: middle;
+    color: var(--text, #1E293B);
+  }
+
+  .admin-table .user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .admin-table .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .admin-table .user-name {
+    font-weight: 600;
+    color: var(--navy, #0F172A);
+  }
+
+  .admin-table .user-email {
+    font-size: 0.82rem;
+    color: var(--text-light, #64748B);
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .badge-super {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(34, 211, 238, 0.06));
+    color: var(--blue, #2563EB);
+    border: 1px solid rgba(37, 99, 235, 0.08);
+  }
+
+  .badge-super i {
+    color: var(--cyan, #22D3EE);
+  }
+
+  .badge-admin {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7C3AED;
+    border: 1px solid rgba(124, 58, 237, 0.06);
+  }
+
+  .badge-admin i {
+    color: #7C3AED;
+  }
+
+  /* Course Tags */
+  .course-tag {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+    border: 1px solid rgba(37, 99, 235, 0.06);
+    margin: 2px 4px 2px 0;
+    white-space: nowrap;
+  }
+
+  .course-tag:last-child {
+    margin-right: 0;
+  }
+
+  .text-muted {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.82rem;
+  }
+
+  /* Action Buttons */
+  .action-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm, 8px);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    font-size: 0.8rem;
+  }
+
+  .btn-action i {
+    font-size: 0.8rem;
+  }
+
+  .btn-edit {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+  }
+
+  .btn-edit:hover {
+    background: rgba(37, 99, 235, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .btn-delete {
+    background: rgba(239, 68, 68, 0.06);
+    color: #EF4444;
+  }
+
+  .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .btn-delete:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .super-label {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94A3B8);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .super-label i {
+    color: var(--cyan, #22D3EE);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    color: var(--text-muted, #94A3B8);
+    opacity: 0.2;
+    margin-bottom: 12px;
+  }
+
+  .empty-state h3 {
+    font-size: 1.1rem;
+    color: var(--text, #1E293B);
+    margin-bottom: 4px;
+  }
+
+  .empty-state p {
+    color: var(--text-light, #64748B);
+    font-size: 0.9rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .page-header-left {
+      width: 100%;
+    }
+
+    .btn-create {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .admin-table thead th {
+      padding: 10px 14px;
+      font-size: 0.65rem;
+    }
+
+    .admin-table tbody td {
+      padding: 10px 14px;
+      font-size: 0.82rem;
+    }
+
+    .admin-table .user-avatar {
+      width: 30px;
+      height: 30px;
+      font-size: 0.7rem;
+    }
+
+    .badge {
+      font-size: 0.6rem;
+      padding: 3px 10px;
+    }
+
+    .course-tag {
+      font-size: 0.6rem;
+      padding: 1px 10px;
+    }
+
+    .action-group {
+      gap: 4px;
+    }
+
+    .btn-action {
+      width: 28px;
+      height: 28px;
+      font-size: 0.7rem;
+    }
+
+    .btn-action i {
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .admin-table thead th {
+      padding: 8px 10px;
+      font-size: 0.6rem;
+    }
+
+    .admin-table tbody td {
+      padding: 8px 10px;
+      font-size: 0.78rem;
+    }
+
+    .admin-table .user-cell {
+      gap: 8px;
+    }
+
+    .admin-table .user-avatar {
+      width: 26px;
+      height: 26px;
+      font-size: 0.6rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .table-wrapper {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .admin-table thead {
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .admin-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .admin-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .admin-table .user-name {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .badge-super {
+    background: rgba(37, 99, 235, 0.15);
+    border-color: rgba(37, 99, 235, 0.1);
+  }
+
+  [data-theme="dark"] .badge-admin {
+    background: rgba(124, 58, 237, 0.12);
+    border-color: rgba(124, 58, 237, 0.08);
+  }
+
+  [data-theme="dark"] .course-tag {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.06);
+  }
+
+  [data-theme="dark"] .btn-edit {
+    background: rgba(37, 99, 235, 0.08);
+  }
+
+  [data-theme="dark"] .btn-edit:hover {
+    background: rgba(37, 99, 235, 0.16);
+  }
+
+  [data-theme="dark"] .btn-delete {
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.16);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .empty-state h3 {
+    color: var(--white, #FFFFFF);
+  }
+</style>
+
+<div class="manage-admins">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon">
+        <i class="fas fa-users-cog"></i>
+      </div>
+      <div>
+        <h1>Manage <span>Admins</span></h1>
+        <p class="subtitle">Manage administrator accounts and their permissions</p>
+      </div>
+    </div>
+    <a href="{{ url_for('create_admin') }}" class="btn-create">
+      <i class="fas fa-plus"></i> Create Admin
+    </a>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <div class="table-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Admin</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Assigned Courses</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for admin in admins %}
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar">{{ admin.username[0]|upper }}</div>
+                  <div>
+                    <div class="user-name">{{ admin.username }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="user-email">{{ admin.email }}</span>
+              </td>
+              <td>
+                {% if admin.is_super_admin() %}
+                  <span class="badge badge-super">
+                    <i class="fas fa-crown"></i> Super Admin
+                  </span>
+                {% else %}
+                  <span class="badge badge-admin">
+                    <i class="fas fa-user-shield"></i> {{ admin.role|title }}
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                {% for course in admin.managed_courses %}
+                  <span class="course-tag">{{ course.code }}</span>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endfor %}
+              </td>
+              <td style="text-align: right;">
+                <div class="action-group" style="justify-content: flex-end;">
+                  {% if not admin.is_super_admin() %}
+                    <a href="{{ url_for('edit_admin', admin_id=admin.id) }}" class="btn-action btn-edit" title="Edit Admin">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <form method="POST" action="{{ url_for('delete_admin', admin_id=admin.id) }}" style="display: inline;">
+                      <button type="submit" class="btn-action btn-delete confirm-delete" title="Delete Admin">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </form>
+                  {% else %}
+                    <span class="super-label">
+                      <i class="fas fa-crown"></i> Protected
+                    </span>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <i class="fas fa-users-cog"></i>
+                  <h3>No admins found</h3>
+                  <p>Create your first administrator to get started.</p>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Confirm delete
+    document.querySelectorAll('.confirm-delete').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (!confirm('Are you sure you want to delete this admin?')) {
+          e.preventDefault();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

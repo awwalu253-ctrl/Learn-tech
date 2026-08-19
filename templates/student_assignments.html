@@ -1,0 +1,860 @@
+{% extends "base.html" %}
+
+{% block title %}Assignments - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     ASSIGNMENTS - Premium Theme
+     ============================================ */
+  .assignments-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F59E0B;
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+  }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  .stat-mini {
+    background: var(--white, #FFFFFF);
+    padding: 16px 18px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .stat-mini:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-2px);
+  }
+
+  .stat-mini .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .stat-mini .stat-icon.orange {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .stat-mini .stat-icon.green {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .stat-mini .stat-icon.red {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+  }
+
+  .stat-mini .stat-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+  }
+
+  .stat-mini .stat-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    line-height: 1.2;
+  }
+
+  .stat-mini .stat-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Assignments Grid */
+  .assignments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+  }
+
+  /* Assignment Card */
+  .assignment-card {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    padding: 24px 22px 22px;
+    transition: var(--transition, 0.3s ease);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .assignment-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    opacity: 0;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .assignment-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-4px);
+    border-color: rgba(245, 158, 11, 0.06);
+  }
+
+  .assignment-card:hover::before {
+    opacity: 1;
+  }
+
+  .assignment-card.past-due::before {
+    opacity: 1;
+    background: linear-gradient(90deg, #EF4444, #DC2626);
+  }
+
+  .assignment-card.graded::before {
+    opacity: 1;
+    background: linear-gradient(90deg, #059669, #34D399);
+  }
+
+  .assignment-card.submitted::before {
+    opacity: 1;
+    background: linear-gradient(90deg, #F59E0B, #D97706);
+  }
+
+  .assignment-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .assignment-card-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .assignment-card-header .assignment-course {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    background: rgba(15, 23, 42, 0.04);
+    padding: 2px 12px;
+    border-radius: 100px;
+    white-space: nowrap;
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.02em;
+  }
+
+  .assignment-description {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    line-height: 1.6;
+    margin: 0 0 14px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Assignment Meta */
+  .assignment-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background: var(--bg, #F8FAFC);
+    border-radius: var(--radius-sm, 8px);
+  }
+
+  .assignment-meta span {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-light, #64748B);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .assignment-meta span i {
+    font-size: 0.75rem;
+    color: #F59E0B;
+  }
+
+  .assignment-meta span .due-soon {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #F59E0B;
+    background: rgba(245, 158, 11, 0.08);
+    padding: 1px 8px;
+    border-radius: 100px;
+    margin-left: 4px;
+  }
+
+  .assignment-meta span .past-due-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.08);
+    padding: 1px 8px;
+    border-radius: 100px;
+    margin-left: 4px;
+  }
+
+  /* Status Badge */
+  .assignment-status {
+    margin-bottom: 14px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .status-badge.pending {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+    border: 1px solid rgba(37, 99, 235, 0.06);
+  }
+
+  .status-badge.submitted {
+    background: rgba(245, 158, 11, 0.06);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.06);
+  }
+
+  .status-badge.graded {
+    background: rgba(5, 150, 105, 0.06);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.06);
+  }
+
+  .status-badge.past-due {
+    background: rgba(239, 68, 68, 0.06);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.06);
+  }
+
+  .status-badge i {
+    font-size: 0.7rem;
+  }
+
+  /* Buttons */
+  .btn-block {
+    width: 100%;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(245, 158, 11, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+  }
+
+  .btn-outline:hover:not(:disabled) {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: #F59E0B;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-outline i {
+    color: #F59E0B;
+  }
+
+  .btn-outline.success i {
+    color: #059669;
+  }
+
+  .btn-outline.danger i {
+    color: #EF4444;
+  }
+
+  /* Feedback */
+  .assignment-feedback {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(5, 150, 105, 0.04);
+    border: 1px solid rgba(5, 150, 105, 0.06);
+    border-radius: var(--radius-sm, 8px);
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    line-height: 1.6;
+  }
+
+  .assignment-feedback strong {
+    color: #059669;
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    grid-column: 1 / -1;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--text-muted, #94A3B8);
+    opacity: 0.2;
+    margin-bottom: 16px;
+  }
+
+  .empty-state p {
+    color: var(--text-light, #64748B);
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .empty-state .text-muted {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .page-header-left {
+      width: 100%;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-mini {
+      padding: 12px 14px;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1.1rem;
+    }
+
+    .assignments-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .assignment-card {
+      padding: 20px 16px 18px;
+    }
+
+    .assignment-card-header h3 {
+      font-size: 0.92rem;
+    }
+
+    .assignment-card-header .assignment-course {
+      font-size: 0.6rem;
+      padding: 1px 10px;
+    }
+
+    .assignment-meta {
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 12px;
+    }
+
+    .assignment-meta span {
+      font-size: 0.72rem;
+    }
+
+    .status-badge {
+      font-size: 0.65rem;
+      padding: 3px 12px;
+    }
+
+    .btn {
+      font-size: 0.82rem;
+      padding: 9px 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-mini {
+      padding: 10px 12px;
+    }
+
+    .stat-mini .stat-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 0.9rem;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1rem;
+    }
+
+    .stat-mini .stat-label {
+      font-size: 0.6rem;
+    }
+
+    .assignment-card {
+      padding: 16px 12px 14px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .assignment-card-header h3 {
+      font-size: 0.85rem;
+    }
+
+    .assignment-description {
+      font-size: 0.8rem;
+    }
+
+    .assignment-meta span {
+      font-size: 0.68rem;
+    }
+
+    .status-badge {
+      font-size: 0.6rem;
+      padding: 2px 10px;
+    }
+
+    .btn {
+      font-size: 0.78rem;
+      padding: 8px 14px;
+    }
+
+    .assignment-feedback {
+      font-size: 0.8rem;
+      padding: 10px 12px;
+    }
+
+    .empty-state {
+      padding: 40px 16px;
+    }
+
+    .empty-state i {
+      font-size: 2.2rem;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .stat-mini {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .assignment-card {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .assignment-card:hover {
+    border-color: rgba(245, 158, 11, 0.1);
+  }
+
+  [data-theme="dark"] .assignment-card::before {
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+  }
+
+  [data-theme="dark"] .assignment-card.past-due::before {
+    background: linear-gradient(90deg, #EF4444, #DC2626);
+  }
+
+  [data-theme="dark"] .assignment-card.graded::before {
+    background: linear-gradient(90deg, #059669, #34D399);
+  }
+
+  [data-theme="dark"] .assignment-card.submitted::before {
+    background: linear-gradient(90deg, #F59E0B, #D97706);
+  }
+
+  [data-theme="dark"] .assignment-card-header h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .assignment-card-header .assignment-course {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .assignment-description {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .assignment-meta {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .assignment-meta span {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .assignment-meta span i {
+    color: #F59E0B;
+  }
+
+  [data-theme="dark"] .assignment-meta span .due-soon {
+    color: #F59E0B;
+    background: rgba(245, 158, 11, 0.08);
+  }
+
+  [data-theme="dark"] .assignment-meta span .past-due-label {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .status-badge.pending {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.06);
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .status-badge.submitted {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.06);
+    color: #F59E0B;
+  }
+
+  [data-theme="dark"] .status-badge.graded {
+    background: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.06);
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .status-badge.past-due {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.06);
+    color: #EF4444;
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: #F59E0B;
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: #F59E0B;
+  }
+
+  [data-theme="dark"] .btn-outline.success i {
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .btn-outline.danger i {
+    color: #EF4444;
+  }
+
+  [data-theme="dark"] .assignment-feedback {
+    background: rgba(5, 150, 105, 0.06);
+    border-color: rgba(5, 150, 105, 0.08);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .assignment-feedback strong {
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .empty-state {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .btn-primary {
+    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.12);
+  }
+
+  [data-theme="dark"] .btn-primary:hover {
+    box-shadow: 0 4px 24px rgba(245, 158, 11, 0.2);
+  }
+</style>
+
+<div class="assignments-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon">
+        <i class="fas fa-tasks"></i>
+      </div>
+      <div>
+        <h1><span>Assignments</span></h1>
+        <p class="subtitle">View and submit your assignments</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-mini">
+      <div class="stat-icon orange"><i class="fas fa-tasks"></i></div>
+      <div>
+        <div class="stat-number">{{ assignment_data|length }}</div>
+        <div class="stat-label">Total Assignments</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+      <div>
+        <div class="stat-number">{{ assignment_data|selectattr('is_graded', 'equalto', true)|list|length }}</div>
+        <div class="stat-label">Graded</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon blue"><i class="fas fa-clock"></i></div>
+      <div>
+        <div class="stat-number">{{ assignment_data|selectattr('is_submitted', 'equalto', true)|rejectattr('is_graded', 'equalto', true)|list|length }}</div>
+        <div class="stat-label">Submitted</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon red"><i class="fas fa-exclamation-circle"></i></div>
+      <div>
+        <div class="stat-number">{{ assignment_data|selectattr('is_past_due', 'equalto', true)|rejectattr('is_submitted', 'equalto', true)|list|length }}</div>
+        <div class="stat-label">Past Due</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignments Grid -->
+  <div class="assignments-grid">
+    {% for data in assignment_data %}
+      {% set card_class = '' %}
+      {% if data.is_past_due and not data.is_submitted %}
+        {% set card_class = 'past-due' %}
+      {% elif data.is_graded %}
+        {% set card_class = 'graded' %}
+      {% elif data.is_submitted %}
+        {% set card_class = 'submitted' %}
+      {% endif %}
+
+      <div class="assignment-card {{ card_class }}">
+        <div class="assignment-card-header">
+          <h3>{{ data.assignment.title }}</h3>
+          <span class="assignment-course">{{ data.assignment.course.name }}</span>
+        </div>
+        <p class="assignment-description">{{ data.assignment.description|truncate(150) or 'No description provided.' }}</p>
+        <div class="assignment-meta">
+          <span>
+            <i class="fas fa-calendar"></i> 
+            Due: {{ data.assignment.due_date.strftime('%b %d, %Y %H:%M') }}
+            {% if data.is_past_due and not data.is_submitted %}
+              <span class="past-due-label"><i class="fas fa-exclamation-circle"></i> Past Due</span>
+            {% elif not data.is_past_due and not data.is_submitted %}
+              {% set days_left = (data.assignment.due_date - now).days if now else 7 %}
+              {% if days_left <= 3 and days_left >= 0 %}
+                <span class="due-soon">Due Soon!</span>
+              {% endif %}
+            {% endif %}
+          </span>
+          <span><i class="fas fa-star"></i> Max Score: {{ data.assignment.max_score }}</span>
+        </div>
+        <div class="assignment-status">
+          {% if data.is_past_due and not data.is_submitted %}
+            <span class="status-badge past-due"><i class="fas fa-times-circle"></i> Past Due</span>
+          {% elif data.is_graded %}
+            <span class="status-badge graded"><i class="fas fa-check-circle"></i> Graded: {{ data.submission.score }}/{{ data.assignment.max_score }}</span>
+          {% elif data.is_submitted %}
+            <span class="status-badge submitted"><i class="fas fa-clock"></i> Submitted</span>
+          {% else %}
+            <span class="status-badge pending"><i class="fas fa-hourglass-half"></i> Pending</span>
+          {% endif %}
+        </div>
+        <div class="assignment-actions">
+          {% if data.is_submitted %}
+            <button class="btn btn-outline btn-block success" disabled>
+              <i class="fas fa-check"></i> Submitted
+            </button>
+          {% elif data.is_past_due %}
+            <button class="btn btn-outline btn-block danger" disabled>
+              <i class="fas fa-times"></i> Past Due
+            </button>
+          {% else %}
+            <a href="{{ url_for('submit_assignment', assignment_id=data.assignment.id) }}" class="btn btn-primary btn-block">
+              <i class="fas fa-upload"></i> Submit Assignment
+            </a>
+          {% endif %}
+        </div>
+        {% if data.is_graded and data.submission.feedback %}
+          <div class="assignment-feedback">
+            <strong><i class="fas fa-comment"></i> Feedback:</strong> {{ data.submission.feedback }}
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-tasks"></i>
+        <p>No assignments available for your enrolled courses.</p>
+        <p class="text-muted">Assignments will appear here once they are created for your courses.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
