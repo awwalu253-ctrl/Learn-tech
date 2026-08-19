@@ -17,7 +17,7 @@ import logging
 # LOAD ENVIRONMENT VARIABLES
 # ============================================================================
 
-# Load .env from root directory (for local development)
+# Load .env from root directory
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
 if os.path.exists(env_path):
     load_dotenv(dotenv_path=env_path)
@@ -34,58 +34,40 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'awwaludevs-secret-key-change-in-production')
 
 # ============================================================================
-# DATABASE CONFIGURATION - CONNECTS TO YOUR FRANKFURT POSTGRESQL
+# DATABASE CONFIGURATION
 # ============================================================================
 
 # Check if the app is running on Render
 if os.environ.get('RENDER'):
-    # --- PRODUCTION: PostgreSQL on Render (Frankfurt region) ---
-    
-    # Get the database URL from environment variables
+    # PostgreSQL on Render
     database_url = os.environ.get('DATABASE_URL')
-    
-    # Ensure SSL is enabled (required by Render PostgreSQL)
     if database_url and 'sslmode' not in database_url:
         database_url += '?sslmode=require'
-    
-    # Set the database URI
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-    
-    # Connection pool settings for better performance
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_size': 10,          # Maximum connections in the pool
-        'pool_recycle': 300,      # Recycle connections after 5 minutes
-        'pool_pre_ping': True,    # Check connection before using
+        'pool_size': 10,
+        'pool_recycle': 300,
+        'pool_pre_ping': True,
     }
 else:
-    # --- DEVELOPMENT: SQLite locally ---
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-        'DATABASE_URL', 
-        'sqlite:///../database/awwaludevs.db'
-    )
+    # SQLite locally
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///../database/awwaludevs.db')
 
-# Disable modification tracking for better performance
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # ============================================================================
 # UPLOAD CONFIGURATION
 # ============================================================================
 
-# Where to store uploaded files
 if os.environ.get('RENDER'):
-    # On Render, use /tmp for temporary storage
     app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 else:
-    # Locally, use the static/uploads folder
     app.config['UPLOAD_FOLDER'] = '../static/uploads'
 
-# Maximum file size: 16MB
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-
-# Allowed file extensions for uploads
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'txt', 'zip'}
 
-# Ensure upload directories exist
+# Ensure directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 if not os.environ.get('RENDER'):
     os.makedirs(os.path.join(os.path.dirname(__file__), '../database'), exist_ok=True)
@@ -116,13 +98,11 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 def get_upload_path(filename):
-    """Generate a unique filename for uploads"""
     ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
     unique_name = f"{uuid.uuid4().hex[:12]}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
     return f"{unique_name}.{ext}" if ext else unique_name
 
 def admin_required(f):
-    """Decorator to require admin role"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated or current_user.role not in ['admin', 'super_admin']:
@@ -132,7 +112,6 @@ def admin_required(f):
     return decorated_function
 
 def super_admin_required(f):
-    """Decorator to require super admin role"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not current_user.is_authenticated or current_user.role != 'super_admin':
@@ -163,18 +142,13 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
-    role = db.Column(db.String(20), default='student')  # student, admin, super_admin
+    role = db.Column(db.String(20), default='student')
     is_approved = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     dark_mode = db.Column(db.Boolean, default=False)
     
-    # Admin can manage multiple courses
     managed_courses = db.relationship('Course', secondary=admin_course, backref='admins')
-    
-    # Student enrolled courses
     enrolled_courses = db.relationship('Course', secondary=student_course, backref='students')
-    
-    # Relationships
     notes_read = db.relationship('StudentProgress', backref='student', lazy=True)
     quiz_answers = db.relationship('QuizAnswer', backref='student', lazy=True)
     submissions = db.relationship('AssignmentSubmission', backref='student', lazy=True)
@@ -186,7 +160,6 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     
     def get_courses(self):
-        """Get all courses the user has access to"""
         if self.role == 'super_admin':
             return Course.query.all()
         elif self.role == 'admin':
@@ -199,9 +172,6 @@ class User(UserMixin, db.Model):
     
     def is_super_admin(self):
         return self.role == 'super_admin'
-    
-    def __repr__(self):
-        return f'<User {self.username}>'
 
 class Announcement(db.Model):
     __tablename__ = 'announcement'
@@ -214,11 +184,7 @@ class Announcement(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
-    # Relationship
     author = db.relationship('User', backref='announcements')
-    
-    def __repr__(self):
-        return f'<Announcement {self.title}>'
 
 class Course(db.Model):
     __tablename__ = 'course'
@@ -230,13 +196,11 @@ class Course(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
-    # Relationships
     notes = db.relationship('Note', backref='course', lazy=True, cascade='all, delete-orphan')
     quiz_groups = db.relationship('QuizGroup', backref='course', lazy=True, cascade='all, delete-orphan')
     assignments = db.relationship('Assignment', backref='course', lazy=True, cascade='all, delete-orphan')
     
     def get_progress_for_student(self, student_id):
-        """Calculate progress for a student in this course"""
         total_notes = Note.query.filter_by(course_id=self.id).count()
         if total_notes == 0:
             return 0
@@ -246,9 +210,6 @@ class Course(db.Model):
             is_read=True
         ).count()
         return int((read_count / total_notes) * 100)
-    
-    def __repr__(self):
-        return f'<Course {self.code}: {self.name}>'
 
 class Tag(db.Model):
     __tablename__ = 'tag'
@@ -258,9 +219,6 @@ class Tag(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     notes = db.relationship('Note', backref='tag', lazy=True)
-    
-    def __repr__(self):
-        return f'<Tag {self.name}>'
 
 class Note(db.Model):
     __tablename__ = 'note'
@@ -277,15 +235,11 @@ class Note(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
-    # Relationships
     author = db.relationship('User', backref='notes')
     progress = db.relationship('StudentProgress', backref='note', lazy=True)
     
     def is_new(self):
         return (datetime.utcnow() - self.created_at).days <= 7
-    
-    def __repr__(self):
-        return f'<Note {self.title}>'
 
 class StudentProgress(db.Model):
     __tablename__ = 'student_progress'
@@ -307,14 +261,13 @@ class QuizGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text)
-    time_limit = db.Column(db.Integer, default=0)  # 0 = no limit
+    time_limit = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
-    # Relationships
     author = db.relationship('User', backref='created_quizzes')
     questions = db.relationship('QuizQuestion', backref='quiz_group', lazy=True, cascade='all, delete-orphan')
     answers = db.relationship('QuizAnswer', backref='quiz_group', lazy=True)
@@ -323,7 +276,6 @@ class QuizGroup(db.Model):
         return len(self.questions)
     
     def get_student_score(self, student_id):
-        """Get score for a specific student"""
         answers = QuizAnswer.query.filter_by(
             quiz_group_id=self.id,
             student_id=student_id
@@ -332,12 +284,6 @@ class QuizGroup(db.Model):
             return None
         correct = sum(1 for a in answers if a.is_correct)
         return {'correct': correct, 'total': len(answers), 'score': int((correct / len(answers)) * 100) if answers else 0}
-    
-    def get_question_count(self):
-        return QuizQuestion.query.filter_by(quiz_group_id=self.id).count()
-    
-    def __repr__(self):
-        return f'<QuizGroup {self.title}>'
 
 class QuizQuestion(db.Model):
     __tablename__ = 'quiz_question'
@@ -348,19 +294,11 @@ class QuizQuestion(db.Model):
     option_b = db.Column(db.String(500), nullable=False)
     option_c = db.Column(db.String(500), nullable=False)
     option_d = db.Column(db.String(500), nullable=False)
-    correct_option = db.Column(db.String(1), nullable=False)  # A, B, C, D
+    correct_option = db.Column(db.String(1), nullable=False)
     order = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     quiz_group_id = db.Column(db.Integer, db.ForeignKey('quiz_group.id'), nullable=False)
-    
-    def get_options(self):
-        return [
-            ('A', self.option_a),
-            ('B', self.option_b),
-            ('C', self.option_c),
-            ('D', self.option_d)
-        ]
 
 class QuizAnswer(db.Model):
     __tablename__ = 'quiz_answer'
@@ -393,7 +331,6 @@ class Assignment(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
-    # Relationships
     author = db.relationship('User', backref='created_assignments')
     submissions = db.relationship('AssignmentSubmission', backref='assignment', lazy=True, cascade='all, delete-orphan')
     
@@ -405,9 +342,6 @@ class Assignment(db.Model):
             assignment_id=self.id,
             student_id=student_id
         ).first()
-    
-    def get_submission_count(self):
-        return AssignmentSubmission.query.filter_by(assignment_id=self.id).count()
 
 class AssignmentSubmission(db.Model):
     __tablename__ = 'assignment_submission'
@@ -422,9 +356,6 @@ class AssignmentSubmission(db.Model):
     is_graded = db.Column(db.Boolean, default=False)
     score = db.Column(db.Float)
     feedback = db.Column(db.Text)
-    
-    def __repr__(self):
-        return f'<AssignmentSubmission for {self.assignment_id}>'
 
 class RejectionMessage(db.Model):
     __tablename__ = 'rejection_message'
@@ -439,11 +370,10 @@ class RejectionMessage(db.Model):
     course = db.relationship('Course', backref='rejections')
 
 # ============================================================================
-# CREATE ADMIN USER (if not exists)
+# CREATE ADMIN USER
 # ============================================================================
 
 def create_initial_admin():
-    """Create default admin account if it doesn't exist"""
     try:
         admin = User.query.filter_by(username='admin').first()
         if not admin:
@@ -476,7 +406,6 @@ def load_user(user_id):
 
 @app.context_processor
 def inject_user():
-    """Inject user data into all templates"""
     return {
         'current_user': current_user,
         'now': datetime.utcnow(),
@@ -532,7 +461,6 @@ def signup():
         confirm_password = request.form.get('confirm_password')
         selected_courses = request.form.getlist('courses')
         
-        # Validation
         if not username or not email or not password:
             flash('Please fill in all required fields.', 'error')
             return render_template('signup.html', courses=courses)
@@ -553,7 +481,6 @@ def signup():
             flash('Email already registered.', 'error')
             return render_template('signup.html', courses=courses)
         
-        # Create student
         student = User(
             username=username,
             email=email,
@@ -564,7 +491,6 @@ def signup():
         db.session.add(student)
         db.session.flush()
         
-        # Enroll in selected courses (pending approval)
         for course_id in selected_courses:
             course = Course.query.get(course_id)
             if course:
@@ -609,7 +535,6 @@ def student_dashboard():
             'progress': course.get_progress_for_student(current_user.id)
         })
     
-    # Get recent quiz results
     quiz_results = []
     quiz_answers = QuizAnswer.query.filter_by(student_id=current_user.id).all()
     quiz_groups_taken = set()
@@ -623,7 +548,6 @@ def student_dashboard():
                     'score': score
                 })
     
-    # Get announcements for student dashboard
     announcements = Announcement.query.order_by(Announcement.is_pinned.desc(), Announcement.created_at.desc()).limit(5).all()
     
     return render_template('student_dashboard.html', 
@@ -636,11 +560,8 @@ def student_dashboard():
 @login_required
 @admin_required
 def admin_dashboard():
-    # Stats
     total_students = User.query.filter_by(role='student').count()
     pending_approvals = User.query.filter_by(role='student', is_approved=False).count()
-    
-    # Get pending students for display
     pending = User.query.filter_by(role='student', is_approved=False).all()
     
     if current_user.is_super_admin():
@@ -660,7 +581,6 @@ def admin_dashboard():
         admin_count = 0
         tag_count = Tag.query.count()
     
-    # Recent activity
     recent_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
     recent_quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(5).all()
     
@@ -733,7 +653,6 @@ def delete_course(course_id):
 @login_required
 @admin_required
 def manage_announcements():
-    """View all announcements"""
     announcements = Announcement.query.order_by(Announcement.is_pinned.desc(), Announcement.created_at.desc()).all()
     return render_template('admin/manage_announcements.html', announcements=announcements)
 
@@ -741,7 +660,6 @@ def manage_announcements():
 @login_required
 @admin_required
 def post_announcement():
-    """Create a new announcement"""
     if request.method == 'POST':
         title = request.form.get('title')
         content = request.form.get('content')
@@ -769,7 +687,6 @@ def post_announcement():
 @login_required
 @admin_required
 def delete_announcement(announcement_id):
-    """Delete an announcement"""
     announcement = Announcement.query.get_or_404(announcement_id)
     db.session.delete(announcement)
     db.session.commit()
@@ -780,7 +697,6 @@ def delete_announcement(announcement_id):
 @login_required
 @admin_required
 def toggle_pin_announcement(announcement_id):
-    """Toggle pin status of an announcement"""
     announcement = Announcement.query.get_or_404(announcement_id)
     announcement.is_pinned = not announcement.is_pinned
     db.session.commit()
@@ -792,7 +708,6 @@ def toggle_pin_announcement(announcement_id):
 @login_required
 @admin_required
 def edit_announcement(announcement_id):
-    """Edit an existing announcement"""
     announcement = Announcement.query.get_or_404(announcement_id)
     
     if request.method == 'POST':
@@ -818,7 +733,6 @@ def edit_announcement(announcement_id):
 @app.route('/student/announcements')
 @login_required
 def student_announcements():
-    """View announcements for students"""
     announcements = Announcement.query.order_by(Announcement.is_pinned.desc(), Announcement.created_at.desc()).all()
     return render_template('student/announcements.html', announcements=announcements)
 
@@ -830,7 +744,6 @@ def student_announcements():
 @login_required
 @admin_required
 def export_page():
-    """Export reports page"""
     total_students = User.query.filter_by(role='student').count()
     total_quizzes = QuizGroup.query.count()
     total_assignments = Assignment.query.count()
@@ -843,7 +756,6 @@ def export_page():
 @login_required
 @admin_required
 def export_students():
-    """Export students data as CSV"""
     import csv
     from io import StringIO
     
@@ -852,10 +764,8 @@ def export_students():
     output = StringIO()
     writer = csv.writer(output)
     
-    # Headers
     writer.writerow(['Username', 'Email', 'Enrolled Courses', 'Status', 'Joined Date'])
     
-    # Data
     for student in students:
         courses = ', '.join([c.name for c in student.enrolled_courses])
         status = 'Approved' if student.is_approved else 'Pending'
@@ -876,20 +786,16 @@ def export_students():
 @login_required
 @admin_required
 def export_quizzes():
-    """Export quiz results as CSV"""
     import csv
     from io import StringIO
     
-    # Get all quiz attempts
     answers = QuizAnswer.query.all()
     
     output = StringIO()
     writer = csv.writer(output)
     
-    # Headers
     writer.writerow(['Student', 'Quiz', 'Course', 'Question', 'Selected', 'Correct', 'Result'])
     
-    # Data
     for answer in answers:
         student = User.query.get(answer.student_id)
         quiz = QuizGroup.query.get(answer.quiz_group_id)
@@ -1038,7 +944,6 @@ def manage_students():
         students = User.query.filter_by(role='student').all()
         pending = User.query.filter_by(role='student', is_approved=False).all()
     else:
-        # Get students enrolled in admin's courses
         course_ids = [c.id for c in current_user.managed_courses]
         students = User.query.filter(
             User.role == 'student',
@@ -1059,7 +964,6 @@ def manage_students():
 def approve_student(student_id):
     student = User.query.get_or_404(student_id)
     
-    # Check if admin has permission for this student's courses
     if not current_user.is_super_admin():
         student_course_ids = [c.id for c in student.enrolled_courses]
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -1087,12 +991,10 @@ def reject_student(student_id):
             flash('Please select a course and provide a reason.', 'error')
             return render_template('admin/reject_user.html', student=student, courses=courses)
         
-        # Remove student from course
         course = Course.query.get(course_id)
         if course in student.enrolled_courses:
             student.enrolled_courses.remove(course)
         
-        # Save rejection message
         rejection = RejectionMessage(
             student_id=student.id,
             course_id=course_id,
@@ -1100,7 +1002,6 @@ def reject_student(student_id):
         )
         db.session.add(rejection)
         
-        # If student has no courses left, mark as unapproved
         if len(student.enrolled_courses) == 0:
             student.is_approved = False
         
@@ -1117,12 +1018,10 @@ def unreject_student(student_id, course_id):
     student = User.query.get_or_404(student_id)
     course = Course.query.get_or_404(course_id)
     
-    # Re-add student to course
     if course not in student.enrolled_courses:
         student.enrolled_courses.append(course)
         student.is_approved = True
         
-        # Remove rejection message
         RejectionMessage.query.filter_by(
             student_id=student.id,
             course_id=course_id
@@ -1153,39 +1052,6 @@ def bulk_approve_students():
     return redirect(url_for('manage_students'))
 
 # ============================================================================
-# ROUTES - BULK ACTIONS
-# ============================================================================
-
-@app.route('/admin/notes/bulk-delete', methods=['POST'])
-@login_required
-@admin_required
-def bulk_delete_notes():
-    """Delete multiple notes at once"""
-    note_ids = request.form.getlist('note_ids')
-    
-    if not note_ids:
-        flash('No notes selected.', 'warning')
-        return redirect(url_for('manage_notes'))
-    
-    deleted_count = 0
-    for note_id in note_ids:
-        note = Note.query.get(note_id)
-        if note:
-            # Check permission
-            if current_user.is_super_admin() or note.course in current_user.managed_courses:
-                # Delete file if exists
-                if note.file_path:
-                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], note.file_path)
-                    if os.path.exists(file_path):
-                        os.remove(file_path)
-                db.session.delete(note)
-                deleted_count += 1
-    
-    db.session.commit()
-    flash(f'{deleted_count} notes deleted successfully.', 'success')
-    return redirect(url_for('manage_notes'))
-
-# ============================================================================
 # ROUTES - NOTES (Admin)
 # ============================================================================
 
@@ -1193,11 +1059,9 @@ def bulk_delete_notes():
 @login_required
 @admin_required
 def manage_notes():
-    """View and manage all notes"""
     if current_user.is_super_admin():
         notes = Note.query.order_by(Note.created_at.desc()).all()
     else:
-        # Get notes from courses the admin manages
         course_ids = [c.id for c in current_user.managed_courses]
         notes = Note.query.filter(Note.course_id.in_(course_ids)).order_by(Note.created_at.desc()).all()
     
@@ -1227,13 +1091,11 @@ def post_note():
             flash('Title, content, and course are required.', 'error')
             return render_template('admin/post_note.html', courses=courses, tags=tags)
         
-        # Check admin permission for course
         course = Course.query.get(course_id)
         if not current_user.is_super_admin() and course not in current_user.managed_courses:
             flash('You do not have permission for this course.', 'error')
             return render_template('admin/post_note.html', courses=courses, tags=tags)
         
-        # Handle file upload
         file_path = None
         file_name = None
         if 'file' in request.files:
@@ -1269,7 +1131,6 @@ def post_note():
 def edit_note(note_id):
     note = Note.query.get_or_404(note_id)
     
-    # Check permission
     if not current_user.is_super_admin() and note.course not in current_user.managed_courses:
         flash('You do not have permission to edit this note.', 'error')
         return redirect(url_for('admin_dashboard'))
@@ -1297,11 +1158,9 @@ def edit_note(note_id):
         note.tag_id = tag_id if tag_id else None
         note.updated_at = datetime.utcnow()
         
-        # Handle file upload
         if 'file' in request.files:
             file = request.files['file']
             if file and file.filename and allowed_file(file.filename):
-                # Delete old file if exists
                 if note.file_path:
                     old_path = os.path.join(app.config['UPLOAD_FOLDER'], note.file_path)
                     if os.path.exists(old_path):
@@ -1329,7 +1188,6 @@ def delete_note(note_id):
         flash('You do not have permission to delete this note.', 'error')
         return redirect(url_for('admin_dashboard'))
     
-    # Delete file if exists
     if note.file_path:
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], note.file_path)
         if os.path.exists(file_path):
@@ -1430,7 +1288,6 @@ def create_quiz_group():
         db.session.add(quiz_group)
         db.session.commit()
         
-        # Handle questions
         questions = request.form.getlist('question_text')
         option_a = request.form.getlist('option_a')
         option_b = request.form.getlist('option_b')
@@ -1485,15 +1342,12 @@ def edit_quiz_group(quiz_id):
         quiz.time_limit = int(time_limit) if time_limit else 0
         quiz.updated_at = datetime.utcnow()
         
-        # Update existing questions or add new ones
-        # Delete questions marked for removal
         delete_questions = request.form.getlist('delete_questions')
         for qid in delete_questions:
             q = QuizQuestion.query.get(qid)
             if q and q.quiz_group_id == quiz.id:
                 db.session.delete(q)
         
-        # Update existing questions
         question_ids = request.form.getlist('question_id')
         for qid in question_ids:
             if qid:
@@ -1506,7 +1360,6 @@ def edit_quiz_group(quiz_id):
                     q.option_d = request.form.get(f'option_d_{qid}')
                     q.correct_option = request.form.get(f'correct_option_{qid}')
         
-        # Add new questions
         new_questions = request.form.getlist('new_question_text')
         new_option_a = request.form.getlist('new_option_a')
         new_option_b = request.form.getlist('new_option_b')
@@ -1741,11 +1594,8 @@ def view_course(course_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('student_courses'))
     
-    # Get all notes for this course
     notes = Note.query.filter_by(course_id=course_id).order_by(Note.created_at.desc()).all()
     tags = Tag.query.all()
-    
-    # Get progress
     progress = course.get_progress_for_student(current_user.id)
     
     return render_template('course.html', course=course, notes=notes, tags=tags, progress=progress)
@@ -1763,7 +1613,6 @@ def request_course(course_id):
         flash('You are already enrolled in this course.', 'info')
         return redirect(url_for('student_courses'))
     
-    # Check if already rejected
     rejection = RejectionMessage.query.filter_by(
         student_id=current_user.id,
         course_id=course_id
@@ -1774,7 +1623,7 @@ def request_course(course_id):
         return redirect(url_for('student_courses'))
     
     current_user.enrolled_courses.append(course)
-    current_user.is_approved = False  # Needs re-approval for new course
+    current_user.is_approved = False
     db.session.commit()
     
     flash(f'Request sent for {course.name}. Waiting for admin approval.', 'success')
@@ -1785,7 +1634,6 @@ def request_course(course_id):
 def view_note(note_id):
     note = Note.query.get_or_404(note_id)
     
-    # Check if user has access (student enrolled or admin)
     if not current_user.is_admin():
         if note.course not in current_user.enrolled_courses:
             flash('You do not have access to this note.', 'error')
@@ -1840,7 +1688,6 @@ def student_quizzes():
     course_ids = [c.id for c in current_user.enrolled_courses]
     quizzes = QuizGroup.query.filter(QuizGroup.course_id.in_(course_ids)).all()
     
-    # Get results for each quiz
     quiz_data = []
     for quiz in quizzes:
         score = quiz.get_student_score(current_user.id)
@@ -1865,7 +1712,6 @@ def take_quiz(quiz_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('student_quizzes'))
     
-    # Check if already taken
     existing_answers = QuizAnswer.query.filter_by(
         student_id=current_user.id,
         quiz_group_id=quiz.id
@@ -1953,7 +1799,6 @@ def student_assignments():
     course_ids = [c.id for c in current_user.enrolled_courses]
     assignments = Assignment.query.filter(Assignment.course_id.in_(course_ids)).all()
     
-    # Check submissions
     assignment_data = []
     for assignment in assignments:
         submission = assignment.get_submission_for_student(current_user.id)
@@ -1996,7 +1841,6 @@ def submit_assignment(assignment_id):
             flash('Please provide content or upload a file.', 'error')
             return render_template('student_submit_assignment.html', assignment=assignment)
         
-        # Handle file upload
         file_path = None
         file_name = None
         if 'file' in request.files:
@@ -2034,12 +1878,10 @@ def leaderboard():
         flash('Leaderboard is for students.', 'info')
         return redirect(url_for('admin_dashboard'))
     
-    # Calculate scores for all students
     students = User.query.filter_by(role='student', is_approved=True).all()
     student_scores = []
     
     for student in students:
-        # Get all quiz answers
         answers = QuizAnswer.query.filter_by(student_id=student.id).all()
         correct = sum(1 for a in answers if a.is_correct)
         total = len(answers)
@@ -2052,7 +1894,6 @@ def leaderboard():
             'course_count': len(student.enrolled_courses)
         })
     
-    # Sort by score descending
     student_scores.sort(key=lambda x: x['score'], reverse=True)
     
     return render_template('leaderboard.html', student_scores=student_scores)
@@ -2123,13 +1964,10 @@ def pending_approval():
 @login_required
 @admin_required
 def recent_activity():
-    """View all recent activity across the platform"""
-    # Get all recent activity
     recent_notes = Note.query.order_by(Note.created_at.desc()).limit(20).all()
     recent_quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(20).all()
     recent_assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(20).all()
     
-    # Combine and sort by date
     activities = []
     
     for note in recent_notes:
@@ -2165,10 +2003,39 @@ def recent_activity():
             'color': 'orange'
         })
     
-    # Sort by date (newest first)
     activities.sort(key=lambda x: x['created_at'], reverse=True)
     
     return render_template('admin/recent_activity.html', activities=activities[:50])
+
+# ============================================================================
+# BULK DELETE NOTES
+# ============================================================================
+
+@app.route('/admin/notes/bulk-delete', methods=['POST'])
+@login_required
+@admin_required
+def bulk_delete_notes():
+    note_ids = request.form.getlist('note_ids')
+    
+    if not note_ids:
+        flash('No notes selected.', 'warning')
+        return redirect(url_for('manage_notes'))
+    
+    deleted_count = 0
+    for note_id in note_ids:
+        note = Note.query.get(note_id)
+        if note:
+            if current_user.is_super_admin() or note.course in current_user.managed_courses:
+                if note.file_path:
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], note.file_path)
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                db.session.delete(note)
+                deleted_count += 1
+    
+    db.session.commit()
+    flash(f'{deleted_count} notes deleted successfully.', 'success')
+    return redirect(url_for('manage_notes'))
 
 # ============================================================================
 # NOTIFICATION API ENDPOINT
@@ -2177,11 +2044,9 @@ def recent_activity():
 @app.route('/api/notifications')
 @login_required
 def get_notifications():
-    """Get notifications for the current user"""
     notifications = []
     
     if current_user.is_admin():
-        # Pending student approvals
         pending_count = User.query.filter_by(role='student', is_approved=False).count()
         if pending_count > 0:
             notifications.append({
@@ -2196,7 +2061,6 @@ def get_notifications():
                 'is_read': False
             })
         
-        # Recent notes (last 7 days)
         recent_notes = Note.query.filter(Note.created_at > datetime.utcnow() - timedelta(days=7)).count()
         if recent_notes > 0:
             notifications.append({
@@ -2211,7 +2075,6 @@ def get_notifications():
                 'is_read': False
             })
     else:
-        # For students: new announcements
         new_announcements = Announcement.query.filter(Announcement.created_at > datetime.utcnow() - timedelta(days=7)).count()
         if new_announcements > 0:
             notifications.append({
@@ -2226,7 +2089,6 @@ def get_notifications():
                 'is_read': False
             })
         
-        # Unread notes in enrolled courses
         enrolled_course_ids = [c.id for c in current_user.enrolled_courses]
         if enrolled_course_ids:
             unread_notes = StudentProgress.query.filter(

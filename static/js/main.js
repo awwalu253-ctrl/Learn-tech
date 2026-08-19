@@ -11,7 +11,7 @@
 // For production: https://awwaludevs-backend.onrender.com
 const API_BASE_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:5000' 
-    : 'https://learn-tech-backend.onrender.com';
+    : 'https://awwaludevs-backend.onrender.com';
 
 // Helper function for API calls
 async function apiCall(endpoint, options = {}) {
