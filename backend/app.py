@@ -17,7 +17,7 @@ import logging
 # LOAD ENVIRONMENT VARIABLES
 # ============================================================================
 
-# Load .env from root directory
+# Load .env from root directory (for local development)
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
 if os.path.exists(env_path):
     load_dotenv(dotenv_path=env_path)
@@ -30,42 +30,62 @@ else:
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
-# Security
+# Security - Secret key for session encryption
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'awwaludevs-secret-key-change-in-production')
 
-# Database - PostgreSQL on Render, SQLite locally
-# app.py - Database Configuration
+# ============================================================================
+# DATABASE CONFIGURATION - CONNECTS TO YOUR FRANKFURT POSTGRESQL
+# ============================================================================
 
+# Check if the app is running on Render
 if os.environ.get('RENDER'):
-    # PostgreSQL on Render - External URL with SSL
+    # --- PRODUCTION: PostgreSQL on Render (Frankfurt region) ---
+    
+    # Get the database URL from environment variables
     database_url = os.environ.get('DATABASE_URL')
-    # Ensure SSL is enabled
-    if 'sslmode' not in database_url:
+    
+    # Ensure SSL is enabled (required by Render PostgreSQL)
+    if database_url and 'sslmode' not in database_url:
         database_url += '?sslmode=require'
+    
+    # Set the database URI
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    
+    # Connection pool settings for better performance
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_size': 10,
-        'pool_recycle': 300,
-        'pool_pre_ping': True,
+        'pool_size': 10,          # Maximum connections in the pool
+        'pool_recycle': 300,      # Recycle connections after 5 minutes
+        'pool_pre_ping': True,    # Check connection before using
     }
 else:
-    # SQLite locally
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///../database/awwaludevs.db')
+    # --- DEVELOPMENT: SQLite locally ---
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+        'DATABASE_URL', 
+        'sqlite:///../database/awwaludevs.db'
+    )
 
+# Disable modification tracking for better performance
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# ============================================================================
+# UPLOAD CONFIGURATION
+# ============================================================================
 
-# Upload folder
+# Where to store uploaded files
 if os.environ.get('RENDER'):
+    # On Render, use /tmp for temporary storage
     app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 else:
+    # Locally, use the static/uploads folder
     app.config['UPLOAD_FOLDER'] = '../static/uploads'
 
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+# Maximum file size: 16MB
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+# Allowed file extensions for uploads
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'txt', 'zip'}
 
-# Ensure directories exist
+# Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 if not os.environ.get('RENDER'):
     os.makedirs(os.path.join(os.path.dirname(__file__), '../database'), exist_ok=True)

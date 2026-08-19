@@ -13,7 +13,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        value: postgresql://awwalu_devs_user:g9H6aR0008qZC1n7SX5PQXy0Hria1Fjz@dpg-d9sdick9v7es73emm6tg-a.ondigitalocean.com:5432/awwalu_devs_db?sslmode=require
+        value: postgresql://awwalu_devs_user:g9H6aR0008qZC1n7SX5PQXy0Hria1Fjz@dpg-d9sdick9v7es73emm6tg-a.frankfurt-postgres.render.com/awwalu_devs_db?sslmode=require
       - key: FLASK_DEBUG
         value: False
       - key: RENDER
