@@ -1,0 +1,794 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Assignments - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     MANAGE ASSIGNMENTS - Premium Theme
+     ============================================ */
+  .manage-assignments {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F59E0B;
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+  }
+
+  .btn-create {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    color: var(--white, #FFFFFF);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.2);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-create:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(245, 158, 11, 0.3);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-create i {
+    font-size: 0.9em;
+  }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  .stat-mini {
+    background: var(--white, #FFFFFF);
+    padding: 16px 18px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .stat-mini:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-2px);
+  }
+
+  .stat-mini .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .stat-mini .stat-icon.orange {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .stat-mini .stat-icon.red {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+  }
+
+  .stat-mini .stat-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+  }
+
+  .stat-mini .stat-icon.green {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .stat-mini .stat-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    line-height: 1.2;
+  }
+
+  .stat-mini .stat-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Table Container */
+  .table-wrapper {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .table-wrapper:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    padding: 0 4px 4px 0;
+  }
+
+  .assignment-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .assignment-table thead {
+    background: var(--bg, #F8FAFC);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  .assignment-table thead th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94A3B8);
+    white-space: nowrap;
+  }
+
+  .assignment-table tbody tr {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .assignment-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .assignment-table tbody tr:hover {
+    background: rgba(245, 158, 11, 0.02);
+  }
+
+  .assignment-table tbody td {
+    padding: 14px 20px;
+    vertical-align: middle;
+    color: var(--text, #1E293B);
+  }
+
+  .assignment-title-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .assignment-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm, 8px);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F59E0B;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .assignment-title {
+    font-weight: 600;
+    color: var(--navy, #0F172A);
+  }
+
+  .course-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+    border: 1px solid rgba(37, 99, 235, 0.06);
+  }
+
+  .course-badge i {
+    font-size: 0.7rem;
+  }
+
+  /* Due Date Status */
+  .due-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--text-light, #64748B);
+  }
+
+  .due-date i {
+    font-size: 0.75rem;
+  }
+
+  .due-date.overdue {
+    color: #EF4444;
+  }
+
+  .due-date.overdue i {
+    color: #EF4444;
+  }
+
+  .due-date.soon {
+    color: #F59E0B;
+  }
+
+  .due-date.soon i {
+    color: #F59E0B;
+  }
+
+  .due-date.upcoming {
+    color: #059669;
+  }
+
+  .due-date.upcoming i {
+    color: #059669;
+  }
+
+  /* Submission Count */
+  .submission-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+  }
+
+  .submission-count i {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.8rem;
+  }
+
+  .submission-count .count-badge {
+    display: inline-block;
+    padding: 1px 10px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+  }
+
+  /* Action Buttons */
+  .action-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm, 8px);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    font-size: 0.8rem;
+  }
+
+  .btn-action i {
+    font-size: 0.8rem;
+  }
+
+  .btn-view {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+  }
+
+  .btn-view:hover {
+    background: rgba(37, 99, 235, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .btn-edit {
+    background: rgba(245, 158, 11, 0.06);
+    color: #F59E0B;
+  }
+
+  .btn-edit:hover {
+    background: rgba(245, 158, 11, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .btn-delete {
+    background: rgba(239, 68, 68, 0.06);
+    color: #EF4444;
+  }
+
+  .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.12);
+    transform: translateY(-1px);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    color: var(--text-muted, #94A3B8);
+    opacity: 0.2;
+    margin-bottom: 12px;
+  }
+
+  .empty-state h3 {
+    font-size: 1.1rem;
+    color: var(--text, #1E293B);
+    margin-bottom: 4px;
+  }
+
+  .empty-state p {
+    color: var(--text-light, #64748B);
+    font-size: 0.9rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .page-header-left {
+      width: 100%;
+    }
+
+    .btn-create {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .stat-mini {
+      padding: 12px 14px;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1.1rem;
+    }
+
+    .assignment-table thead th {
+      padding: 10px 14px;
+      font-size: 0.65rem;
+    }
+
+    .assignment-table tbody td {
+      padding: 10px 14px;
+      font-size: 0.82rem;
+    }
+
+    .assignment-icon-box {
+      width: 30px;
+      height: 30px;
+      font-size: 0.75rem;
+    }
+
+    .course-badge {
+      font-size: 0.65rem;
+      padding: 2px 10px;
+    }
+
+    .due-date {
+      font-size: 0.75rem;
+    }
+
+    .action-group {
+      gap: 4px;
+    }
+
+    .btn-action {
+      width: 28px;
+      height: 28px;
+      font-size: 0.7rem;
+    }
+
+    .btn-action i {
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .stat-mini {
+      padding: 10px 12px;
+    }
+
+    .stat-mini .stat-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 0.9rem;
+    }
+
+    .stat-mini .stat-number {
+      font-size: 1rem;
+    }
+
+    .stat-mini .stat-label {
+      font-size: 0.6rem;
+    }
+
+    .assignment-table thead th {
+      padding: 6px 8px;
+      font-size: 0.55rem;
+    }
+
+    .assignment-table tbody td {
+      padding: 8px 8px;
+      font-size: 0.75rem;
+    }
+
+    .assignment-title-cell {
+      gap: 8px;
+    }
+
+    .assignment-icon-box {
+      width: 26px;
+      height: 26px;
+      font-size: 0.65rem;
+    }
+
+    .submission-count .count-badge {
+      font-size: 0.6rem;
+      padding: 0 8px;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .table-wrapper {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .assignment-table thead {
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .assignment-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .assignment-table tbody tr:hover {
+    background: rgba(245, 158, 11, 0.04);
+  }
+
+  [data-theme="dark"] .assignment-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .stat-mini {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .submission-count {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-badge {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.06);
+  }
+
+  [data-theme="dark"] .btn-view {
+    background: rgba(37, 99, 235, 0.08);
+  }
+
+  [data-theme="dark"] .btn-view:hover {
+    background: rgba(37, 99, 235, 0.16);
+  }
+
+  [data-theme="dark"] .btn-edit {
+    background: rgba(245, 158, 11, 0.08);
+  }
+
+  [data-theme="dark"] .btn-edit:hover {
+    background: rgba(245, 158, 11, 0.16);
+  }
+
+  [data-theme="dark"] .btn-delete {
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.16);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .empty-state h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .assignment-icon-box {
+    background: rgba(245, 158, 11, 0.12);
+  }
+
+  [data-theme="dark"] .due-date {
+    color: var(--text-muted, #94A3B8);
+  }
+
+  [data-theme="dark"] .due-date.overdue {
+    color: #EF4444;
+  }
+
+  [data-theme="dark"] .due-date.soon {
+    color: #F59E0B;
+  }
+
+  [data-theme="dark"] .due-date.upcoming {
+    color: #059669;
+  }
+</style>
+
+<div class="manage-assignments">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon">
+        <i class="fas fa-tasks"></i>
+      </div>
+      <div>
+        <h1>Manage <span>Assignments</span></h1>
+        <p class="subtitle">Create and manage assignments for your courses</p>
+      </div>
+    </div>
+    <a href="{{ url_for('create_assignment') }}" class="btn-create">
+      <i class="fas fa-plus"></i> Create Assignment
+    </a>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-mini">
+      <div class="stat-icon orange"><i class="fas fa-tasks"></i></div>
+      <div>
+        <div class="stat-number">{{ assignments|length }}</div>
+        <div class="stat-label">Total Assignments</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon red"><i class="fas fa-clock"></i></div>
+      <div>
+        <div class="stat-number">{{ assignments|selectattr('is_overdue', 'equalto', true)|list|length if assignments else 0 }}</div>
+        <div class="stat-label">Overdue</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon blue"><i class="fas fa-book"></i></div>
+      <div>
+        <div class="stat-number">{{ assignments|map(attribute='course')|unique|list|length if assignments else 0 }}</div>
+        <div class="stat-label">Courses Covered</div>
+      </div>
+    </div>
+    <div class="stat-mini">
+      <div class="stat-icon green"><i class="fas fa-file-upload"></i></div>
+      <div>
+        <div class="stat-number">{{ assignments|sum(attribute='submissions|length') if assignments else 0 }}</div>
+        <div class="stat-label">Total Submissions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <div class="table-scroll">
+      <table class="assignment-table">
+        <thead>
+          <tr>
+            <th>Assignment</th>
+            <th>Course</th>
+            <th>Due Date</th>
+            <th>Submissions</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for assignment in assignments %}
+            <tr>
+              <td>
+                <div class="assignment-title-cell">
+                  <div class="assignment-icon-box">
+                    <i class="fas fa-file-alt"></i>
+                  </div>
+                  <div>
+                    <div class="assignment-title">{{ assignment.title }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="course-badge">
+                  <i class="fas fa-book-open"></i> {{ assignment.course.name }}
+                </span>
+              </td>
+              <td>
+                {% set now = None %}
+                {% set due = assignment.due_date %}
+                {% set is_overdue = due and due < now %}
+                {% set is_soon = due and (due - now).days <= 3 and (due - now).days >= 0 %}
+                <span class="due-date {% if is_overdue %}overdue{% elif is_soon %}soon{% else %}upcoming{% endif %}">
+                  <i class="fas fa-{% if is_overdue %}exclamation-circle{% elif is_soon %}clock{% else %}calendar-check{% endif %}"></i>
+                  {{ assignment.due_date.strftime('%b %d, %Y %H:%M') }}
+                  {% if is_overdue %}
+                    <span style="font-size:0.65rem; font-weight:600; color:#EF4444; background:rgba(239,68,68,0.08); padding:1px 8px; border-radius:100px; margin-left:4px;">OVERDUE</span>
+                  {% elif is_soon %}
+                    <span style="font-size:0.65rem; font-weight:600; color:#F59E0B; background:rgba(245,158,11,0.08); padding:1px 8px; border-radius:100px; margin-left:4px;">SOON</span>
+                  {% endif %}
+                </span>
+              </td>
+              <td>
+                <span class="submission-count">
+                  <i class="fas fa-file-upload"></i>
+                  {{ assignment.submissions|length }}
+                  <span class="count-badge">submissions</span>
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <div class="action-group" style="justify-content: flex-end;">
+                  <a href="{{ url_for('view_submissions', assignment_id=assignment.id) }}" class="btn-action btn-view" title="View Submissions">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="{{ url_for('edit_assignment', assignment_id=assignment.id) }}" class="btn-action btn-edit" title="Edit Assignment">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <form method="POST" action="{{ url_for('delete_assignment', assignment_id=assignment.id) }}" style="display: inline;">
+                    <button type="submit" class="btn-action btn-delete confirm-delete" title="Delete Assignment">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">
+                <div class="empty-state">
+                  <i class="fas fa-tasks"></i>
+                  <h3>No assignments available</h3>
+                  <p>Create your first assignment to get started.</p>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Confirm delete
+    document.querySelectorAll('.confirm-delete').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (!confirm('Are you sure you want to delete this assignment? This action cannot be undone.')) {
+          e.preventDefault();
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

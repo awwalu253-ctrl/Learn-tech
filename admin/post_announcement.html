@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Post Announcement - Awwalu Devs{% endblock %}
+
+{% block extra_css %}
+<style>
+.post-announcement {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue, #2563EB);
+    font-size: 1.3rem;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0;
+}
+
+.page-header h1 span {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+}
+
+.form-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    padding: 32px;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text, #1E293B);
+    margin-bottom: 6px;
+}
+
+.form-group label i {
+    color: var(--blue);
+    margin-right: 6px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid rgba(15, 23, 42, 0.06);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    background: var(--bg, #F8FAFC);
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.06);
+    background: var(--white);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted, #94A3B8);
+}
+
+textarea.form-control {
+    min-height: 180px;
+    resize: vertical;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--bg, #F8FAFC);
+    border-radius: 10px;
+    border: 2px solid rgba(15, 23, 42, 0.04);
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+}
+
+.checkbox-group:hover {
+    border-color: var(--blue);
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--blue);
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    margin: 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.checkbox-group .helper-text {
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.3);
+    color: var(--white);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 2px solid rgba(15, 23, 42, 0.06);
+}
+
+.btn-outline:hover {
+    background: var(--bg);
+    border-color: var(--text-muted);
+    transform: translateY(-2px);
+}
+
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        padding: 20px;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="post-announcement">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon">
+                <i class="fas fa-bullhorn"></i>
+            </div>
+            <div>
+                <h1>Post <span>Announcement</span></h1>
+                <p class="subtitle">Share important updates with your students</p>
+            </div>
+        </div>
+        <a href="{{ url_for('manage_announcements') }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back to Announcements
+        </a>
+    </div>
+
+    <div class="form-container">
+        <form method="POST">
+            <div class="form-group">
+                <label for="title"><i class="fas fa-heading"></i> Announcement Title</label>
+                <input type="text" id="title" name="title" class="form-control" placeholder="Enter a clear, descriptive title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="content"><i class="fas fa-file-alt"></i> Content</label>
+                <textarea id="content" name="content" class="form-control" placeholder="Write your announcement here..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group" onclick="this.querySelector('input[type=checkbox]').click()">
+                    <input type="checkbox" id="is_pinned" name="is_pinned">
+                    <label for="is_pinned">
+                        <i class="fas fa-thumbtack" style="color: #F59E0B;"></i> Pin this announcement
+                        <span class="helper-text">(Pinned announcements appear at the top)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Post Announcement
+                </button>
+                <a href="{{ url_for('manage_announcements') }}" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

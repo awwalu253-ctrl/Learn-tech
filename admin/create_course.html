@@ -1,0 +1,610 @@
+{% extends "base.html" %}
+
+{% block title %}Create Course - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     CREATE COURSE - Premium Theme
+     ============================================ */
+  .create-course-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 0;
+  }
+
+  /* Container */
+  .course-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 40px 40px 36px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .course-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    opacity: 0.6;
+  }
+
+  .course-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  /* Header */
+  .course-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .course-header .icon-wrapper {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--blue, #2563EB);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .course-container:hover .icon-wrapper {
+    transform: scale(1.04);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+  }
+
+  .course-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+  }
+
+  .course-header h2 span {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .course-header p {
+    font-size: 0.9rem;
+    color: var(--text-light, #64748B);
+    margin: 0;
+  }
+
+  /* Form */
+  .course-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-group label i {
+    color: var(--blue, #2563EB);
+    font-size: 0.85rem;
+    width: 18px;
+    text-align: center;
+  }
+
+  .form-group label .required {
+    color: #EF4444;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .form-group .helper-text {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94A3B8);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .form-group .helper-text i {
+    font-size: 0.7rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+    appearance: none;
+  }
+
+  .form-control:focus {
+    border-color: var(--blue, #2563EB);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    background: var(--white, #FFFFFF);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  .form-control.error {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  .form-control.error:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.7;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Course Code Input - Monospace */
+  #code {
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  #code::placeholder {
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    margin-top: 8px;
+  }
+
+  .btn-outline:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: var(--blue, #2563EB);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline i {
+    color: var(--blue, #2563EB);
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* Character counter */
+  .char-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.7rem;
+    color: var(--text-muted, #94A3B8);
+    margin-top: 4px;
+  }
+
+  .char-counter .count {
+    font-weight: 600;
+  }
+
+  .char-counter .count.warning {
+    color: #F59E0B;
+  }
+
+  .char-counter .count.danger {
+    color: #EF4444;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .create-course-page {
+      padding: 16px 0;
+    }
+
+    .course-container {
+      padding: 28px 20px 24px;
+    }
+
+    .course-header .icon-wrapper {
+      width: 56px;
+      height: 56px;
+      font-size: 1.5rem;
+    }
+
+    .course-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .form-control {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+
+    textarea.form-control {
+      min-height: 80px;
+    }
+
+    .btn {
+      padding: 11px 20px;
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .course-container {
+      padding: 20px 14px 18px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .course-header .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      font-size: 1.3rem;
+    }
+
+    .course-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .course-header p {
+      font-size: 0.82rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+    }
+
+    .form-control {
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+
+    textarea.form-control {
+      min-height: 70px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      font-size: 0.82rem;
+    }
+
+    .form-group .helper-text {
+      font-size: 0.7rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .course-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .course-container::before {
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+  }
+
+  [data-theme="dark"] .course-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-header .icon-wrapper {
+    background: rgba(37, 99, 235, 0.12);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: var(--cyan, #22D3EE);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .form-group .helper-text {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .char-counter {
+    color: var(--text-muted, #64748B);
+  }
+</style>
+
+<div class="create-course-page">
+  <div class="course-container">
+    <!-- Header -->
+    <div class="course-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-plus-circle"></i>
+      </div>
+      <h2>Create <span>Course</span></h2>
+      <p>Add a new course to the platform</p>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" class="course-form" id="courseForm" novalidate>
+      <!-- Course Name -->
+      <div class="form-group">
+        <label for="name">
+          <i class="fas fa-heading"></i> Course Name
+          <span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          class="form-control" 
+          placeholder="Enter course name" 
+          required
+          autofocus
+          maxlength="100"
+        >
+        <div class="char-counter">
+          <span class="count" id="nameCount">0</span> / 100
+        </div>
+      </div>
+
+      <!-- Course Code -->
+      <div class="form-group">
+        <label for="code">
+          <i class="fas fa-hashtag"></i> Course Code
+          <span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="code" 
+          name="code" 
+          class="form-control" 
+          placeholder="e.g., CS101" 
+          required
+          maxlength="20"
+          pattern="[A-Za-z0-9\-_]+"
+          title="Only letters, numbers, hyphens, and underscores allowed"
+        >
+        <span class="helper-text">
+          <i class="fas fa-info-circle"></i> 
+          Only letters, numbers, hyphens, and underscores allowed
+        </span>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">
+          <i class="fas fa-align-left"></i> Description
+          <span style="font-weight:400;color:var(--text-muted);font-size:0.7rem;">(Optional)</span>
+        </label>
+        <textarea 
+          id="description" 
+          name="description" 
+          class="form-control" 
+          rows="4" 
+          placeholder="Enter course description..."
+          maxlength="500"
+        ></textarea>
+        <div class="char-counter">
+          <span class="count" id="descCount">0</span> / 500
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fas fa-save"></i> Create Course
+      </button>
+
+      <a href="{{ url_for('manage_courses') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Courses
+      </a>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('courseForm');
+    const nameInput = document.getElementById('name');
+    const codeInput = document.getElementById('code');
+    const descInput = document.getElementById('description');
+    const nameCount = document.getElementById('nameCount');
+    const descCount = document.getElementById('descCount');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Character counters
+    if (nameInput && nameCount) {
+      nameInput.addEventListener('input', function() {
+        const len = this.value.length;
+        nameCount.textContent = len;
+        nameCount.className = 'count' + (len > 90 ? ' warning' : '') + (len >= 100 ? ' danger' : '');
+      });
+    }
+
+    if (descInput && descCount) {
+      descInput.addEventListener('input', function() {
+        const len = this.value.length;
+        descCount.textContent = len;
+        descCount.className = 'count' + (len > 450 ? ' warning' : '') + (len >= 500 ? ' danger' : '');
+      });
+    }
+
+    // Real-time validation for course code
+    if (codeInput) {
+      codeInput.addEventListener('input', function() {
+        const val = this.value;
+        const pattern = /^[A-Za-z0-9\-_]*$/;
+        if (val && !pattern.test(val)) {
+          this.classList.add('error');
+        } else {
+          this.classList.remove('error');
+        }
+        // Auto-uppercase
+        this.value = val.toUpperCase();
+      });
+
+      codeInput.addEventListener('blur', function() {
+        if (this.value && !/^[A-Za-z0-9\-_]+$/.test(this.value)) {
+          this.classList.add('error');
+        }
+      });
+    }
+
+    // Form validation
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        let isValid = true;
+        const name = nameInput.value.trim();
+        const code = codeInput.value.trim();
+
+        // Validate name
+        if (!name) {
+          nameInput.classList.add('error');
+          isValid = false;
+        } else {
+          nameInput.classList.remove('error');
+        }
+
+        // Validate code
+        if (!code) {
+          codeInput.classList.add('error');
+          isValid = false;
+        } else if (!/^[A-Za-z0-9\-_]+$/.test(code)) {
+          codeInput.classList.add('error');
+          isValid = false;
+        } else {
+          codeInput.classList.remove('error');
+        }
+
+        if (!isValid) {
+          e.preventDefault();
+          // Focus first error
+          if (nameInput.classList.contains('error')) {
+            nameInput.focus();
+          } else if (codeInput.classList.contains('error')) {
+            codeInput.focus();
+          }
+        }
+      });
+
+      // Remove error on input
+      [nameInput, codeInput, descInput].forEach(input => {
+        if (input) {
+          input.addEventListener('input', function() {
+            this.classList.remove('error');
+          });
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

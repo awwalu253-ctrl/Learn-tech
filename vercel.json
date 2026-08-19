@@ -2,16 +2,28 @@
   "version": 2,
   "routes": [
     {
-      "src": "/",
-      "dest": "/templates/index.html"
-    },
-    {
       "src": "/static/(.*)",
       "dest": "/static/$1"
     },
     {
       "src": "/uploads/(.*)",
       "dest": "/static/uploads/$1"
+    },
+    {
+      "src": "/css/(.*)",
+      "dest": "/static/css/$1"
+    },
+    {
+      "src": "/js/(.*)",
+      "dest": "/static/js/$1"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/static/favicon.ico"
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "/static/robots.txt"
     },
     {
       "src": "/(.*)",

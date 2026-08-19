@@ -1,0 +1,633 @@
+{% extends "base.html" %}
+
+{% block title %}Reject Student - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     REJECT STUDENT - Premium Theme
+     ============================================ */
+  .reject-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Container */
+  .reject-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 40px 40px 36px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .reject-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #EF4444, #DC2626);
+    opacity: 0.6;
+  }
+
+  .reject-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  /* Header */
+  .reject-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .reject-header .icon-wrapper {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #EF4444;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .reject-container:hover .icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.08);
+  }
+
+  .reject-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+  }
+
+  .reject-header h2 span {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .reject-header .student-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    margin: 0;
+  }
+
+  .reject-header .student-name i {
+    color: #EF4444;
+    margin-right: 4px;
+  }
+
+  .reject-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 4px 0 0;
+  }
+
+  /* Warning Box */
+  .warning-box {
+    background: rgba(239, 68, 68, 0.04);
+    border: 1px solid rgba(239, 68, 68, 0.08);
+    border-radius: var(--radius-sm, 10px);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .warning-box i {
+    color: #EF4444;
+    font-size: 1.1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .warning-box .warning-text {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    line-height: 1.6;
+  }
+
+  .warning-box .warning-text strong {
+    color: #EF4444;
+  }
+
+  /* Form */
+  .reject-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-group label i {
+    color: #EF4444;
+    font-size: 0.85rem;
+    width: 18px;
+    text-align: center;
+  }
+
+  .form-group label .required {
+    color: #EF4444;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+    appearance: none;
+  }
+
+  .form-control:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+    background: var(--white, #FFFFFF);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  .form-control.error {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.7;
+    font-family: 'Inter', sans-serif;
+  }
+
+  select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  select.form-control option {
+    padding: 8px;
+  }
+
+  /* Character Counter */
+  .char-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.7rem;
+    color: var(--text-muted, #94A3B8);
+    margin-top: 4px;
+  }
+
+  .char-counter .count {
+    font-weight: 600;
+  }
+
+  .char-counter .count.warning {
+    color: #F59E0B;
+  }
+
+  .char-counter .count.danger {
+    color: #EF4444;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(239, 68, 68, 0.15);
+  }
+
+  .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(239, 68, 68, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-danger:active {
+    transform: translateY(0);
+  }
+
+  .btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    margin-top: 8px;
+  }
+
+  .btn-outline:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: #EF4444;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline i {
+    color: #EF4444;
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .reject-container {
+      padding: 28px 20px 24px;
+    }
+
+    .reject-header .icon-wrapper {
+      width: 60px;
+      height: 60px;
+      font-size: 1.6rem;
+    }
+
+    .reject-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .form-control {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+
+    textarea.form-control {
+      min-height: 80px;
+    }
+
+    .btn {
+      padding: 11px 20px;
+      font-size: 0.85rem;
+    }
+
+    .warning-box {
+      padding: 12px 14px;
+    }
+
+    .warning-box .warning-text {
+      font-size: 0.82rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .reject-container {
+      padding: 20px 14px 18px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .reject-header .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      font-size: 1.3rem;
+    }
+
+    .reject-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .reject-header .student-name {
+      font-size: 0.9rem;
+    }
+
+    .reject-header .subtitle {
+      font-size: 0.78rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+    }
+
+    .form-control {
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+
+    textarea.form-control {
+      min-height: 70px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      font-size: 0.82rem;
+    }
+
+    .warning-box {
+      padding: 10px 12px;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .warning-box .warning-text {
+      font-size: 0.78rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .reject-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .reject-container::before {
+    background: linear-gradient(90deg, #EF4444, #DC2626);
+  }
+
+  [data-theme="dark"] .reject-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .reject-header .student-name {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .reject-header .icon-wrapper {
+    background: rgba(239, 68, 68, 0.12);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] select.form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  [data-theme="dark"] select.form-control option {
+    background: var(--white, #1E293B);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .warning-box {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .warning-box .warning-text {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: #EF4444;
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: #EF4444;
+  }
+
+  [data-theme="dark"] .char-counter {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .btn-danger {
+    box-shadow: 0 2px 16px rgba(239, 68, 68, 0.12);
+  }
+
+  [data-theme="dark"] .btn-danger:hover {
+    box-shadow: 0 4px 28px rgba(239, 68, 68, 0.2);
+  }
+</style>
+
+<div class="reject-page">
+  <div class="reject-container">
+    <!-- Header -->
+    <div class="reject-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-user-times"></i>
+      </div>
+      <h2>Reject <span>Student</span></h2>
+      <p class="student-name">
+        <i class="fas fa-user"></i> {{ student.username }}
+      </p>
+      <p class="subtitle">Select a course and provide a reason for rejection</p>
+    </div>
+
+    <!-- Warning Box -->
+    <div class="warning-box">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div class="warning-text">
+        <strong>Warning:</strong> This action will reject the student from the selected course. 
+        The student will be notified via email. This action cannot be undone.
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" class="reject-form" id="rejectForm" novalidate>
+      <!-- Course Selection -->
+      <div class="form-group">
+        <label for="course_id">
+          <i class="fas fa-book"></i> Select Course
+          <span class="required">*</span>
+        </label>
+        <select id="course_id" name="course_id" class="form-control" required>
+          <option value="">Select a course</option>
+          {% for course in courses %}
+            <option value="{{ course.id }}">{{ course.name }} ({{ course.code }})</option>
+          {% endfor %}
+        </select>
+        <div class="error-message" id="courseError" style="display: none; font-size:0.78rem; color:#EF4444; margin-top:4px;">
+          <i class="fas fa-exclamation-circle"></i> Please select a course
+        </div>
+      </div>
+
+      <!-- Reason -->
+      <div class="form-group">
+        <label for="message">
+          <i class="fas fa-comment"></i> Reason for Rejection
+          <span class="required">*</span>
+        </label>
+        <textarea 
+          id="message" 
+          name="message" 
+          class="form-control" 
+          rows="4" 
+          placeholder="Explain why the student is being rejected..." 
+          required
+          maxlength="500"
+        ></textarea>
+        <div class="char-counter">
+          <span class="count" id="charCount">0</span> / 500
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-danger" id="submitBtn">
+        <i class="fas fa-times"></i> Reject Student
+      </button>
+
+      <a href="{{ url_for('manage_students') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Students
+      </a>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('rejectForm');
+    const courseSelect = document.getElementById('course_id');
+    const messageInput = document.getElementById('message');
+    const charCount = document.getElementById('charCount');
+    const courseError = document.getElementById('courseError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Character counter
+    if (messageInput && charCount) {
+      messageInput.addEventListener('input', function() {
+        const len = this.value.length;
+        charCount.textContent = len;
+        charCount.className = 'count' + (len > 450 ? ' warning' : '') + (len >= 500 ? ' danger' : '');
+      });
+    }
+
+    // Remove error on change
+    courseSelect.addEventListener('change', function() {
+      this.classList.remove('error');
+      courseError.style.display = 'none';
+    });
+
+    messageInput.addEventListener('input', function() {
+      this.classList.remove('error');
+    });
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+
+      // Validate course
+      if (!courseSelect.value) {
+        courseSelect.classList.add('error');
+        courseError.style.display = 'block';
+        isValid = false;
+      }
+
+      // Validate message
+      if (!messageInput.value.trim()) {
+        messageInput.classList.add('error');
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        // Focus first error
+        if (courseSelect.classList.contains('error')) {
+          courseSelect.focus();
+        } else if (messageInput.classList.contains('error')) {
+          messageInput.focus();
+        }
+        return;
+      }
+
+      // Confirm before submitting
+      const studentName = "{{ student.username }}";
+      const courseName = courseSelect.options[courseSelect.selectedIndex]?.text || '';
+      if (!confirm(`Are you sure you want to reject ${studentName} from ${courseName}? This action cannot be undone.`)) {
+        e.preventDefault();
+        return;
+      }
+
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,793 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Admin - Awwalu Devs{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     EDIT ADMIN - Premium Theme
+     ============================================ */
+  .edit-admin-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* Container */
+  .admin-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 40px 40px 36px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #7C3AED, #EC4899);
+    opacity: 0.6;
+  }
+
+  .admin-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  /* Header */
+  .admin-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .admin-header .icon-wrapper {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(236, 72, 153, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #7C3AED;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .admin-container:hover .icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.08);
+  }
+
+  .admin-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+  }
+
+  .admin-header h2 span {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .admin-header .admin-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    margin: 0 0 2px;
+  }
+
+  .admin-header .admin-name i {
+    color: #7C3AED;
+    margin-right: 4px;
+  }
+
+  .admin-header p {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 0;
+  }
+
+  /* Form */
+  .admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .form-group label i {
+    color: #7C3AED;
+    font-size: 0.85rem;
+    width: 18px;
+    text-align: center;
+  }
+
+  .form-group label .required {
+    color: #EF4444;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+    appearance: none;
+  }
+
+  .form-control:focus {
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
+    background: var(--white, #FFFFFF);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  .form-control.error {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  .form-control.error:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  }
+
+  .error-message {
+    font-size: 0.78rem;
+    color: #EF4444;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .error-message i {
+    font-size: 0.7rem;
+  }
+
+  /* Courses Checkbox Grid */
+  .courses-checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  .checkbox-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm, 8px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    position: relative;
+  }
+
+  .checkbox-card:hover {
+    border-color: #7C3AED;
+    background: rgba(124, 58, 237, 0.02);
+  }
+
+  .checkbox-card input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #7C3AED;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .checkbox-card .checkbox-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text, #1E293B);
+    flex: 1;
+  }
+
+  .checkbox-card .checkbox-code {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    background: rgba(15, 23, 42, 0.04);
+    padding: 1px 10px;
+    border-radius: 100px;
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.03em;
+  }
+
+  .checkbox-card.checked {
+    border-color: #7C3AED;
+    background: rgba(124, 58, 237, 0.04);
+  }
+
+  .checkbox-card.checked .checkbox-label {
+    color: #7C3AED;
+    font-weight: 600;
+  }
+
+  .checkbox-card.checked .checkbox-code {
+    background: rgba(124, 58, 237, 0.06);
+    color: #7C3AED;
+  }
+
+  .checkbox-card .check-mark {
+    display: none;
+    color: #7C3AED;
+    font-size: 0.9rem;
+  }
+
+  .checkbox-card.checked .check-mark {
+    display: inline;
+  }
+
+  .no-courses-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 16px;
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  .no-courses-message i {
+    margin-right: 6px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 28px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(124, 58, 237, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(124, 58, 237, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    margin-top: 8px;
+  }
+
+  .btn-outline:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: #7C3AED;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline i {
+    color: #7C3AED;
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  /* Info Box */
+  .info-box {
+    background: rgba(124, 58, 237, 0.03);
+    border: 1px solid rgba(124, 58, 237, 0.06);
+    border-radius: var(--radius-sm, 10px);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .info-box i {
+    color: #7C3AED;
+    font-size: 1rem;
+  }
+
+  .info-box .info-text {
+    font-size: 0.82rem;
+    color: var(--text-light, #64748B);
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-container {
+      padding: 28px 20px 24px;
+    }
+
+    .admin-header .icon-wrapper {
+      width: 56px;
+      height: 56px;
+      font-size: 1.5rem;
+    }
+
+    .admin-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .admin-header .admin-name {
+      font-size: 0.95rem;
+    }
+
+    .form-control {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+
+    .btn {
+      padding: 11px 20px;
+      font-size: 0.85rem;
+    }
+
+    .courses-checkbox-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .checkbox-card {
+      padding: 8px 12px;
+    }
+
+    .checkbox-card .checkbox-label {
+      font-size: 0.78rem;
+    }
+
+    .info-box {
+      padding: 10px 14px;
+    }
+
+    .info-box .info-text {
+      font-size: 0.78rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .admin-container {
+      padding: 20px 14px 18px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .admin-header .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      font-size: 1.3rem;
+    }
+
+    .admin-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .admin-header .admin-name {
+      font-size: 0.88rem;
+    }
+
+    .admin-header p {
+      font-size: 0.78rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+    }
+
+    .form-control {
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      font-size: 0.82rem;
+    }
+
+    .courses-checkbox-grid {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .checkbox-card {
+      padding: 8px 10px;
+    }
+
+    .checkbox-card input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+    }
+
+    .checkbox-card .checkbox-label {
+      font-size: 0.75rem;
+    }
+
+    .checkbox-card .checkbox-code {
+      font-size: 0.6rem;
+      padding: 0 8px;
+    }
+
+    .info-box {
+      flex-direction: column;
+      text-align: center;
+      padding: 8px 12px;
+    }
+
+    .info-box .info-text {
+      font-size: 0.75rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .admin-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .admin-container::before {
+    background: linear-gradient(90deg, #7C3AED, #EC4899);
+  }
+
+  [data-theme="dark"] .admin-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .admin-header .admin-name {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .admin-header .icon-wrapper {
+    background: rgba(124, 58, 237, 0.12);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: #A78BFA;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .checkbox-card {
+    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .checkbox-card:hover {
+    border-color: #A78BFA;
+    background: rgba(124, 58, 237, 0.04);
+  }
+
+  [data-theme="dark"] .checkbox-card .checkbox-label {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .checkbox-card .checkbox-code {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .checkbox-card.checked {
+    border-color: #A78BFA;
+    background: rgba(124, 58, 237, 0.06);
+  }
+
+  [data-theme="dark"] .checkbox-card.checked .checkbox-label {
+    color: #A78BFA;
+  }
+
+  [data-theme="dark"] .checkbox-card.checked .checkbox-code {
+    background: rgba(124, 58, 237, 0.08);
+    color: #A78BFA;
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: #A78BFA;
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: #A78BFA;
+  }
+
+  [data-theme="dark"] .info-box {
+    background: rgba(124, 58, 237, 0.06);
+    border-color: rgba(124, 58, 237, 0.08);
+  }
+
+  [data-theme="dark"] .info-box .info-text {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .no-courses-message {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .admin-header p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .checkbox-card .check-mark {
+    color: #A78BFA;
+  }
+</style>
+
+<div class="edit-admin-page">
+  <div class="admin-container">
+    <!-- Header -->
+    <div class="admin-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-user-edit"></i>
+      </div>
+      <h2>Edit <span>Admin</span></h2>
+      <p class="admin-name">
+        <i class="fas fa-user-shield"></i> {{ admin.username }}
+      </p>
+      <p>Update administrator details and permissions</p>
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <i class="fas fa-info-circle"></i>
+      <span class="info-text">
+        Update the admin's profile information and course assignments.
+        Changes will take effect immediately.
+      </span>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" class="admin-form" id="adminForm" novalidate>
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username">
+          <i class="fas fa-user"></i> Username
+          <span class="required">*</span>
+        </label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          class="form-control" 
+          value="{{ admin.username }}" 
+          required
+          minlength="3"
+          maxlength="30"
+        >
+        <div class="error-message" id="usernameError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Please enter a valid username (min 3 characters)
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">
+          <i class="fas fa-envelope"></i> Email
+          <span class="required">*</span>
+        </label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="form-control" 
+          value="{{ admin.email }}" 
+          required
+        >
+        <div class="error-message" id="emailError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Please enter a valid email address
+        </div>
+      </div>
+
+      <!-- Courses -->
+      <div class="form-group">
+        <label>
+          <i class="fas fa-book"></i> Assign Courses
+          <span style="font-weight:400;color:var(--text-muted);font-size:0.7rem;">(Select all that apply)</span>
+        </label>
+        <div class="courses-checkbox-grid" id="courseGrid">
+          {% for course in courses %}
+            <label class="checkbox-card {% if course in admin.managed_courses %}checked{% endif %}">
+              <input type="checkbox" name="courses" value="{{ course.id }}" 
+                {% if course in admin.managed_courses %}checked{% endif %}>
+              <span class="checkbox-label">{{ course.name }}</span>
+              <span class="checkbox-code">{{ course.code }}</span>
+              <span class="check-mark"><i class="fas fa-check-circle"></i></span>
+            </label>
+          {% else %}
+            <div class="no-courses-message">
+              <i class="fas fa-info-circle"></i> No courses available.
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fas fa-save"></i> Update Admin
+      </button>
+
+      <a href="{{ url_for('manage_admins') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Admins
+      </a>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('adminForm');
+    const username = document.getElementById('username');
+    const email = document.getElementById('email');
+    const usernameError = document.getElementById('usernameError');
+    const emailError = document.getElementById('emailError');
+    const submitBtn = document.getElementById('submitBtn');
+    const checkboxes = document.querySelectorAll('input[name="courses"]');
+
+    // Checkbox toggle class
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', function() {
+        const card = this.closest('.checkbox-card');
+        if (this.checked) {
+          card.classList.add('checked');
+        } else {
+          card.classList.remove('checked');
+        }
+      });
+    });
+
+    // Real-time validation
+    username.addEventListener('input', function() {
+      this.classList.remove('error');
+      usernameError.style.display = 'none';
+    });
+
+    email.addEventListener('input', function() {
+      this.classList.remove('error');
+      emailError.style.display = 'none';
+    });
+
+    // Form validation
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+
+      // Validate username
+      if (!username.value.trim() || username.value.trim().length < 3) {
+        username.classList.add('error');
+        usernameError.style.display = 'flex';
+        isValid = false;
+      }
+
+      // Validate email
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email.value.trim() || !emailPattern.test(email.value.trim())) {
+        email.classList.add('error');
+        emailError.style.display = 'flex';
+        isValid = false;
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        if (username.classList.contains('error')) {
+          username.focus();
+        } else if (email.classList.contains('error')) {
+          email.focus();
+        }
+        return;
+      }
+
+      // Confirm update
+      const selected = document.querySelectorAll('input[name="courses"]:checked');
+      const courseText = selected.length === 0 ? 'no courses' : `${selected.length} course(s)`;
+      if (!confirm(`Update admin "${username.value.trim()}" with access to ${courseText}?`)) {
+        e.preventDefault();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    });
+
+    // Enter key on checkbox cards
+    document.querySelectorAll('.checkbox-card').forEach(card => {
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const checkbox = this.querySelector('input[type="checkbox"]');
+          if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change'));
+          }
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
