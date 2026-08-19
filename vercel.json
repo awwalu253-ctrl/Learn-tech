@@ -6,8 +6,12 @@
       "dest": "/static/$1"
     },
     {
+      "src": "/uploads/(.*)",
+      "dest": "/static/uploads/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "https://awwaludevs-backend.onrender.com/$1"
+      "dest": "/templates/$1"
     }
   ]
 }
