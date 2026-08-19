@@ -1387,7 +1387,7 @@ def edit_quiz_group(quiz_id):
     
     return render_template('admin/edit_quiz_group.html', quiz=quiz, courses=courses)
 
-@app.route('/admin/quizzes/<int:quiz_id>/delete', methods=['POST'])
+@app.route('/admin/quizzes/<int:quiz_id>/delete', methods(['POST'])
 @login_required
 @admin_required
 def delete_quiz_group(quiz_id):

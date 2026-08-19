@@ -3,15 +3,11 @@
 // ============================================================================
 
 // ============================================================================
-// API CONFIGURATION - Connect to Render Backend
+// API CONFIGURATION - Everything on Render (relative paths)
 // ============================================================================
 
-// Set the backend API URL
-// For local development: http://localhost:5000
-// For production: https://awwaludevs-backend.onrender.com
-const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:5000' 
-    : 'https://awwaludevs-backend.onrender.com';
+// No need for absolute URL - everything is served from the same domain on Render
+const API_BASE_URL = '';
 
 // Helper function for API calls
 async function apiCall(endpoint, options = {}) {
@@ -57,6 +53,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon.classList.toggle('fa-times');
             }
         });
+        
+        // Close menu when clicking a link (mobile)
+        navbarMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navbarMenu.classList.remove('open');
+                const icon = navbarToggle.querySelector('i');
+                if (icon) {
+                    icon.classList.add('fa-bars');
+                    icon.classList.remove('fa-times');
+                }
+            });
+        });
+    }
+    
+    // ========================================================================
+    // Navbar Scroll Effect
+    // ========================================================================
+    
+    const navbar = document.getElementById('navbar');
+    if (navbar) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 10) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
     }
     
     // ========================================================================
@@ -68,7 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             msg.style.opacity = '0';
             msg.style.transform = 'translateX(20px)';
-            setTimeout(() => msg.remove(), 400);
+            setTimeout(() => {
+                if (msg.parentElement) msg.remove();
+            }, 400);
         }, 4000 + (index * 300));
     });
     
@@ -79,8 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const darkModeToggle = document.getElementById('darkModeToggle');
     if (darkModeToggle) {
         darkModeToggle.addEventListener('click', function() {
-            // Use the API_BASE_URL for the toggle endpoint
-            fetch(`${API_BASE_URL}/profile/toggle-dark-mode`, {
+            fetch('/profile/toggle-dark-mode', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -130,7 +154,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (fileNameSpan) {
                     fileNameSpan.textContent = fileName;
                 } else {
-                    label.textContent = fileName;
+                    // Update the label text
+                    const textNode = label.childNodes[0];
+                    if (textNode) {
+                        label.innerHTML = label.innerHTML.replace(/Choose a file.*/, 'Choose a file');
+                        const span = document.createElement('span');
+                        span.className = 'file-name';
+                        span.textContent = fileName;
+                        label.appendChild(span);
+                    }
                 }
             }
         });
@@ -178,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
             
+            // Initial check
             checkAllAnswered();
         }
     });
@@ -222,6 +255,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             this.classList.add('active');
         });
+    });
+    
+    // ========================================================================
+    // Course Progress Animation
+    // ========================================================================
+    
+    const progressBars = document.querySelectorAll('.progress-track .fill');
+    progressBars.forEach(bar => {
+        const targetWidth = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = targetWidth;
+        }, 300);
     });
     
     // ========================================================================
@@ -295,6 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="notif-title">${notif.title}</div>
                     <div class="notif-meta">
                         <span>${notif.message}</span>
+                        <span class="notif-badge unread-badge">New</span>
                     </div>
                 </div>
                 <div class="notif-time">${formatTime(notif.created_at)}</div>
@@ -331,8 +378,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                const response = await apiCall('/login', {
+                const response = await fetch('/login', {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
                     body: JSON.stringify({ username, password })
                 });
                 
@@ -386,8 +437,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                const response = await apiCall('/signup', {
+                const response = await fetch('/signup', {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
                     body: JSON.stringify({ 
                         username, 
                         email, 
@@ -410,6 +465,20 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (error) {
                 console.error('Signup error:', error);
                 showFlash('Signup failed. Please try again.', 'error');
+            }
+        });
+    }
+    
+    // ========================================================================
+    // Logout Handler
+    // ========================================================================
+    
+    const logoutBtn = document.querySelector('.btn-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
             }
         });
     }
@@ -443,13 +512,14 @@ function copyToClipboard(text) {
 // ============================================================================
 
 function showFlash(message, type = 'info') {
-    const container = document.querySelector('.flash-container');
+    // Check if container exists
+    let container = document.querySelector('.flash-container');
+    
+    // Create container if it doesn't exist
     if (!container) {
-        // Create container if it doesn't exist
-        const newContainer = document.createElement('div');
-        newContainer.className = 'flash-container';
-        document.body.prepend(newContainer);
-        return showFlash(message, type);
+        container = document.createElement('div');
+        container.className = 'flash-container';
+        document.body.prepend(container);
     }
     
     const icons = {
@@ -488,19 +558,13 @@ function showFlash(message, type = 'info') {
 }
 
 // ============================================================================
-// API Helper - GET Request
+// API Helpers
 // ============================================================================
 
 async function apiGet(endpoint) {
-    const response = await apiCall(endpoint, {
-        method: 'GET'
-    });
+    const response = await apiCall(endpoint, { method: 'GET' });
     return response;
 }
-
-// ============================================================================
-// API Helper - POST Request
-// ============================================================================
 
 async function apiPost(endpoint, data) {
     const response = await apiCall(endpoint, {
@@ -510,10 +574,6 @@ async function apiPost(endpoint, data) {
     return response;
 }
 
-// ============================================================================
-// API Helper - PUT Request
-// ============================================================================
-
 async function apiPut(endpoint, data) {
     const response = await apiCall(endpoint, {
         method: 'PUT',
@@ -522,14 +582,8 @@ async function apiPut(endpoint, data) {
     return response;
 }
 
-// ============================================================================
-// API Helper - DELETE Request
-// ============================================================================
-
 async function apiDelete(endpoint) {
-    const response = await apiCall(endpoint, {
-        method: 'DELETE'
-    });
+    const response = await apiCall(endpoint, { method: 'DELETE' });
     return response;
 }
 
@@ -545,3 +599,10 @@ window.apiDelete = apiDelete;
 window.showFlash = showFlash;
 window.copyToClipboard = copyToClipboard;
 window.API_BASE_URL = API_BASE_URL;
+
+// ============================================================================
+// Console Helpers (for debugging)
+// ============================================================================
+
+console.log('🚀 Awwalu Devs LMS loaded successfully!');
+console.log('📚 API_BASE_URL:', API_BASE_URL || 'Same domain (relative paths)');
