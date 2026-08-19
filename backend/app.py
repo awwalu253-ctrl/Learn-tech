@@ -34,20 +34,25 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'awwaludevs-secret-key-change-in-production')
 
 # Database - PostgreSQL on Render, SQLite locally
+# app.py - Database Configuration
+
 if os.environ.get('RENDER'):
-    # PostgreSQL on Render
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+    # PostgreSQL on Render - External URL with SSL
+    database_url = os.environ.get('DATABASE_URL')
+    # Ensure SSL is enabled
+    if 'sslmode' not in database_url:
+        database_url += '?sslmode=require'
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'pool_size': 10,
         'pool_recycle': 300,
         'pool_pre_ping': True,
-        'connect_args': {
-            'sslmode': 'require',  # Required for Render PostgreSQL
-        }
     }
 else:
     # SQLite locally
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///../database/awwaludevs.db')
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
