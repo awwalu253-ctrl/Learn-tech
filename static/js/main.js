@@ -11,7 +11,7 @@
 // For production: https://awwaludevs-backend.onrender.com
 const API_BASE_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:5000' 
-    : 'https://learn-teach-backend.onrender.com';
+    : 'https://learn-tech-backend.onrender.com';
 
 // Helper function for API calls
 async function apiCall(endpoint, options = {}) {
@@ -344,6 +344,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         showFlash(data.error, 'error');
                     } else if (data.redirect) {
                         window.location.href = data.redirect;
+                    } else {
+                        // If login successful but no redirect, reload page
+                        window.location.reload();
                     }
                 }
             } catch (error) {
