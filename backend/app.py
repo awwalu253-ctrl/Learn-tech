@@ -389,8 +389,14 @@ def create_initial_admin():
             print("✅ Default admin created: admin / admin123")
         else:
             print("✅ Admin user already exists")
+            # 🔥 FORCE RESET PASSWORD
+            admin.set_password('admin123')
+            admin.is_approved = True
+            admin.role = 'super_admin'
+            db.session.commit()
+            print("✅ Password reset to: admin123")
     except Exception as e:
-        print(f"⚠️ Error creating admin: {e}")
+        print(f"⚠️ Error: {e}")
 
 # ============================================================================
 # USER LOADER
@@ -431,18 +437,31 @@ def login():
         
         user = User.query.filter_by(username=username).first()
         
+        # Check if this is an AJAX request
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.is_json
+        
         if user and user.check_password(password):
             if not user.is_approved and user.role == 'student':
-                flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+                if is_ajax:
+                    return jsonify({'error': 'Your account is pending approval.'}), 403
+                flash('Your account is pending approval.', 'warning')
                 return render_template('login.html')
             
             login_user(user)
-            flash(f'Welcome back, {user.username}!', 'success')
             
+            if is_ajax:
+                # Return JSON for AJAX requests
+                if user.is_admin():
+                    return jsonify({'redirect': url_for('admin_dashboard')})
+                return jsonify({'redirect': url_for('student_dashboard')})
+            
+            # Redirect for regular form submissions
             if user.is_admin():
                 return redirect(url_for('admin_dashboard'))
             return redirect(url_for('student_dashboard'))
         else:
+            if is_ajax:
+                return jsonify({'error': 'Invalid username or password.'}), 401
             flash('Invalid username or password.', 'error')
     
     return render_template('login.html')

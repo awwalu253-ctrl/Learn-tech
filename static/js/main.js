@@ -361,54 +361,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ========================================================================
-    // Login Form Handler
+    // ✅ LOGIN FORM - Regular HTML submission (NO JavaScript interception)
     // ========================================================================
-    
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username')?.value;
-            const password = document.getElementById('password')?.value;
-            
-            if (!username || !password) {
-                showFlash('Please fill in all fields.', 'error');
-                return;
-            }
-            
-            try {
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ username, password })
-                });
-                
-                if (response.redirected) {
-                    window.location.href = response.url;
-                } else {
-                    const data = await response.json();
-                    if (data.error) {
-                        showFlash(data.error, 'error');
-                    } else if (data.redirect) {
-                        window.location.href = data.redirect;
-                    } else {
-                        // If login successful but no redirect, reload page
-                        window.location.reload();
-                    }
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showFlash('Login failed. Please try again.', 'error');
-            }
-        });
-    }
+    // The login form in login.html uses method="POST" with action="/login"
+    // It submits normally - no JavaScript needed here
     
     // ========================================================================
-    // Signup Form Handler
+    // Signup Form Handler (if using AJAX)
     // ========================================================================
     
     const signupForm = document.getElementById('signupForm');
