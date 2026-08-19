@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- ✅ FIXED: Direct static path (works on Vercel & Render) -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
     {% block extra_css %}{% endblock %}
     
     <style>
@@ -1016,8 +1019,10 @@
     </footer>
 
     <!-- ==========================================
-    SCRIPTS
+    SCRIPTS - ✅ FIXED: Direct static path (works on Vercel & Render)
     ========================================== -->
+    <script src="/static/js/main.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Mobile menu
