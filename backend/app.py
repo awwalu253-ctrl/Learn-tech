@@ -17,7 +17,7 @@ import logging
 # LOAD ENVIRONMENT VARIABLES
 # ============================================================================
 
-# Load .env from root directory (for production)
+# Load .env from root directory
 env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
 if os.path.exists(env_path):
     load_dotenv(dotenv_path=env_path)
@@ -30,13 +30,23 @@ else:
 
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
-# Configuration from environment
+# Security
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'awwaludevs-secret-key-change-in-production')
 
-# Database - Use PostgreSQL on Render, SQLite locally
+# Database - PostgreSQL on Render, SQLite locally
 if os.environ.get('RENDER'):
+    # PostgreSQL on Render
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 10,
+        'pool_recycle': 300,
+        'pool_pre_ping': True,
+        'connect_args': {
+            'sslmode': 'require',  # Required for Render PostgreSQL
+        }
+    }
 else:
+    # SQLite locally
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///../database/awwaludevs.db')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -49,14 +59,6 @@ else:
 
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'txt', 'zip'}
-
-# PostgreSQL pool settings for Render
-if os.environ.get('RENDER'):
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_size': 10,
-        'pool_recycle': 300,
-        'pool_pre_ping': True,
-    }
 
 # Ensure directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -417,18 +419,23 @@ class RejectionMessage(db.Model):
 
 def create_initial_admin():
     """Create default admin account if it doesn't exist"""
-    admin = User.query.filter_by(username='admin').first()
-    if not admin:
-        admin = User(
-            username='admin',
-            email='admin@awwaludevs.com',
-            role='super_admin',
-            is_approved=True
-        )
-        admin.set_password('admin123')
-        db.session.add(admin)
-        db.session.commit()
-        print("✅ Default admin created: admin / admin123")
+    try:
+        admin = User.query.filter_by(username='admin').first()
+        if not admin:
+            admin = User(
+                username='admin',
+                email='admin@awwaludevs.com',
+                role='super_admin',
+                is_approved=True
+            )
+            admin.set_password('admin123')
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Default admin created: admin / admin123")
+        else:
+            print("✅ Admin user already exists")
+    except Exception as e:
+        print(f"⚠️ Error creating admin: {e}")
 
 # ============================================================================
 # USER LOADER
