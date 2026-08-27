@@ -182,7 +182,7 @@
         }
 
         /* ============================================
-           MOBILE MENU TOGGLE - FIXED
+           MOBILE MENU TOGGLE - COMPLETE FIX
            ============================================ */
         .navbar-toggle {
             display: none;
@@ -196,6 +196,11 @@
             transition: var(--transition);
             z-index: 1001;
             line-height: 1;
+            position: relative;
+            width: 44px;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
         }
 
         [data-theme="dark"] .navbar-toggle {
@@ -210,12 +215,12 @@
             background: rgba(255, 255, 255, 0.06);
         }
 
-        /* Hide times icon by default, show bars */
+        /* Show bars by default, hide times */
         .navbar-toggle .fa-times {
             display: none;
         }
 
-        /* When active, hide bars, show times */
+        /* When open, hide bars, show times */
         .navbar-toggle.open .fa-bars {
             display: none;
         }
@@ -247,14 +252,14 @@
             border-radius: 100px;
             font-size: 0.82rem;
             font-weight: 500;
-            color: #1A1A2E;
+            color: var(--text);
             transition: var(--transition);
             white-space: nowrap;
             letter-spacing: 0.01em;
         }
 
         [data-theme="dark"] .navbar-nav a {
-            color: #FFFFFF;
+            color: var(--text-light);
         }
 
         .navbar-nav a i {
@@ -972,7 +977,7 @@
                 <span class="logo-text">Awwalu Devs</span>
             </a>
 
-            <!-- ✅ FIXED: Both icons inside button -->
+            <!-- ✅ FIXED: Both icons inside button with proper toggle -->
             <button class="navbar-toggle" id="navbarToggle" aria-label="Menu">
                 <i class="fas fa-bars"></i>
                 <i class="fas fa-times"></i>
@@ -1069,6 +1074,7 @@
             const menu = document.getElementById('navbarMenu');
             
             if (toggle && menu) {
+                // Toggle menu on button click
                 toggle.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
