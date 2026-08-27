@@ -389,7 +389,7 @@ def create_initial_admin():
             print("✅ Default admin created: admin / admin123")
         else:
             print("✅ Admin user already exists")
-            # 🔥 FORCE RESET PASSWORD
+            # Force reset password
             admin.set_password('admin123')
             admin.is_approved = True
             admin.role = 'super_admin'
@@ -583,6 +583,9 @@ def admin_dashboard():
     pending_approvals = User.query.filter_by(role='student', is_approved=False).count()
     pending = User.query.filter_by(role='student', is_approved=False).all()
     
+    # Get announcements count for badge
+    announcements_count = Announcement.query.count()
+    
     if current_user.is_super_admin():
         courses = Course.query.all()
         total_courses = Course.query.count()
@@ -615,7 +618,8 @@ def admin_dashboard():
                          recent_notes=recent_notes,
                          recent_quizzes=recent_quizzes,
                          admin_count=admin_count,
-                         tag_count=tag_count)
+                         tag_count=tag_count,
+                         announcements_count=announcements_count)
 
 # ============================================================================
 # ROUTES - COURSE MANAGEMENT (Super Admin)
@@ -1887,7 +1891,7 @@ def submit_assignment(assignment_id):
     return render_template('student_submit_assignment.html', assignment=assignment)
 
 # ============================================================================
-# ROUTES - LEADERBOARD
+# ROUTES - LEADERBOARD (Student & Admin)
 # ============================================================================
 
 @app.route('/leaderboard')
@@ -1916,6 +1920,119 @@ def leaderboard():
     student_scores.sort(key=lambda x: x['score'], reverse=True)
     
     return render_template('leaderboard.html', student_scores=student_scores)
+
+@app.route('/admin/leaderboard')
+@login_required
+@admin_required
+def admin_leaderboard():
+    """Admin view of leaderboard with management features"""
+    # Get all students with their scores
+    students = User.query.filter_by(role='student', is_approved=True).all()
+    
+    student_scores = []
+    for student in students:
+        answers = QuizAnswer.query.filter_by(student_id=student.id).all()
+        correct = sum(1 for a in answers if a.is_correct)
+        total = len(answers)
+        score = int((correct / total) * 100) if total > 0 else 0
+        
+        # Get course count
+        course_count = len(student.enrolled_courses)
+        
+        student_scores.append({
+            'student': student,
+            'score': score,
+            'correct': correct,
+            'total': total,
+            'course_count': course_count,
+            'joined': student.created_at.strftime('%b %d, %Y'),
+            'status': 'Active' if student.is_approved else 'Pending'
+        })
+    
+    # Sort by score descending
+    student_scores.sort(key=lambda x: x['score'], reverse=True)
+    
+    # Stats
+    total_students = len(student_scores)
+    avg_score = sum(s['score'] for s in student_scores) / total_students if total_students > 0 else 0
+    top_performer = student_scores[0] if student_scores else None
+    
+    return render_template('admin/leaderboard.html',
+                         student_scores=student_scores,
+                         total_students=total_students,
+                         avg_score=avg_score,
+                         top_performer=top_performer)
+
+@app.route('/admin/leaderboard/reset/<int:student_id>', methods=['POST'])
+@login_required
+@admin_required
+def reset_student_scores(student_id):
+    """Reset a student's quiz scores"""
+    student = User.query.get_or_404(student_id)
+    
+    # Delete all quiz answers for this student
+    QuizAnswer.query.filter_by(student_id=student_id).delete()
+    db.session.commit()
+    
+    flash(f'All quiz scores for {student.username} have been reset.', 'success')
+    return redirect(url_for('admin_leaderboard'))
+
+@app.route('/admin/leaderboard/reset-all', methods=['POST'])
+@login_required
+@admin_required
+def reset_all_scores():
+    """Reset all students' quiz scores"""
+    if not current_user.is_super_admin():
+        flash('Only super admin can reset all scores.', 'error')
+        return redirect(url_for('admin_leaderboard'))
+    
+    # Delete all quiz answers
+    QuizAnswer.query.delete()
+    db.session.commit()
+    
+    flash('All student quiz scores have been reset.', 'success')
+    return redirect(url_for('admin_leaderboard'))
+
+@app.route('/admin/leaderboard/export')
+@login_required
+@admin_required
+def export_leaderboard():
+    """Export leaderboard data as CSV"""
+    import csv
+    from io import StringIO
+    
+    students = User.query.filter_by(role='student', is_approved=True).all()
+    
+    output = StringIO()
+    writer = csv.writer(output)
+    
+    # Headers
+    writer.writerow(['Rank', 'Student', 'Email', 'Score', 'Correct', 'Total', 'Courses', 'Joined'])
+    
+    # Data
+    rank = 1
+    for student in students:
+        answers = QuizAnswer.query.filter_by(student_id=student.id).all()
+        correct = sum(1 for a in answers if a.is_correct)
+        total = len(answers)
+        score = int((correct / total) * 100) if total > 0 else 0
+        
+        writer.writerow([
+            rank,
+            student.username,
+            student.email,
+            f"{score}%",
+            correct,
+            total,
+            len(student.enrolled_courses),
+            student.created_at.strftime('%Y-%m-%d')
+        ])
+        rank += 1
+    
+    response = make_response(output.getvalue())
+    response.headers['Content-Disposition'] = 'attachment; filename=leaderboard_export.csv'
+    response.headers['Content-Type'] = 'text/csv'
+    return response
 
 # ============================================================================
 # ROUTES - PROFILE
