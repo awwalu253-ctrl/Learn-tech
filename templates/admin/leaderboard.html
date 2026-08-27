@@ -1,0 +1,453 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard Management - Awwalu Devs{% endblock %}
+
+{% block extra_css %}
+<style>
+  .leaderboard-manage {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F59E0B;
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+    margin: 2px 0 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--white, #FFFFFF);
+    padding: 20px 18px;
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    text-align: center;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .stat-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    transform: translateY(-2px);
+  }
+
+  .stat-card .stat-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--navy, #0F172A);
+    line-height: 1.2;
+  }
+
+  .stat-card .stat-number.gold { color: #F59E0B; }
+  .stat-card .stat-number.blue { color: var(--blue, #2563EB); }
+  .stat-card .stat-number.green { color: #10B981; }
+
+  .stat-card .stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+
+  .table-wrapper {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    overflow: hidden;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+  }
+
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .leaderboard-table thead {
+    background: var(--bg, #F8FAFC);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  .leaderboard-table thead th {
+    padding: 14px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94A3B8);
+    white-space: nowrap;
+  }
+
+  .leaderboard-table tbody tr {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .leaderboard-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.02);
+  }
+
+  .leaderboard-table tbody td {
+    padding: 12px 20px;
+    vertical-align: middle;
+    color: var(--text, #1E293B);
+  }
+
+  .rank-cell {
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .rank-cell .gold { color: #F59E0B; }
+  .rank-cell .silver { color: #9CA3AF; }
+  .rank-cell .bronze { color: #D97706; }
+
+  .student-name {
+    font-weight: 600;
+    color: var(--navy, #0F172A);
+  }
+
+  .student-email {
+    font-size: 0.8rem;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .score-cell {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .score-cell.excellent { color: #10B981; }
+  .score-cell.good { color: #F59E0B; }
+  .score-cell.poor { color: #EF4444; }
+
+  .action-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .btn-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+  }
+
+  .btn-danger-sm {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+  }
+
+  .btn-danger-sm:hover {
+    background: #EF4444;
+    color: white;
+  }
+
+  .btn-success-sm {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .btn-success-sm:hover {
+    background: #059669;
+    color: white;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    color: var(--text-muted);
+    opacity: 0.2;
+    margin-bottom: 12px;
+  }
+
+  .empty-state p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .header-actions {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .header-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stats-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .leaderboard-table thead th,
+    .leaderboard-table tbody td {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .stat-card .stat-number {
+      font-size: 1.3rem;
+    }
+
+    .leaderboard-table thead th {
+      font-size: 0.6rem;
+      padding: 6px 8px;
+    }
+
+    .leaderboard-table tbody td {
+      padding: 6px 8px;
+      font-size: 0.7rem;
+    }
+
+    .btn-sm {
+      font-size: 0.65rem;
+      padding: 4px 8px;
+    }
+
+    .score-cell {
+      font-size: 0.8rem;
+    }
+
+    .student-name {
+      font-size: 0.8rem;
+    }
+  }
+
+  [data-theme="dark"] .stat-card {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .stat-card .stat-number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .table-wrapper {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .leaderboard-table thead {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .leaderboard-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.04);
+  }
+
+  [data-theme="dark"] .student-name {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="leaderboard-manage">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <div>
+        <h1>Leaderboard <span>Management</span></h1>
+        <p class="subtitle">View and manage student rankings</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="{{ url_for('export_leaderboard') }}" class="btn-sm btn-success-sm">
+        <i class="fas fa-file-export"></i> Export CSV
+      </a>
+      {% if current_user.is_super_admin() %}
+        <form method="POST" action="{{ url_for('reset_all_scores') }}" style="display:inline;">
+          <button type="submit" class="btn-sm btn-danger-sm" onclick="return confirm('⚠️ This will reset ALL student quiz scores. This action cannot be undone!')">
+            <i class="fas fa-redo"></i> Reset All
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-number blue">{{ total_students }}</div>
+      <div class="stat-label">Total Students</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number gold">{{ avg_score|round|int }}%</div>
+      <div class="stat-label">Average Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number green">
+        {% if top_performer %}
+          {{ top_performer.score }}%
+        {% else %}
+          -
+        {% endif %}
+      </div>
+      <div class="stat-label">Top Score</div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <div class="table-scroll">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th style="width: 60px;">Rank</th>
+            <th>Student</th>
+            <th>Score</th>
+            <th>Correct / Total</th>
+            <th>Courses</th>
+            <th>Joined</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in student_scores %}
+            <tr>
+              <td>
+                <span class="rank-cell">
+                  {% if loop.index == 1 %}
+                    <span class="gold"><i class="fas fa-crown"></i> #1</span>
+                  {% elif loop.index == 2 %}
+                    <span class="silver"><i class="fas fa-medal"></i> #2</span>
+                  {% elif loop.index == 3 %}
+                    <span class="bronze"><i class="fas fa-medal"></i> #3</span>
+                  {% else %}
+                    #{{ loop.index }}
+                  {% endif %}
+                </span>
+              </td>
+              <td>
+                <div class="student-name">{{ data.student.username }}</div>
+                <div class="student-email">{{ data.student.email }}</div>
+              </td>
+              <td>
+                <span class="score-cell {% if data.score >= 70 %}excellent{% elif data.score >= 40 %}good{% else %}poor{% endif %}">
+                  {{ data.score }}%
+                </span>
+              </td>
+              <td>{{ data.correct }}/{{ data.total }}</td>
+              <td>{{ data.course_count }}</td>
+              <td>{{ data.joined }}</td>
+              <td style="text-align: right;">
+                <div class="action-group">
+                  <form method="POST" action="{{ url_for('reset_student_scores', student_id=data.student.id) }}" style="display:inline;">
+                    <button type="submit" class="btn-sm btn-danger-sm" onclick="return confirm('Reset {{ data.student.username }}\'s quiz scores?')">
+                      <i class="fas fa-redo"></i> Reset
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <i class="fas fa-trophy"></i>
+                  <p>No student data available.</p>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">Students need to take quizzes to appear on the leaderboard.</p>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
