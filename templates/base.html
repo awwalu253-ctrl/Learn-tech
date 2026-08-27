@@ -217,6 +217,7 @@
             list-style: none;
         }
 
+        /* ✅ FIXED: Nav links are black in light mode, white in dark mode */
         .navbar-nav a {
             display: flex;
             align-items: center;
@@ -225,14 +226,15 @@
             border-radius: 100px;
             font-size: 0.82rem;
             font-weight: 500;
-            color: var(--text-light);
+            color: #1A1A2E;
             transition: var(--transition);
             white-space: nowrap;
             letter-spacing: 0.01em;
         }
 
+        /* ✅ FIXED: Dark mode nav links are white */
         [data-theme="dark"] .navbar-nav a {
-            color: var(--text-muted);
+            color: #FFFFFF;
         }
 
         .navbar-nav a i {
@@ -242,13 +244,13 @@
         }
 
         .navbar-nav a:hover {
-            color: var(--navy);
-            background: rgba(15, 23, 42, 0.04);
+            color: var(--blue);
+            background: rgba(37, 99, 235, 0.08);
         }
 
         [data-theme="dark"] .navbar-nav a:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--white);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--cyan);
         }
 
         .navbar-nav a:hover i {
@@ -262,7 +264,7 @@
         }
 
         [data-theme="dark"] .navbar-nav a.active {
-            background: rgba(37, 99, 235, 0.12);
+            background: rgba(37, 99, 235, 0.15);
             color: var(--cyan);
         }
 
@@ -1007,7 +1009,8 @@
                 <i class="fas fa-graduation-cap"></i>
                 <span>Awwalu Devs</span>
             </div>
-            <p>&copy; 2024 Awwalu Devs. All rights reserved.</p>
+            <!-- ✅ FIXED: Auto-updating year -->
+            <p>&copy; {{ now.year if now else 2024 }} Awwalu Devs. All rights reserved.</p>
             <div class="footer-links">
                 <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
                 <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
