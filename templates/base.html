@@ -216,11 +216,11 @@
         }
 
         /* When active, hide bars, show times */
-        .navbar-toggle.active .fa-bars {
+        .navbar-toggle.open .fa-bars {
             display: none;
         }
 
-        .navbar-toggle.active .fa-times {
+        .navbar-toggle.open .fa-times {
             display: inline-block;
         }
 
@@ -972,6 +972,7 @@
                 <span class="logo-text">Awwalu Devs</span>
             </a>
 
+            <!-- ✅ FIXED: Both icons inside button -->
             <button class="navbar-toggle" id="navbarToggle" aria-label="Menu">
                 <i class="fas fa-bars"></i>
                 <i class="fas fa-times"></i>
@@ -1055,14 +1056,14 @@
     </footer>
 
     <!-- ==========================================
-    SCRIPTS - ✅ Uses Flask's url_for (works on Render)
+    SCRIPTS
     ========================================== -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // ========================================
-            // MOBILE MENU TOGGLE - FIXED
+            // MOBILE MENU TOGGLE - COMPLETE FIX
             // ========================================
             const toggle = document.getElementById('navbarToggle');
             const menu = document.getElementById('navbarMenu');
@@ -1072,14 +1073,14 @@
                     e.preventDefault();
                     e.stopPropagation();
                     menu.classList.toggle('open');
-                    toggle.classList.toggle('active');
+                    toggle.classList.toggle('open');
                 });
 
-                // Close menu when clicking a link (mobile)
-                menu.querySelectorAll('a').forEach(link => {
+                // Close menu when clicking a link
+                menu.querySelectorAll('a').forEach(function(link) {
                     link.addEventListener('click', function() {
                         menu.classList.remove('open');
-                        toggle.classList.remove('active');
+                        toggle.classList.remove('open');
                     });
                 });
 
@@ -1087,7 +1088,7 @@
                 document.addEventListener('click', function(e) {
                     if (!menu.contains(e.target) && !toggle.contains(e.target)) {
                         menu.classList.remove('open');
-                        toggle.classList.remove('active');
+                        toggle.classList.remove('open');
                     }
                 });
             }
@@ -1109,11 +1110,11 @@
             // ========================================
             // AUTO-DISMISS FLASHES
             // ========================================
-            document.querySelectorAll('.flash-message').forEach((flash, i) => {
-                setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(function(flash, i) {
+                setTimeout(function() {
                     flash.style.opacity = '0';
                     flash.style.transform = 'translateX(20px) scale(0.97)';
-                    setTimeout(() => {
+                    setTimeout(function() {
                         if (flash.parentElement) flash.remove();
                     }, 350);
                 }, 4500 + (i * 150));
