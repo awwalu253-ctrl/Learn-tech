@@ -42,6 +42,19 @@
             --nav-height: 68px;
         }
 
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --bg: #0B1120;
+            --text: #F1F5F9;
+            --text-light: #94A3B8;
+            --text-muted: #64748B;
+            --white: #1E293B;
+            --border: rgba(255, 255, 255, 0.04);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5);
+        }
+
         html {
             scroll-behavior: smooth;
         }
@@ -100,6 +113,11 @@
             transition: var(--transition);
         }
 
+        [data-theme="dark"] .navbar {
+            background: rgba(11, 17, 32, 0.92);
+            border-bottom: 1px solid var(--border);
+        }
+
         .navbar.scrolled {
             box-shadow: var(--shadow-md);
         }
@@ -124,6 +142,10 @@
             color: var(--navy);
             letter-spacing: -0.02em;
             flex-shrink: 0;
+        }
+
+        [data-theme="dark"] .navbar-brand {
+            color: var(--white);
         }
 
         .navbar-brand .logo-icon {
@@ -152,6 +174,13 @@
             background-clip: text;
         }
 
+        [data-theme="dark"] .navbar-brand .logo-text {
+            background: linear-gradient(135deg, var(--white), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .navbar-toggle {
             display: none;
             background: none;
@@ -164,8 +193,16 @@
             transition: var(--transition);
         }
 
+        [data-theme="dark"] .navbar-toggle {
+            color: var(--white);
+        }
+
         .navbar-toggle:hover {
             background: rgba(15, 23, 42, 0.04);
+        }
+
+        [data-theme="dark"] .navbar-toggle:hover {
+            background: rgba(255, 255, 255, 0.04);
         }
 
         .navbar-menu {
@@ -194,6 +231,10 @@
             letter-spacing: 0.01em;
         }
 
+        [data-theme="dark"] .navbar-nav a {
+            color: var(--text-muted);
+        }
+
         .navbar-nav a i {
             font-size: 0.9em;
             opacity: 0.6;
@@ -203,6 +244,11 @@
         .navbar-nav a:hover {
             color: var(--navy);
             background: rgba(15, 23, 42, 0.04);
+        }
+
+        [data-theme="dark"] .navbar-nav a:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--white);
         }
 
         .navbar-nav a:hover i {
@@ -215,9 +261,18 @@
             font-weight: 600;
         }
 
+        [data-theme="dark"] .navbar-nav a.active {
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--cyan);
+        }
+
         .navbar-nav a.active i {
             opacity: 1;
             color: var(--blue);
+        }
+
+        [data-theme="dark"] .navbar-nav a.active i {
+            color: var(--cyan);
         }
 
         .nav-divider {
@@ -250,6 +305,14 @@
             color: var(--white) !important;
         }
 
+        [data-theme="dark"] .btn-signup {
+            box-shadow: 0 2px 16px rgba(37, 99, 235, 0.12);
+        }
+
+        [data-theme="dark"] .btn-signup:hover {
+            box-shadow: 0 4px 24px rgba(37, 99, 235, 0.2);
+        }
+
         /* ============================================
            NOTIFICATION BELL
            ============================================ */
@@ -276,9 +339,18 @@
             font-family: 'Inter', sans-serif;
         }
 
+        [data-theme="dark"] .notification-btn {
+            color: var(--text-muted);
+        }
+
         .notification-btn:hover {
             color: var(--navy);
             background: rgba(15, 23, 42, 0.04);
+        }
+
+        [data-theme="dark"] .notification-btn:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--white);
         }
 
         .notification-btn .bell-icon {
@@ -296,6 +368,10 @@
             border-radius: 50%;
             border: 2px solid var(--white);
             animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        [data-theme="dark"] .notification-btn .bell-icon .bell-dot {
+            border-color: var(--white);
         }
 
         .notification-btn .bell-icon .bell-dot.hidden {
@@ -336,6 +412,11 @@
             animation: dropdownSlide 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
+        [data-theme="dark"] .notification-dropdown {
+            background: var(--white);
+            border-color: var(--border);
+        }
+
         .notification-dropdown.open {
             display: block;
         }
@@ -353,11 +434,19 @@
             border-bottom: 1px solid var(--border);
         }
 
+        [data-theme="dark"] .notification-dropdown-header {
+            border-bottom: 1px solid var(--border);
+        }
+
         .notification-dropdown-header h4 {
             font-size: 0.85rem;
             font-weight: 700;
             color: var(--navy);
             margin: 0;
+        }
+
+        [data-theme="dark"] .notification-dropdown-header h4 {
+            color: var(--white);
         }
 
         .notification-dropdown-header .mark-all-read {
@@ -388,9 +477,17 @@
             background: rgba(37, 99, 235, 0.02);
         }
 
+        [data-theme="dark"] .notification-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
         .notification-item.unread {
             border-left-color: var(--blue);
             background: rgba(37, 99, 235, 0.02);
+        }
+
+        [data-theme="dark"] .notification-item.unread {
+            background: rgba(37, 99, 235, 0.04);
         }
 
         .notification-item .notif-icon {
@@ -435,6 +532,10 @@
             font-size: 0.85rem;
             font-weight: 500;
             color: var(--text);
+        }
+
+        [data-theme="dark"] .notification-item .notif-content .notif-title {
+            color: var(--white);
         }
 
         .notification-item .notif-content .notif-meta {
@@ -515,6 +616,11 @@
             position: relative;
         }
 
+        [data-theme="dark"] .flash-message {
+            background: var(--white);
+            border-color: var(--border);
+        }
+
         .flash-message .flash-icon {
             width: 28px;
             height: 28px;
@@ -550,6 +656,11 @@
         .flash-message .flash-close:hover {
             color: var(--text);
             background: rgba(15, 23, 42, 0.04);
+        }
+
+        [data-theme="dark"] .flash-message .flash-close:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--white);
         }
 
         .flash-success .flash-icon {
@@ -602,6 +713,11 @@
             margin-top: auto;
         }
 
+        [data-theme="dark"] .footer {
+            background: var(--white);
+            border-top: 1px solid var(--border);
+        }
+
         .footer-container {
             max-width: 1360px;
             margin: 0 auto;
@@ -620,6 +736,10 @@
             font-weight: 700;
             font-size: 0.95rem;
             color: var(--navy);
+        }
+
+        [data-theme="dark"] .footer-brand {
+            color: var(--white);
         }
 
         .footer-brand i {
@@ -659,6 +779,11 @@
             transform: translateY(-2px);
         }
 
+        [data-theme="dark"] .footer-links a:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--cyan);
+        }
+
         /* ============================================
            UTILITY
            ============================================ */
@@ -691,6 +816,11 @@
                 display: none;
                 max-height: calc(100vh - var(--nav-height));
                 overflow-y: auto;
+            }
+
+            [data-theme="dark"] .navbar-menu {
+                background: rgba(11, 17, 32, 0.98);
+                border-bottom: 1px solid var(--border);
             }
 
             .navbar-menu.open {
@@ -791,138 +921,6 @@
             .notification-btn {
                 padding: 4px 8px;
             }
-        }
-
-        /* ============================================
-           DARK MODE
-           ============================================ */
-        [data-theme="dark"] {
-            --bg: #0B1120;
-            --text: #F1F5F9;
-            --text-light: #94A3B8;
-            --text-muted: #64748B;
-            --white: #1E293B;
-            --border: rgba(255, 255, 255, 0.04);
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5);
-        }
-
-        [data-theme="dark"] .navbar {
-            background: rgba(11, 17, 32, 0.92);
-            border-bottom: 1px solid var(--border);
-        }
-
-        [data-theme="dark"] .navbar-brand .logo-text {
-            background: linear-gradient(135deg, var(--white), var(--blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        [data-theme="dark"] .navbar-nav a {
-            color: var(--text-muted);
-        }
-
-        [data-theme="dark"] .navbar-nav a:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--white);
-        }
-
-        [data-theme="dark"] .navbar-nav a.active {
-            background: rgba(37, 99, 235, 0.12);
-            color: var(--cyan);
-        }
-
-        [data-theme="dark"] .navbar-nav a.active i {
-            color: var(--cyan);
-        }
-
-        [data-theme="dark"] .navbar-toggle {
-            color: var(--white);
-        }
-
-        [data-theme="dark"] .navbar-toggle:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        [data-theme="dark"] .navbar-menu {
-            background: rgba(11, 17, 32, 0.98);
-            border-bottom: 1px solid var(--border);
-        }
-
-        [data-theme="dark"] .flash-message {
-            background: var(--white);
-            border-color: var(--border);
-        }
-
-        [data-theme="dark"] .flash-message .flash-close:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--white);
-        }
-
-        [data-theme="dark"] .footer {
-            background: var(--white);
-            border-top: 1px solid var(--border);
-        }
-
-        [data-theme="dark"] .footer-brand {
-            color: var(--white);
-        }
-
-        [data-theme="dark"] .footer-links a {
-            color: var(--text-muted);
-        }
-
-        [data-theme="dark"] .footer-links a:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--cyan);
-        }
-
-        [data-theme="dark"] .notification-btn {
-            color: var(--text-muted);
-        }
-
-        [data-theme="dark"] .notification-btn:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--white);
-        }
-
-        [data-theme="dark"] .notification-dropdown {
-            background: var(--white);
-            border-color: var(--border);
-        }
-
-        [data-theme="dark"] .notification-dropdown-header h4 {
-            color: var(--white);
-        }
-
-        [data-theme="dark"] .notification-item:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        [data-theme="dark"] .notification-item.unread {
-            background: rgba(37, 99, 235, 0.04);
-        }
-
-        [data-theme="dark"] .notification-item .notif-content .notif-title {
-            color: var(--white);
-        }
-
-        [data-theme="dark"] .btn-logout:hover {
-            background: rgba(239, 68, 68, 0.08) !important;
-        }
-
-        [data-theme="dark"] .btn-signup {
-            box-shadow: 0 2px 16px rgba(37, 99, 235, 0.12);
-        }
-
-        [data-theme="dark"] .btn-signup:hover {
-            box-shadow: 0 4px 24px rgba(37, 99, 235, 0.2);
-        }
-
-        [data-theme="dark"] .notification-btn .bell-icon .bell-dot {
-            border-color: var(--white);
         }
     </style>
 </head>

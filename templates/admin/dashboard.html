@@ -1,6 +1,3 @@
-<!-- This is your redesigned admin_dashboard.html template -->
-<!-- Extends base.html (your base template remains unchanged) -->
-
 {% extends "base.html" %}
 
 {% block title %}Admin Dashboard - Awwalu Devs{% endblock %}
@@ -1188,10 +1185,13 @@
           {% endif %}
         </a>
 
-        <!-- New: Announcements & Export -->
+        <!-- Announcements & Export -->
         <a href="{{ url_for('manage_announcements') }}" class="quick-action">
           <i class="fas fa-bullhorn"></i>
           <span>Announcements</span>
+          {% if announcements_count is defined and announcements_count > 0 %}
+            <span class="badge-count">{{ announcements_count }}</span>
+          {% endif %}
         </a>
         <a href="{{ url_for('export_page') }}" class="quick-action">
           <i class="fas fa-file-export"></i>
@@ -1214,6 +1214,9 @@
         <a href="{{ url_for('manage_tags') }}" class="quick-action">
           <i class="fas fa-tags"></i>
           <span>Manage Tags</span>
+          {% if tag_count is defined and tag_count > 0 %}
+            <span class="badge-count">{{ tag_count }}</span>
+          {% endif %}
         </a>
         <a href="{{ url_for('change_password') }}" class="quick-action">
           <i class="fas fa-key"></i>
@@ -1304,9 +1307,7 @@
             </div>
             <div class="progress-track">
               {# Calculate progress based on notes, quizzes, and assignments #}
-              {% set total_items = course.notes|length + course.quiz_groups|length + course.assignments|length %}
-              {% set target_items = 30 %} {# Target: 10 notes + 10 quizzes + 10 assignments #}
-              {% set progress_pct = (total_items / target_items * 100) if total_items > 0 else 0 %}
+              {% set progress_pct = (course.notes|length / 10 * 100) if course.notes|length > 0 else 0 %}
               <div class="fill" style="width: {{ progress_pct if progress_pct <= 100 else 100 }}%;"></div>
             </div>
             <div class="course-stats">
