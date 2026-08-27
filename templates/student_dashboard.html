@@ -89,7 +89,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 14px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
   }
@@ -104,6 +104,9 @@
     transition: var(--transition, 0.3s ease);
     position: relative;
     overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
   }
 
   .stat-card::before {
@@ -156,13 +159,114 @@
     margin-top: 2px;
   }
 
+  .stat-card .stat-action {
+    font-size: 0.65rem;
+    color: var(--blue, #2563EB);
+    margin-top: 4px;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+
+  .stat-card:hover .stat-action {
+    opacity: 1;
+  }
+
+  /* Quick Actions */
+  .quick-actions-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+  }
+
+  .quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    text-decoration: none;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
+    cursor: pointer;
+  }
+
+  .quick-action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    border-color: rgba(37, 99, 235, 0.06);
+  }
+
+  .quick-action-btn .action-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .quick-action-btn .action-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+  }
+
+  .quick-action-btn .action-icon.purple {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7C3AED;
+  }
+
+  .quick-action-btn .action-icon.green {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .quick-action-btn .action-icon.orange {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .quick-action-btn .action-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .quick-action-btn .action-content .action-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text, #1E293B);
+  }
+
+  .quick-action-btn .action-content .action-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .quick-action-btn .action-arrow {
+    font-size: 0.9rem;
+    color: var(--text-muted, #94A3B8);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .quick-action-btn:hover .action-arrow {
+    color: var(--blue, #2563EB);
+    transform: translateX(4px);
+  }
+
   /* Dashboard Grid */
   .dashboard-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 24px;
     opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
   }
 
   /* Section */
@@ -206,6 +310,18 @@
     background: var(--bg, #F8FAFC);
     padding: 2px 12px;
     border-radius: 100px;
+  }
+
+  .dashboard-section .section-header .section-link {
+    font-size: 0.8rem;
+    color: var(--blue, #2563EB);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .dashboard-section .section-header .section-link:hover {
+    color: var(--cyan, #22D3EE);
   }
 
   /* Course Grid */
@@ -450,7 +566,6 @@
     color: var(--text-muted, #94A3B8);
   }
 
-  /* View All Link */
   .view-all-link {
     display: inline-flex;
     align-items: center;
@@ -526,6 +641,10 @@
     .stats-row {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    .quick-actions-section {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   @media (max-width: 768px) {
@@ -555,6 +674,21 @@
 
     .stat-number {
       font-size: 1.4rem;
+    }
+
+    .quick-actions-section {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .quick-action-btn {
+      padding: 14px 16px;
+    }
+
+    .quick-action-btn .action-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
     }
 
     .dashboard-section {
@@ -616,6 +750,25 @@
 
     .stat-card .stat-icon {
       font-size: 1.1rem;
+    }
+
+    .quick-actions-section {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .quick-action-btn {
+      padding: 12px 14px;
+    }
+
+    .quick-action-btn .action-icon {
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+    }
+
+    .quick-action-btn .action-content .action-title {
+      font-size: 0.85rem;
     }
 
     .dashboard-section {
@@ -694,6 +847,19 @@
 
   [data-theme="dark"] .stat-card .stat-number {
     color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .quick-action-btn {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .quick-action-btn .action-content .action-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .quick-action-btn .action-content .action-sub {
+    color: var(--text-muted, #64748B);
   }
 
   [data-theme="dark"] .dashboard-section {
@@ -809,6 +975,26 @@
   [data-theme="dark"] .view-all-link:hover {
     color: var(--blue, #2563EB);
   }
+
+  [data-theme="dark"] .stat-card .stat-action {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .quick-action-btn .action-icon.blue {
+    background: rgba(37, 99, 235, 0.12);
+  }
+
+  [data-theme="dark"] .quick-action-btn .action-icon.purple {
+    background: rgba(124, 58, 237, 0.12);
+  }
+
+  [data-theme="dark"] .quick-action-btn .action-icon.green {
+    background: rgba(5, 150, 105, 0.12);
+  }
+
+  [data-theme="dark"] .quick-action-btn .action-icon.orange {
+    background: rgba(245, 158, 11, 0.12);
+  }
 </style>
 
 <div class="student-dashboard">
@@ -829,14 +1015,15 @@
     </div>
   </div>
 
-  <!-- Stats -->
+  <!-- Stats Row - Clickable -->
   <div class="stats-row">
-    <div class="stat-card">
+    <div class="stat-card" onclick="window.location.href='{{ url_for('student_courses') }}'">
       <div class="stat-icon"><i class="fas fa-book"></i></div>
       <div class="stat-number">{{ courses|length }}</div>
       <div class="stat-label">Enrolled Courses</div>
+      <div class="stat-action"><i class="fas fa-arrow-right"></i> View All</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="window.location.href='{{ url_for('student_courses') }}'">
       <div class="stat-icon"><i class="fas fa-play-circle"></i></div>
       <div class="stat-number">
         {% set started = 0 %}
@@ -848,27 +1035,59 @@
         {{ started }}
       </div>
       <div class="stat-label">Courses Started</div>
+      <div class="stat-action"><i class="fas fa-arrow-right"></i> Continue</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="window.location.href='{{ url_for('student_quizzes') }}'">
       <div class="stat-icon"><i class="fas fa-puzzle-piece"></i></div>
       <div class="stat-number">{{ quiz_results|length }}</div>
       <div class="stat-label">Quizzes Taken</div>
+      <div class="stat-action"><i class="fas fa-arrow-right"></i> Take Quiz</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" onclick="window.location.href='{{ url_for('student_announcements') }}'">
       <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
       <div class="stat-number">{{ announcements|length if announcements else 0 }}</div>
       <div class="stat-label">Announcements</div>
+      <div class="stat-action"><i class="fas fa-arrow-right"></i> Read</div>
     </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions-section">
+    <a href="{{ url_for('student_quizzes') }}" class="quick-action-btn">
+      <div class="action-icon blue"><i class="fas fa-puzzle-piece"></i></div>
+      <div class="action-content">
+        <div class="action-title">Take a Quiz</div>
+        <div class="action-sub">Test your knowledge</div>
+      </div>
+      <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+    </a>
+    <a href="{{ url_for('student_assignments') }}" class="quick-action-btn">
+      <div class="action-icon purple"><i class="fas fa-tasks"></i></div>
+      <div class="action-content">
+        <div class="action-title">View Assignments</div>
+        <div class="action-sub">Submit your work</div>
+      </div>
+      <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+    </a>
+    <a href="{{ url_for('leaderboard') }}" class="quick-action-btn">
+      <div class="action-icon orange"><i class="fas fa-trophy"></i></div>
+      <div class="action-content">
+        <div class="action-title">Leaderboard</div>
+        <div class="action-sub">See rankings</div>
+      </div>
+      <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+    </a>
   </div>
 
   <!-- Dashboard Grid -->
   <div class="dashboard-grid">
-    <!-- Your Courses -->
+    <!-- Left Column: Your Courses -->
     <div class="dashboard-section">
       <div class="section-header">
         <i class="fas fa-book"></i>
         <h2>Your Courses</h2>
         <span class="section-count">{{ progress_data|length }}</span>
+        <a href="{{ url_for('student_courses') }}" class="section-link">View All →</a>
       </div>
       <div class="course-grid">
         {% for data in progress_data %}
@@ -909,6 +1128,7 @@
           <i class="fas fa-puzzle-piece"></i>
           <h2>Recent Quiz Results</h2>
           <span class="section-count">{{ quiz_results|length }}</span>
+          <a href="{{ url_for('student_quizzes') }}" class="section-link">View All →</a>
         </div>
         <div class="quiz-results-list">
           {% for result in quiz_results %}
@@ -925,6 +1145,9 @@
             <div class="empty-state">
               <i class="fas fa-puzzle-piece"></i>
               <p>You haven't taken any quizzes yet.</p>
+              <a href="{{ url_for('student_quizzes') }}" class="btn">
+                <i class="fas fa-play"></i> Take a Quiz
+              </a>
             </div>
           {% endfor %}
         </div>
@@ -936,6 +1159,7 @@
           <i class="fas fa-bullhorn"></i>
           <h2>Latest Announcements</h2>
           <span class="section-count">{{ announcements|length if announcements else 0 }}</span>
+          <a href="{{ url_for('student_announcements') }}" class="section-link">View All →</a>
         </div>
         <div class="announcement-list">
           {% if announcements %}
@@ -951,9 +1175,6 @@
                 <span class="announcement-date">{{ announcement.created_at.strftime('%b %d, %Y') }}</span>
               </div>
             {% endfor %}
-            <a href="{{ url_for('student_announcements') }}" class="view-all-link">
-              View All <i class="fas fa-arrow-right"></i>
-            </a>
           {% else %}
             <div class="empty-state">
               <i class="fas fa-bullhorn"></i>
