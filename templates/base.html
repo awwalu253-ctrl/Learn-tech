@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- ✅ Works on Render with Flask's url_for -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
     {% block extra_css %}{% endblock %}
@@ -42,7 +41,6 @@
             --nav-height: 68px;
         }
 
-        /* Dark Mode Variables */
         [data-theme="dark"] {
             --bg: #0B1120;
             --text: #F1F5F9;
@@ -97,7 +95,7 @@
         }
 
         /* ============================================
-           NAVBAR - Premium Glass Effect
+           NAVBAR
            ============================================ */
         .navbar {
             position: fixed;
@@ -182,7 +180,7 @@
         }
 
         /* ============================================
-           MOBILE MENU TOGGLE - COMPLETE FIX
+           MOBILE MENU TOGGLE - FIXED
            ============================================ */
         .navbar-toggle {
             display: none;
@@ -215,12 +213,12 @@
             background: rgba(255, 255, 255, 0.06);
         }
 
-        /* Show bars by default, hide times */
+        /* ✅ Show bars by default, hide times */
         .navbar-toggle .fa-times {
             display: none;
         }
 
-        /* When open, hide bars, show times */
+        /* ✅ When open, hide bars, show times */
         .navbar-toggle.open .fa-bars {
             display: none;
         }
