@@ -181,6 +181,9 @@
             background-clip: text;
         }
 
+        /* ============================================
+           MOBILE MENU TOGGLE - FIXED
+           ============================================ */
         .navbar-toggle {
             display: none;
             background: none;
@@ -188,9 +191,10 @@
             font-size: 1.3rem;
             color: var(--text);
             cursor: pointer;
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: var(--radius-sm);
             transition: var(--transition);
+            z-index: 1001;
         }
 
         [data-theme="dark"] .navbar-toggle {
@@ -198,13 +202,28 @@
         }
 
         .navbar-toggle:hover {
-            background: rgba(15, 23, 42, 0.04);
+            background: rgba(15, 23, 42, 0.06);
         }
 
         [data-theme="dark"] .navbar-toggle:hover {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.06);
         }
 
+        .navbar-toggle .fa-times {
+            display: none;
+        }
+
+        .navbar-toggle.active .fa-bars {
+            display: none;
+        }
+
+        .navbar-toggle.active .fa-times {
+            display: inline-block;
+        }
+
+        /* ============================================
+           NAVBAR MENU
+           ============================================ */
         .navbar-menu {
             display: flex;
             align-items: center;
@@ -217,7 +236,6 @@
             list-style: none;
         }
 
-        /* ✅ FIXED: Nav links are black in light mode, white in dark mode */
         .navbar-nav a {
             display: flex;
             align-items: center;
@@ -232,7 +250,6 @@
             letter-spacing: 0.01em;
         }
 
-        /* ✅ FIXED: Dark mode nav links are white */
         [data-theme="dark"] .navbar-nav a {
             color: #FFFFFF;
         }
@@ -797,11 +814,13 @@
         }
 
         /* ============================================
-           RESPONSIVE
+           RESPONSIVE - MOBILE MENU FIXED
            ============================================ */
         @media (max-width: 992px) {
             .navbar-toggle {
-                display: block;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .navbar-menu {
@@ -818,11 +837,7 @@
                 display: none;
                 max-height: calc(100vh - var(--nav-height));
                 overflow-y: auto;
-            }
-
-            [data-theme="dark"] .navbar-menu {
-                background: rgba(11, 17, 32, 0.98);
-                border-bottom: 1px solid var(--border);
+                transition: all 0.3s ease;
             }
 
             .navbar-menu.open {
@@ -830,9 +845,20 @@
                 animation: menuSlide 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
 
+            [data-theme="dark"] .navbar-menu {
+                background: rgba(11, 17, 32, 0.98);
+                border-bottom: 1px solid var(--border);
+            }
+
             @keyframes menuSlide {
-                0% { opacity: 0; transform: translateY(-6px); }
-                100% { opacity: 1; transform: translateY(0); }
+                0% {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
             }
 
             .navbar-nav {
@@ -842,9 +868,10 @@
             }
 
             .navbar-nav a {
-                padding: 10px 14px;
+                padding: 12px 16px;
                 border-radius: var(--radius-sm);
                 font-size: 0.9rem;
+                justify-content: flex-start;
             }
 
             .nav-divider {
@@ -923,6 +950,11 @@
             .notification-btn {
                 padding: 4px 8px;
             }
+
+            .navbar-nav a {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
@@ -939,6 +971,7 @@
 
             <button class="navbar-toggle" id="navbarToggle" aria-label="Menu">
                 <i class="fas fa-bars"></i>
+                <i class="fas fa-times"></i>
             </button>
 
             <div class="navbar-menu" id="navbarMenu">
@@ -1009,7 +1042,6 @@
                 <i class="fas fa-graduation-cap"></i>
                 <span>Awwalu Devs</span>
             </div>
-            <!-- ✅ FIXED: Auto-updating year -->
             <p>&copy; {{ now.year if now else 2024 }} Awwalu Devs. All rights reserved.</p>
             <div class="footer-links">
                 <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
@@ -1026,32 +1058,39 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu
+            // ========================================
+            // MOBILE MENU TOGGLE - FIXED
+            // ========================================
             const toggle = document.getElementById('navbarToggle');
             const menu = document.getElementById('navbarMenu');
+            
             if (toggle && menu) {
-                toggle.addEventListener('click', function() {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     menu.classList.toggle('open');
-                    const icon = toggle.querySelector('i');
-                    if (icon) {
-                        icon.classList.toggle('fa-bars');
-                        icon.classList.toggle('fa-times');
-                    }
+                    toggle.classList.toggle('active');
                 });
 
+                // Close menu when clicking a link (mobile)
                 menu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
+                    link.addEventListener('click', function() {
                         menu.classList.remove('open');
-                        const icon = toggle.querySelector('i');
-                        if (icon) {
-                            icon.classList.add('fa-bars');
-                            icon.classList.remove('fa-times');
-                        }
+                        toggle.classList.remove('active');
                     });
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+                        menu.classList.remove('open');
+                        toggle.classList.remove('active');
+                    }
                 });
             }
 
-            // Navbar scroll effect
+            // ========================================
+            // NAVBAR SCROLL EFFECT
+            // ========================================
             const navbar = document.getElementById('navbar');
             if (navbar) {
                 window.addEventListener('scroll', function() {
@@ -1063,7 +1102,9 @@
                 });
             }
 
-            // Auto-dismiss flashes
+            // ========================================
+            // AUTO-DISMISS FLASHES
+            // ========================================
             document.querySelectorAll('.flash-message').forEach((flash, i) => {
                 setTimeout(() => {
                     flash.style.opacity = '0';
@@ -1074,7 +1115,9 @@
                 }, 4500 + (i * 150));
             });
 
-            // Notification dropdown toggle
+            // ========================================
+            // NOTIFICATION DROPDOWN TOGGLE
+            // ========================================
             const notifBtn = document.getElementById('notificationBtn');
             const notifDropdown = document.getElementById('notificationDropdown');
             if (notifBtn && notifDropdown) {
