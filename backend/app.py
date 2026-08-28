@@ -1216,6 +1216,9 @@ def delete_note(note_id):
         if os.path.exists(file_path):
             os.remove(file_path)
     
+    # ✅ ADD THIS ONE LINE - Deletes student progress records first
+    StudentProgress.query.filter_by(note_id=note.id).delete()
+    
     db.session.delete(note)
     db.session.commit()
     flash('Note deleted successfully.', 'success')
@@ -1420,8 +1423,16 @@ def delete_quiz_group(quiz_id):
         flash('You do not have permission to delete this quiz.', 'error')
         return redirect(url_for('manage_quizzes'))
     
+    # Delete all answers for this quiz first
+    QuizAnswer.query.filter_by(quiz_group_id=quiz.id).delete()
+    
+    # Delete all questions for this quiz
+    QuizQuestion.query.filter_by(quiz_group_id=quiz.id).delete()
+    
+    # Now delete the quiz
     db.session.delete(quiz)
     db.session.commit()
+    
     flash('Quiz deleted successfully.', 'success')
     return redirect(url_for('manage_quizzes'))
 

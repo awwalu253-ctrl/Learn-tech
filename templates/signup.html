@@ -2,163 +2,354 @@
 
 {% block title %}Sign Up - Awwalu Devs{% endblock %}
 
-{% block extra_css %}
+{% block content %}
 <style>
-/* ============================================
-   SIGNUP PAGE - Premium Navy + Electric Blue Theme
-   ============================================ */
-:root {
-    --navy: #0F172A;
-    --blue: #2563EB;
-    --cyan: #22D3EE;
-    --bg: #F8FAFC;
-    --text: #1E293B;
-    --text-light: #64748B;
-    --text-muted: #94A3B8;
-    --white: #FFFFFF;
-    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
-    --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
-    --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.12);
-    --radius: 16px;
-    --radius-sm: 10px;
-    --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.auth-page {
-    min-height: calc(100vh - 160px);
+  /* ============================================
+     SIGNUP PAGE - Premium Theme
+     ============================================ */
+  .signup-page {
+    min-height: calc(100vh - var(--nav-height, 68px) - 120px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 24px;
-    background: var(--bg);
-}
+    padding: 40px 20px;
+    background: var(--bg, #F8FAFC);
+    position: relative;
+    overflow: hidden;
+  }
 
-.auth-container {
+  /* Background decoration with floating blobs */
+  .signup-page::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatBlob 20s ease-in-out infinite alternate;
+  }
+
+  .signup-page::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -15%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatBlob 25s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(40px, -30px) scale(1.1); }
+  }
+
+  /* Container */
+  .signup-container {
     max-width: 520px;
     width: 100%;
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 40px 36px 36px;
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
     border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-md);
-    transition: var(--transition);
-    animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 40px 36px 36px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
 
-.auth-container:hover {
-    box-shadow: var(--shadow-lg);
-}
+  .signup-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    opacity: 0.6;
+  }
 
-@keyframes fadeSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(24px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+  .signup-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
 
-/* Header */
-.auth-header {
+  /* Header */
+  .signup-header {
     text-align: center;
     margin-bottom: 28px;
-}
+  }
 
-.auth-icon {
-    font-size: 2.8rem;
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+  .signup-header .icon-wrapper {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--blue, #2563EB);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .signup-container:hover .icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+  }
+
+  .signup-header h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+  }
+
+  .signup-header h2 span {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 8px;
-}
+  }
 
-.auth-header h2 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--navy);
-    letter-spacing: -0.02em;
+  .signup-header p {
+    font-size: 0.9rem;
+    color: var(--text-light, #64748B);
     margin: 0;
-}
+  }
 
-.auth-header p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-    margin: 4px 0 0;
-}
+  /* Info Box - New */
+  .info-box {
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.06);
+    border-radius: var(--radius-sm, 10px);
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
 
-/* Form */
-.auth-form .form-group {
-    margin-bottom: 16px;
-}
+  .info-box i {
+    color: var(--blue, #2563EB);
+    font-size: 1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
 
-.auth-form label {
+  .info-box .info-text {
+    font-size: 0.82rem;
+    color: var(--text-light, #64748B);
+    line-height: 1.6;
+  }
+
+  .info-box .info-text strong {
+    color: var(--navy, #0F172A);
+  }
+
+  [data-theme="dark"] .info-box {
+    background: rgba(37, 99, 235, 0.06);
+    border-color: rgba(37, 99, 235, 0.08);
+  }
+
+  [data-theme="dark"] .info-box .info-text {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .info-box .info-text strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  /* Form */
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
     display: flex;
     align-items: center;
     gap: 8px;
-    font-weight: 600;
+  }
+
+  .form-group label i {
+    color: var(--blue, #2563EB);
     font-size: 0.85rem;
-    color: var(--text);
-    margin-bottom: 4px;
-}
-
-.auth-form label i {
-    color: var(--blue);
     width: 18px;
-    font-size: 0.9rem;
-}
+    text-align: center;
+  }
 
-.form-control {
+  .form-group label .required {
+    color: #EF4444;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .form-group label .optional {
+    font-weight: 400;
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.7rem;
+  }
+
+  .form-group .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .form-group .input-wrapper input {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid rgba(15, 23, 42, 0.06);
-    border-radius: var(--radius-sm);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 0.95rem;
-    background: var(--bg);
-    color: var(--text);
-    transition: var(--transition);
-}
-
-.form-control:focus {
+    padding-right: 48px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    background: var(--bg, #F8FAFC);
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--text, #1E293B);
+    transition: var(--transition, 0.3s ease);
     outline: none;
-    border-color: var(--blue);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.06);
-    background: var(--white);
-}
+  }
 
-.form-control::placeholder {
-    color: var(--text-muted);
-}
+  .form-group .input-wrapper input:focus {
+    border-color: var(--blue, #2563EB);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    background: var(--white, #FFFFFF);
+  }
 
-/* Course Selection */
-.courses-checkbox-grid {
+  .form-group .input-wrapper input::placeholder {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  .form-group .input-wrapper input.error {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  .form-group .input-wrapper input.error:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+  }
+
+  .form-group .input-wrapper .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted, #94A3B8);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: var(--transition, 0.3s ease);
+    font-size: 0.9rem;
+  }
+
+  .form-group .input-wrapper .toggle-password:hover {
+    color: var(--text, #1E293B);
+    background: rgba(15, 23, 42, 0.04);
+  }
+
+  /* Password Strength */
+  .password-strength {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .password-strength .strength-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(15, 23, 42, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .password-strength .strength-bar .strength-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 4px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .password-strength .strength-text {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    min-width: 56px;
+    text-align: right;
+  }
+
+  /* Full Name - New */
+  .name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Error message */
+  .error-message {
+    font-size: 0.78rem;
+    color: #EF4444;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .error-message i {
+    font-size: 0.7rem;
+  }
+
+  /* Course Selection */
+  .courses-checkbox-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-top: 4px;
     max-height: 200px;
     overflow-y: auto;
-    padding: 4px 2px;
-}
+    padding: 2px;
+  }
 
-.courses-checkbox-grid::-webkit-scrollbar {
+  .courses-checkbox-grid::-webkit-scrollbar {
     width: 4px;
-}
+  }
 
-.courses-checkbox-grid::-webkit-scrollbar-track {
+  .courses-checkbox-grid::-webkit-scrollbar-track {
     background: var(--bg);
     border-radius: 4px;
-}
+  }
 
-.courses-checkbox-grid::-webkit-scrollbar-thumb {
+  .courses-checkbox-grid::-webkit-scrollbar-thumb {
     background: var(--blue);
     border-radius: 4px;
-}
+  }
 
-.checkbox-card {
+  .checkbox-card {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -168,33 +359,29 @@
     cursor: pointer;
     transition: var(--transition);
     background: var(--bg);
-}
+  }
 
-.checkbox-card:hover {
+  .checkbox-card:hover {
     border-color: var(--blue);
     background: rgba(37, 99, 235, 0.02);
-}
+  }
 
-.checkbox-card input[type="checkbox"] {
+  .checkbox-card input[type="checkbox"] {
     width: 18px;
     height: 18px;
     accent-color: var(--blue);
     cursor: pointer;
     flex-shrink: 0;
-}
+  }
 
-.checkbox-card input[type="checkbox"]:checked {
-    accent-color: var(--blue);
-}
-
-.checkbox-label {
+  .checkbox-label {
     font-weight: 500;
     font-size: 0.85rem;
     color: var(--text);
     flex: 1;
-}
+  }
 
-.checkbox-code {
+  .checkbox-code {
     font-size: 0.65rem;
     font-weight: 600;
     color: var(--text-muted);
@@ -203,344 +390,836 @@
     border-radius: 100px;
     font-family: 'Inter', monospace;
     letter-spacing: 0.03em;
-}
+  }
 
-.no-courses {
+  .checkbox-card.selected {
+    border-color: var(--blue);
+    background: rgba(37, 99, 235, 0.04);
+  }
+
+  .checkbox-card.selected .checkbox-label {
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .checkbox-card.selected .checkbox-code {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue);
+  }
+
+  .no-courses {
     grid-column: 1 / -1;
     text-align: center;
     color: var(--text-muted);
     font-size: 0.9rem;
     padding: 12px 0;
-}
+  }
 
-/* Buttons */
-.btn {
+  .course-error-msg {
+    color: #EF4444;
+    font-size: 0.8rem;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Terms - New */
+  .terms-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0 4px;
+  }
+
+  .terms-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--blue);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .terms-check .terms-text {
+    font-size: 0.82rem;
+    color: var(--text-light, #64748B);
+    line-height: 1.5;
+  }
+
+  .terms-check .terms-text a {
+    color: var(--blue, #2563EB);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .terms-check .terms-text a:hover {
+    color: var(--cyan, #22D3EE);
+  }
+
+  /* Submit Button */
+  .btn-submit {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: 'Inter', sans-serif;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 60px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    border: none;
     cursor: pointer;
-    transition: var(--transition);
-    text-decoration: none;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
-    color: var(--white);
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.3);
-    color: var(--white);
-}
-
-.btn-block {
+    transition: var(--transition, 0.3s ease);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
     width: 100%;
-    justify-content: center;
-    padding: 14px;
-    font-size: 1rem;
-}
+    margin-top: 4px;
+  }
 
-/* Footer */
-.auth-footer {
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-submit:active {
+    transform: translateY(0);
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-submit .spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .btn-submit.loading .spinner {
+    display: inline-block;
+  }
+
+  .btn-submit.loading .btn-text {
+    display: none;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Footer */
+  .signup-footer {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 24px;
     padding-top: 20px;
     border-top: 1px solid rgba(15, 23, 42, 0.04);
-    color: var(--text-light);
-    font-size: 0.9rem;
-}
+  }
 
-.auth-footer a {
-    color: var(--blue);
+  .signup-footer p {
+    font-size: 0.88rem;
+    color: var(--text-light, #64748B);
+    margin: 0;
+  }
+
+  .signup-footer p a {
+    color: var(--blue, #2563EB);
     text-decoration: none;
     font-weight: 600;
-    transition: var(--transition);
-}
+    transition: var(--transition, 0.3s ease);
+  }
 
-.auth-footer a:hover {
-    color: var(--cyan);
-}
+  .signup-footer p a:hover {
+    color: var(--cyan, #22D3EE);
+  }
 
-/* Responsive */
-@media (max-width: 480px) {
-    .auth-container {
-        padding: 28px 20px 24px;
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
     }
-    
-    .auth-header h2 {
-        font-size: 1.3rem;
+    100% {
+      opacity: 1;
+      transform: translateY(0);
     }
-    
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .signup-page {
+      padding: 30px 16px;
+    }
+
+    .signup-container {
+      padding: 32px 24px 28px;
+    }
+
+    .signup-header .icon-wrapper {
+      width: 60px;
+      height: 60px;
+      font-size: 1.6rem;
+    }
+
+    .signup-header h2 {
+      font-size: 1.4rem;
+    }
+
+    .name-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .form-group .input-wrapper input {
+      padding: 11px 14px;
+      padding-right: 44px;
+      font-size: 0.85rem;
+    }
+
+    .btn-submit {
+      padding: 12px 24px;
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .signup-container {
+      padding: 24px 16px 20px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .signup-header .icon-wrapper {
+      width: 52px;
+      height: 52px;
+      font-size: 1.4rem;
+    }
+
+    .signup-header h2 {
+      font-size: 1.2rem;
+    }
+
+    .signup-header p {
+      font-size: 0.82rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+    }
+
+    .form-group .input-wrapper input {
+      padding: 10px 12px;
+      padding-right: 40px;
+      font-size: 0.82rem;
+    }
+
     .courses-checkbox-grid {
-        grid-template-columns: 1fr;
-        max-height: 160px;
+      grid-template-columns: 1fr;
+      max-height: 160px;
     }
-    
-    .checkbox-card {
-        padding: 8px 12px;
-    }
-    
-    .checkbox-label {
-        font-size: 0.8rem;
-    }
-    
-    .auth-form label {
-        font-size: 0.8rem;
-    }
-    
-    .form-control {
-        padding: 10px 14px;
-        font-size: 0.9rem;
-    }
-    
-    .btn-block {
-        padding: 12px;
-        font-size: 0.9rem;
-    }
-}
 
-/* Dark Mode */
-[data-theme="dark"] .auth-container {
+    .checkbox-card {
+      padding: 8px 12px;
+    }
+
+    .checkbox-label {
+      font-size: 0.8rem;
+    }
+
+    .btn-submit {
+      padding: 11px 20px;
+      font-size: 0.82rem;
+    }
+
+    .signup-footer p {
+      font-size: 0.82rem;
+    }
+
+    .terms-check .terms-text {
+      font-size: 0.78rem;
+    }
+
+    .info-box {
+      padding: 10px 12px;
+    }
+
+    .info-box .info-text {
+      font-size: 0.78rem;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .signup-container {
     background: var(--white, #1E293B);
     border-color: rgba(255, 255, 255, 0.04);
-}
+  }
 
-[data-theme="dark"] .auth-header h2 {
+  [data-theme="dark"] .signup-container::before {
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+  }
+
+  [data-theme="dark"] .signup-header h2 {
     color: var(--white, #FFFFFF);
-}
+  }
 
-[data-theme="dark"] .auth-header p {
-    color: var(--text-muted, #94A3B8);
-}
+  [data-theme="dark"] .signup-header .icon-wrapper {
+    background: rgba(37, 99, 235, 0.12);
+  }
 
-[data-theme="dark"] .form-control {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
+  [data-theme="dark"] .form-group label {
     color: var(--white, #FFFFFF);
-}
+  }
 
-[data-theme="dark"] .form-control:focus {
+  [data-theme="dark"] .form-group .input-wrapper input {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper input:focus {
+    border-color: var(--cyan, #22D3EE);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper input::placeholder {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper .toggle-password {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .form-group .input-wrapper .toggle-password:hover {
+    color: var(--white, #FFFFFF);
     background: rgba(255, 255, 255, 0.04);
-    border-color: var(--blue);
-}
+  }
 
-[data-theme="dark"] .checkbox-card {
+  [data-theme="dark"] .password-strength .strength-bar {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  [data-theme="dark"] .password-strength .strength-text {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .signup-footer {
+    border-top-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .signup-footer p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .signup-footer p a {
+    color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .signup-footer p a:hover {
+    color: var(--blue, #2563EB);
+  }
+
+  [data-theme="dark"] .signup-page::before {
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+  }
+
+  [data-theme="dark"] .signup-page::after {
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
+  }
+
+  [data-theme="dark"] .btn-submit {
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.12);
+  }
+
+  [data-theme="dark"] .btn-submit:hover {
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.2);
+  }
+
+  [data-theme="dark"] .checkbox-card {
     background: rgba(255, 255, 255, 0.02);
     border-color: rgba(255, 255, 255, 0.04);
-}
+  }
 
-[data-theme="dark"] .checkbox-card:hover {
+  [data-theme="dark"] .checkbox-card:hover {
     background: rgba(37, 99, 235, 0.06);
-    border-color: var(--blue);
-}
+    border-color: var(--cyan, #22D3EE);
+  }
 
-[data-theme="dark"] .checkbox-label {
-    color: var(--white, #FFFFFF);
-}
+  [data-theme="dark"] .checkbox-card .checkbox-label {
+    color: var(--text-muted, #64748B);
+  }
 
-[data-theme="dark"] .auth-footer {
-    border-color: rgba(255, 255, 255, 0.04);
-}
+  [data-theme="dark"] .checkbox-card.selected {
+    border-color: var(--cyan, #22D3EE);
+    background: rgba(37, 99, 235, 0.06);
+  }
 
-[data-theme="dark"] .auth-footer p {
-    color: var(--text-muted, #94A3B8);
-}
+  [data-theme="dark"] .checkbox-card.selected .checkbox-label {
+    color: var(--cyan, #22D3EE);
+  }
 
-[data-theme="dark"] .auth-form label {
-    color: var(--white, #FFFFFF);
-}
+  [data-theme="dark"] .checkbox-card.selected .checkbox-code {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--cyan, #22D3EE);
+  }
 
-[data-theme="dark"] .btn-primary {
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
-}
+  [data-theme="dark"] .terms-check .terms-text {
+    color: var(--text-muted, #64748B);
+  }
 
-[data-theme="dark"] .btn-primary:hover {
-    box-shadow: 0 8px 28px rgba(37, 99, 235, 0.25);
-}
+  [data-theme="dark"] .terms-check .terms-text a {
+    color: var(--cyan, #22D3EE);
+  }
 
-[data-theme="dark"] .auth-page {
-    background: var(--bg, #0F172A);
-}
+  [data-theme="dark"] .terms-check .terms-text a:hover {
+    color: var(--blue, #2563EB);
+  }
+
+  [data-theme="dark"] .signup-header p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .no-courses {
+    color: var(--text-muted, #64748B);
+  }
 </style>
-{% endblock %}
 
-{% block content %}
-<div class="auth-page">
-    <div class="auth-container">
-        <div class="auth-header">
-            <div class="auth-icon">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h2>Create Account</h2>
-            <p>Join Awwalu Devs and start learning today</p>
-        </div>
-        
-        <form method="POST" class="auth-form">
-            <div class="form-group">
-                <label for="username">
-                    <i class="fas fa-user"></i> Username
-                </label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    name="username" 
-                    class="form-control" 
-                    placeholder="Choose a unique username" 
-                    required
-                    autocomplete="username"
-                >
-            </div>
-            
-            <div class="form-group">
-                <label for="email">
-                    <i class="fas fa-envelope"></i> Email Address
-                </label>
-                <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    class="form-control" 
-                    placeholder="Enter your email address" 
-                    required
-                    autocomplete="email"
-                >
-            </div>
-            
-            <div class="form-group">
-                <label for="password">
-                    <i class="fas fa-lock"></i> Password
-                </label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    class="form-control" 
-                    placeholder="Create a password (min 6 characters)" 
-                    required
-                    autocomplete="new-password"
-                    minlength="6"
-                >
-            </div>
-            
-            <div class="form-group">
-                <label for="confirm_password">
-                    <i class="fas fa-check-circle"></i> Confirm Password
-                </label>
-                <input 
-                    type="password" 
-                    id="confirm_password" 
-                    name="confirm_password" 
-                    class="form-control" 
-                    placeholder="Confirm your password" 
-                    required
-                    autocomplete="new-password"
-                    minlength="6"
-                >
-            </div>
-            
-            <div class="form-group">
-                <label>
-                    <i class="fas fa-book"></i> Select Courses
-                    <span style="font-weight: 400; font-size: 0.75rem; color: var(--text-muted);">
-                        (Select at least one)
-                    </span>
-                </label>
-                <div class="courses-checkbox-grid">
-                    {% for course in courses %}
-                        <label class="checkbox-card">
-                            <input type="checkbox" name="courses" value="{{ course.id }}">
-                            <span class="checkbox-label">{{ course.name }}</span>
-                            <span class="checkbox-code">{{ course.code }}</span>
-                        </label>
-                    {% else %}
-                        <div class="no-courses">
-                            <i class="fas fa-info-circle"></i> No courses available yet. Please check back later.
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <button type="submit" class="btn btn-primary btn-block">
-                <i class="fas fa-user-plus"></i> Create Account
-            </button>
-        </form>
-        
-        <div class="auth-footer">
-            <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
-        </div>
+<div class="signup-page">
+  <div class="signup-container">
+    <!-- Header -->
+    <div class="signup-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <h2>Create <span>Account</span></h2>
+      <p>Join Awwalu Devs and start learning today</p>
     </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
+    <!-- Info Box - New -->
+    <div class="info-box">
+      <i class="fas fa-info-circle"></i>
+      <div class="info-text">
+        <strong>Welcome to Awwalu Devs!</strong> Create your account to access courses, 
+        take quizzes, and track your learning progress. All fields marked with <strong>*</strong> are required.
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" class="signup-form" id="signupForm" novalidate>
+      <!-- Full Name - New -->
+      <div class="name-row">
+        <div class="form-group">
+          <label for="first_name">
+            <i class="fas fa-user"></i> First Name
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="first_name" 
+              name="first_name" 
+              class="form-control" 
+              placeholder="First name" 
+              required
+              autocomplete="given-name"
+            >
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="last_name">
+            <i class="fas fa-user"></i> Last Name
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="last_name" 
+              name="last_name" 
+              class="form-control" 
+              placeholder="Last name" 
+              required
+              autocomplete="family-name"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username">
+          <i class="fas fa-user-tag"></i> Username
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            class="form-control" 
+            placeholder="Choose a unique username" 
+            required
+            autofocus
+            minlength="3"
+            maxlength="30"
+            autocomplete="username"
+          >
+        </div>
+        <div class="error-message" id="usernameError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Please enter a valid username (min 3 characters)
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">
+          <i class="fas fa-envelope"></i> Email Address
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-control" 
+            placeholder="Enter your email address" 
+            required
+            autocomplete="email"
+          >
+        </div>
+        <div class="error-message" id="emailError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Please enter a valid email address
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">
+          <i class="fas fa-lock"></i> Password
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="form-control" 
+            placeholder="Create a password (min 6 characters)" 
+            required
+            minlength="6"
+            autocomplete="new-password"
+          >
+          <button type="button" class="toggle-password" onclick="togglePassword('password')" aria-label="Toggle password visibility">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="password-strength" id="strengthIndicator" style="display: none;">
+          <div class="strength-bar">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <span class="strength-text" id="strengthText">Weak</span>
+        </div>
+        <div class="error-message" id="passwordError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Password must be at least 6 characters
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label for="confirm_password">
+          <i class="fas fa-check-circle"></i> Confirm Password
+          <span class="required">*</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            type="password" 
+            id="confirm_password" 
+            name="confirm_password" 
+            class="form-control" 
+            placeholder="Confirm your password" 
+            required
+            autocomplete="new-password"
+          >
+          <button type="button" class="toggle-password" onclick="togglePassword('confirm_password')" aria-label="Toggle password visibility">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="error-message" id="confirmError" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Passwords do not match
+        </div>
+      </div>
+
+      <!-- Select Courses -->
+      <div class="form-group">
+        <label>
+          <i class="fas fa-book"></i> Select Courses
+          <span class="required">*</span>
+          <span class="optional">(Select at least one)</span>
+        </label>
+        <div class="courses-checkbox-grid" id="courseGrid">
+          {% for course in courses %}
+            <label class="checkbox-card">
+              <input type="checkbox" name="courses" value="{{ course.id }}">
+              <span class="checkbox-label">{{ course.name }}</span>
+              <span class="checkbox-code">{{ course.code }}</span>
+            </label>
+          {% else %}
+            <div class="no-courses">
+              <i class="fas fa-info-circle"></i> No courses available yet. Please check back later.
+            </div>
+          {% endfor %}
+        </div>
+        <div id="courseError" style="display: none;" class="course-error-msg">
+          <i class="fas fa-exclamation-circle"></i> Please select at least one course
+        </div>
+      </div>
+
+      <!-- Terms - New -->
+      <div class="terms-check">
+        <input type="checkbox" id="terms" name="terms" required>
+        <label for="terms" class="terms-text">
+          I agree to the <a href="#" target="_blank">Terms of Service</a> and 
+          <a href="#" target="_blank">Privacy Policy</a>. I understand that my account 
+          will be reviewed and approved by an administrator.
+        </label>
+      </div>
+      <div class="error-message" id="termsError" style="display: none;">
+        <i class="fas fa-exclamation-circle"></i> You must agree to the terms to continue
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="btn-text"><i class="fas fa-user-plus"></i> Create Account</span>
+        <span class="spinner"></span>
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="signup-footer">
+      <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+  </div>
+</div>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Password matching validation
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('signupForm');
+    const firstName = document.getElementById('first_name');
+    const lastName = document.getElementById('last_name');
+    const username = document.getElementById('username');
+    const email = document.getElementById('email');
     const password = document.getElementById('password');
     const confirmPassword = document.getElementById('confirm_password');
-    
-    confirmPassword.addEventListener('input', function() {
-        if (this.value.length > 0 && this.value !== password.value) {
-            this.style.borderColor = '#EF4444';
-            this.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.06)';
-        } else if (this.value.length > 0 && this.value === password.value) {
-            this.style.borderColor = '#059669';
-            this.style.boxShadow = '0 0 0 4px rgba(5, 150, 105, 0.06)';
+    const terms = document.getElementById('terms');
+    const usernameError = document.getElementById('usernameError');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    const confirmError = document.getElementById('confirmError');
+    const termsError = document.getElementById('termsError');
+    const courseError = document.getElementById('courseError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Password strength checker
+    const strengthIndicator = document.getElementById('strengthIndicator');
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthText = document.getElementById('strengthText');
+
+    // Toggle password visibility
+    window.togglePassword = function(inputId) {
+      const input = document.getElementById(inputId);
+      const btn = input.parentElement.querySelector('.toggle-password');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+      } else {
+        input.type = 'password';
+        btn.innerHTML = '<i class="fas fa-eye"></i>';
+      }
+    };
+
+    // Password strength
+    if (password) {
+      password.addEventListener('input', function() {
+        const val = this.value;
+        if (val.length === 0) {
+          strengthIndicator.style.display = 'none';
+          return;
+        }
+
+        strengthIndicator.style.display = 'flex';
+
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (val.match(/[a-z]/)) score++;
+        if (val.match(/[A-Z]/)) score++;
+        if (val.match(/[0-9]/)) score++;
+        if (val.match(/[^a-zA-Z0-9]/)) score++;
+
+        const strengths = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+        const colors = ['#EF4444', '#F59E0B', '#F59E0B', '#059669', '#059669'];
+        const widths = ['20%', '40%', '60%', '80%', '100%'];
+
+        const index = Math.min(score, strengths.length - 1);
+        strengthFill.style.width = widths[index];
+        strengthFill.style.background = colors[index];
+        strengthText.textContent = strengths[index];
+        strengthText.style.color = colors[index];
+      });
+    }
+
+    // Confirm password validation
+    if (confirmPassword) {
+      confirmPassword.addEventListener('input', function() {
+        const pass = password.value;
+        const confirm = this.value;
+        if (confirm.length > 0 && pass !== confirm) {
+          this.classList.add('error');
+          confirmError.style.display = 'flex';
         } else {
-            this.style.borderColor = '';
-            this.style.boxShadow = '';
+          this.classList.remove('error');
+          confirmError.style.display = 'none';
         }
+      });
+    }
+
+    // Course checkbox selection styling
+    document.querySelectorAll('.checkbox-card input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const card = this.closest('.checkbox-card');
+        if (this.checked) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+        // Hide course error when any is selected
+        if (document.querySelectorAll('input[name="courses"]:checked').length > 0) {
+          courseError.style.display = 'none';
+        }
+      });
     });
-    
+
+    // Remove error on input
+    firstName.addEventListener('input', function() { this.classList.remove('error'); });
+    lastName.addEventListener('input', function() { this.classList.remove('error'); });
+    username.addEventListener('input', function() {
+      this.classList.remove('error');
+      usernameError.style.display = 'none';
+    });
+    email.addEventListener('input', function() {
+      this.classList.remove('error');
+      emailError.style.display = 'none';
+    });
     password.addEventListener('input', function() {
-        if (confirmPassword.value.length > 0 && this.value !== confirmPassword.value) {
-            confirmPassword.style.borderColor = '#EF4444';
-            confirmPassword.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.06)';
-        } else if (confirmPassword.value.length > 0 && this.value === confirmPassword.value) {
-            confirmPassword.style.borderColor = '#059669';
-            confirmPassword.style.boxShadow = '0 0 0 4px rgba(5, 150, 105, 0.06)';
-        }
+      this.classList.remove('error');
+      passwordError.style.display = 'none';
     });
-    
-    // Course selection - at least one required
-    const form = document.querySelector('.auth-form');
+    terms.addEventListener('change', function() {
+      termsError.style.display = 'none';
+    });
+
+    // Form validation
     form.addEventListener('submit', function(e) {
-        const checked = document.querySelectorAll('input[name="courses"]:checked');
-        if (checked.length === 0) {
-            e.preventDefault();
-            const courseSection = document.querySelector('.courses-checkbox-grid');
-            courseSection.style.border = '2px solid #EF4444';
-            courseSection.style.borderRadius = '8px';
-            courseSection.style.padding = '4px';
-            
-            // Show message
-            let msg = document.querySelector('.course-error-msg');
-            if (!msg) {
-                msg = document.createElement('p');
-                msg.className = 'course-error-msg';
-                msg.style.color = '#EF4444';
-                msg.style.fontSize = '0.8rem';
-                msg.style.marginTop = '6px';
-                msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please select at least one course';
-                courseSection.parentNode.appendChild(msg);
-            }
-            
-            setTimeout(() => {
-                courseSection.style.border = '';
-                courseSection.style.padding = '';
-                if (msg) msg.remove();
-            }, 3000);
+      let isValid = true;
+
+      // Validate first name
+      if (!firstName.value.trim()) {
+        firstName.classList.add('error');
+        isValid = false;
+      }
+
+      // Validate last name
+      if (!lastName.value.trim()) {
+        lastName.classList.add('error');
+        isValid = false;
+      }
+
+      // Validate username
+      if (!username.value.trim() || username.value.trim().length < 3) {
+        username.classList.add('error');
+        usernameError.style.display = 'flex';
+        isValid = false;
+      }
+
+      // Validate email
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email.value.trim() || !emailPattern.test(email.value.trim())) {
+        email.classList.add('error');
+        emailError.style.display = 'flex';
+        isValid = false;
+      }
+
+      // Validate password
+      if (!password.value || password.value.length < 6) {
+        password.classList.add('error');
+        passwordError.style.display = 'flex';
+        isValid = false;
+      }
+
+      // Validate confirm password
+      if (password.value !== confirmPassword.value) {
+        confirmPassword.classList.add('error');
+        confirmError.style.display = 'flex';
+        isValid = false;
+      }
+
+      // Validate courses
+      const checkedCourses = document.querySelectorAll('input[name="courses"]:checked');
+      if (checkedCourses.length === 0) {
+        courseError.style.display = 'flex';
+        isValid = false;
+      } else {
+        courseError.style.display = 'none';
+      }
+
+      // Validate terms
+      if (!terms.checked) {
+        termsError.style.display = 'flex';
+        isValid = false;
+      } else {
+        termsError.style.display = 'none';
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        // Focus first error
+        if (firstName.classList.contains('error')) {
+          firstName.focus();
+        } else if (lastName.classList.contains('error')) {
+          lastName.focus();
+        } else if (username.classList.contains('error')) {
+          username.focus();
+        } else if (email.classList.contains('error')) {
+          email.focus();
+        } else if (password.classList.contains('error')) {
+          password.focus();
+        } else if (confirmPassword.classList.contains('error')) {
+          confirmPassword.focus();
         }
+        return;
+      }
+
+      // Show loading state
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
     });
-});
+
+    // Enter key support for toggle buttons
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.setAttribute('role', 'button');
+      btn.setAttribute('tabindex', '0');
+      btn.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.click();
+        }
+      });
+    });
+  });
 </script>
 {% endblock %}
