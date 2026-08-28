@@ -5,21 +5,30 @@
 {% block content %}
 <style>
   /* ============================================
-     CREATE QUIZ - Premium Theme
+     CREATE QUIZ - Premium Theme with Preview
      ============================================ */
   .create-quiz-page {
-    max-width: 820px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0;
   }
 
-  /* Container */
+  .quiz-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* ==========================================
+     FORM CONTAINER
+     ========================================== */
   .quiz-container {
     background: var(--white, #FFFFFF);
     border-radius: var(--radius, 16px);
     border: 1px solid rgba(15, 23, 42, 0.04);
     box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
-    padding: 40px 40px 36px;
+    padding: 32px 32px 28px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -42,22 +51,230 @@
     box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
   }
 
-  /* Header */
+  /* ==========================================
+     PREVIEW CONTAINER
+     ========================================== */
+  .preview-container {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 32px 32px 28px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #22D3EE, #2563EB);
+    opacity: 0.6;
+  }
+
+  .preview-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  .preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    flex-shrink: 0;
+  }
+
+  .preview-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .preview-header h3 i {
+    color: #7C3AED;
+    font-size: 0.9rem;
+  }
+
+  .preview-header .preview-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    background: var(--bg, #F8FAFC);
+    padding: 2px 12px;
+    border-radius: 100px;
+  }
+
+  .preview-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .preview-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .preview-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .preview-body::-webkit-scrollbar-thumb {
+    background: #7C3AED;
+    border-radius: 10px;
+  }
+
+  /* ==========================================
+     PREVIEW QUESTION CARDS
+     ========================================== */
+  .preview-question {
+    background: var(--bg, #F8FAFC);
+    border-radius: var(--radius-sm, 10px);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .preview-question:hover {
+    border-color: rgba(124, 58, 237, 0.06);
+  }
+
+  .preview-question .pq-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+
+  .preview-question .pq-number {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #7C3AED;
+    background: rgba(124, 58, 237, 0.08);
+    padding: 1px 10px;
+    border-radius: 100px;
+  }
+
+  .preview-question .pq-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    margin: 0 0 8px;
+    line-height: 1.4;
+  }
+
+  .preview-question .pq-text.empty {
+    color: var(--text-muted, #94A3B8);
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .preview-question .pq-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+  }
+
+  .preview-question .pq-option {
+    font-size: 0.78rem;
+    color: var(--text-light, #64748B);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+  }
+
+  .preview-question .pq-option .pq-letter {
+    font-weight: 700;
+    color: var(--text-muted, #94A3B8);
+    min-width: 18px;
+    font-size: 0.7rem;
+  }
+
+  .preview-question .pq-option .pq-value {
+    color: var(--text, #1E293B);
+  }
+
+  .preview-question .pq-option .pq-value.empty {
+    color: var(--text-muted, #94A3B8);
+    font-style: italic;
+  }
+
+  .preview-question .pq-correct {
+    margin-top: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #059669;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(5, 150, 105, 0.06);
+    padding: 1px 10px;
+    border-radius: 100px;
+  }
+
+  .preview-question .pq-correct .pq-answer {
+    font-weight: 700;
+    color: #059669;
+  }
+
+  .preview-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted, #94A3B8);
+  }
+
+  .preview-empty i {
+    font-size: 2.5rem;
+    opacity: 0.2;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .preview-empty h4 {
+    font-size: 1rem;
+    color: var(--text, #1E293B);
+    margin: 0 0 4px;
+  }
+
+  .preview-empty p {
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  /* ==========================================
+     HEADER STYLES
+     ========================================== */
   .quiz-header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
   }
 
   .quiz-header .icon-wrapper {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 16px;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 14px;
     border-radius: 50%;
     background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(236, 72, 153, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     color: #7C3AED;
     transition: var(--transition, 0.3s ease);
   }
@@ -68,11 +285,11 @@
   }
 
   .quiz-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--navy, #0F172A);
     letter-spacing: -0.02em;
-    margin: 0 0 6px;
+    margin: 0 0 4px;
   }
 
   .quiz-header h2 span {
@@ -83,26 +300,28 @@
   }
 
   .quiz-header p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-light, #64748B);
     margin: 0;
   }
 
-  /* Form */
+  /* ==========================================
+     FORM STYLES
+     ========================================== */
   .quiz-form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
   }
 
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
   }
 
   .form-group label {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--text, #1E293B);
     display: flex;
@@ -112,30 +331,30 @@
 
   .form-group label i {
     color: #7C3AED;
-    font-size: 0.85rem;
-    width: 18px;
+    font-size: 0.8rem;
+    width: 16px;
     text-align: center;
   }
 
   .form-group label .required {
     color: #EF4444;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
   }
 
   .form-group label .optional {
     font-weight: 400;
     color: var(--text-muted, #94A3B8);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
   }
 
   .form-control {
     width: 100%;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: var(--radius-sm, 10px);
     border: 1.5px solid rgba(15, 23, 42, 0.06);
     background: var(--bg, #F8FAFC);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-family: 'Inter', sans-serif;
     color: var(--text, #1E293B);
     transition: var(--transition, 0.3s ease);
@@ -151,13 +370,13 @@
 
   .form-control::placeholder {
     color: var(--text-muted, #94A3B8);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
   }
 
   textarea.form-control {
     resize: vertical;
-    min-height: 60px;
-    line-height: 1.7;
+    min-height: 50px;
+    line-height: 1.6;
     font-family: 'Inter', sans-serif;
   }
 
@@ -183,36 +402,40 @@
     margin: 0;
   }
 
-  /* Divider */
   .form-divider {
     border: none;
     border-top: 1px solid rgba(15, 23, 42, 0.06);
-    margin: 4px 0 8px;
+    margin: 2px 0 6px;
   }
 
-  /* Questions Section */
+  /* ==========================================
+     QUESTIONS SECTION
+     ========================================== */
   .questions-section {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
   }
 
   .questions-section .section-label {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
 
   .questions-section .section-label h3 {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--navy, #0F172A);
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .questions-section .section-label .question-count {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: var(--text-muted, #94A3B8);
     background: var(--bg, #F8FAFC);
@@ -223,8 +446,8 @@
   #questionsContainer {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    max-height: 600px;
+    gap: 14px;
+    max-height: 400px;
     overflow-y: auto;
     padding-right: 4px;
   }
@@ -242,11 +465,13 @@
     border-radius: 10px;
   }
 
-  /* Question Group */
+  /* ==========================================
+     QUESTION GROUP
+     ========================================== */
   .question-group {
     background: var(--bg, #F8FAFC);
     border-radius: var(--radius-sm, 10px);
-    padding: 20px 22px 18px;
+    padding: 16px 18px 14px;
     border: 1px solid rgba(15, 23, 42, 0.04);
     transition: var(--transition, 0.3s ease);
     position: relative;
@@ -260,11 +485,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .question-group .question-header h4 {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #7C3AED;
     margin: 0;
@@ -277,12 +502,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: linear-gradient(135deg, #7C3AED, #EC4899);
     color: white;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     font-weight: 700;
   }
 
@@ -294,7 +519,7 @@
     padding: 4px 8px;
     border-radius: 6px;
     transition: var(--transition, 0.3s ease);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .question-group .question-header .remove-btn:hover {
@@ -303,25 +528,25 @@
   }
 
   .question-group .form-group {
-    gap: 4px;
+    gap: 3px;
   }
 
   .question-group .form-group label {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     font-weight: 500;
     color: var(--text-light, #64748B);
   }
 
   .question-group .form-group label i {
     color: #7C3AED;
-    font-size: 0.75rem;
-    width: 16px;
+    font-size: 0.7rem;
+    width: 14px;
     text-align: center;
   }
 
   .question-group .form-control {
-    padding: 10px 14px;
-    font-size: 0.85rem;
+    padding: 8px 12px;
+    font-size: 0.82rem;
     background: var(--white, #FFFFFF);
   }
 
@@ -330,20 +555,22 @@
     box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.06);
   }
 
-  /* Options Grid */
+  /* ==========================================
+     OPTIONS GRID
+     ========================================== */
   .options-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
     margin: 2px 0;
   }
 
   .options-grid .form-group {
-    gap: 4px;
+    gap: 3px;
   }
 
   .options-grid .form-group label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: var(--text-muted, #94A3B8);
     text-transform: uppercase;
@@ -352,27 +579,29 @@
 
   .options-grid .form-group label .letter {
     display: inline-block;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
     text-align: center;
     border-radius: 50%;
     background: rgba(124, 58, 237, 0.08);
     color: #7C3AED;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
   }
 
-  /* Buttons */
+  /* ==========================================
+     BUTTONS
+     ========================================== */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 9px 18px;
     border-radius: 60px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
     border: none;
@@ -412,10 +641,10 @@
   }
 
   .btn-add-question {
-    padding: 10px 24px;
+    padding: 9px 20px;
     border-radius: 60px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     background: transparent;
     color: #7C3AED;
     border: 1.5px dashed rgba(124, 58, 237, 0.2);
@@ -435,7 +664,9 @@
     transform: translateY(-2px);
   }
 
-  /* Animations */
+  /* ==========================================
+     ANIMATIONS
+     ========================================== */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -462,73 +693,43 @@
     animation: fadeIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* Responsive */
+  /* ==========================================
+     RESPONSIVE
+     ========================================== */
+  @media (max-width: 1024px) {
+    .quiz-layout {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .preview-container {
+      position: static;
+      max-height: 500px;
+    }
+  }
+
   @media (max-width: 768px) {
     .quiz-container {
-      padding: 28px 20px 24px;
+      padding: 24px 16px 20px;
+    }
+
+    .preview-container {
+      padding: 24px 16px 20px;
+      max-height: 400px;
     }
 
     .quiz-header .icon-wrapper {
-      width: 56px;
-      height: 56px;
-      font-size: 1.5rem;
+      width: 52px;
+      height: 52px;
+      font-size: 1.3rem;
     }
 
     .quiz-header h2 {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
     }
 
     .options-grid {
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .question-group {
-      padding: 16px 14px 14px;
-    }
-
-    .form-control {
-      padding: 10px 14px;
-      font-size: 0.85rem;
-    }
-
-    .btn {
-      font-size: 0.82rem;
-      padding: 9px 16px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .quiz-container {
-      padding: 20px 14px 18px;
-      border-radius: var(--radius-sm, 10px);
-    }
-
-    .quiz-header .icon-wrapper {
-      width: 48px;
-      height: 48px;
-      font-size: 1.3rem;
-    }
-
-    .quiz-header h2 {
-      font-size: 1.1rem;
-    }
-
-    .quiz-header p {
-      font-size: 0.82rem;
-    }
-
-    .form-group label {
-      font-size: 0.78rem;
-    }
-
-    .form-control {
-      padding: 9px 12px;
-      font-size: 0.82rem;
-    }
-
-    .options-grid {
-      grid-template-columns: 1fr;
       gap: 6px;
     }
 
@@ -536,14 +737,9 @@
       padding: 14px 12px 12px;
     }
 
-    .question-group .question-header h4 {
+    .form-control {
+      padding: 8px 12px;
       font-size: 0.82rem;
-    }
-
-    .question-group .question-header .q-number {
-      width: 20px;
-      height: 20px;
-      font-size: 0.6rem;
     }
 
     .btn {
@@ -551,24 +747,113 @@
       padding: 8px 14px;
     }
 
-    .btn-add-question {
-      font-size: 0.8rem;
-      padding: 8px 16px;
+    .preview-question .pq-options {
+      grid-template-columns: 1fr;
+      gap: 2px;
     }
 
     #questionsContainer {
-      max-height: 400px;
+      max-height: 300px;
     }
   }
 
-  /* Dark Mode */
+  @media (max-width: 480px) {
+    .quiz-container {
+      padding: 18px 12px 16px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .preview-container {
+      padding: 18px 12px 16px;
+      border-radius: var(--radius-sm, 10px);
+      max-height: 350px;
+    }
+
+    .quiz-header .icon-wrapper {
+      width: 44px;
+      height: 44px;
+      font-size: 1.1rem;
+    }
+
+    .quiz-header h2 {
+      font-size: 1rem;
+    }
+
+    .quiz-header p {
+      font-size: 0.78rem;
+    }
+
+    .form-group label {
+      font-size: 0.75rem;
+    }
+
+    .form-control {
+      padding: 7px 10px;
+      font-size: 0.78rem;
+    }
+
+    .options-grid {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+    .question-group {
+      padding: 12px 10px 10px;
+    }
+
+    .question-group .question-header h4 {
+      font-size: 0.78rem;
+    }
+
+    .question-group .question-header .q-number {
+      width: 18px;
+      height: 18px;
+      font-size: 0.55rem;
+    }
+
+    .btn {
+      font-size: 0.75rem;
+      padding: 7px 12px;
+    }
+
+    .btn-add-question {
+      font-size: 0.75rem;
+      padding: 7px 14px;
+    }
+
+    .preview-question {
+      padding: 12px 14px;
+    }
+
+    .preview-question .pq-text {
+      font-size: 0.8rem;
+    }
+
+    .preview-question .pq-option {
+      font-size: 0.72rem;
+    }
+
+    #questionsContainer {
+      max-height: 250px;
+    }
+  }
+
+  /* ==========================================
+     DARK MODE
+     ========================================== */
   [data-theme="dark"] .quiz-container {
     background: var(--white, #1E293B);
     border-color: rgba(255, 255, 255, 0.04);
   }
 
-  [data-theme="dark"] .quiz-container::before {
-    background: linear-gradient(90deg, #7C3AED, #EC4899);
+  [data-theme="dark"] .preview-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .quiz-container::before,
+  [data-theme="dark"] .preview-container::before {
+    opacity: 0.8;
   }
 
   [data-theme="dark"] .quiz-header h2 {
@@ -635,10 +920,6 @@
     border-color: #7C3AED;
   }
 
-  [data-theme="dark"] .btn-outline i {
-    color: #7C3AED;
-  }
-
   [data-theme="dark"] .btn-add-question {
     color: #7C3AED;
     border-color: rgba(124, 58, 237, 0.15);
@@ -666,131 +947,186 @@
     background: rgba(124, 58, 237, 0.12);
   }
 
-  [data-theme="dark"] #questionsContainer::-webkit-scrollbar-thumb {
+  [data-theme="dark"] .preview-header h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .preview-header .preview-badge {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .preview-question {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .preview-question:hover {
+    border-color: rgba(124, 58, 237, 0.1);
+  }
+
+  [data-theme="dark"] .preview-question .pq-text {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .preview-question .pq-text.empty {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .preview-question .pq-option .pq-value {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .preview-question .pq-option .pq-value.empty {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .preview-empty h4 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] #questionsContainer::-webkit-scrollbar-thumb,
+  [data-theme="dark"] .preview-body::-webkit-scrollbar-thumb {
     background: #7C3AED;
   }
 </style>
 
 <div class="create-quiz-page">
-  <div class="quiz-container">
-    <!-- Header -->
-    <div class="quiz-header">
-      <div class="icon-wrapper">
-        <i class="fas fa-plus-circle"></i>
-      </div>
-      <h2>Create <span>Quiz</span></h2>
-      <p>Add a new quiz with multiple questions</p>
-    </div>
-
-    <!-- Form -->
-    <form method="POST" id="quizForm" class="quiz-form" novalidate>
-      <!-- Quiz Title -->
-      <div class="form-group">
-        <label for="title">
-          <i class="fas fa-heading"></i> Quiz Title
-          <span class="required">*</span>
-        </label>
-        <input type="text" id="title" name="title" class="form-control" placeholder="Enter quiz title" required autofocus>
+  <div class="quiz-layout">
+    <!-- LEFT: Form -->
+    <div class="quiz-container">
+      <div class="quiz-header">
+        <div class="icon-wrapper">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <h2>Create <span>Quiz</span></h2>
+        <p>Add a new quiz with multiple questions</p>
       </div>
 
-      <!-- Description -->
-      <div class="form-group">
-        <label for="description">
-          <i class="fas fa-align-left"></i> Description
-          <span class="optional">(Optional)</span>
-        </label>
-        <textarea id="description" name="description" class="form-control" rows="2" placeholder="Enter quiz description"></textarea>
-      </div>
-
-      <!-- Course -->
-      <div class="form-group">
-        <label for="course_id">
-          <i class="fas fa-book"></i> Course
-          <span class="required">*</span>
-        </label>
-        <select id="course_id" name="course_id" class="form-control" required>
-          <option value="">Select a course</option>
-          {% for course in courses %}
-            <option value="{{ course.id }}">{{ course.name }} ({{ course.code }})</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <!-- Time Limit -->
-      <div class="form-group">
-        <label for="time_limit">
-          <i class="fas fa-clock"></i> Time Limit
-          <span class="optional">(0 = no limit)</span>
-        </label>
-        <input type="number" id="time_limit" name="time_limit" class="form-control" value="0" min="0">
-      </div>
-
-      <hr class="form-divider">
-
-      <!-- Questions -->
-      <div class="questions-section">
-        <div class="section-label">
-          <h3><i class="fas fa-question-circle" style="color:#7C3AED;margin-right:6px;"></i>Questions</h3>
-          <span class="question-count" id="questionCount">0</span>
+      <form method="POST" id="quizForm" class="quiz-form" novalidate>
+        <!-- Quiz Title -->
+        <div class="form-group">
+          <label for="title">
+            <i class="fas fa-heading"></i> Quiz Title
+            <span class="required">*</span>
+          </label>
+          <input type="text" id="title" name="title" class="form-control" placeholder="Enter quiz title" required autofocus oninput="updatePreview()">
         </div>
 
-        <div id="questionsContainer">
-          <!-- Question 1 (pre-filled) -->
-          <div class="question-group" data-index="0">
-            <div class="question-header">
-              <h4>
-                <span class="q-number">1</span> Question 1
-              </h4>
-            </div>
-            <div class="form-group">
-              <label><i class="fas fa-question-circle"></i> Question Text</label>
-              <input type="text" name="question_text" class="form-control" placeholder="Enter question" required>
-            </div>
-            <div class="options-grid">
-              <div class="form-group">
-                <label><span class="letter">A</span> Option A</label>
-                <input type="text" name="option_a" class="form-control" placeholder="Option A" required>
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description">
+            <i class="fas fa-align-left"></i> Description
+            <span class="optional">(Optional)</span>
+          </label>
+          <textarea id="description" name="description" class="form-control" rows="2" placeholder="Enter quiz description" oninput="updatePreview()"></textarea>
+        </div>
+
+        <!-- Course -->
+        <div class="form-group">
+          <label for="course_id">
+            <i class="fas fa-book"></i> Course
+            <span class="required">*</span>
+          </label>
+          <select id="course_id" name="course_id" class="form-control" required>
+            <option value="">Select a course</option>
+            {% for course in courses %}
+              <option value="{{ course.id }}">{{ course.name }} ({{ course.code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Time Limit -->
+        <div class="form-group">
+          <label for="time_limit">
+            <i class="fas fa-clock"></i> Time Limit
+            <span class="optional">(0 = no limit)</span>
+          </label>
+          <input type="number" id="time_limit" name="time_limit" class="form-control" value="0" min="0">
+        </div>
+
+        <hr class="form-divider">
+
+        <!-- Questions -->
+        <div class="questions-section">
+          <div class="section-label">
+            <h3><i class="fas fa-question-circle" style="color:#7C3AED;"></i>Questions</h3>
+            <span class="question-count" id="questionCount">0</span>
+          </div>
+
+          <div id="questionsContainer">
+            <!-- Question 1 (pre-filled) -->
+            <div class="question-group" data-index="0">
+              <div class="question-header">
+                <h4>
+                  <span class="q-number">1</span> Question 1
+                </h4>
               </div>
               <div class="form-group">
-                <label><span class="letter">B</span> Option B</label>
-                <input type="text" name="option_b" class="form-control" placeholder="Option B" required>
+                <label><i class="fas fa-question-circle"></i> Question Text</label>
+                <input type="text" name="question_text" class="form-control" placeholder="Enter question" required oninput="updatePreview()">
+              </div>
+              <div class="options-grid">
+                <div class="form-group">
+                  <label><span class="letter">A</span> Option A</label>
+                  <input type="text" name="option_a" class="form-control" placeholder="Option A" required oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                  <label><span class="letter">B</span> Option B</label>
+                  <input type="text" name="option_b" class="form-control" placeholder="Option B" required oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                  <label><span class="letter">C</span> Option C</label>
+                  <input type="text" name="option_c" class="form-control" placeholder="Option C" required oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                  <label><span class="letter">D</span> Option D</label>
+                  <input type="text" name="option_d" class="form-control" placeholder="Option D" required oninput="updatePreview()">
+                </div>
               </div>
               <div class="form-group">
-                <label><span class="letter">C</span> Option C</label>
-                <input type="text" name="option_c" class="form-control" placeholder="Option C" required>
+                <label><i class="fas fa-check-circle"></i> Correct Option</label>
+                <select name="correct_option" class="form-control" required onchange="updatePreview()">
+                  <option value="">Select correct option</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                </select>
               </div>
-              <div class="form-group">
-                <label><span class="letter">D</span> Option D</label>
-                <input type="text" name="option_d" class="form-control" placeholder="Option D" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label><i class="fas fa-check-circle"></i> Correct Option</label>
-              <select name="correct_option" class="form-control" required>
-                <option value="">Select correct option</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-              </select>
             </div>
           </div>
+
+          <button type="button" class="btn-add-question" onclick="addQuestion()">
+            <i class="fas fa-plus"></i> Add Question
+          </button>
         </div>
 
-        <button type="button" class="btn-add-question" onclick="addQuestion()">
-          <i class="fas fa-plus"></i> Add Question
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+          <i class="fas fa-save"></i> Create Quiz
         </button>
+
+        <a href="{{ url_for('manage_quizzes') }}" class="btn btn-outline btn-block">
+          <i class="fas fa-arrow-left"></i> Back to Quizzes
+        </a>
+      </form>
+    </div>
+
+    <!-- RIGHT: Preview -->
+    <div class="preview-container">
+      <div class="preview-header">
+        <h3><i class="fas fa-eye"></i> Live Preview</h3>
+        <span class="preview-badge" id="previewCount">0 questions</span>
       </div>
-
-      <!-- Submit -->
-      <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
-        <i class="fas fa-save"></i> Create Quiz
-      </button>
-
-      <a href="{{ url_for('manage_quizzes') }}" class="btn btn-outline btn-block">
-        <i class="fas fa-arrow-left"></i> Back to Quizzes
-      </a>
-    </form>
+      <div class="preview-body" id="previewBody">
+        <div class="preview-empty">
+          <i class="fas fa-question-circle"></i>
+          <h4>No questions yet</h4>
+          <p>Start adding questions to see the preview</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -806,13 +1142,13 @@
       if (qNumber) {
         qNumber.textContent = num;
       }
-      // Update the text after the number
       const textNode = header.childNodes[header.childNodes.length - 1];
       if (textNode && textNode.nodeType === 3) {
         textNode.textContent = ` Question ${num}`;
       }
     });
     document.getElementById('questionCount').textContent = groups.length;
+    updatePreview();
   }
 
   function addQuestion() {
@@ -831,29 +1167,29 @@
       </div>
       <div class="form-group">
         <label><i class="fas fa-question-circle"></i> Question Text</label>
-        <input type="text" name="question_text" class="form-control" placeholder="Enter question" required>
+        <input type="text" name="question_text" class="form-control" placeholder="Enter question" required oninput="updatePreview()">
       </div>
       <div class="options-grid">
         <div class="form-group">
           <label><span class="letter">A</span> Option A</label>
-          <input type="text" name="option_a" class="form-control" placeholder="Option A" required>
+          <input type="text" name="option_a" class="form-control" placeholder="Option A" required oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label><span class="letter">B</span> Option B</label>
-          <input type="text" name="option_b" class="form-control" placeholder="Option B" required>
+          <input type="text" name="option_b" class="form-control" placeholder="Option B" required oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label><span class="letter">C</span> Option C</label>
-          <input type="text" name="option_c" class="form-control" placeholder="Option C" required>
+          <input type="text" name="option_c" class="form-control" placeholder="Option C" required oninput="updatePreview()">
         </div>
         <div class="form-group">
           <label><span class="letter">D</span> Option D</label>
-          <input type="text" name="option_d" class="form-control" placeholder="Option D" required>
+          <input type="text" name="option_d" class="form-control" placeholder="Option D" required oninput="updatePreview()">
         </div>
       </div>
       <div class="form-group">
         <label><i class="fas fa-check-circle"></i> Correct Option</label>
-        <select name="correct_option" class="form-control" required>
+        <select name="correct_option" class="form-control" required onchange="updatePreview()">
           <option value="">Select correct option</option>
           <option value="A">A</option>
           <option value="B">B</option>
@@ -881,12 +1217,74 @@
     }
   }
 
-  // Update count on load
-  document.addEventListener('DOMContentLoaded', function() {
-    updateQuestionNumbers();
-  });
+  // ==========================================
+  // LIVE PREVIEW
+  // ==========================================
+  function updatePreview() {
+    const groups = document.querySelectorAll('#questionsContainer .question-group');
+    const previewBody = document.getElementById('previewBody');
+    const previewCount = document.getElementById('previewCount');
 
-  // Form validation
+    if (groups.length === 0) {
+      previewBody.innerHTML = `
+        <div class="preview-empty">
+          <i class="fas fa-question-circle"></i>
+          <h4>No questions yet</h4>
+          <p>Start adding questions to see the preview</p>
+        </div>
+      `;
+      previewCount.textContent = '0 questions';
+      return;
+    }
+
+    let previewHTML = '';
+    const letters = ['A', 'B', 'C', 'D'];
+
+    groups.forEach((group, index) => {
+      const num = index + 1;
+      const qText = group.querySelector('input[name="question_text"]')?.value || '';
+      const optA = group.querySelector('input[name="option_a"]')?.value || '';
+      const optB = group.querySelector('input[name="option_b"]')?.value || '';
+      const optC = group.querySelector('input[name="option_c"]')?.value || '';
+      const optD = group.querySelector('input[name="option_d"]')?.value || '';
+      const correct = group.querySelector('select[name="correct_option"]')?.value || '';
+
+      previewHTML += `
+        <div class="preview-question">
+          <div class="pq-header">
+            <span class="pq-number">Question ${num}</span>
+          </div>
+          <p class="pq-text ${qText ? '' : 'empty'}">${qText || 'No question text entered'}</p>
+          <div class="pq-options">
+            <div class="pq-option">
+              <span class="pq-letter">A.</span>
+              <span class="pq-value ${optA ? '' : 'empty'}">${optA || '—'}</span>
+            </div>
+            <div class="pq-option">
+              <span class="pq-letter">B.</span>
+              <span class="pq-value ${optB ? '' : 'empty'}">${optB || '—'}</span>
+            </div>
+            <div class="pq-option">
+              <span class="pq-letter">C.</span>
+              <span class="pq-value ${optC ? '' : 'empty'}">${optC || '—'}</span>
+            </div>
+            <div class="pq-option">
+              <span class="pq-letter">D.</span>
+              <span class="pq-value ${optD ? '' : 'empty'}">${optD || '—'}</span>
+            </div>
+          </div>
+          ${correct ? `<div class="pq-correct"><i class="fas fa-check-circle"></i> Correct: <span class="pq-answer">${correct}</span></div>` : ''}
+        </div>
+      `;
+    });
+
+    previewBody.innerHTML = previewHTML;
+    previewCount.textContent = `${groups.length} question${groups.length > 1 ? 's' : ''}`;
+  }
+
+  // ==========================================
+  // FORM VALIDATION
+  // ==========================================
   document.getElementById('quizForm').addEventListener('submit', function(e) {
     const title = document.getElementById('title').value.trim();
     const course = document.getElementById('course_id').value;
@@ -933,6 +1331,13 @@
     if (!valid) {
       e.preventDefault();
     }
+  });
+
+  // ==========================================
+  // INITIALIZE
+  // ==========================================
+  document.addEventListener('DOMContentLoaded', function() {
+    updateQuestionNumbers();
   });
 </script>
 {% endblock %}
