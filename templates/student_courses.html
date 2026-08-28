@@ -2,19 +2,227 @@
 
 {% block title %}My Courses - Awwalu Devs{% endblock %}
 
-{% block content %}
+{% block extra_css %}
 <style>
-  /* ============================================
-     MY COURSES - Premium Theme
-     ============================================ */
-  .my-courses {
+/* ============================================
+   RE-APPLY MODAL STYLES
+   ============================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-box {
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    padding: 32px 36px;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.12));
+    border: 1px solid var(--border, rgba(15, 23, 42, 0.06));
+    animation: slideUp 0.3s ease;
+}
+
+.modal-box .modal-icon {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.modal-box h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+    text-align: center;
+    margin: 0 0 8px;
+}
+
+.modal-box p {
+    color: var(--text-light, #64748B);
+    font-size: 0.95rem;
+    text-align: center;
+    margin: 0 0 6px;
+    line-height: 1.6;
+}
+
+.modal-box .rejection-reason {
+    background: rgba(239, 68, 68, 0.04);
+    border-left: 3px solid #EF4444;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 12px 0 16px;
+    font-size: 0.9rem;
+    color: var(--text, #1E293B);
+}
+
+.modal-box .rejection-reason strong {
+    color: #EF4444;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.modal-actions .btn {
+    flex: 1;
+    padding: 10px 20px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-reapply {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+}
+
+.btn-reapply:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.25);
+    color: var(--white, #FFFFFF);
+}
+
+.btn-cancel-modal {
+    background: rgba(15, 23, 42, 0.04);
+    color: var(--text, #1E293B);
+}
+
+.btn-cancel-modal:hover {
+    background: rgba(15, 23, 42, 0.08);
+    transform: translateY(-2px);
+}
+
+/* Dark Mode */
+[data-theme="dark"] .modal-box {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .modal-box h3 {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .modal-box p {
+    color: var(--text-muted, #94A3B8);
+}
+
+[data-theme="dark"] .modal-box .rejection-reason {
+    background: rgba(239, 68, 68, 0.08);
+}
+
+[data-theme="dark"] .btn-cancel-modal {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .btn-cancel-modal:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Flash Message Re-apply Button */
+.btn-reapply-flash {
+    background: linear-gradient(135deg, #2563EB, #22D3EE) !important;
+    color: white !important;
+    border: none !important;
+    padding: 4px 14px !important;
+    border-radius: 60px !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    cursor: pointer !important;
+    margin-left: 12px !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+.btn-reapply-flash:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Flash message adjustments */
+.flash-message .flash-content {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/* Course status badges */
+.course-status-badge {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.course-status-badge.approved {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+}
+
+.course-status-badge.pending {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+}
+
+.course-status-badge.rejected {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+}
+
+.course-status-badge.locked {
+    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-muted, #94A3B8);
+}
+
+/* ============================================
+   STUDENT COURSES - Premium Theme
+   ============================================ */
+.student-courses {
     max-width: 1360px;
     margin: 0 auto;
     padding: 0;
-  }
+}
 
-  /* Header */
-  .page-header {
+.page-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -23,15 +231,15 @@
     margin-bottom: 28px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
+}
 
-  .page-header-left {
+.page-header-left {
     display: flex;
     align-items: center;
     gap: 14px;
-  }
+}
 
-  .page-header-icon {
+.page-header-icon {
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm, 10px);
@@ -41,99 +249,118 @@
     justify-content: center;
     color: var(--blue, #2563EB);
     font-size: 1.3rem;
-  }
+}
 
-  .page-header h1 {
+.page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--navy, #0F172A);
     letter-spacing: -0.02em;
     margin: 0;
-  }
+}
 
-  .page-header h1 span {
+.page-header h1 span {
     background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-  }
+}
 
-  .page-header .subtitle {
+.page-header .subtitle {
     font-size: 0.85rem;
     color: var(--text-light, #64748B);
     margin: 2px 0 0;
-  }
+}
 
-  /* Stats Row - FIXED: No selectattr on methods */
-  .stats-row {
+.page-header .greeting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--blue, #2563EB);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.page-header .greeting i {
+    font-size: 0.8rem;
+}
+
+.page-header .greeting strong {
+    font-weight: 700;
+}
+
+/* Stats Row */
+.stats-row {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 14px;
     margin-bottom: 28px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
-  }
+}
 
-  .stat-mini {
+.stat-card {
     background: var(--white, #FFFFFF);
-    padding: 16px 18px;
+    padding: 18px 16px 16px;
     border-radius: var(--radius, 14px);
     border: 1px solid rgba(15, 23, 42, 0.04);
     box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    text-align: center;
     transition: var(--transition, 0.3s ease);
-  }
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+}
 
-  .stat-mini:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
-    transform: translateY(-2px);
-  }
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    opacity: 0;
+    transition: var(--transition, 0.3s ease);
+}
 
-  .stat-mini .stat-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-sm, 8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-  }
+.stat-card:hover::before {
+    opacity: 1;
+}
 
-  .stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
-  }
+.stat-card .stat-icon {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+    display: inline-block;
+}
 
-  .stat-mini .stat-icon.green {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-  }
+.stat-card:nth-child(1) .stat-icon { color: var(--blue, #2563EB); }
+.stat-card:nth-child(2) .stat-icon { color: #7C3AED; }
+.stat-card:nth-child(3) .stat-icon { color: #059669; }
+.stat-card:nth-child(4) .stat-icon { color: #F59E0B; }
 
-  .stat-mini .stat-icon.orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-  }
-
-  .stat-mini .stat-number {
-    font-size: 1.3rem;
-    font-weight: 700;
+.stat-number {
+    font-size: 1.6rem;
+    font-weight: 800;
     color: var(--navy, #0F172A);
     line-height: 1.2;
-  }
+    letter-spacing: -0.02em;
+}
 
-  .stat-mini .stat-label {
-    font-size: 0.7rem;
-    font-weight: 500;
+.stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
     color: var(--text-muted, #94A3B8);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+}
 
-  /* Tab Navigation */
-  .tab-nav {
+/* Tab Navigation */
+.tab-nav {
     display: flex;
     gap: 4px;
     background: var(--white, #FFFFFF);
@@ -144,9 +371,9 @@
     margin-bottom: 24px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
-  }
+}
 
-  .tab-btn {
+.tab-btn {
     flex: 1;
     padding: 10px 20px;
     border: none;
@@ -159,20 +386,20 @@
     transition: var(--transition, 0.3s ease);
     font-family: 'Inter', sans-serif;
     position: relative;
-  }
+}
 
-  .tab-btn:hover {
+.tab-btn:hover {
     color: var(--text, #1E293B);
     background: rgba(15, 23, 42, 0.02);
-  }
+}
 
-  .tab-btn.active {
+.tab-btn.active {
     background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     color: var(--white, #FFFFFF);
     box-shadow: 0 2px 12px rgba(37, 99, 235, 0.15);
-  }
+}
 
-  .tab-btn .tab-badge {
+.tab-btn .tab-badge {
     display: inline-block;
     padding: 0 8px;
     border-radius: 100px;
@@ -181,54 +408,54 @@
     background: rgba(255, 255, 255, 0.2);
     color: inherit;
     margin-left: 6px;
-  }
+}
 
-  .tab-btn.active .tab-badge {
+.tab-btn.active .tab-badge {
     background: rgba(255, 255, 255, 0.2);
-  }
+}
 
-  /* Tab Content */
-  .tab-content {
+/* Tab Content */
+.tab-content {
     display: none;
     opacity: 0;
     animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
+}
 
-  .tab-content.active {
+.tab-content.active {
     display: block;
-  }
+}
 
-  .tab-content .section-header {
+.tab-content .section-header {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 18px;
-  }
+}
 
-  .tab-content .section-header h2 {
+.tab-content .section-header h2 {
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--navy, #0F172A);
     margin: 0;
-  }
+}
 
-  .tab-content .section-header .section-count {
+.tab-content .section-header .section-count {
     font-size: 0.7rem;
     font-weight: 600;
     color: var(--text-muted, #94A3B8);
     background: var(--bg, #F8FAFC);
     padding: 2px 12px;
     border-radius: 100px;
-  }
+}
 
-  /* Course Grid */
-  .course-grid {
+/* Course Grid */
+.course-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-  }
+}
 
-  .course-card {
+.course-card {
     background: var(--white, #FFFFFF);
     border-radius: var(--radius, 14px);
     border: 1px solid rgba(15, 23, 42, 0.04);
@@ -237,31 +464,39 @@
     transition: var(--transition, 0.3s ease);
     display: flex;
     flex-direction: column;
-  }
+    position: relative;
+}
 
-  .course-card:hover {
+.course-card:hover {
     box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
     transform: translateY(-4px);
     border-color: rgba(37, 99, 235, 0.06);
-  }
+}
 
-  .course-card-header {
+.course-card .card-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.course-card-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 8px;
-  }
+    margin-bottom: 6px;
+    padding-right: 30px;
+}
 
-  .course-card-header h3 {
+.course-card-header h3 {
     font-size: 1rem;
     font-weight: 700;
     color: var(--navy, #0F172A);
     margin: 0;
     line-height: 1.3;
-  }
+}
 
-  .course-card-header .course-code {
+.course-card-header .course-code {
     font-size: 0.65rem;
     font-weight: 600;
     color: var(--text-muted, #94A3B8);
@@ -271,9 +506,10 @@
     font-family: 'Inter', monospace;
     letter-spacing: 0.03em;
     white-space: nowrap;
-  }
+    flex-shrink: 0;
+}
 
-  .course-description {
+.course-description {
     font-size: 0.85rem;
     color: var(--text-light, #64748B);
     line-height: 1.6;
@@ -283,49 +519,50 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-  }
+}
 
-  /* Progress in card */
-  .course-progress {
+/* Course Progress */
+.course-progress {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 14px;
-  }
+}
 
-  .course-progress .progress-track {
+.course-progress .progress-track {
     flex: 1;
     height: 6px;
     background: rgba(15, 23, 42, 0.06);
     border-radius: 6px;
     overflow: hidden;
-  }
+}
 
-  .course-progress .progress-track .fill {
+.course-progress .progress-track .fill {
     height: 100%;
     border-radius: 6px;
     background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     width: 0%;
-  }
+}
 
-  .course-progress .progress-text {
+.course-progress .progress-text {
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--blue, #2563EB);
     min-width: 40px;
     text-align: right;
-  }
+}
 
-  .course-actions {
+/* Course Actions */
+.course-actions {
     display: flex;
     gap: 8px;
     margin-top: auto;
     padding-top: 12px;
     border-top: 1px solid rgba(15, 23, 42, 0.04);
-  }
+}
 
-  .btn-sm {
+.btn-sm {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -337,463 +574,848 @@
     transition: var(--transition, 0.3s ease);
     border: none;
     cursor: pointer;
-  }
+}
 
-  .btn-sm i {
+.btn-sm i {
     font-size: 0.8em;
-  }
+}
 
-  .btn-primary-sm {
+.btn-primary-sm {
     background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     color: var(--white, #FFFFFF);
     box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
-  }
+}
 
-  .btn-primary-sm:hover {
+.btn-primary-sm:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
     color: var(--white, #FFFFFF);
-  }
+}
 
-  .btn-success-sm {
+.btn-success-sm {
     background: linear-gradient(135deg, #059669, #34D399);
     color: var(--white, #FFFFFF);
     box-shadow: 0 2px 12px rgba(5, 150, 105, 0.12);
-  }
+}
 
-  .btn-success-sm:hover {
+.btn-success-sm:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(5, 150, 105, 0.2);
     color: var(--white, #FFFFFF);
-  }
+}
 
-  /* Empty State */
-  .empty-state {
+.btn-warning-sm {
+    background: linear-gradient(135deg, #F59E0B, #FBBF24);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 12px rgba(245, 158, 11, 0.12);
+}
+
+.btn-warning-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+    color: var(--white, #FFFFFF);
+}
+
+.btn-outline-sm {
+    background: transparent;
+    color: var(--text, #1E293B);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.btn-outline-sm:hover {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: var(--blue, #2563EB);
+    transform: translateY(-2px);
+}
+
+.btn-outline-sm i {
+    color: var(--blue, #2563EB);
+}
+
+.btn-disabled-sm {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-danger-sm {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.12);
+}
+
+.btn-danger-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.2);
+    color: var(--white, #FFFFFF);
+}
+
+/* Empty State */
+.empty-state {
     text-align: center;
     padding: 48px 20px;
     background: var(--white, #FFFFFF);
     border-radius: var(--radius, 14px);
     border: 1px solid rgba(15, 23, 42, 0.04);
     grid-column: 1 / -1;
-  }
+}
 
-  .empty-state i {
+.empty-state i {
     font-size: 2.5rem;
     color: var(--text-muted, #94A3B8);
     opacity: 0.2;
     margin-bottom: 12px;
-  }
+}
 
-  .empty-state p {
+.empty-state h3 {
+    font-size: 1.1rem;
+    color: var(--text, #1E293B);
+    margin-bottom: 4px;
+}
+
+.empty-state p {
     color: var(--text-light, #64748B);
     font-size: 0.95rem;
     margin: 0;
-  }
+}
 
-  .empty-state p:last-child {
+.empty-state p:last-child {
     font-size: 0.85rem;
     margin-top: 4px;
-  }
+}
 
-  .empty-state .text-muted {
+.empty-state .text-muted {
     color: var(--text-muted, #94A3B8);
-  }
+}
 
-  /* Animations */
-  @keyframes fadeUp {
+.empty-state .empty-cta {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+}
+
+.empty-state .empty-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+    color: var(--white, #FFFFFF);
+}
+
+/* Animations */
+@keyframes fadeUp {
     0% {
-      opacity: 0;
-      transform: translateY(16px);
+        opacity: 0;
+        transform: translateY(16px);
     }
     100% {
-      opacity: 1;
-      transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
     }
-  }
+}
 
-  /* Responsive */
-  @media (max-width: 768px) {
+/* Responsive */
+@media (max-width: 1024px) {
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
     .page-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
 
     .page-header-left {
-      width: 100%;
+        width: 100%;
+    }
+
+    .page-header .greeting {
+        width: 100%;
+        justify-content: center;
     }
 
     .stats-row {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
 
-    .stat-mini {
-      padding: 12px 14px;
+    .stat-card {
+        padding: 14px 12px;
     }
 
-    .stat-mini .stat-number {
-      font-size: 1.1rem;
+    .stat-number {
+        font-size: 1.3rem;
     }
 
     .tab-nav {
-      flex-direction: column;
-      gap: 4px;
-      padding: 4px;
+        flex-direction: column;
+        gap: 4px;
+        padding: 4px;
     }
 
     .tab-btn {
-      padding: 10px 16px;
-      font-size: 0.82rem;
-      text-align: center;
-    }
-
-    .tab-btn .tab-badge {
-      float: none;
+        padding: 10px 16px;
+        font-size: 0.82rem;
+        text-align: center;
     }
 
     .course-grid {
-      grid-template-columns: 1fr;
-      gap: 14px;
+        grid-template-columns: 1fr;
+        gap: 14px;
     }
 
     .course-card {
-      padding: 18px 16px 16px;
+        padding: 18px 16px 16px;
     }
 
     .course-card-header h3 {
-      font-size: 0.92rem;
+        font-size: 0.92rem;
     }
 
     .btn-sm {
-      font-size: 0.75rem;
-      padding: 6px 14px;
+        font-size: 0.75rem;
+        padding: 6px 14px;
     }
-  }
 
-  @media (max-width: 480px) {
+    .modal-box {
+        padding: 24px 20px;
+    }
+}
+
+@media (max-width: 480px) {
     .page-header h1 {
-      font-size: 1.2rem;
+        font-size: 1.2rem;
     }
 
     .page-header-icon {
-      width: 40px;
-      height: 40px;
-      font-size: 1rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .page-header .greeting {
+        font-size: 0.78rem;
+        padding: 4px 12px;
     }
 
     .stats-row {
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
     }
 
-    .stat-mini {
-      padding: 10px 12px;
+    .stat-card {
+        padding: 12px 10px;
     }
 
-    .stat-mini .stat-icon {
-      width: 32px;
-      height: 32px;
-      font-size: 0.9rem;
+    .stat-number {
+        font-size: 1.1rem;
     }
 
-    .stat-mini .stat-number {
-      font-size: 1rem;
+    .stat-label {
+        font-size: 0.6rem;
     }
 
-    .stat-mini .stat-label {
-      font-size: 0.6rem;
+    .stat-card .stat-icon {
+        font-size: 1.1rem;
     }
 
     .tab-btn {
-      font-size: 0.78rem;
-      padding: 8px 12px;
+        font-size: 0.78rem;
+        padding: 8px 12px;
     }
 
     .course-card {
-      padding: 14px 12px 14px;
-      border-radius: var(--radius-sm, 10px);
+        padding: 14px 12px 14px;
+        border-radius: var(--radius-sm, 10px);
+    }
+
+    .course-card-header {
+        padding-right: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
     }
 
     .course-card-header h3 {
-      font-size: 0.85rem;
+        font-size: 0.85rem;
     }
 
     .course-description {
-      font-size: 0.8rem;
+        font-size: 0.8rem;
     }
 
     .course-progress .progress-text {
-      font-size: 0.7rem;
-      min-width: 34px;
+        font-size: 0.7rem;
+        min-width: 34px;
     }
 
     .btn-sm {
-      font-size: 0.7rem;
-      padding: 5px 12px;
+        font-size: 0.7rem;
+        padding: 5px 12px;
+    }
+
+    .modal-box {
+        padding: 20px 16px;
+    }
+
+    .modal-box h3 {
+        font-size: 1rem;
+    }
+
+    .modal-box p {
+        font-size: 0.85rem;
+    }
+
+    .modal-actions {
+        flex-direction: column;
     }
 
     .empty-state {
-      padding: 32px 16px;
+        padding: 32px 16px;
     }
 
     .empty-state i {
-      font-size: 2rem;
+        font-size: 2rem;
+    }
+
+    .empty-state h3 {
+        font-size: 0.95rem;
     }
 
     .empty-state p {
-      font-size: 0.85rem;
+        font-size: 0.85rem;
     }
-  }
 
-  /* Dark Mode */
-  [data-theme="dark"] .stat-mini {
+    .course-status-badge {
+        font-size: 0.55rem;
+        padding: 1px 8px;
+    }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .stat-card {
     background: var(--white, #1E293B);
     border-color: rgba(255, 255, 255, 0.04);
-  }
+}
 
-  [data-theme="dark"] .stat-mini .stat-number {
+[data-theme="dark"] .stat-card .stat-number {
     color: var(--white, #FFFFFF);
-  }
+}
 
-  [data-theme="dark"] .tab-nav {
+[data-theme="dark"] .tab-nav {
     background: var(--white, #1E293B);
     border-color: rgba(255, 255, 255, 0.04);
-  }
+}
 
-  [data-theme="dark"] .tab-btn {
+[data-theme="dark"] .tab-btn {
     color: var(--text-muted, #64748B);
-  }
+}
 
-  [data-theme="dark"] .tab-btn:hover {
+[data-theme="dark"] .tab-btn:hover {
     color: var(--white, #FFFFFF);
     background: rgba(255, 255, 255, 0.02);
-  }
+}
 
-  [data-theme="dark"] .tab-btn.active {
+[data-theme="dark"] .tab-btn.active {
     background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     color: var(--white, #FFFFFF);
-  }
+}
 
-  [data-theme="dark"] .course-card {
+[data-theme="dark"] .course-card {
     background: var(--white, #1E293B);
     border-color: rgba(255, 255, 255, 0.04);
-  }
+}
 
-  [data-theme="dark"] .course-card:hover {
+[data-theme="dark"] .course-card:hover {
     border-color: rgba(37, 99, 235, 0.1);
-  }
+}
 
-  [data-theme="dark"] .course-card-header h3 {
+[data-theme="dark"] .course-card-header h3 {
     color: var(--white, #FFFFFF);
-  }
+}
 
-  [data-theme="dark"] .course-card-header .course-code {
+[data-theme="dark"] .course-card-header .course-code {
     background: rgba(255, 255, 255, 0.04);
     color: var(--text-muted, #64748B);
-  }
+}
 
-  [data-theme="dark"] .course-description {
+[data-theme="dark"] .course-description {
     color: var(--text-muted, #64748B);
-  }
+}
 
-  [data-theme="dark"] .course-progress .progress-track {
+[data-theme="dark"] .course-progress .progress-track {
     background: rgba(255, 255, 255, 0.06);
-  }
+}
 
-  [data-theme="dark"] .course-progress .progress-text {
+[data-theme="dark"] .course-progress .progress-text {
     color: var(--cyan, #22D3EE);
-  }
+}
 
-  [data-theme="dark"] .course-actions {
+[data-theme="dark"] .course-actions {
     border-top-color: rgba(255, 255, 255, 0.04);
-  }
+}
 
-  [data-theme="dark"] .empty-state {
+[data-theme="dark"] .empty-state {
     background: var(--white, #1E293B);
     border-color: rgba(255, 255, 255, 0.04);
-  }
+}
 
-  [data-theme="dark"] .empty-state p {
+[data-theme="dark"] .empty-state h3 {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .empty-state p {
     color: var(--text-muted, #64748B);
-  }
+}
 
-  [data-theme="dark"] .page-header h1 {
+[data-theme="dark"] .page-header h1 {
     color: var(--white, #FFFFFF);
-  }
+}
 
-  [data-theme="dark"] .tab-content .section-header h2 {
+[data-theme="dark"] .page-header .greeting {
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--cyan, #22D3EE);
+}
+
+[data-theme="dark"] .tab-content .section-header h2 {
     color: var(--white, #FFFFFF);
-  }
+}
 
-  [data-theme="dark"] .tab-content .section-header .section-count {
+[data-theme="dark"] .tab-content .section-header .section-count {
     background: rgba(255, 255, 255, 0.04);
     color: var(--text-muted, #64748B);
-  }
+}
+
+[data-theme="dark"] .btn-outline-sm {
+    color: var(--white, #FFFFFF);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .btn-outline-sm:hover {
+    border-color: var(--cyan, #22D3EE);
+}
+
+[data-theme="dark"] .btn-outline-sm i {
+    color: var(--cyan, #22D3EE);
+}
+
+[data-theme="dark"] .course-status-badge.approved {
+    background: rgba(5, 150, 105, 0.12);
+    color: #34D399;
+}
+
+[data-theme="dark"] .course-status-badge.pending {
+    background: rgba(245, 158, 11, 0.12);
+    color: #FBBF24;
+}
+
+[data-theme="dark"] .course-status-badge.rejected {
+    background: rgba(239, 68, 68, 0.12);
+    color: #F87171;
+}
+
+[data-theme="dark"] .course-status-badge.locked {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted, #64748B);
+}
 </style>
+{% endblock %}
 
-<div class="my-courses">
-  <!-- Header -->
-  <div class="page-header">
-    <div class="page-header-left">
-      <div class="page-header-icon">
-        <i class="fas fa-book"></i>
-      </div>
-      <div>
-        <h1>My <span>Courses</span></h1>
-        <p class="subtitle">Browse and manage your learning journey</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats - FIXED: No selectattr on methods -->
-  <div class="stats-row">
-    <div class="stat-mini">
-      <div class="stat-icon blue"><i class="fas fa-book"></i></div>
-      <div>
-        <div class="stat-number">{{ courses|length }}</div>
-        <div class="stat-label">Enrolled</div>
-      </div>
-    </div>
-    <div class="stat-mini">
-      <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
-      <div>
-        {% set in_progress = 0 %}
-        {% for course in courses %}
-          {% if course.get_progress_for_student(current_user.id) > 0 %}
-            {% set in_progress = in_progress + 1 %}
-          {% endif %}
-        {% endfor %}
-        <div class="stat-number">{{ in_progress }}</div>
-        <div class="stat-label">In Progress</div>
-      </div>
-    </div>
-    <div class="stat-mini">
-      <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
-      <div>
-        <div class="stat-number">{{ available_courses|length }}</div>
-        <div class="stat-label">Available</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabs -->
-  <div class="tab-nav" role="tablist">
-    <button class="tab-btn active" data-target="enrolled" role="tab">
-      Enrolled Courses
-      <span class="tab-badge">{{ courses|length }}</span>
-    </button>
-    <button class="tab-btn" data-target="available" role="tab">
-      Available Courses
-      <span class="tab-badge">{{ available_courses|length }}</span>
-    </button>
-  </div>
-
-  <!-- Enrolled Tab -->
-  <div id="enrolled" class="tab-content active" role="tabpanel">
-    <div class="section-header">
-      <h2>Your Enrolled Courses</h2>
-      <span class="section-count">{{ courses|length }}</span>
-    </div>
-    <div class="course-grid">
-      {% for course in courses %}
-        <div class="course-card">
-          <div class="course-card-header">
-            <h3>{{ course.name }}</h3>
-            <span class="course-code">{{ course.code }}</span>
-          </div>
-          <p class="course-description">{{ course.description or 'No description available.' }}</p>
-          <div class="course-progress">
-            <div class="progress-track">
-              <div class="fill" style="width: {{ course.get_progress_for_student(current_user.id) }}%;"></div>
-            </div>
-            <span class="progress-text">{{ course.get_progress_for_student(current_user.id) }}%</span>
-          </div>
-          <div class="course-actions">
-            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn-sm btn-primary-sm">
-              <i class="fas fa-eye"></i> View Course
-            </a>
-          </div>
+{% block content %}
+<!-- ========================================== -->
+<!-- RE-APPLY MODAL -->
+<!-- ========================================== -->
+<div class="modal-overlay" id="reapplyModal">
+    <div class="modal-box">
+        <div class="modal-icon">🔄</div>
+        <h3>Re-apply for Course?</h3>
+        <p>You were previously rejected from this course.</p>
+        <div class="rejection-reason" id="rejectionReason">
+            <strong>Reason:</strong> <span id="reasonText">Not specified</span>
         </div>
-      {% else %}
-        <div class="empty-state">
-          <i class="fas fa-book-open"></i>
-          <p>You are not enrolled in any courses yet.</p>
-          <p class="text-muted">Browse available courses and request access.</p>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-
-  <!-- Available Tab -->
-  <div id="available" class="tab-content" role="tabpanel">
-    <div class="section-header">
-      <h2>Available Courses</h2>
-      <span class="section-count">{{ available_courses|length }}</span>
-    </div>
-    <div class="course-grid">
-      {% for course in available_courses %}
-        <div class="course-card">
-          <div class="course-card-header">
-            <h3>{{ course.name }}</h3>
-            <span class="course-code">{{ course.code }}</span>
-          </div>
-          <p class="course-description">{{ course.description or 'No description available.' }}</p>
-          <div class="course-actions">
-            <form method="POST" action="{{ url_for('request_course', course_id=course.id) }}">
-              <button type="submit" class="btn-sm btn-success-sm">
-                <i class="fas fa-plus"></i> Request Access
-              </button>
+        <p style="font-size: 0.85rem; color: var(--text-muted, #94A3B8);">
+            Would you like to submit a new request for approval?
+        </p>
+        <div class="modal-actions">
+            <button class="btn btn-cancel-modal" onclick="closeModal()">
+                Cancel
+            </button>
+            <form method="POST" id="reapplyForm" style="flex: 1;">
+                <button type="submit" class="btn btn-reapply" style="width: 100%;">
+                    <i class="fas fa-redo"></i> Re-apply
+                </button>
             </form>
-          </div>
         </div>
-      {% else %}
-        <div class="empty-state">
-          <i class="fas fa-check-circle"></i>
-          <p>All courses are available!</p>
-          <p class="text-muted">You are enrolled in all available courses.</p>
-        </div>
-      {% endfor %}
     </div>
-  </div>
+</div>
+
+<div class="student-courses">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div>
+                <h1>My <span>Courses</span></h1>
+                <p class="subtitle">Browse and manage your learning journey</p>
+            </div>
+        </div>
+        <div class="greeting">
+            <i class="fas fa-wave"></i>
+            Welcome back, <strong>{{ current_user.username }}</strong>!
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-number">{{ approved_courses|length }}</div>
+            <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-number">{{ pending_courses|length }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+            <div class="stat-number">{{ rejections|length }}</div>
+            <div class="stat-label">Rejected</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-plus-circle"></i></div>
+            <div class="stat-number">{{ available_courses|length }}</div>
+            <div class="stat-label">Available</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav" role="tablist">
+        <button class="tab-btn active" data-target="approved" role="tab">
+            Approved Courses
+            <span class="tab-badge">{{ approved_courses|length }}</span>
+        </button>
+        <button class="tab-btn" data-target="pending" role="tab">
+            Pending Requests
+            <span class="tab-badge">{{ pending_courses|length }}</span>
+        </button>
+        <button class="tab-btn" data-target="available" role="tab">
+            Available Courses
+            <span class="tab-badge">{{ available_courses|length }}</span>
+        </button>
+        {% if rejections %}
+        <button class="tab-btn" data-target="rejected" role="tab">
+            Rejected
+            <span class="tab-badge">{{ rejections|length }}</span>
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Approved Tab -->
+    <div id="approved" class="tab-content active" role="tabpanel">
+        <div class="section-header">
+            <h2>Your Approved Courses</h2>
+            <span class="section-count">{{ approved_courses|length }}</span>
+        </div>
+        
+        {% if approved_courses %}
+            <div class="course-grid">
+                {% for course in approved_courses %}
+                    <div class="course-card">
+                        <div class="card-status">
+                            <span class="course-status-badge approved">
+                                <i class="fas fa-check-circle"></i> Approved
+                            </span>
+                        </div>
+                        
+                        <div class="course-card-header">
+                            <h3>{{ course.name }}</h3>
+                            <span class="course-code">{{ course.code }}</span>
+                        </div>
+                        
+                        <p class="course-description">{{ course.description or 'No description available.' }}</p>
+                        
+                        <div class="course-progress">
+                            <div class="progress-track">
+                                <div class="fill" style="width: {{ course.get_progress_for_student(current_user.id) }}%;"></div>
+                            </div>
+                            <span class="progress-text">{{ course.get_progress_for_student(current_user.id) }}%</span>
+                        </div>
+                        
+                        <div class="course-actions">
+                            <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn-sm btn-primary-sm">
+                                <i class="fas fa-eye"></i> View Course
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <h3>No approved courses</h3>
+                <p>You don't have any approved courses yet.</p>
+                <p class="text-muted">Request access to available courses below.</p>
+                <a href="#available" class="empty-cta" onclick="switchTab('available')">
+                    <i class="fas fa-search"></i> Browse Courses
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pending Tab -->
+    <div id="pending" class="tab-content" role="tabpanel">
+        <div class="section-header">
+            <h2>Pending Requests</h2>
+            <span class="section-count">{{ pending_courses|length }}</span>
+        </div>
+        
+        {% if pending_courses %}
+            <div class="course-grid">
+                {% for course in pending_courses %}
+                    <div class="course-card">
+                        <div class="card-status">
+                            <span class="course-status-badge pending">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                        </div>
+                        
+                        <div class="course-card-header">
+                            <h3>{{ course.name }}</h3>
+                            <span class="course-code">{{ course.code }}</span>
+                        </div>
+                        
+                        <p class="course-description">{{ course.description or 'No description available.' }}</p>
+                        
+                        <div class="course-progress" style="opacity: 0.5;">
+                            <div class="progress-track">
+                                <div class="fill" style="width: 0%;"></div>
+                            </div>
+                            <span class="progress-text" style="color: var(--text-muted);">0%</span>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--text-muted, #94A3B8); text-align: center; margin: -4px 0 8px;">
+                            <i class="fas fa-clock"></i> Waiting for admin approval
+                        </p>
+                        
+                        <div class="course-actions">
+                            <button class="btn-sm btn-outline-sm btn-disabled-sm" disabled>
+                                <i class="fas fa-clock"></i> Awaiting Approval
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-clock"></i>
+                <h3>No pending requests</h3>
+                <p>You don't have any pending course requests.</p>
+                <p class="text-muted">Request access to available courses above.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Rejected Tab -->
+    <div id="rejected" class="tab-content" role="tabpanel">
+        <div class="section-header">
+            <h2>Rejected Courses</h2>
+            <span class="section-count">{{ rejections|length }}</span>
+        </div>
+        
+        {% if rejections %}
+            <div class="course-grid">
+                {% for rejection in rejections %}
+                    {% set course = rejection.course %}
+                    <div class="course-card" style="border-color: rgba(239, 68, 68, 0.15);">
+                        <div class="card-status">
+                            <span class="course-status-badge rejected">
+                                <i class="fas fa-times-circle"></i> Rejected
+                            </span>
+                        </div>
+                        
+                        <div class="course-card-header">
+                            <h3>{{ course.name }}</h3>
+                            <span class="course-code">{{ course.code }}</span>
+                        </div>
+                        
+                        <p class="course-description">{{ course.description or 'No description available.' }}</p>
+                        
+                        <div style="background: rgba(239, 68, 68, 0.04); border-left: 3px solid #EF4444; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px;">
+                            <p style="font-size: 0.8rem; color: #EF4444; margin: 0;">
+                                <strong>Reason:</strong> {{ rejection.message }}
+                            </p>
+                        </div>
+                        
+                        <div class="course-actions">
+                            <button class="btn-sm btn-success-sm" onclick="openReapplyModal('{{ course.id }}', '{{ rejection.message|escape }}')">
+                                <i class="fas fa-redo"></i> Re-apply
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <h3>No rejected courses</h3>
+                <p>All your course requests have been approved or are pending.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Available Tab -->
+    <div id="available" class="tab-content" role="tabpanel">
+        <div class="section-header">
+            <h2>Available Courses</h2>
+            <span class="section-count">{{ available_courses|length }}</span>
+        </div>
+        
+        {% if available_courses %}
+            <div class="course-grid">
+                {% for course in available_courses %}
+                    <div class="course-card">
+                        <div class="card-status">
+                            <span class="course-status-badge locked">
+                                <i class="fas fa-lock"></i> Locked
+                            </span>
+                        </div>
+                        
+                        <div class="course-card-header">
+                            <h3>{{ course.name }}</h3>
+                            <span class="course-code">{{ course.code }}</span>
+                        </div>
+                        
+                        <p class="course-description">{{ course.description or 'No description available.' }}</p>
+                        
+                        <div class="course-actions">
+                            <form method="POST" action="{{ url_for('request_course', course_id=course.id) }}" style="width: 100%;">
+                                <button type="submit" class="btn-sm btn-success-sm" style="width: 100%; justify-content: center;">
+                                    <i class="fas fa-plus"></i> Request Access
+                                </button>
+                            </form>
+                        </div>
+                        <p style="font-size: 0.65rem; color: var(--text-muted, #94A3B8); text-align: center; margin-top: 8px;">
+                            <i class="fas fa-info-circle"></i> Admin approval required
+                        </p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <h3>All courses enrolled!</h3>
+                <p>You are enrolled in all available courses.</p>
+                <p class="text-muted">Check back later for new courses.</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Tab switching
+document.addEventListener('DOMContentLoaded', function() {
+    // ==========================================
+    // TAB SWITCHING
+    // ==========================================
     const tabs = document.querySelectorAll('.tab-btn');
     const contents = {
-      enrolled: document.getElementById('enrolled'),
-      available: document.getElementById('available')
+        approved: document.getElementById('approved'),
+        pending: document.getElementById('pending'),
+        rejected: document.getElementById('rejected'),
+        available: document.getElementById('available')
     };
 
     tabs.forEach(tab => {
-      tab.addEventListener('click', function() {
-        const target = this.dataset.target;
+        tab.addEventListener('click', function() {
+            const target = this.dataset.target;
 
-        // Update tabs
-        tabs.forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
 
-        // Update content
-        Object.keys(contents).forEach(key => {
-          contents[key].classList.remove('active');
+            Object.keys(contents).forEach(key => {
+                if (contents[key]) {
+                    contents[key].classList.remove('active');
+                }
+            });
+            if (contents[target]) {
+                contents[target].classList.add('active');
+            }
         });
-        if (contents[target]) {
-          contents[target].classList.add('active');
-        }
-      });
     });
 
-    // Animate progress bars on load
+    // ==========================================
+    // ANIMATE PROGRESS BARS
+    // ==========================================
     const fills = document.querySelectorAll('.progress-track .fill');
     fills.forEach(bar => {
-      const target = bar.style.width;
-      bar.style.width = '0%';
-      setTimeout(() => {
-        bar.style.width = target;
-      }, 300);
+        const target = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+            bar.style.width = target;
+        }, 300);
     });
-  });
+});
+
+// ==========================================
+// GLOBAL FUNCTIONS
+// ==========================================
+function openReapplyModal(courseId, reason) {
+    document.getElementById('reapplyForm').action = `/student/courses/${courseId}/reapply`;
+    document.getElementById('reasonText').textContent = reason || 'Not specified';
+    document.getElementById('reapplyModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('reapplyModal').classList.remove('active');
+}
+
+function switchTab(tabId) {
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.target === tabId) {
+            tab.classList.add('active');
+        }
+    });
+    
+    const contents = {
+        approved: document.getElementById('approved'),
+        pending: document.getElementById('pending'),
+        rejected: document.getElementById('rejected'),
+        available: document.getElementById('available')
+    };
+    
+    Object.keys(contents).forEach(key => {
+        if (contents[key]) {
+            contents[key].classList.remove('active');
+        }
+    });
+    if (contents[tabId]) {
+        contents[tabId].classList.add('active');
+    }
+}
+
+// Close modal when clicking outside
+document.getElementById('reapplyModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
 </script>
 {% endblock %}

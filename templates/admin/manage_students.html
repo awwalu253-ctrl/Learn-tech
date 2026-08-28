@@ -4,659 +4,745 @@
 
 {% block extra_css %}
 <style>
-/* ============================================
+    /* ============================================
    MANAGE STUDENTS - Premium Theme
    ============================================ */
-:root {
-    --navy: #0F172A;
-    --blue: #2563EB;
-    --cyan: #22D3EE;
-    --bg: #F8FAFC;
-    --text: #1E293B;
-    --text-light: #64748B;
-    --text-muted: #94A3B8;
-    --white: #FFFFFF;
-    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
-    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
-    --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
-    --radius: 16px;
-    --radius-sm: 10px;
-    --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.manage-students {
-    max-width: 1360px;
-    margin: 0 auto;
-    padding: 0;
-}
-
-/* Page Header */
-.page-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.page-header-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.page-header-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--blue, #2563EB);
-    font-size: 1.3rem;
-}
-
-.page-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--navy, #0F172A);
-    letter-spacing: -0.02em;
-    margin: 0;
-}
-
-.page-header h1 span {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.page-header .subtitle {
-    font-size: 0.85rem;
-    color: var(--text-light, #64748B);
-    margin: 2px 0 0;
-}
-
-.header-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.btn-bulk {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 60px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    background: linear-gradient(135deg, #059669, #34D399);
-    color: var(--white, #FFFFFF);
-    text-decoration: none;
-    transition: var(--transition);
-    box-shadow: 0 2px 16px rgba(5, 150, 105, 0.2);
-    border: none;
-    cursor: pointer;
-}
-
-.btn-bulk:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(5, 150, 105, 0.3);
-    color: var(--white);
-}
-
-.btn-bulk i {
-    font-size: 0.9em;
-}
-
-/* Stats Row - FIXED: No sum with pipe */
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 14px;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
-}
-
-.stat-mini {
-    background: var(--white, #FFFFFF);
-    padding: 16px 18px;
-    border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    transition: var(--transition);
-}
-
-.stat-mini:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-}
-
-.stat-mini .stat-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-sm, 8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-}
-
-.stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue);
-}
-
-.stat-mini .stat-icon.green {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-}
-
-.stat-mini .stat-icon.orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-}
-
-.stat-mini .stat-icon.purple {
-    background: rgba(124, 58, 237, 0.08);
-    color: #7C3AED;
-}
-
-.stat-mini .stat-number {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--navy);
-    line-height: 1.2;
-}
-
-.stat-mini .stat-label {
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-/* Section Cards */
-.section-card {
-    background: var(--white, #FFFFFF);
-    border-radius: var(--radius);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: var(--transition);
-    margin-bottom: 24px;
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-}
-
-.section-card:hover {
-    box-shadow: var(--shadow-md);
-}
-
-.section-card-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.section-card-header h2 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--navy);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-}
-
-.section-card-header h2 i {
-    color: var(--blue);
-}
-
-.section-card-header .badge-count {
-    background: var(--blue);
-    color: white;
-    font-size: 0.7rem;
-    padding: 2px 12px;
-    border-radius: 100px;
-    font-weight: 600;
-}
-
-.section-card-body {
-    padding: 0;
-    overflow-x: auto;
-}
-
-/* Table */
-.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-}
-
-.admin-table thead {
-    background: var(--bg, #F8FAFC);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
-}
-
-.admin-table thead th {
-    padding: 12px 20px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-muted);
-    white-space: nowrap;
-}
-
-.admin-table tbody tr {
-    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
-    transition: var(--transition);
-}
-
-.admin-table tbody tr:last-child {
-    border-bottom: none;
-}
-
-.admin-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.02);
-}
-
-.admin-table tbody td {
-    padding: 12px 20px;
-    vertical-align: middle;
-    color: var(--text);
-}
-
-.student-name {
-    font-weight: 600;
-    color: var(--navy);
-}
-
-.student-email {
-    font-size: 0.85rem;
-    color: var(--text-light);
-}
-
-.tag-badge {
-    display: inline-block;
-    padding: 2px 12px;
-    border-radius: 100px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue);
-    margin: 2px 4px 2px 0;
-}
-
-.badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 12px;
-    border-radius: 100px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-.badge-success {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-}
-
-.badge-warning {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-}
-
-.badge-danger {
-    background: rgba(239, 68, 68, 0.08);
-    color: #EF4444;
-}
-
-.badge-info {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue);
-}
-
-.action-group {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.btn-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-sm, 8px);
-    border: none;
-    cursor: pointer;
-    transition: var(--transition);
-    text-decoration: none;
-    font-size: 0.8rem;
-}
-
-.btn-action i {
-    font-size: 0.8rem;
-}
-
-.btn-approve {
-    background: rgba(5, 150, 105, 0.06);
-    color: #059669;
-}
-
-.btn-approve:hover {
-    background: #059669;
-    color: white;
-    transform: translateY(-2px);
-}
-
-.btn-reject {
-    background: rgba(239, 68, 68, 0.06);
-    color: #EF4444;
-}
-
-.btn-reject:hover {
-    background: #EF4444;
-    color: white;
-    transform: translateY(-2px);
-}
-
-.btn-restore {
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue);
-}
-
-.btn-restore:hover {
-    background: var(--blue);
-    color: white;
-    transform: translateY(-2px);
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 40px 20px;
-}
-
-.empty-state i {
-    font-size: 2.5rem;
-    color: var(--text-muted);
-    opacity: 0.2;
-    margin-bottom: 12px;
-}
-
-.empty-state h3 {
-    font-size: 1.1rem;
-    color: var(--text);
-    margin-bottom: 4px;
-}
-
-.empty-state p {
-    color: var(--text-light);
-    font-size: 0.9rem;
-}
-
-/* Checkbox */
-.checkbox-cell {
-    width: 40px;
-}
-
-.checkbox-cell input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--blue);
-    cursor: pointer;
-}
-
-/* Animations */
-@keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(16px);
+    :root {
+        --navy: #0F172A;
+        --blue: #2563EB;
+        --cyan: #22D3EE;
+        --bg: #F8FAFC;
+        --text: #1E293B;
+        --text-light: #64748B;
+        --text-muted: #94A3B8;
+        --white: #FFFFFF;
+        --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+        --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+        --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
+        --radius: 16px;
+        --radius-sm: 10px;
+        --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-/* Responsive */
-@media (max-width: 768px) {
+    .manage-students {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    /* Page Header */
     .page-header {
-        flex-direction: column;
-        align-items: flex-start;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
     .page-header-left {
-        width: 100%;
-    }
-
-    .header-actions {
-        width: 100%;
-    }
-
-    .header-actions .btn-bulk {
-        flex: 1;
-        justify-content: center;
-    }
-
-    .stats-row {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .stat-mini {
-        padding: 12px 14px;
-    }
-
-    .stat-mini .stat-number {
-        font-size: 1.1rem;
-    }
-
-    .section-card-header {
-        padding: 12px 16px;
-    }
-
-    .admin-table thead th,
-    .admin-table tbody td {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-    }
-
-    .admin-table thead th {
-        font-size: 0.65rem;
-    }
-
-    .student-email {
-        font-size: 0.75rem;
-    }
-
-    .tag-badge {
-        font-size: 0.6rem;
-        padding: 1px 8px;
-    }
-
-    .badge {
-        font-size: 0.6rem;
-        padding: 2px 8px;
-    }
-
-    .btn-action {
-        width: 28px;
-        height: 28px;
-        font-size: 0.7rem;
-    }
-
-    .btn-action i {
-        font-size: 0.7rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .page-header h1 {
-        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 14px;
     }
 
     .page-header-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm, 10px);
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--blue, #2563EB);
+        font-size: 1.3rem;
     }
 
-    .stats-row {
-        grid-template-columns: 1fr 1fr;
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--navy, #0F172A);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    .page-header h1 span {
+        background: linear-gradient(135deg, var(--blue), var(--cyan));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header .subtitle {
+        font-size: 0.85rem;
+        color: var(--text-light, #64748B);
+        margin: 2px 0 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-bulk {
+        display: inline-flex;
+        align-items: center;
         gap: 8px;
+        padding: 10px 20px;
+        border-radius: 60px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        background: linear-gradient(135deg, #059669, #34D399);
+        color: var(--white, #FFFFFF);
+        text-decoration: none;
+        transition: var(--transition);
+        box-shadow: 0 2px 16px rgba(5, 150, 105, 0.2);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-bulk:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 28px rgba(5, 150, 105, 0.3);
+        color: var(--white);
+    }
+
+    .btn-bulk i {
+        font-size: 0.9em;
+    }
+
+    /* Stats Row */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
     }
 
     .stat-mini {
-        padding: 10px 12px;
+        background: var(--white, #FFFFFF);
+        padding: 16px 18px;
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(15, 23, 42, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition);
+    }
+
+    .stat-mini:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
     }
 
     .stat-mini .stat-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm, 8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .stat-mini .stat-icon.blue {
+        background: rgba(37, 99, 235, 0.08);
+        color: var(--blue);
+    }
+
+    .stat-mini .stat-icon.green {
+        background: rgba(5, 150, 105, 0.08);
+        color: #059669;
+    }
+
+    .stat-mini .stat-icon.orange {
+        background: rgba(245, 158, 11, 0.08);
+        color: #F59E0B;
+    }
+
+    .stat-mini .stat-icon.purple {
+        background: rgba(124, 58, 237, 0.08);
+        color: #7C3AED;
     }
 
     .stat-mini .stat-number {
-        font-size: 1rem;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--navy);
+        line-height: 1.2;
     }
 
     .stat-mini .stat-label {
-        font-size: 0.6rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    /* Section Cards */
+    .section-card {
+        background: var(--white, #FFFFFF);
+        border-radius: var(--radius);
+        border: 1px solid rgba(15, 23, 42, 0.04);
+        box-shadow: var(--shadow-sm);
+        overflow: hidden;
+        transition: var(--transition);
+        margin-bottom: 24px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    }
+
+    .section-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+    .section-card-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .section-card-header h2 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .section-card-header h2 i {
+        color: var(--blue);
+    }
+
+    .section-card-header .badge-count {
+        background: var(--blue);
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 12px;
+        border-radius: 100px;
+        font-weight: 600;
+    }
+
+    .section-card-body {
+        padding: 0;
+        overflow-x: auto;
+    }
+
+    /* Table */
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .admin-table thead {
+        background: var(--bg, #F8FAFC);
+        border-bottom: 1px solid rgba(15, 23, 42, 0.04);
     }
 
     .admin-table thead th {
-        padding: 6px 8px;
-        font-size: 0.55rem;
+        padding: 12px 20px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+
+    .admin-table tbody tr {
+        border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+        transition: var(--transition);
+    }
+
+    .admin-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .admin-table tbody tr:hover {
+        background: rgba(37, 99, 235, 0.02);
     }
 
     .admin-table tbody td {
-        padding: 6px 8px;
-        font-size: 0.7rem;
+        padding: 12px 20px;
+        vertical-align: middle;
+        color: var(--text);
     }
 
     .student-name {
-        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--navy);
     }
 
     .student-email {
-        font-size: 0.65rem;
-        display: block;
+        font-size: 0.85rem;
+        color: var(--text-light);
     }
 
+    /* Enrollment Status Badges */
+    .enrollment-status {
+        display: inline-block;
+        padding: 2px 12px;
+        border-radius: 100px;
+        font-size: 0.65rem;
+        font-weight: 600;
+        margin: 2px 4px 2px 0;
+    }
+
+    .enrollment-status.pending {
+        background: rgba(245, 158, 11, 0.08);
+        color: #F59E0B;
+        border: 1px solid rgba(245, 158, 11, 0.06);
+    }
+
+    .enrollment-status.approved {
+        background: rgba(5, 150, 105, 0.08);
+        color: #059669;
+        border: 1px solid rgba(5, 150, 105, 0.06);
+    }
+
+    .enrollment-status.rejected {
+        background: rgba(239, 68, 68, 0.08);
+        color: #EF4444;
+        border: 1px solid rgba(239, 68, 68, 0.06);
+    }
+
+    .tag-badge {
+        display: inline-block;
+        padding: 2px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        background: rgba(37, 99, 235, 0.06);
+        color: var(--blue);
+        margin: 2px 4px 2px 0;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background: rgba(5, 150, 105, 0.08);
+        color: #059669;
+    }
+
+    .badge-warning {
+        background: rgba(245, 158, 11, 0.08);
+        color: #F59E0B;
+    }
+
+    .badge-danger {
+        background: rgba(239, 68, 68, 0.08);
+        color: #EF4444;
+    }
+
+    .badge-info {
+        background: rgba(37, 99, 235, 0.08);
+        color: var(--blue);
+    }
+
+    /* ============================================
+       ACTION BUTTONS - Complete Set
+       ============================================ */
     .action-group {
-        gap: 3px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        align-items: center;
     }
 
     .btn-action {
-        width: 24px;
-        height: 24px;
-        font-size: 0.6rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-sm, 8px);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        font-size: 0.8rem;
     }
 
     .btn-action i {
-        font-size: 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-approve {
+        background: rgba(5, 150, 105, 0.06);
+        color: #059669;
+    }
+
+    .btn-approve:hover {
+        background: #059669;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-reject {
+        background: rgba(239, 68, 68, 0.06);
+        color: #EF4444;
+    }
+
+    .btn-reject:hover {
+        background: #EF4444;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-unapprove {
+        background: rgba(239, 68, 68, 0.06);
+        color: #EF4444;
+    }
+
+    .btn-unapprove:hover {
+        background: #EF4444;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-restore {
+        background: rgba(37, 99, 235, 0.06);
+        color: var(--blue);
+    }
+
+    .btn-restore:hover {
+        background: var(--blue);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-unapprove-course {
+        background: rgba(239, 68, 68, 0.06);
+        color: #EF4444;
+        font-size: 0.65rem;
+        padding: 0 6px;
+        width: auto;
+        min-width: 28px;
+    }
+
+    .btn-unapprove-course:hover {
+        background: #EF4444;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        color: var(--text-muted);
+        opacity: 0.2;
+        margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+        font-size: 1.1rem;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+
+    .empty-state p {
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+
+    /* Checkbox */
+    .checkbox-cell {
+        width: 40px;
     }
 
     .checkbox-cell input[type="checkbox"] {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
+        accent-color: var(--blue);
+        cursor: pointer;
     }
-}
 
-/* Dark Mode */
-[data-theme="dark"] .section-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
-}
+    /* Animations */
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-[data-theme="dark"] .section-card-header {
-    border-color: rgba(255, 255, 255, 0.04);
-}
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-[data-theme="dark"] .section-card-header h2 {
-    color: var(--white, #FFFFFF);
-}
+        .page-header-left {
+            width: 100%;
+        }
 
-[data-theme="dark"] .admin-table thead {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
-}
+        .header-actions {
+            width: 100%;
+        }
 
-[data-theme="dark"] .admin-table tbody tr {
-    border-color: rgba(255, 255, 255, 0.02);
-}
+        .header-actions .btn-bulk {
+            flex: 1;
+            justify-content: center;
+        }
 
-[data-theme="dark"] .admin-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.04);
-}
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
 
-[data-theme="dark"] .student-name {
-    color: var(--white, #FFFFFF);
-}
+        .stat-mini {
+            padding: 12px 14px;
+        }
 
-[data-theme="dark"] .stat-mini {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
-}
+        .stat-mini .stat-number {
+            font-size: 1.1rem;
+        }
 
-[data-theme="dark"] .stat-mini .stat-number {
-    color: var(--white, #FFFFFF);
-}
+        .section-card-header {
+            padding: 12px 16px;
+        }
 
-[data-theme="dark"] .page-header h1 {
-    color: var(--white, #FFFFFF);
-}
+        .admin-table thead th,
+        .admin-table tbody td {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
 
-[data-theme="dark"] .empty-state h3 {
-    color: var(--white, #FFFFFF);
-}
+        .admin-table thead th {
+            font-size: 0.65rem;
+        }
 
-[data-theme="dark"] .tag-badge {
-    background: rgba(37, 99, 235, 0.12);
-    color: var(--cyan, #22D3EE);
-}
+        .student-email {
+            font-size: 0.75rem;
+        }
 
-[data-theme="dark"] .badge-success {
-    background: rgba(5, 150, 105, 0.12);
-    color: #34D399;
-}
+        .tag-badge {
+            font-size: 0.6rem;
+            padding: 1px 8px;
+        }
 
-[data-theme="dark"] .badge-warning {
-    background: rgba(245, 158, 11, 0.12);
-    color: #FBBF24;
-}
+        .badge {
+            font-size: 0.6rem;
+            padding: 2px 8px;
+        }
 
-[data-theme="dark"] .badge-danger {
-    background: rgba(239, 68, 68, 0.12);
-    color: #F87171;
-}
+        .btn-action {
+            width: 28px;
+            height: 28px;
+            font-size: 0.7rem;
+        }
 
-[data-theme="dark"] .badge-info {
-    background: rgba(37, 99, 235, 0.12);
-    color: var(--cyan, #22D3EE);
-}
+        .btn-action i {
+            font-size: 0.7rem;
+        }
+
+        .btn-unapprove-course {
+            font-size: 0.6rem;
+            padding: 0 4px;
+            min-width: 24px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 1.2rem;
+        }
+
+        .page-header-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-mini {
+            padding: 10px 12px;
+        }
+
+        .stat-mini .stat-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+
+        .stat-mini .stat-number {
+            font-size: 1rem;
+        }
+
+        .stat-mini .stat-label {
+            font-size: 0.6rem;
+        }
+
+        .admin-table thead th {
+            padding: 6px 8px;
+            font-size: 0.55rem;
+        }
+
+        .admin-table tbody td {
+            padding: 6px 8px;
+            font-size: 0.7rem;
+        }
+
+        .student-name {
+            font-size: 0.8rem;
+        }
+
+        .student-email {
+            font-size: 0.65rem;
+            display: block;
+        }
+
+        .action-group {
+            gap: 3px;
+        }
+
+        .btn-action {
+            width: 24px;
+            height: 24px;
+            font-size: 0.6rem;
+        }
+
+        .btn-action i {
+            font-size: 0.6rem;
+        }
+
+        .btn-unapprove-course {
+            font-size: 0.55rem;
+            padding: 0 3px;
+            min-width: 20px;
+            height: 20px;
+        }
+
+        .checkbox-cell input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] .section-card {
+        background: var(--white, #1E293B);
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .section-card-header {
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .section-card-header h2 {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .admin-table thead {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .admin-table tbody tr {
+        border-color: rgba(255, 255, 255, 0.02);
+    }
+
+    [data-theme="dark"] .admin-table tbody tr:hover {
+        background: rgba(37, 99, 235, 0.04);
+    }
+
+    [data-theme="dark"] .student-name {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .stat-mini {
+        background: var(--white, #1E293B);
+        border-color: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="dark"] .stat-mini .stat-number {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .page-header h1 {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .empty-state h3 {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .tag-badge {
+        background: rgba(37, 99, 235, 0.12);
+        color: var(--cyan, #22D3EE);
+    }
+
+    [data-theme="dark"] .badge-success {
+        background: rgba(5, 150, 105, 0.12);
+        color: #34D399;
+    }
+
+    [data-theme="dark"] .badge-warning {
+        background: rgba(245, 158, 11, 0.12);
+        color: #FBBF24;
+    }
+
+    [data-theme="dark"] .badge-danger {
+        background: rgba(239, 68, 68, 0.12);
+        color: #F87171;
+    }
+
+    [data-theme="dark"] .badge-info {
+        background: rgba(37, 99, 235, 0.12);
+        color: var(--cyan, #22D3EE);
+    }
+
+    [data-theme="dark"] .enrollment-status.pending {
+        background: rgba(245, 158, 11, 0.12);
+        color: #FBBF24;
+    }
+
+    [data-theme="dark"] .enrollment-status.approved {
+        background: rgba(5, 150, 105, 0.12);
+        color: #34D399;
+    }
+
+    [data-theme="dark"] .enrollment-status.rejected {
+        background: rgba(239, 68, 68, 0.12);
+        color: #F87171;
+    }
 </style>
 {% endblock %}
 
@@ -670,19 +756,19 @@
             </div>
             <div>
                 <h1>Manage <span>Students</span></h1>
-                <p class="subtitle">View, approve, and manage student accounts</p>
+                <p class="subtitle">View, approve, and manage student accounts and course enrollments</p>
             </div>
         </div>
         <div class="header-actions">
             <form method="POST" action="{{ url_for('bulk_approve_students') }}" style="display: inline;">
                 <button type="submit" class="btn-bulk" id="bulkApproveBtn">
-                    <i class="fas fa-check-double"></i> Bulk Approve
+                    <i class="fas fa-check-double"></i> Bulk Approve All
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Stats Row - FIXED: No sum with pipe -->
+    <!-- Stats Row -->
     <div class="stats-row">
         <div class="stat-mini">
             <div class="stat-icon blue"><i class="fas fa-users"></i></div>
@@ -726,78 +812,84 @@
 
     <!-- Pending Approvals Section -->
     {% if pending and pending|length > 0 %}
-        <div class="section-card" style="border-color: rgba(245, 158, 11, 0.15);">
-            <div class="section-card-header">
-                <h2>
-                    <i class="fas fa-clock" style="color: #F59E0B;"></i> 
-                    Pending Approvals
-                    <span class="badge-count">{{ pending|length }}</span>
-                </h2>
-                <span style="font-size: 0.75rem; color: var(--text-muted);">Review and approve student requests</span>
-            </div>
-            <div class="section-card-body">
-                <form id="bulkForm" method="POST" action="{{ url_for('bulk_approve_students') }}">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-cell">
-                                    <input type="checkbox" id="selectAllPending">
-                                </th>
-                                <th>Student</th>
-                                <th>Email</th>
-                                <th>Requested Courses</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for student in pending %}
-                                <tr>
-                                    <td class="checkbox-cell">
-                                        <input type="checkbox" name="student_ids" value="{{ student.id }}" class="pending-checkbox">
-                                    </td>
-                                    <td>
-                                        <div class="student-name">{{ student.username }}</div>
-                                    </td>
-                                    <td>
-                                        <span class="student-email">{{ student.email }}</span>
-                                    </td>
-                                    <td>
-                                        {% for course in student.enrolled_courses %}
-                                            <span class="tag-badge">{{ course.name }}</span>
-                                        {% else %}
-                                            <span style="color: var(--text-muted); font-size: 0.8rem;">No courses</span>
-                                        {% endfor %}
-                                    </td>
-                                    <td>
-                                        <div class="action-group">
-                                            <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display: inline;">
-                                                <button type="submit" class="btn-action btn-approve" title="Approve Student">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
-                                            <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-action btn-reject" title="Reject Student">
-                                                <i class="fas fa-times"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </form>
-            </div>
+    <div class="section-card" style="border-color: rgba(245, 158, 11, 0.15);">
+        <div class="section-card-header">
+            <h2>
+                <i class="fas fa-clock" style="color: #F59E0B;"></i>
+                Pending Approvals
+                <span class="badge-count">{{ pending|length }}</span>
+            </h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Review and approve student course requests</span>
         </div>
+        <div class="section-card-body">
+            <form id="bulkForm" method="POST" action="{{ url_for('bulk_approve_students') }}">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell">
+                                <input type="checkbox" id="selectAllPending">
+                            </th>
+                            <th>Student</th>
+                            <th>Email</th>
+                            <th>Requested Courses</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in pending %}
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" name="student_ids" value="{{ student.id }}" class="pending-checkbox">
+                            </td>
+                            <td>
+                                <div class="student-name">{{ student.username }}</div>
+                            </td>
+                            <td>
+                                <span class="student-email">{{ student.email }}</span>
+                            </td>
+                            <td>
+                                {% for course in student.enrolled_courses %}
+                                <span class="enrollment-status pending">{{ course.name }}</span>
+                                {% else %}
+                                <span style="color: var(--text-muted); font-size: 0.8rem;">No courses</span>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <span class="badge badge-warning">
+                                    <i class="fas fa-clock"></i> Pending
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn-action btn-approve" title="Approve All Courses">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-action btn-reject" title="Reject Student">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
     {% endif %}
 
     <!-- All Students Section -->
     <div class="section-card">
         <div class="section-card-header">
             <h2>
-                <i class="fas fa-users"></i> 
+                <i class="fas fa-users"></i>
                 All Students
                 <span class="badge-count">{{ students|length if students else 0 }}</span>
             </h2>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">Manage student accounts and enrollments</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Manage student accounts and course enrollments</span>
         </div>
         <div class="section-card-body">
             <table class="admin-table">
@@ -812,61 +904,84 @@
                 </thead>
                 <tbody>
                     {% for student in students %}
-                        <tr>
-                            <td>
-                                <div class="student-name">{{ student.username }}</div>
-                            </td>
-                            <td>
-                                <span class="student-email">{{ student.email }}</span>
-                            </td>
-                            <td>
-                                {% for course in student.enrolled_courses %}
-                                    <span class="tag-badge">{{ course.name }}</span>
-                                {% else %}
-                                    <span style="color: var(--text-muted); font-size: 0.8rem;">No courses</span>
-                                {% endfor %}
-                            </td>
-                            <td>
+                    <tr>
+                        <td>
+                            <div class="student-name">{{ student.username }}</div>
+                        </td>
+                        <td>
+                            <span class="student-email">{{ student.email }}</span>
+                        </td>
+                        <td>
+                            {% for course in student.enrolled_courses %}
+                            <span class="enrollment-status approved">{{ course.name }}</span>
+                            {% else %}
+                            <span style="color: var(--text-muted); font-size: 0.8rem;">No courses</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if student.is_approved %}
+                            <span class="badge badge-success">
+                                <i class="fas fa-check-circle"></i> Approved
+                            </span>
+                            {% else %}
+                            <span class="badge badge-warning">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-group">
                                 {% if student.is_approved %}
-                                    <span class="badge badge-success">
-                                        <i class="fas fa-check-circle"></i> Approved
-                                    </span>
-                                {% else %}
-                                    <span class="badge badge-warning">
-                                        <i class="fas fa-clock"></i> Pending
+                                    <!-- Unapprove All Button -->
+                                    <form method="POST" action="{{ url_for('unapprove_student', student_id=student.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn-action btn-unapprove" 
+                                                onclick="return confirm('Unapprove {{ student.username }} from ALL courses? They will lose access to all courses.')" 
+                                                title="Unapprove from All Courses">
+                                            <i class="fas fa-user-slash"></i>
+                                        </button>
+                                    </form>
+
+                                    <!-- Unapprove Individual Course Buttons -->
+                                    {% for course in student.enrolled_courses %}
+                                    <form method="POST" action="{{ url_for('unapprove_course', student_id=student.id, course_id=course.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn-action btn-unapprove-course" 
+                                                onclick="return confirm('Remove {{ student.username }} from {{ course.name }}?')" 
+                                                title="Unapprove from {{ course.name }}">
+                                            <i class="fas fa-times-circle"></i>
+                                        </button>
+                                    </form>
+                                    {% endfor %}
+                                {% endif %}
+
+                                {% if not student.is_approved %}
+                                    <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn-action btn-approve" title="Approve Student">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-action btn-reject" title="Reject Student">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                {% endif %}
+
+                                {% if student.enrolled_courses|length > 0 %}
+                                    <span class="badge badge-info" style="font-size: 0.6rem;">
+                                        {{ student.enrolled_courses|length }} courses
                                     </span>
                                 {% endif %}
-                            </td>
-                            <td>
-                                <div class="action-group">
-                                    {% if not student.is_approved %}
-                                        <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display: inline;">
-                                            <button type="submit" class="btn-action btn-approve" title="Approve Student">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        </form>
-                                        <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-action btn-reject" title="Reject Student">
-                                            <i class="fas fa-times"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if student.enrolled_courses|length > 0 %}
-                                        <span class="badge badge-info" style="font-size: 0.6rem;">
-                                            {{ student.enrolled_courses|length }} courses
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </td>
+                    </tr>
                     {% else %}
-                        <tr>
-                            <td colspan="5">
-                                <div class="empty-state">
-                                    <i class="fas fa-user-graduate"></i>
-                                    <h3>No students registered</h3>
-                                    <p>Students will appear here once they sign up.</p>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fas fa-user-graduate"></i>
+                                <h3>No students registered</h3>
+                                <p>Students will appear here once they sign up.</p>
+                            </div>
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -877,35 +992,79 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Select all pending checkboxes
-    const selectAll = document.getElementById('selectAllPending');
-    const pendingCheckboxes = document.querySelectorAll('.pending-checkbox');
-    
-    if (selectAll) {
-        selectAll.addEventListener('change', function() {
-            pendingCheckboxes.forEach(cb => {
-                cb.checked = this.checked;
+    document.addEventListener('DOMContentLoaded', function () {
+        // Select all pending checkboxes
+        const selectAll = document.getElementById('selectAllPending');
+        const pendingCheckboxes = document.querySelectorAll('.pending-checkbox');
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function () {
+                pendingCheckboxes.forEach(cb => {
+                    cb.checked = this.checked;
+                });
+            });
+        }
+
+        // Update bulk approve button state
+        pendingCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                const checked = document.querySelectorAll('.pending-checkbox:checked');
+                const btn = document.getElementById('bulkApproveBtn');
+                if (btn) {
+                    if (checked.length > 0) {
+                        btn.innerHTML = '<i class="fas fa-check-double"></i> Approve ' + checked.length + ' Selected';
+                        btn.style.opacity = '1';
+                    } else {
+                        btn.innerHTML = '<i class="fas fa-check-double"></i> Bulk Approve All';
+                        btn.style.opacity = '0.6';
+                    }
+                }
             });
         });
-    }
-    
-    // Update bulk approve button state
-    pendingCheckboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            const checked = document.querySelectorAll('.pending-checkbox:checked');
-            const btn = document.getElementById('bulkApproveBtn');
-            if (btn) {
-                if (checked.length > 0) {
-                    btn.innerHTML = '<i class="fas fa-check-double"></i> Approve ' + checked.length + ' Selected';
-                    btn.style.opacity = '1';
-                } else {
-                    btn.innerHTML = '<i class="fas fa-check-double"></i> Bulk Approve';
-                    btn.style.opacity = '0.6';
+
+        // Confirm delete/reject actions
+        document.querySelectorAll('.btn-reject').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                if (!confirm('Are you sure you want to reject this student? This will remove all their pending course requests.')) {
+                    e.preventDefault();
                 }
+            });
+        });
+
+        document.querySelectorAll('.btn-approve').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                if (!confirm('Approve this student for all requested courses?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Confirm unapprove actions
+        document.querySelectorAll('.btn-unapprove').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                if (!confirm('Are you sure you want to unapprove this student from ALL courses? They will lose access to all courses.')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-unapprove-course').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                // The confirm is already in the onclick attribute
+                // This is just a fallback
+            });
+        });
+
+        // Bulk approve confirmation
+        document.querySelector('.btn-bulk')?.addEventListener('click', function (e) {
+            const checked = document.querySelectorAll('.pending-checkbox:checked');
+            if (checked.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one student to approve.');
+            } else if (!confirm('Approve ' + checked.length + ' selected student(s) for all requested courses?')) {
+                e.preventDefault();
             }
         });
     });
-});
 </script>
 {% endblock %}

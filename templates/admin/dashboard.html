@@ -1419,7 +1419,7 @@
             <div class="pending-info">
               <div class="name">{{ student.username }}</div>
               <div class="course">
-                Requested: {% for c in student.enrolled_courses[:2] %}{{ c.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                Requested: {% for c in student.get_enrolled_courses()[:2] %}{{ c.name }}{% if not loop.last %}, {% endif %}{% endfor %}
                 {% if student.enrolled_courses|length > 2 %} +{{ student.enrolled_courses|length - 2 }} more{% endif %}
               </div>
             </div>

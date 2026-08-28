@@ -121,10 +121,10 @@ def super_admin_required(f):
     return decorated_function
 
 # ============================================================================
-# DATABASE MODELS
+# DATABASE MODELS - CORRECT ORDER
 # ============================================================================
 
-# Association Tables
+# 1. Association Tables
 admin_course = db.Table('admin_course',
     db.Column('admin_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('course_id', db.Integer, db.ForeignKey('course.id'))
@@ -135,6 +135,28 @@ student_course = db.Table('student_course',
     db.Column('course_id', db.Integer, db.ForeignKey('course.id'))
 )
 
+# 2. CourseEnrollment MUST be defined BEFORE User
+class CourseEnrollment(db.Model):
+    __tablename__ = 'course_enrollment'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    requested_at = db.Column(db.DateTime, default=datetime.utcnow)
+    approved_at = db.Column(db.DateTime)
+    rejected_at = db.Column(db.DateTime)
+    rejection_reason = db.Column(db.Text)
+    
+    # Relationships - will be resolved after User and Course are defined
+    student = db.relationship('User', backref='enrollments', foreign_keys=[student_id])
+    course = db.relationship('Course', backref='enrollments')
+    
+    __table_args__ = (
+        db.UniqueConstraint('student_id', 'course_id', name='unique_student_course_enrollment'),
+    )
+
+# 3. User model
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     
@@ -147,8 +169,12 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     dark_mode = db.Column(db.Boolean, default=False)
     
+    # Admin can manage multiple courses
     managed_courses = db.relationship('Course', secondary=admin_course, backref='admins')
-    enrolled_courses = db.relationship('Course', secondary=student_course, backref='students')
+    
+    # Student enrollments - CourseEnrollment is now defined
+    # enrollments relationship is defined via CourseEnrollment.student
+    
     notes_read = db.relationship('StudentProgress', backref='student', lazy=True)
     quiz_answers = db.relationship('QuizAnswer', backref='student', lazy=True)
     submissions = db.relationship('AssignmentSubmission', backref='student', lazy=True)
@@ -160,32 +186,84 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     
     def get_courses(self):
+        """Get all courses the user has access to"""
         if self.role == 'super_admin':
             return Course.query.all()
         elif self.role == 'admin':
             return self.managed_courses
         else:
-            return self.enrolled_courses
+            return self.get_enrolled_courses()
     
     def is_admin(self):
         return self.role in ['admin', 'super_admin']
     
     def is_super_admin(self):
         return self.role == 'super_admin'
-
-class Announcement(db.Model):
-    __tablename__ = 'announcement'
     
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    is_pinned = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    # ==========================================
+    # COURSE ENROLLMENT METHODS
+    # ==========================================
     
-    author = db.relationship('User', backref='announcements')
+    def is_enrolled_in_course(self, course_id):
+        """Check if student is approved for a specific course"""
+        from sqlalchemy import and_
+        enrollment = CourseEnrollment.query.filter(
+            and_(
+                CourseEnrollment.student_id == self.id,
+                CourseEnrollment.course_id == course_id,
+                CourseEnrollment.status == 'approved'
+            )
+        ).first()
+        return enrollment is not None
+    
+    def has_pending_request_for_course(self, course_id):
+        """Check if student has a pending request for a course"""
+        from sqlalchemy import and_
+        enrollment = CourseEnrollment.query.filter(
+            and_(
+                CourseEnrollment.student_id == self.id,
+                CourseEnrollment.course_id == course_id,
+                CourseEnrollment.status == 'pending'
+            )
+        ).first()
+        return enrollment is not None
+    
+    def get_course_status(self, course_id):
+        """Get the status of a specific course enrollment"""
+        enrollment = CourseEnrollment.query.filter_by(
+            student_id=self.id,
+            course_id=course_id
+        ).first()
+        return enrollment.status if enrollment else None
+    
+    def get_enrolled_courses(self):
+        """Get all courses where student is approved"""
+        enrollments = CourseEnrollment.query.filter_by(
+            student_id=self.id,
+            status='approved'
+        ).all()
+        return [e.course for e in enrollments]
+    
+    def get_pending_courses(self):
+        """Get all courses where student has pending requests"""
+        enrollments = CourseEnrollment.query.filter_by(
+            student_id=self.id,
+            status='pending'
+        ).all()
+        return [e.course for e in enrollments]
+    
+    def get_rejected_courses(self):
+        """Get all courses where student was rejected"""
+        enrollments = CourseEnrollment.query.filter_by(
+            student_id=self.id,
+            status='rejected'
+        ).all()
+        return [e.course for e in enrollments]
+    
+    def __repr__(self):
+        return f'<User {self.username}>'
 
+# 4. Course model
 class Course(db.Model):
     __tablename__ = 'course'
     
@@ -211,6 +289,7 @@ class Course(db.Model):
         ).count()
         return int((read_count / total_notes) * 100)
 
+# 5. Tag model
 class Tag(db.Model):
     __tablename__ = 'tag'
     
@@ -220,6 +299,7 @@ class Tag(db.Model):
     
     notes = db.relationship('Note', backref='tag', lazy=True)
 
+# 6. Note model
 class Note(db.Model):
     __tablename__ = 'note'
     
@@ -241,6 +321,7 @@ class Note(db.Model):
     def is_new(self):
         return (datetime.utcnow() - self.created_at).days <= 7
 
+# 7. StudentProgress model
 class StudentProgress(db.Model):
     __tablename__ = 'student_progress'
     
@@ -255,6 +336,7 @@ class StudentProgress(db.Model):
         db.UniqueConstraint('student_id', 'note_id', name='unique_student_note'),
     )
 
+# 8. QuizGroup model
 class QuizGroup(db.Model):
     __tablename__ = 'quiz_group'
     
@@ -285,6 +367,7 @@ class QuizGroup(db.Model):
         correct = sum(1 for a in answers if a.is_correct)
         return {'correct': correct, 'total': len(answers), 'score': int((correct / len(answers)) * 100) if answers else 0}
 
+# 9. QuizQuestion model
 class QuizQuestion(db.Model):
     __tablename__ = 'quiz_question'
     
@@ -300,6 +383,7 @@ class QuizQuestion(db.Model):
     
     quiz_group_id = db.Column(db.Integer, db.ForeignKey('quiz_group.id'), nullable=False)
 
+# 10. QuizAnswer model
 class QuizAnswer(db.Model):
     __tablename__ = 'quiz_answer'
     
@@ -317,6 +401,7 @@ class QuizAnswer(db.Model):
         db.UniqueConstraint('student_id', 'question_id', name='unique_student_question'),
     )
 
+# 11. Assignment model
 class Assignment(db.Model):
     __tablename__ = 'assignment'
     
@@ -343,6 +428,7 @@ class Assignment(db.Model):
             student_id=student_id
         ).first()
 
+# 12. AssignmentSubmission model
 class AssignmentSubmission(db.Model):
     __tablename__ = 'assignment_submission'
     
@@ -357,6 +443,7 @@ class AssignmentSubmission(db.Model):
     score = db.Column(db.Float)
     feedback = db.Column(db.Text)
 
+# 13. RejectionMessage model
 class RejectionMessage(db.Model):
     __tablename__ = 'rejection_message'
     
@@ -368,6 +455,20 @@ class RejectionMessage(db.Model):
     
     student = db.relationship('User', backref='rejections')
     course = db.relationship('Course', backref='rejections')
+
+# 14. Announcement model
+class Announcement(db.Model):
+    __tablename__ = 'announcement'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    is_pinned = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    
+    author = db.relationship('User', backref='announcements')
 
 # ============================================================================
 # CREATE ADMIN USER
@@ -415,7 +516,8 @@ def inject_user():
     return {
         'current_user': current_user,
         'now': datetime.utcnow(),
-        'get_courses': lambda: current_user.get_courses() if current_user.is_authenticated else []
+        'get_courses': lambda: current_user.get_courses() if current_user.is_authenticated else [],
+        'is_approved': lambda: current_user.is_approved if current_user.is_authenticated else False
     }
 
 # ============================================================================
@@ -458,6 +560,11 @@ def login():
             # Redirect for regular form submissions
             if user.is_admin():
                 return redirect(url_for('admin_dashboard'))
+            
+            # ✅ If student is not approved, redirect to pending approval page
+            if not user.is_approved:
+                return redirect(url_for('student_pending_approval'))
+            
             return redirect(url_for('student_dashboard'))
         else:
             if is_ajax:
@@ -510,10 +617,16 @@ def signup():
         db.session.add(student)
         db.session.flush()
         
+        # Create CourseEnrollment records for each selected course
         for course_id in selected_courses:
             course = Course.query.get(course_id)
             if course:
-                student.enrolled_courses.append(course)
+                enrollment = CourseEnrollment(
+                    student_id=student.id,
+                    course_id=course_id,
+                    status='pending'
+                )
+                db.session.add(enrollment)
         
         db.session.commit()
         
@@ -538,6 +651,12 @@ def logout():
 def dashboard():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
+    
+    # ✅ Check if student is approved
+    if not current_user.is_approved:
+        flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+        return redirect(url_for('student_pending_approval'))
+    
     return redirect(url_for('student_dashboard'))
 
 @app.route('/student/dashboard')
@@ -546,7 +665,12 @@ def student_dashboard():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    courses = current_user.enrolled_courses
+    # ✅ Check if student is approved
+    if not current_user.is_approved:
+        flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+        return redirect(url_for('student_pending_approval'))
+    
+    courses = current_user.get_enrolled_courses()
     progress_data = []
     for course in courses:
         progress_data.append({
@@ -622,6 +746,29 @@ def admin_dashboard():
                          announcements_count=announcements_count)
 
 # ============================================================================
+# ROUTES - STUDENT PENDING APPROVAL
+# ============================================================================
+
+@app.route('/student/pending-approval')
+@login_required
+def student_pending_approval():
+    """Show pending approval page for students waiting for admin approval"""
+    # If user is admin, redirect to admin dashboard
+    if current_user.is_admin():
+        return redirect(url_for('admin_dashboard'))
+    
+    # If student is already approved, redirect to student dashboard
+    if current_user.is_approved:
+        return redirect(url_for('student_dashboard'))
+    
+    # Get pending courses count
+    pending_courses = current_user.get_pending_courses()
+    
+    return render_template('student/pending_approval.html', 
+                         pending_courses=pending_courses,
+                         pending_count=len(pending_courses))
+
+# ============================================================================
 # ROUTES - COURSE MANAGEMENT (Super Admin)
 # ============================================================================
 
@@ -658,13 +805,85 @@ def create_course():
     
     return render_template('admin/create_course.html')
 
+@app.route('/admin/students/<int:student_id>/unapprove', methods=['POST'])
+@login_required
+@admin_required
+def unapprove_student(student_id):
+    """Unapprove a student - remove all course enrollments"""
+    student = User.query.get_or_404(student_id)
+    
+    # Check if admin has permission for this student's courses
+    if not current_user.is_super_admin():
+        student_course_ids = [e.course_id for e in CourseEnrollment.query.filter_by(student_id=student.id, status='approved').all()]
+        admin_course_ids = [c.id for c in current_user.managed_courses]
+        if not any(cid in admin_course_ids for cid in student_course_ids):
+            flash('You do not have permission to unapprove this student.', 'error')
+            return redirect(url_for('manage_students'))
+    
+    # Remove all approved enrollments
+    approved_enrollments = CourseEnrollment.query.filter_by(
+        student_id=student.id,
+        status='approved'
+    ).all()
+    
+    for enrollment in approved_enrollments:
+        enrollment.status = 'pending'  # Change back to pending
+        enrollment.approved_at = None
+    
+    # Also mark student as not approved
+    student.is_approved = False
+    
+    db.session.commit()
+    
+    flash(f'{student.username} has been unapproved. They will need to be re-approved to access courses.', 'warning')
+    return redirect(url_for('manage_students'))
+
+@app.route('/admin/students/<int:student_id>/unapprove-course/<int:course_id>', methods=['POST'])
+@login_required
+@admin_required
+def unapprove_course(student_id, course_id):
+    """Unapprove a student from a specific course"""
+    student = User.query.get_or_404(student_id)
+    course = Course.query.get_or_404(course_id)
+    
+    # Check if admin has permission
+    if not current_user.is_super_admin() and course not in current_user.managed_courses:
+        flash('You do not have permission to unapprove this course.', 'error')
+        return redirect(url_for('manage_students'))
+    
+    # Find the enrollment
+    enrollment = CourseEnrollment.query.filter_by(
+        student_id=student.id,
+        course_id=course.id,
+        status='approved'
+    ).first()
+    
+    if enrollment:
+        enrollment.status = 'pending'
+        enrollment.approved_at = None
+        db.session.commit()
+        flash(f'{student.username} unapproved from {course.name}.', 'warning')
+    else:
+        flash('Student is not approved for this course.', 'error')
+    
+    return redirect(url_for('manage_students'))
+
 @app.route('/admin/courses/<int:course_id>/delete', methods=['POST'])
 @login_required
 @super_admin_required
 def delete_course(course_id):
     course = Course.query.get_or_404(course_id)
+    
+    # Delete all rejection messages related to this course first
+    RejectionMessage.query.filter_by(course_id=course_id).delete()
+    
+    # Delete all enrollments for this course
+    CourseEnrollment.query.filter_by(course_id=course_id).delete()
+    
+    # Now delete the course
     db.session.delete(course)
     db.session.commit()
+    
     flash(f'Course {course.name} deleted successfully.', 'success')
     return redirect(url_for('manage_courses'))
 
@@ -756,6 +975,11 @@ def edit_announcement(announcement_id):
 @app.route('/student/announcements')
 @login_required
 def student_announcements():
+    # ✅ Check if student is approved
+    if not current_user.is_admin() and not current_user.is_approved:
+        flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+        return redirect(url_for('student_pending_approval'))
+    
     announcements = Announcement.query.order_by(Announcement.is_pinned.desc(), Announcement.created_at.desc()).all()
     return render_template('student/announcements.html', announcements=announcements)
 
@@ -790,7 +1014,7 @@ def export_students():
     writer.writerow(['Username', 'Email', 'Enrolled Courses', 'Status', 'Joined Date'])
     
     for student in students:
-        courses = ', '.join([c.name for c in student.enrolled_courses])
+        courses = ', '.join([c.name for c in student.get_enrolled_courses()])
         status = 'Approved' if student.is_approved else 'Pending'
         writer.writerow([
             student.username,
@@ -956,7 +1180,7 @@ def delete_admin(admin_id):
     return redirect(url_for('manage_admins'))
 
 # ============================================================================
-# ROUTES - STUDENT MANAGEMENT (Admin)
+# ROUTES - STUDENT MANAGEMENT (Admin) with Course Approval
 # ============================================================================
 
 @app.route('/admin/students')
@@ -968,14 +1192,23 @@ def manage_students():
         pending = User.query.filter_by(role='student', is_approved=False).all()
     else:
         course_ids = [c.id for c in current_user.managed_courses]
+        # Get students with pending or approved enrollments in this admin's courses
         students = User.query.filter(
             User.role == 'student',
-            User.enrolled_courses.any(Course.id.in_(course_ids))
+            User.id.in_(
+                db.session.query(CourseEnrollment.student_id).filter(
+                    CourseEnrollment.course_id.in_(course_ids)
+                )
+            )
         ).all()
         pending = User.query.filter(
             User.role == 'student',
             User.is_approved == False,
-            User.enrolled_courses.any(Course.id.in_(course_ids))
+            User.id.in_(
+                db.session.query(CourseEnrollment.student_id).filter(
+                    CourseEnrollment.course_id.in_(course_ids)
+                )
+            )
         ).all()
     
     courses = Course.query.all()
@@ -987,16 +1220,31 @@ def manage_students():
 def approve_student(student_id):
     student = User.query.get_or_404(student_id)
     
-    if not current_user.is_super_admin():
-        student_course_ids = [c.id for c in student.enrolled_courses]
-        admin_course_ids = [c.id for c in current_user.managed_courses]
-        if not any(cid in admin_course_ids for cid in student_course_ids):
-            flash('You do not have permission to approve this student.', 'error')
-            return redirect(url_for('manage_students'))
+    # Get all pending enrollments for this student
+    pending_enrollments = CourseEnrollment.query.filter_by(
+        student_id=student.id,
+        status='pending'
+    ).all()
     
+    # Check if admin has permission for these courses
+    if not current_user.is_super_admin():
+        admin_course_ids = [c.id for c in current_user.managed_courses]
+        for enrollment in pending_enrollments:
+            if enrollment.course_id not in admin_course_ids:
+                flash('You do not have permission to approve this student for all courses.', 'error')
+                return redirect(url_for('manage_students'))
+    
+    # Approve all pending enrollments
+    for enrollment in pending_enrollments:
+        enrollment.status = 'approved'
+        enrollment.approved_at = datetime.utcnow()
+    
+    # Mark student as approved
     student.is_approved = True
+    
     db.session.commit()
-    flash(f'{student.username} has been approved.', 'success')
+    
+    flash(f'{student.username} has been approved for {len(pending_enrollments)} course(s).', 'success')
     return redirect(url_for('manage_students'))
 
 @app.route('/admin/students/<int:student_id>/reject', methods=['GET', 'POST'])
@@ -1004,7 +1252,12 @@ def approve_student(student_id):
 @admin_required
 def reject_student(student_id):
     student = User.query.get_or_404(student_id)
-    courses = student.enrolled_courses
+    
+    # Get pending enrollments
+    pending_enrollments = CourseEnrollment.query.filter_by(
+        student_id=student.id,
+        status='pending'
+    ).all()
     
     if request.method == 'POST':
         course_id = request.form.get('course_id')
@@ -1012,12 +1265,21 @@ def reject_student(student_id):
         
         if not course_id or not message:
             flash('Please select a course and provide a reason.', 'error')
-            return render_template('admin/reject_user.html', student=student, courses=courses)
+            return render_template('admin/reject_user.html', student=student, enrollments=pending_enrollments)
         
-        course = Course.query.get(course_id)
-        if course in student.enrolled_courses:
-            student.enrolled_courses.remove(course)
+        # Find the enrollment
+        enrollment = CourseEnrollment.query.filter_by(
+            student_id=student.id,
+            course_id=course_id,
+            status='pending'
+        ).first()
         
+        if enrollment:
+            enrollment.status = 'rejected'
+            enrollment.rejected_at = datetime.utcnow()
+            enrollment.rejection_reason = message
+        
+        # Save rejection message
         rejection = RejectionMessage(
             student_id=student.id,
             course_id=course_id,
@@ -1025,14 +1287,26 @@ def reject_student(student_id):
         )
         db.session.add(rejection)
         
-        if len(student.enrolled_courses) == 0:
-            student.is_approved = False
+        # Check if student has any pending enrollments left
+        remaining_pending = CourseEnrollment.query.filter_by(
+            student_id=student.id,
+            status='pending'
+        ).count()
+        
+        if remaining_pending == 0:
+            # Check if student has any approved enrollments
+            approved_count = CourseEnrollment.query.filter_by(
+                student_id=student.id,
+                status='approved'
+            ).count()
+            if approved_count == 0:
+                student.is_approved = False
         
         db.session.commit()
-        flash(f'Student {student.username} rejected from course.', 'warning')
+        flash(f'Student {student.username} rejected from {enrollment.course.name}.', 'warning')
         return redirect(url_for('manage_students'))
     
-    return render_template('admin/reject_user.html', student=student, courses=courses)
+    return render_template('admin/reject_user.html', student=student, enrollments=pending_enrollments)
 
 @app.route('/admin/students/<int:student_id>/unreject/<int:course_id>', methods=['POST'])
 @login_required
@@ -1041,17 +1315,37 @@ def unreject_student(student_id, course_id):
     student = User.query.get_or_404(student_id)
     course = Course.query.get_or_404(course_id)
     
-    if course not in student.enrolled_courses:
-        student.enrolled_courses.append(course)
-        student.is_approved = True
-        
-        RejectionMessage.query.filter_by(
+    # Check if there's a rejection record
+    rejection = RejectionMessage.query.filter_by(
+        student_id=student.id,
+        course_id=course_id
+    ).first()
+    
+    if rejection:
+        # Remove rejection message
+        db.session.delete(rejection)
+    
+    # Check if there's an enrollment record
+    enrollment = CourseEnrollment.query.filter_by(
+        student_id=student.id,
+        course_id=course_id
+    ).first()
+    
+    if enrollment:
+        enrollment.status = 'pending'
+        enrollment.rejected_at = None
+        enrollment.rejection_reason = None
+    else:
+        # Create new enrollment
+        enrollment = CourseEnrollment(
             student_id=student.id,
-            course_id=course_id
-        ).delete()
-        
-        db.session.commit()
-        flash(f'{student.username} has been restored to {course.name}.', 'success')
+            course_id=course_id,
+            status='pending'
+        )
+        db.session.add(enrollment)
+    
+    db.session.commit()
+    flash(f'{student.username} has been restored to {course.name} (pending approval).', 'success')
     
     return redirect(url_for('manage_students'))
 
@@ -1065,13 +1359,23 @@ def bulk_approve_students():
         flash('No students selected.', 'warning')
         return redirect(url_for('manage_students'))
     
+    approved_count = 0
     for sid in student_ids:
         student = User.query.get(sid)
         if student:
+            # Approve all pending enrollments
+            pending_enrollments = CourseEnrollment.query.filter_by(
+                student_id=student.id,
+                status='pending'
+            ).all()
+            for enrollment in pending_enrollments:
+                enrollment.status = 'approved'
+                enrollment.approved_at = datetime.utcnow()
             student.is_approved = True
+            approved_count += 1
     
     db.session.commit()
-    flash(f'{len(student_ids)} students approved successfully.', 'success')
+    flash(f'{approved_count} students approved successfully.', 'success')
     return redirect(url_for('manage_students'))
 
 # ============================================================================
@@ -1216,7 +1520,7 @@ def delete_note(note_id):
         if os.path.exists(file_path):
             os.remove(file_path)
     
-    # ✅ ADD THIS ONE LINE - Deletes student progress records first
+    # Delete student progress records first
     StudentProgress.query.filter_by(note_id=note.id).delete()
     
     db.session.delete(note)
@@ -1602,7 +1906,7 @@ def grade_submission(submission_id):
     return render_template('admin/grade_submission.html', submission=submission)
 
 # ============================================================================
-# ROUTES - STUDENT COURSE VIEWING
+# ROUTES - STUDENT COURSE VIEWING (with Approval Check)
 # ============================================================================
 
 @app.route('/student/courses')
@@ -1611,10 +1915,32 @@ def student_courses():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    courses = current_user.enrolled_courses
-    available_courses = Course.query.filter(~Course.id.in_([c.id for c in courses])).all()
+    # ✅ Check if student is approved
+    if not current_user.is_approved:
+        flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+        return redirect(url_for('student_pending_approval'))
     
-    return render_template('student_courses.html', courses=courses, available_courses=available_courses)
+    # Get approved and pending courses
+    approved_courses = current_user.get_enrolled_courses()
+    pending_courses = current_user.get_pending_courses()
+    
+    # Get available courses (not enrolled in any way)
+    enrolled_course_ids = [c.id for c in approved_courses] + [c.id for c in pending_courses]
+    
+    # ✅ FIX: Check for rejected courses - This line was missing!
+    rejections = RejectionMessage.query.filter_by(student_id=current_user.id).all()
+    rejected_course_ids = [r.course_id for r in rejections]
+    
+    # Get available courses (not enrolled, not rejected)
+    available_courses = Course.query.filter(
+        ~Course.id.in_(enrolled_course_ids + rejected_course_ids if enrolled_course_ids else [])
+    ).all()
+    
+    return render_template('student_courses.html', 
+                         approved_courses=approved_courses,
+                         pending_courses=pending_courses,
+                         available_courses=available_courses,
+                         rejections=rejections)
 
 @app.route('/student/courses/<int:course_id>')
 @login_required
@@ -1624,7 +1950,13 @@ def view_course(course_id):
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    if course not in current_user.enrolled_courses:
+    # ✅ Check if student is approved
+    if not current_user.is_approved:
+        flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+        return redirect(url_for('student_pending_approval'))
+    
+    # Check if student is APPROVED for this course
+    if not current_user.is_enrolled_in_course(course_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('student_courses'))
     
@@ -1643,24 +1975,72 @@ def request_course(course_id):
     
     course = Course.query.get_or_404(course_id)
     
-    if course in current_user.enrolled_courses:
-        flash('You are already enrolled in this course.', 'info')
-        return redirect(url_for('student_courses'))
-    
-    rejection = RejectionMessage.query.filter_by(
+    # Check if already enrolled or pending
+    existing_enrollment = CourseEnrollment.query.filter_by(
         student_id=current_user.id,
         course_id=course_id
     ).first()
     
-    if rejection:
-        flash(f'Your request for this course was previously rejected. Please contact admin.', 'error')
+    if existing_enrollment:
+        if existing_enrollment.status == 'approved':
+            flash('You are already enrolled in this course.', 'info')
+        elif existing_enrollment.status == 'pending':
+            flash('Your request for this course is pending approval.', 'warning')
+        elif existing_enrollment.status == 'rejected':
+            flash(f'Your request for this course was previously rejected.', 'error')
         return redirect(url_for('student_courses'))
     
-    current_user.enrolled_courses.append(course)
+    # Create new enrollment request
+    enrollment = CourseEnrollment(
+        student_id=current_user.id,
+        course_id=course_id,
+        status='pending'
+    )
+    db.session.add(enrollment)
+    
+    # Update user approval status
     current_user.is_approved = False
     db.session.commit()
     
     flash(f'Request sent for {course.name}. Waiting for admin approval.', 'success')
+    return redirect(url_for('student_courses'))
+
+@app.route('/student/courses/<int:course_id>/reapply', methods=['POST'])
+@login_required
+def reapply_course(course_id):
+    """Re-apply for a course that was previously rejected"""
+    if current_user.is_admin():
+        flash('Admins cannot request courses.', 'warning')
+        return redirect(url_for('student_dashboard'))
+    
+    course = Course.query.get_or_404(course_id)
+    
+    # Check if there's a rejection
+    enrollment = CourseEnrollment.query.filter_by(
+        student_id=current_user.id,
+        course_id=course_id,
+        status='rejected'
+    ).first()
+    
+    if not enrollment:
+        flash('You have not been rejected from this course.', 'info')
+        return redirect(url_for('student_courses'))
+    
+    # Update enrollment to pending
+    enrollment.status = 'pending'
+    enrollment.rejected_at = None
+    enrollment.rejection_reason = None
+    
+    # Remove rejection message
+    RejectionMessage.query.filter_by(
+        student_id=current_user.id,
+        course_id=course_id
+    ).delete()
+    
+    current_user.is_approved = False
+    db.session.commit()
+    
+    flash(f'You have re-applied for {course.name}. Waiting for admin approval.', 'success')
     return redirect(url_for('student_courses'))
 
 @app.route('/note/<int:note_id>')
@@ -1668,10 +2048,39 @@ def request_course(course_id):
 def view_note(note_id):
     note = Note.query.get_or_404(note_id)
     
-    if not current_user.is_admin():
-        if note.course not in current_user.enrolled_courses:
-            flash('You do not have access to this note.', 'error')
-            return redirect(url_for('student_dashboard'))
+    if current_user.is_admin():
+        return redirect(url_for('admin_dashboard'))
+    
+    # ✅ Check if student is approved
+    if not current_user.is_approved:
+        flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+        return redirect(url_for('student_pending_approval'))
+    
+    # Check if student has access
+    if not current_user.is_enrolled_in_course(note.course_id):
+        flash('You do not have access to this note.', 'error')
+        return redirect(url_for('student_dashboard'))
+    
+    # Mark as read
+    progress = StudentProgress.query.filter_by(
+        student_id=current_user.id,
+        note_id=note.id
+    ).first()
+    
+    if not progress:
+        progress = StudentProgress(
+            student_id=current_user.id,
+            note_id=note.id,
+            course_id=note.course_id,
+            is_read=True,
+            read_at=datetime.utcnow()
+        )
+        db.session.add(progress)
+    elif not progress.is_read:
+        progress.is_read = True
+        progress.read_at = datetime.utcnow()
+    
+    db.session.commit()
     
     return render_template('view_note.html', note=note)
 
@@ -1683,7 +2092,7 @@ def toggle_note_read(note_id):
     if current_user.is_admin():
         return jsonify({'error': 'Admins cannot track progress'}), 403
     
-    if note.course not in current_user.enrolled_courses:
+    if not current_user.is_enrolled_in_course(note.course_id):
         return jsonify({'error': 'Not enrolled'}), 403
     
     progress = StudentProgress.query.filter_by(
@@ -1710,7 +2119,7 @@ def toggle_note_read(note_id):
     return jsonify({'success': True, 'is_read': progress.is_read})
 
 # ============================================================================
-# ROUTES - STUDENT QUIZZES
+# ROUTES - STUDENT QUIZZES (with Approval Check)
 # ============================================================================
 
 @app.route('/student/quizzes')
@@ -1719,7 +2128,15 @@ def student_quizzes():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    course_ids = [c.id for c in current_user.enrolled_courses]
+    # ✅ Check if student is approved
+    if not current_user.is_approved:
+        flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+        return redirect(url_for('student_pending_approval'))
+    
+    # Get courses the student is approved for
+    approved_courses = current_user.get_enrolled_courses()
+    course_ids = [c.id for c in approved_courses]
+    
     quizzes = QuizGroup.query.filter(QuizGroup.course_id.in_(course_ids)).all()
     
     quiz_data = []
@@ -1742,10 +2159,11 @@ def take_quiz(quiz_id):
     
     quiz = QuizGroup.query.get_or_404(quiz_id)
     
-    if quiz.course not in current_user.enrolled_courses:
+    if not current_user.is_enrolled_in_course(quiz.course_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('student_quizzes'))
     
+    # Check if already taken
     existing_answers = QuizAnswer.query.filter_by(
         student_id=current_user.id,
         quiz_group_id=quiz.id
@@ -1797,7 +2215,7 @@ def quiz_result(quiz_id):
     
     quiz = QuizGroup.query.get_or_404(quiz_id)
     
-    if quiz.course not in current_user.enrolled_courses:
+    if not current_user.is_enrolled_in_course(quiz.course_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('student_quizzes'))
     
@@ -1821,7 +2239,7 @@ def quiz_result(quiz_id):
                          score=score)
 
 # ============================================================================
-# ROUTES - STUDENT ASSIGNMENTS
+# ROUTES - STUDENT ASSIGNMENTS (with Approval Check)
 # ============================================================================
 
 @app.route('/student/assignments')
@@ -1830,7 +2248,15 @@ def student_assignments():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    course_ids = [c.id for c in current_user.enrolled_courses]
+    # ✅ Check if student is approved
+    if not current_user.is_approved:
+        flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
+        return redirect(url_for('student_pending_approval'))
+    
+    # Get courses the student is approved for
+    approved_courses = current_user.get_enrolled_courses()
+    course_ids = [c.id for c in approved_courses]
+    
     assignments = Assignment.query.filter(Assignment.course_id.in_(course_ids)).all()
     
     assignment_data = []
@@ -1855,7 +2281,7 @@ def submit_assignment(assignment_id):
     
     assignment = Assignment.query.get_or_404(assignment_id)
     
-    if assignment.course not in current_user.enrolled_courses:
+    if not current_user.is_enrolled_in_course(assignment.course_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('student_assignments'))
     
@@ -1925,7 +2351,7 @@ def leaderboard():
             'student': student,
             'score': score,
             'total_questions': total,
-            'course_count': len(student.enrolled_courses)
+            'course_count': len(student.get_enrolled_courses())
         })
     
     student_scores.sort(key=lambda x: x['score'], reverse=True)
@@ -1937,7 +2363,6 @@ def leaderboard():
 @admin_required
 def admin_leaderboard():
     """Admin view of leaderboard with management features"""
-    # Get all students with their scores
     students = User.query.filter_by(role='student', is_approved=True).all()
     
     student_scores = []
@@ -1947,23 +2372,18 @@ def admin_leaderboard():
         total = len(answers)
         score = int((correct / total) * 100) if total > 0 else 0
         
-        # Get course count
-        course_count = len(student.enrolled_courses)
-        
         student_scores.append({
             'student': student,
             'score': score,
             'correct': correct,
             'total': total,
-            'course_count': course_count,
+            'course_count': len(student.get_enrolled_courses()),
             'joined': student.created_at.strftime('%b %d, %Y'),
             'status': 'Active' if student.is_approved else 'Pending'
         })
     
-    # Sort by score descending
     student_scores.sort(key=lambda x: x['score'], reverse=True)
     
-    # Stats
     total_students = len(student_scores)
     avg_score = sum(s['score'] for s in student_scores) / total_students if total_students > 0 else 0
     top_performer = student_scores[0] if student_scores else None
@@ -1981,7 +2401,6 @@ def reset_student_scores(student_id):
     """Reset a student's quiz scores"""
     student = User.query.get_or_404(student_id)
     
-    # Delete all quiz answers for this student
     QuizAnswer.query.filter_by(student_id=student_id).delete()
     db.session.commit()
     
@@ -1997,7 +2416,6 @@ def reset_all_scores():
         flash('Only super admin can reset all scores.', 'error')
         return redirect(url_for('admin_leaderboard'))
     
-    # Delete all quiz answers
     QuizAnswer.query.delete()
     db.session.commit()
     
@@ -2017,10 +2435,8 @@ def export_leaderboard():
     output = StringIO()
     writer = csv.writer(output)
     
-    # Headers
     writer.writerow(['Rank', 'Student', 'Email', 'Score', 'Correct', 'Total', 'Courses', 'Joined'])
     
-    # Data
     rank = 1
     for student in students:
         answers = QuizAnswer.query.filter_by(student_id=student.id).all()
@@ -2035,7 +2451,7 @@ def export_leaderboard():
             f"{score}%",
             correct,
             total,
-            len(student.enrolled_courses),
+            len(student.get_enrolled_courses()),
             student.created_at.strftime('%Y-%m-%d')
         ])
         rank += 1
@@ -2222,38 +2638,53 @@ def get_notifications():
                 'is_read': False
             })
     else:
-        new_announcements = Announcement.query.filter(Announcement.created_at > datetime.utcnow() - timedelta(days=7)).count()
-        if new_announcements > 0:
-            notifications.append({
-                'id': 'new_announcements',
-                'type': 'announcement',
-                'title': f'{new_announcements} new announcement(s)',
-                'message': 'Check out the latest updates from your instructors',
-                'url': url_for('student_announcements'),
-                'icon': 'fa-bullhorn',
-                'icon_color': 'purple',
-                'created_at': datetime.utcnow().isoformat(),
-                'is_read': False
-            })
-        
-        enrolled_course_ids = [c.id for c in current_user.enrolled_courses]
-        if enrolled_course_ids:
-            unread_notes = StudentProgress.query.filter(
-                StudentProgress.student_id == current_user.id,
-                StudentProgress.is_read == False
-            ).count()
-            if unread_notes > 0:
+        # ✅ Check if student is approved before showing notifications
+        if current_user.is_approved:
+            new_announcements = Announcement.query.filter(Announcement.created_at > datetime.utcnow() - timedelta(days=7)).count()
+            if new_announcements > 0:
                 notifications.append({
-                    'id': 'unread_notes',
-                    'type': 'note',
-                    'title': f'{unread_notes} unread note(s)',
-                    'message': 'You have notes to catch up on',
-                    'url': url_for('student_courses'),
-                    'icon': 'fa-book',
-                    'icon_color': 'green',
+                    'id': 'new_announcements',
+                    'type': 'announcement',
+                    'title': f'{new_announcements} new announcement(s)',
+                    'message': 'Check out the latest updates from your instructors',
+                    'url': url_for('student_announcements'),
+                    'icon': 'fa-bullhorn',
+                    'icon_color': 'purple',
                     'created_at': datetime.utcnow().isoformat(),
                     'is_read': False
                 })
+            
+            enrolled_course_ids = [c.id for c in current_user.get_enrolled_courses()]
+            if enrolled_course_ids:
+                unread_notes = StudentProgress.query.filter(
+                    StudentProgress.student_id == current_user.id,
+                    StudentProgress.is_read == False
+                ).count()
+                if unread_notes > 0:
+                    notifications.append({
+                        'id': 'unread_notes',
+                        'type': 'note',
+                        'title': f'{unread_notes} unread note(s)',
+                        'message': 'You have notes to catch up on',
+                        'url': url_for('student_courses'),
+                        'icon': 'fa-book',
+                        'icon_color': 'green',
+                        'created_at': datetime.utcnow().isoformat(),
+                        'is_read': False
+                    })
+        else:
+            # Show pending approval notification
+            notifications.append({
+                'id': 'pending_approval',
+                'type': 'approval',
+                'title': 'Account Pending Approval',
+                'message': 'Your account is waiting for admin approval',
+                'url': url_for('student_pending_approval'),
+                'icon': 'fa-clock',
+                'icon_color': 'orange',
+                'created_at': datetime.utcnow().isoformat(),
+                'is_read': False
+            })
     
     return jsonify(notifications)
 

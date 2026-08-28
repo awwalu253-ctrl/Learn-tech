@@ -84,6 +84,85 @@
     font-weight: 700;
   }
 
+  /* Pending Account Approval Notice */
+  .pending-account-notice {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.20);
+    border-radius: var(--radius-sm, 10px);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    animation: slideInRight 0.4s ease forwards;
+  }
+
+  .pending-account-notice .notice-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .pending-account-notice .notice-content strong {
+    color: var(--navy, #0F172A);
+    display: block;
+    font-size: 0.95rem;
+  }
+
+  .pending-account-notice .notice-content p {
+    margin: 2px 0 0;
+    color: var(--text-light, #64748B);
+    font-size: 0.9rem;
+  }
+
+  /* Pending Course Requests Notice */
+  .pending-courses-notice {
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.10);
+    border-radius: var(--radius-sm, 10px);
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: slideInRight 0.4s ease forwards;
+    flex-wrap: wrap;
+  }
+
+  .pending-courses-notice .notice-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .pending-courses-notice .notice-content {
+    flex: 1;
+  }
+
+  .pending-courses-notice .notice-content strong {
+    color: var(--navy, #0F172A);
+  }
+
+  .pending-courses-notice .notice-content .pending-course-tag {
+    display: inline-block;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin: 2px 4px 2px 0;
+  }
+
+  .pending-courses-notice .notice-content .pending-status {
+    color: var(--text-muted, #94A3B8);
+    font-size: 0.85rem;
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
   /* Stats Row */
   .stats-row {
     display: grid;
@@ -221,11 +300,6 @@
   .quick-action-btn .action-icon.purple {
     background: rgba(124, 58, 237, 0.08);
     color: #7C3AED;
-  }
-
-  .quick-action-btn .action-icon.green {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
   }
 
   .quick-action-btn .action-icon.orange {
@@ -631,6 +705,11 @@
     100% { opacity: 1; transform: translateY(0); }
   }
 
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
   /* Responsive */
   @media (max-width: 1024px) {
     .dashboard-grid {
@@ -712,6 +791,11 @@
 
     .quiz-result-item .quiz-score {
       align-self: flex-start;
+    }
+
+    .pending-courses-notice {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 
@@ -836,6 +920,16 @@
     .empty-state .btn {
       font-size: 0.78rem;
       padding: 7px 16px;
+    }
+
+    .pending-account-notice {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .pending-courses-notice {
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 
@@ -995,8 +1089,70 @@
   [data-theme="dark"] .quick-action-btn .action-icon.orange {
     background: rgba(245, 158, 11, 0.12);
   }
+
+  [data-theme="dark"] .pending-account-notice {
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.12);
+  }
+
+  [data-theme="dark"] .pending-account-notice .notice-content strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .pending-account-notice .notice-content p {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .pending-courses-notice {
+    background: rgba(37, 99, 235, 0.06);
+    border-color: rgba(37, 99, 235, 0.08);
+  }
+
+  [data-theme="dark"] .pending-courses-notice .notice-content strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .pending-courses-notice .notice-content .pending-course-tag {
+    background: rgba(37, 99, 235, 0.12);
+    color: var(--cyan, #22D3EE);
+  }
 </style>
 
+<!-- ========================================== -->
+<!-- PENDING ACCOUNT APPROVAL NOTICE -->
+<!-- ========================================== -->
+{% if not current_user.is_approved %}
+<div class="pending-account-notice">
+    <span class="notice-icon">⏳</span>
+    <div class="notice-content">
+        <strong>Account Pending Approval</strong>
+        <p>Your account is waiting for admin approval. You will not be able to access course content until approved.</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- ========================================== -->
+<!-- PENDING COURSE REQUESTS NOTICE -->
+<!-- ========================================== -->
+{% if pending_courses %}
+<div class="pending-courses-notice">
+    <span class="notice-icon">📚</span>
+    <div class="notice-content">
+        <strong>Pending Course Requests</strong>
+        <p style="margin: 2px 0 0;">
+            You have requested access to:
+            {% for course in pending_courses %}
+                <span class="pending-course-tag">{{ course.name }}</span>
+            {% endfor %}
+            <span class="pending-status">⏳ Waiting for admin approval.</span>
+        </p>
+    </div>
+</div>
+{% endif %}
+
+<!-- ========================================== -->
+<!-- MAIN DASHBOARD CONTENT -->
+<!-- ========================================== -->
 <div class="student-dashboard">
   <!-- Header -->
   <div class="page-header">

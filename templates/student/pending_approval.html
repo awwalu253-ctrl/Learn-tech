@@ -1,0 +1,617 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Approval - Awwalu Devs{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ============================================
+     PENDING APPROVAL PAGE - Premium Theme
+     ============================================ */
+  .pending-page {
+    min-height: calc(100vh - var(--nav-height, 68px) - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--bg, #F8FAFC);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background decoration */
+  .pending-page::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .pending-page::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -15%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .pending-container {
+    max-width: 520px;
+    width: 100%;
+    background: var(--white, #FFFFFF);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    padding: 48px 40px 40px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .pending-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    opacity: 0.6;
+  }
+
+  .pending-container:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+  }
+
+  /* Icon */
+  .pending-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.2rem;
+    color: #F59E0B;
+    transition: var(--transition, 0.3s ease);
+    position: relative;
+  }
+
+  .pending-icon-wrapper .pulse-ring {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba(245, 158, 11, 0.2);
+    animation: pulse-ring 2s ease-in-out infinite;
+  }
+
+  .pending-icon-wrapper .pulse-ring:nth-child(2) {
+    animation-delay: 0.5s;
+    border-color: rgba(245, 158, 11, 0.1);
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.3);
+      opacity: 0;
+    }
+  }
+
+  .pending-container:hover .pending-icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+  }
+
+  /* Content */
+  .pending-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--navy, #0F172A);
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+
+  .pending-title .highlight {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .pending-subtitle {
+    font-size: 1rem;
+    color: var(--text-light, #64748B);
+    margin: 0 0 20px;
+    line-height: 1.7;
+  }
+
+  .pending-subtitle strong {
+    color: var(--text, #1E293B);
+  }
+
+  /* Status Card */
+  .status-card {
+    background: rgba(245, 158, 11, 0.04);
+    border: 1px solid rgba(245, 158, 11, 0.12);
+    border-radius: var(--radius-sm, 10px);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+  }
+
+  .status-card .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #F59E0B;
+    flex-shrink: 0;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .status-card .status-text {
+    font-size: 0.9rem;
+    color: var(--text, #1E293B);
+  }
+
+  .status-card .status-text strong {
+    color: #F59E0B;
+  }
+
+  /* Info Grid */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .info-item {
+    background: var(--bg, #F8FAFC);
+    border-radius: var(--radius-sm, 10px);
+    padding: 14px 16px;
+    text-align: center;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .info-item:hover {
+    background: rgba(37, 99, 235, 0.02);
+    transform: translateY(-2px);
+  }
+
+  .info-item .info-icon {
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .info-item .info-number {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--navy, #0F172A);
+  }
+
+  .info-item .info-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #94A3B8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Steps */
+  .steps-section {
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .steps-section .step-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    margin-bottom: 12px;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    opacity: 0.6;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .step-item.active {
+    opacity: 1;
+  }
+
+  .step-item .step-number {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted, #94A3B8);
+    flex-shrink: 0;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .step-item.active .step-number {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+  }
+
+  .step-item .step-text {
+    font-size: 0.85rem;
+    color: var(--text-light, #64748B);
+  }
+
+  .step-item.active .step-text {
+    color: var(--text, #1E293B);
+    font-weight: 500;
+  }
+
+  .step-item .step-check {
+    margin-left: auto;
+    color: #059669;
+    font-size: 0.9rem;
+  }
+
+  /* Buttons */
+  .pending-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .pending-actions .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary-outline {
+    background: transparent;
+    color: var(--blue, #2563EB);
+    border: 2px solid rgba(37, 99, 235, 0.15);
+  }
+
+  .btn-primary-outline:hover {
+    background: rgba(37, 99, 235, 0.04);
+    border-color: var(--blue, #2563EB);
+    transform: translateY(-2px);
+  }
+
+  .btn-logout-sm {
+    background: rgba(239, 68, 68, 0.06);
+    color: #EF4444;
+  }
+
+  .btn-logout-sm:hover {
+    background: rgba(239, 68, 68, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .btn-logout-sm i {
+    font-size: 0.9rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .pending-container {
+      padding: 36px 24px 28px;
+    }
+
+    .pending-icon-wrapper {
+      width: 80px;
+      height: 80px;
+      font-size: 2.6rem;
+    }
+
+    .pending-title {
+      font-size: 1.5rem;
+    }
+
+    .pending-subtitle {
+      font-size: 0.92rem;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .info-item {
+      padding: 10px 12px;
+    }
+
+    .info-item .info-number {
+      font-size: 1rem;
+    }
+
+    .pending-actions {
+      flex-direction: column;
+    }
+
+    .pending-actions .btn {
+      min-width: unset;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .pending-container {
+      padding: 28px 16px 20px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .pending-icon-wrapper {
+      width: 64px;
+      height: 64px;
+      font-size: 2rem;
+    }
+
+    .pending-title {
+      font-size: 1.2rem;
+    }
+
+    .pending-subtitle {
+      font-size: 0.85rem;
+    }
+
+    .status-card {
+      padding: 12px 14px;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .info-item {
+      padding: 8px 10px;
+    }
+
+    .info-item .info-number {
+      font-size: 0.9rem;
+    }
+
+    .info-item .info-label {
+      font-size: 0.6rem;
+    }
+
+    .steps-section .step-title {
+      font-size: 0.8rem;
+    }
+
+    .step-item .step-text {
+      font-size: 0.78rem;
+    }
+
+    .pending-actions .btn {
+      font-size: 0.82rem;
+      padding: 10px 16px;
+    }
+  }
+
+  /* Dark Mode */
+  [data-theme="dark"] .pending-container {
+    background: var(--white, #1E293B);
+    border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .pending-container::before {
+    background: linear-gradient(90deg, #F59E0B, #EF4444);
+  }
+
+  [data-theme="dark"] .pending-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .pending-subtitle {
+    color: var(--text-muted, #94A3B8);
+  }
+
+  [data-theme="dark"] .pending-subtitle strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .status-card {
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.12);
+  }
+
+  [data-theme="dark"] .status-card .status-text {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .info-item {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="dark"] .info-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  [data-theme="dark"] .info-item .info-number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .step-item .step-text {
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .step-item.active .step-text {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .step-item .step-number {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-muted, #64748B);
+  }
+
+  [data-theme="dark"] .step-item.active .step-number {
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .pending-page::before {
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+  }
+
+  [data-theme="dark"] .pending-page::after {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.04) 0%, transparent 70%);
+  }
+
+  [data-theme="dark"] .btn-primary-outline {
+    color: var(--cyan, #22D3EE);
+    border-color: rgba(37, 99, 235, 0.12);
+  }
+
+  [data-theme="dark"] .btn-primary-outline:hover {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: var(--cyan, #22D3EE);
+  }
+
+  [data-theme="dark"] .pending-icon-wrapper {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(239, 68, 68, 0.08));
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pending-page">
+  <div class="pending-container">
+    <!-- Icon -->
+    <div class="pending-icon-wrapper">
+      <span class="pulse-ring"></span>
+      <span class="pulse-ring"></span>
+      <i class="fas fa-clock"></i>
+    </div>
+
+    <!-- Title -->
+    <h1 class="pending-title">
+      <span class="highlight">Pending</span> Approval
+    </h1>
+    <p class="pending-subtitle">
+      Your account is waiting for admin approval.<br>
+      You will not be able to access course content until <strong>approved</strong>.
+    </p>
+
+    <!-- Status Card -->
+    <div class="status-card">
+      <span class="status-dot"></span>
+      <span class="status-text">
+        <strong>Status:</strong> Your account is currently under review by an administrator.
+      </span>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-icon">📚</span>
+        <div class="info-number">{{ courses|length if courses else 0 }}</div>
+        <div class="info-label">Courses Requested</div>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">⏳</span>
+        <div class="info-number">{{ pending_count if pending_count else 0 }}</div>
+        <div class="info-label">Pending Approvals</div>
+      </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps-section">
+      <div class="step-title">📋 Approval Process</div>
+      <div class="step-item active">
+        <span class="step-number">1</span>
+        <span class="step-text">Account created</span>
+        <span class="step-check"><i class="fas fa-check-circle"></i></span>
+      </div>
+      <div class="step-item active">
+        <span class="step-number">2</span>
+        <span class="step-text">Courses requested</span>
+        <span class="step-check"><i class="fas fa-check-circle"></i></span>
+      </div>
+      <div class="step-item">
+        <span class="step-number">3</span>
+        <span class="step-text">Admin review</span>
+      </div>
+      <div class="step-item">
+        <span class="step-number">4</span>
+        <span class="step-text">Approval & access granted</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="pending-actions">
+      <a href="{{ url_for('student_courses') }}" class="btn btn-primary-outline">
+        <i class="fas fa-sync-alt"></i> Check Status
+      </a>
+      <a href="{{ url_for('logout') }}" class="btn btn-logout-sm">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </div>
+
+    <p style="font-size: 0.75rem; color: var(--text-muted, #94A3B8); margin-top: 16px;">
+      <i class="fas fa-info-circle"></i> You will be notified once your account is approved.
+    </p>
+  </div>
+</div>
+{% endblock %}
