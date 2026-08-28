@@ -8,8 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
     {% block extra_css %}{% endblock %}
     
     <style>
@@ -180,25 +178,20 @@
         }
 
         /* ============================================
-           MOBILE MENU TOGGLE - FIXED
+           MOBILE MENU TOGGLE - COMPLETE FIX
            ============================================ */
         .navbar-toggle {
             display: none;
             background: none;
             border: none;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             color: var(--text);
             cursor: pointer;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: var(--radius-sm);
             transition: var(--transition);
             z-index: 1001;
             line-height: 1;
-            position: relative;
-            width: 44px;
-            height: 44px;
-            align-items: center;
-            justify-content: center;
         }
 
         [data-theme="dark"] .navbar-toggle {
@@ -213,12 +206,16 @@
             background: rgba(255, 255, 255, 0.06);
         }
 
-        /* ✅ Show bars by default, hide times */
+        /* Show bars by default */
+        .navbar-toggle .fa-bars {
+            display: inline-block;
+        }
+
         .navbar-toggle .fa-times {
             display: none;
         }
 
-        /* ✅ When open, hide bars, show times */
+        /* When open, swap icons */
         .navbar-toggle.open .fa-bars {
             display: none;
         }
@@ -228,7 +225,7 @@
         }
 
         /* ============================================
-           NAVBAR MENU
+           NAVBAR MENU - COMPLETE FIX
            ============================================ */
         .navbar-menu {
             display: flex;
@@ -336,279 +333,6 @@
 
         [data-theme="dark"] .btn-signup:hover {
             box-shadow: 0 4px 24px rgba(37, 99, 235, 0.2);
-        }
-
-        /* ============================================
-           NOTIFICATION BELL
-           ============================================ */
-        .notification-wrapper {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .notification-btn {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            padding: 7px 12px 7px 16px;
-            border-radius: 100px;
-            font-size: 0.82rem;
-            font-weight: 500;
-            color: var(--text-light);
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            font-family: 'Inter', sans-serif;
-        }
-
-        [data-theme="dark"] .notification-btn {
-            color: var(--text-muted);
-        }
-
-        .notification-btn:hover {
-            color: var(--navy);
-            background: rgba(15, 23, 42, 0.04);
-        }
-
-        [data-theme="dark"] .notification-btn:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--white);
-        }
-
-        .notification-btn .bell-icon {
-            font-size: 1.1rem;
-            position: relative;
-        }
-
-        .notification-btn .bell-icon .bell-dot {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            width: 8px;
-            height: 8px;
-            background: #EF4444;
-            border-radius: 50%;
-            border: 2px solid var(--white);
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        [data-theme="dark"] .notification-btn .bell-icon .bell-dot {
-            border-color: var(--white);
-        }
-
-        .notification-btn .bell-icon .bell-dot.hidden {
-            display: none;
-        }
-
-        .notification-btn .notification-count {
-            background: #EF4444;
-            color: white;
-            font-size: 0.6rem;
-            font-weight: 700;
-            padding: 1px 8px;
-            border-radius: 100px;
-            min-width: 18px;
-            text-align: center;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
-        }
-
-        .notification-dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            width: 380px;
-            max-width: calc(100vw - 32px);
-            max-height: 440px;
-            overflow-y: auto;
-            background: var(--white);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
-            padding: 12px 0;
-            display: none;
-            z-index: 1001;
-            animation: dropdownSlide 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        [data-theme="dark"] .notification-dropdown {
-            background: var(--white);
-            border-color: var(--border);
-        }
-
-        .notification-dropdown.open {
-            display: block;
-        }
-
-        @keyframes dropdownSlide {
-            0% { opacity: 0; transform: translateY(-6px) scale(0.97); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .notification-dropdown-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 16px 12px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        [data-theme="dark"] .notification-dropdown-header {
-            border-bottom: 1px solid var(--border);
-        }
-
-        .notification-dropdown-header h4 {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--navy);
-            margin: 0;
-        }
-
-        [data-theme="dark"] .notification-dropdown-header h4 {
-            color: var(--white);
-        }
-
-        .notification-dropdown-header .mark-all-read {
-            font-size: 0.7rem;
-            color: var(--blue);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .notification-dropdown-header .mark-all-read:hover {
-            color: var(--cyan);
-        }
-
-        .notification-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 10px 16px;
-            transition: var(--transition);
-            cursor: pointer;
-            border-left: 3px solid transparent;
-        }
-
-        .notification-item:hover {
-            background: rgba(37, 99, 235, 0.02);
-        }
-
-        [data-theme="dark"] .notification-item:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .notification-item.unread {
-            border-left-color: var(--blue);
-            background: rgba(37, 99, 235, 0.02);
-        }
-
-        [data-theme="dark"] .notification-item.unread {
-            background: rgba(37, 99, 235, 0.04);
-        }
-
-        .notification-item .notif-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 0.8rem;
-            margin-top: 1px;
-        }
-
-        .notification-item .notif-icon.blue {
-            background: rgba(37, 99, 235, 0.08);
-            color: var(--blue);
-        }
-        .notification-item .notif-icon.green {
-            background: rgba(5, 150, 105, 0.08);
-            color: #059669;
-        }
-        .notification-item .notif-icon.orange {
-            background: rgba(245, 158, 11, 0.08);
-            color: #F59E0B;
-        }
-        .notification-item .notif-icon.red {
-            background: rgba(239, 68, 68, 0.08);
-            color: #EF4444;
-        }
-        .notification-item .notif-icon.purple {
-            background: rgba(124, 58, 237, 0.08);
-            color: #7C3AED;
-        }
-
-        .notification-item .notif-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .notification-item .notif-content .notif-title {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        [data-theme="dark"] .notification-item .notif-content .notif-title {
-            color: var(--white);
-        }
-
-        .notification-item .notif-content .notif-meta {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 2px;
-        }
-
-        .notification-item .notif-content .notif-meta .notif-badge {
-            font-size: 0.55rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            padding: 1px 8px;
-            border-radius: 100px;
-            letter-spacing: 0.03em;
-        }
-
-        .notif-badge.unread-badge {
-            background: var(--blue);
-            color: white;
-        }
-
-        .notification-item .notif-time {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .notification-empty {
-            text-align: center;
-            padding: 32px 16px;
-            color: var(--text-muted);
-        }
-
-        .notification-empty i {
-            font-size: 1.8rem;
-            opacity: 0.3;
-            margin-bottom: 8px;
-        }
-
-        .notification-empty p {
-            font-size: 0.85rem;
-            margin: 0;
         }
 
         /* ============================================
@@ -810,23 +534,11 @@
         }
 
         /* ============================================
-           UTILITY
-           ============================================ */
-        .text-gradient {
-            background: linear-gradient(135deg, var(--blue), var(--cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* ============================================
-           RESPONSIVE - MOBILE MENU FIXED
+           RESPONSIVE - COMPLETE FIX
            ============================================ */
         @media (max-width: 992px) {
             .navbar-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                display: block;
             }
 
             .navbar-menu {
@@ -834,26 +546,22 @@
                 top: var(--nav-height);
                 left: 0;
                 right: 0;
-                background: rgba(255, 255, 255, 0.98);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                padding: 12px 20px 20px;
+                background: var(--white);
+                padding: 16px 20px 24px;
                 border-bottom: 1px solid var(--border);
                 box-shadow: var(--shadow-md);
                 display: none;
                 max-height: calc(100vh - var(--nav-height));
                 overflow-y: auto;
-                transition: all 0.3s ease;
+            }
+
+            [data-theme="dark"] .navbar-menu {
+                background: var(--white);
             }
 
             .navbar-menu.open {
                 display: block;
-                animation: menuSlide 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-
-            [data-theme="dark"] .navbar-menu {
-                background: rgba(11, 17, 32, 0.98);
-                border-bottom: 1px solid var(--border);
+                animation: menuSlide 0.3s ease;
             }
 
             @keyframes menuSlide {
@@ -887,20 +595,6 @@
             .btn-signup {
                 text-align: center;
                 justify-content: center;
-            }
-
-            .notification-dropdown {
-                position: fixed;
-                top: var(--nav-height);
-                left: 0;
-                right: 0;
-                width: 100%;
-                max-width: 100%;
-                border-radius: 0;
-                max-height: calc(100vh - var(--nav-height));
-                padding: 12px 0;
-                border: none;
-                border-bottom: 1px solid var(--border);
             }
 
             .flash-container {
@@ -949,14 +643,6 @@
                 left: 12px;
             }
 
-            .notification-btn span {
-                display: none;
-            }
-
-            .notification-btn {
-                padding: 4px 8px;
-            }
-
             .navbar-nav a {
                 padding: 10px 14px;
                 font-size: 0.85rem;
@@ -975,7 +661,6 @@
                 <span class="logo-text">Awwalu Devs</span>
             </a>
 
-            <!-- ✅ FIXED: Both icons inside button with proper toggle -->
             <button class="navbar-toggle" id="navbarToggle" aria-label="Menu">
                 <i class="fas fa-bars"></i>
                 <i class="fas fa-times"></i>
@@ -1059,10 +744,8 @@
     </footer>
 
     <!-- ==========================================
-    SCRIPTS
+    SCRIPTS - COMPLETE FIX
     ========================================== -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // ========================================
@@ -1072,10 +755,11 @@
             const menu = document.getElementById('navbarMenu');
             
             if (toggle && menu) {
-                // Toggle menu on button click
                 toggle.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    
+                    // Toggle menu
                     menu.classList.toggle('open');
                     toggle.classList.toggle('open');
                 });
@@ -1123,24 +807,6 @@
                     }, 350);
                 }, 4500 + (i * 150));
             });
-
-            // ========================================
-            // NOTIFICATION DROPDOWN TOGGLE
-            // ========================================
-            const notifBtn = document.getElementById('notificationBtn');
-            const notifDropdown = document.getElementById('notificationDropdown');
-            if (notifBtn && notifDropdown) {
-                notifBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    notifDropdown.classList.toggle('open');
-                });
-
-                document.addEventListener('click', function(e) {
-                    if (!notifBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
-                        notifDropdown.classList.remove('open');
-                    }
-                });
-            }
         });
     </script>
 
