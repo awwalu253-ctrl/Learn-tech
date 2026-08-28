@@ -5,7 +5,7 @@
 {% block extra_css %}
 <style>
   /* ============================================
-     MANAGE ANNOUNCEMENTS - Premium Theme
+     MANAGE ANNOUNCEMENTS - Premium Navy + Blue Theme
      ============================================ */
   .manage-announcements {
     max-width: 1360px;
@@ -35,11 +35,11 @@
     width: 48px;
     height: 48px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #F59E0B;
+    color: var(--blue, #2563EB);
     font-size: 1.3rem;
   }
 
@@ -52,7 +52,7 @@
   }
 
   .page-header h1 span {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -78,18 +78,18 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     color: var(--white);
     text-decoration: none;
     transition: var(--transition);
-    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.2);
+    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
     border: none;
     cursor: pointer;
   }
 
   .btn-create:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.3);
     color: var(--white);
   }
 
@@ -135,14 +135,14 @@
     flex-shrink: 0;
   }
 
-  .stat-mini .stat-icon.orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
+  .stat-mini .stat-icon.blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
   }
 
-  .stat-mini .stat-icon.green {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
+  .stat-mini .stat-icon.cyan {
+    background: rgba(34, 211, 238, 0.08);
+    color: var(--cyan, #22D3EE);
   }
 
   .stat-mini .stat-icon.purple {
@@ -150,9 +150,9 @@
     color: #7C3AED;
   }
 
-  .stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
+  .stat-mini .stat-icon.green {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
   }
 
   .stat-mini .stat-number {
@@ -192,14 +192,14 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     opacity: 0;
     transition: var(--transition);
   }
 
   .announcement-card:hover {
     box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
-    border-color: rgba(245, 158, 11, 0.06);
+    border-color: rgba(37, 99, 235, 0.06);
     transform: translateY(-2px);
   }
 
@@ -208,13 +208,13 @@
   }
 
   .announcement-card.pinned {
-    border-left: 4px solid #F59E0B;
-    background: rgba(245, 158, 11, 0.02);
+    border-left: 4px solid var(--blue, #2563EB);
+    background: rgba(37, 99, 235, 0.02);
   }
 
   .announcement-card.pinned::before {
     opacity: 1;
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
   }
 
   .announcement-card:nth-child(1) { animation-delay: 0.05s; }
@@ -256,9 +256,9 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-    border: 1px solid rgba(245, 158, 11, 0.06);
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
+    border: 1px solid rgba(37, 99, 235, 0.06);
   }
 
   .announcement-meta {
@@ -332,12 +332,12 @@
   }
 
   .btn-pin {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue, #2563EB);
   }
 
   .btn-pin:hover {
-    background: #F59E0B;
+    background: var(--blue, #2563EB);
     color: white;
     transform: translateY(-1px);
   }
@@ -399,7 +399,7 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
     color: var(--white);
     text-decoration: none;
     transition: var(--transition);
@@ -407,7 +407,7 @@
 
   .empty-state .empty-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25);
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
   }
 
   /* Animations */
@@ -574,7 +574,7 @@
   }
 
   [data-theme="dark"] .announcement-card:hover {
-    border-color: rgba(245, 158, 11, 0.1);
+    border-color: rgba(37, 99, 235, 0.1);
   }
 
   [data-theme="dark"] .announcement-title h3 {
@@ -598,12 +598,12 @@
   }
 
   [data-theme="dark"] .btn-pin {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--cyan, #22D3EE);
   }
 
   [data-theme="dark"] .btn-pin:hover {
-    background: #F59E0B;
+    background: var(--blue, #2563EB);
     color: white;
   }
 
@@ -644,13 +644,13 @@
   }
 
   [data-theme="dark"] .announcement-card.pinned {
-    background: rgba(245, 158, 11, 0.04);
+    background: rgba(37, 99, 235, 0.04);
   }
 
   [data-theme="dark"] .pin-badge {
-    background: rgba(245, 158, 11, 0.08);
-    border-color: rgba(245, 158, 11, 0.06);
-    color: #F59E0B;
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.06);
+    color: var(--cyan, #22D3EE);
   }
 </style>
 {% endblock %}
@@ -678,14 +678,14 @@
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-mini">
-      <div class="stat-icon orange"><i class="fas fa-bullhorn"></i></div>
+      <div class="stat-icon blue"><i class="fas fa-bullhorn"></i></div>
       <div>
         <div class="stat-number">{{ announcements|length }}</div>
         <div class="stat-label">Total Announcements</div>
       </div>
     </div>
     <div class="stat-mini">
-      <div class="stat-icon green"><i class="fas fa-thumbtack"></i></div>
+      <div class="stat-icon cyan"><i class="fas fa-thumbtack"></i></div>
       <div>
         <div class="stat-number">{{ announcements|selectattr('is_pinned', 'equalto', true)|list|length if announcements else 0 }}</div>
         <div class="stat-label">Pinned</div>
@@ -699,7 +699,7 @@
       </div>
     </div>
     <div class="stat-mini">
-      <div class="stat-icon blue"><i class="fas fa-calendar"></i></div>
+      <div class="stat-icon green"><i class="fas fa-calendar"></i></div>
       <div>
         {% set this_week_count = 0 %}
         {% for a in announcements %}
@@ -747,7 +747,6 @@
               </button>
             {% endif %}
           </form>
-          <!-- Edit button removed - announcements can be deleted and re-posted -->
           <form method="POST" action="{{ url_for('delete_announcement', announcement_id=announcement.id) }}" style="display:inline;">
             <button type="submit" class="btn-sm btn-delete confirm-delete">
               <i class="fas fa-trash-alt"></i> Delete
