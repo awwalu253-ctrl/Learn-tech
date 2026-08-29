@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Courses - A-Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+  .course-list-page {
+    max-width: 1360px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .page-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: rgba(201, 168, 75, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-gold, #C9A84B);
+    font-size: 1.3rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    margin: 0;
+  }
+
+  .page-header h1 span {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-gray, #C8CED8);
+    margin: 2px 0 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .course-card {
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+    padding: 22px 24px 20px;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+
+  .course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.08);
+  }
+
+  .course-card .course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .course-card .course-header h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    margin: 0;
+  }
+
+  .course-card .course-header .course-code {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #8A94A6);
+    background: rgba(201, 168, 75, 0.04);
+    padding: 2px 12px;
+    border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    white-space: nowrap;
+  }
+
+  .course-card .course-description {
+    font-size: 0.85rem;
+    color: var(--text-gray, #C8CED8);
+    margin: 0 0 14px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .course-card .course-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
+    margin-bottom: 12px;
+  }
+
+  .course-card .course-stats .stat-item {
+    text-align: center;
+  }
+
+  .course-card .course-stats .stat-item .number {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    display: block;
+  }
+
+  .course-card .course-stats .stat-item .label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--text-muted, #8A94A6);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .course-card .course-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .course-card .course-footer .admins {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text-gray, #C8CED8);
+  }
+
+  .course-card .course-footer .admins .admin-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 0.6rem;
+    font-weight: 700;
+  }
+
+  .course-card .course-footer .admins .admin-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .course-card .course-footer .view-btn {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-gold, #C9A84B);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .course-card .course-footer .view-btn:hover {
+    gap: 8px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    grid-column: 1 / -1;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.2;
+    margin-bottom: 16px;
+  }
+
+  .empty-state h3 {
+    font-size: 1.2rem;
+    color: var(--white, #FFFFFF);
+    margin: 0 0 4px;
+  }
+
+  .empty-state p {
+    color: var(--text-gray, #C8CED8);
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 768px) {
+    .course-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .course-card .course-stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  [data-theme="dark"] .course-card {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .course-card .course-header h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-card .course-stats .stat-item .number {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .course-card .course-footer .admins {
+    color: var(--text-gray, #C8CED8);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="course-list-page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-icon">
+        <i class="fas fa-book"></i>
+      </div>
+      <div>
+        <h1>Course <span>Management</span></h1>
+        <p class="subtitle">View all courses and their assigned admins</p>
+      </div>
+    </div>
+    {% if is_super_admin %}
+      <a href="{{ url_for('create_course') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create Course
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="course-grid">
+    {% if courses %}
+      {% for data in courses %}
+        <a href="{{ url_for('admin_course_detail', course_id=data.course.id) }}" class="course-card">
+          <div class="course-header">
+            <h3>{{ data.course.name }}</h3>
+            <span class="course-code">{{ data.course.code }}</span>
+          </div>
+          <p class="course-description">{{ data.course.description or 'No description available.' }}</p>
+          
+          <div class="course-stats">
+            <div class="stat-item">
+              <span class="number">{{ data.total_students }}</span>
+              <span class="label">Students</span>
+            </div>
+            <div class="stat-item">
+              <span class="number">{{ data.approved_students }}</span>
+              <span class="label">Approved</span>
+            </div>
+            <div class="stat-item">
+              <span class="number">{{ data.pending_students }}</span>
+              <span class="label">Pending</span>
+            </div>
+            <div class="stat-item">
+              <span class="number">{{ data.admins|length }}</span>
+              <span class="label">Admins</span>
+            </div>
+          </div>
+
+          <div class="course-footer">
+            <div class="admins">
+              <span style="color: var(--text-muted); font-size: 0.7rem;">Assigned to:</span>
+              {% for admin in data.admins[:3] %}
+                <span class="admin-avatar">
+                  {% if admin.profile_picture %}
+                    <img src="{{ url_for('uploaded_file', filename=admin.profile_picture) }}" alt="{{ admin.username }}">
+                  {% else %}
+                    {{ admin.username[0]|upper }}
+                  {% endif %}
+                </span>
+              {% endfor %}
+              {% if data.admins|length > 3 %}
+                <span style="font-size: 0.65rem; color: var(--text-muted);">+{{ data.admins|length - 3 }}</span>
+              {% endif %}
+            </div>
+            <span class="view-btn">
+              View Details <i class="fas fa-arrow-right"></i>
+            </span>
+          </div>
+        </a>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-book-open"></i>
+        <h3>No Courses Available</h3>
+        <p>{% if is_super_admin %}Create your first course to get started.{% else %}You are not assigned to any courses yet.{% endif %}</p>
+        {% if is_super_admin %}
+          <a href="{{ url_for('create_course') }}" class="btn btn-primary" style="margin-top: 16px;">
+            <i class="fas fa-plus"></i> Create Course
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

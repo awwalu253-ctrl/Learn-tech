@@ -167,6 +167,60 @@
     font-size: 0.85rem;
   }
 
+  /* ============================================
+     NO COURSES NOTICE
+     ============================================ */
+  .no-courses-notice {
+    background: rgba(37, 99, 235, 0.04);
+    border: 1px solid rgba(37, 99, 235, 0.08);
+    border-radius: var(--radius-sm, 10px);
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: slideInRight 0.4s ease forwards;
+    flex-wrap: wrap;
+  }
+
+  .no-courses-notice .notice-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .no-courses-notice .notice-content {
+    flex: 1;
+  }
+
+  .no-courses-notice .notice-content strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  .no-courses-notice .notice-content p {
+    margin: 2px 0 0;
+    color: var(--text-gray, #C8CED8);
+    font-size: 0.9rem;
+  }
+
+  .no-courses-notice .notice-action {
+    padding: 6px 16px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.78rem;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    white-space: nowrap;
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
+  }
+
+  .no-courses-notice .notice-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
+    color: var(--white, #FFFFFF);
+  }
+
   @keyframes slideInRight {
     from { opacity: 0; transform: translateX(-16px); }
     to { opacity: 1; transform: translateX(0); }
@@ -849,6 +903,11 @@
       flex-direction: column;
       align-items: flex-start;
     }
+
+    .no-courses-notice {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 
   @media (max-width: 480px) {
@@ -982,6 +1041,16 @@
     .pending-courses-notice {
       flex-direction: column;
       align-items: flex-start;
+    }
+
+    .no-courses-notice {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .no-courses-notice .notice-action {
+      width: 100%;
+      text-align: center;
     }
   }
 
@@ -1185,6 +1254,19 @@
     border-color: rgba(201, 168, 75, 0.04);
   }
 
+  [data-theme="dark"] .no-courses-notice {
+    background: rgba(37, 99, 235, 0.04);
+    border-color: rgba(37, 99, 235, 0.06);
+  }
+
+  [data-theme="dark"] .no-courses-notice .notice-content strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .no-courses-notice .notice-content p {
+    color: var(--text-gray, #C8CED8);
+  }
+
   [data-theme="dark"] .stat-card:nth-child(1) .stat-icon { color: var(--primary-gold, #C9A84B); }
   [data-theme="dark"] .stat-card:nth-child(2) .stat-icon { color: var(--primary-gold, #C9A84B); }
   [data-theme="dark"] .stat-card:nth-child(3) .stat-icon { color: var(--primary-gold, #C9A84B); }
@@ -1224,6 +1306,22 @@
 {% endif %}
 
 <!-- ========================================== -->
+<!-- NO COURSES NOTICE (when no approved or pending) -->
+<!-- ========================================== -->
+{% if not approved_courses and not pending_courses and current_user.is_approved %}
+<div class="no-courses-notice">
+    <span class="notice-icon">📖</span>
+    <div class="notice-content">
+        <strong>No Courses Enrolled</strong>
+        <p>You are not enrolled in any courses yet. Browse available courses to get started.</p>
+    </div>
+    <a href="{{ url_for('student_courses') }}" class="notice-action">
+        Browse Courses <i class="fas fa-arrow-right"></i>
+    </a>
+</div>
+{% endif %}
+
+<!-- ========================================== -->
 <!-- MAIN DASHBOARD CONTENT -->
 <!-- ========================================== -->
 <div class="student-dashboard">
@@ -1248,8 +1346,8 @@
   <div class="stats-row">
     <div class="stat-card" onclick="window.location.href='{{ url_for('student_courses') }}'">
       <div class="stat-icon"><i class="fas fa-book"></i></div>
-      <div class="stat-number">{{ courses|length }}</div>
-      <div class="stat-label">Enrolled Courses</div>
+      <div class="stat-number">{{ approved_courses|length }}</div>
+      <div class="stat-label">Approved Courses</div>
       <div class="stat-action"><i class="fas fa-arrow-right"></i> View All</div>
     </div>
     <div class="stat-card" onclick="window.location.href='{{ url_for('student_courses') }}'">
@@ -1319,33 +1417,39 @@
         <a href="{{ url_for('student_courses') }}" class="section-link">View All →</a>
       </div>
       <div class="course-grid">
-        {% for data in progress_data %}
-          <div class="course-card">
-            <div class="course-card-header">
-              <h3>{{ data.course.name }}</h3>
-              <span class="course-code">{{ data.course.code }}</span>
-            </div>
-            <div class="course-progress">
-              <div class="progress-track">
-                <div class="fill" style="width: {{ data.progress }}%;"></div>
+        {% if progress_data %}
+          {% for data in progress_data %}
+            <div class="course-card">
+              <div class="course-card-header">
+                <h3>{{ data.course.name }}</h3>
+                <span class="course-code">{{ data.course.code }}</span>
               </div>
-              <span class="progress-text">{{ data.progress }}%</span>
+              <div class="course-progress">
+                <div class="progress-track">
+                  <div class="fill" style="width: {{ data.progress }}%;"></div>
+                </div>
+                <span class="progress-text">{{ data.progress }}%</span>
+              </div>
+              <div class="course-actions">
+                <a href="{{ url_for('view_course', course_id=data.course.id) }}" class="btn-sm btn-primary-sm">
+                  <i class="fas fa-eye"></i> View Course
+                </a>
+              </div>
             </div>
-            <div class="course-actions">
-              <a href="{{ url_for('view_course', course_id=data.course.id) }}" class="btn-sm btn-primary-sm">
-                <i class="fas fa-eye"></i> View Course
-              </a>
-            </div>
-          </div>
+          {% endfor %}
         {% else %}
           <div class="empty-state">
             <i class="fas fa-book-open"></i>
-            <p>You're not enrolled in any courses yet.</p>
-            <a href="{{ url_for('student_courses') }}" class="btn">
-              <i class="fas fa-search"></i> Browse Courses
-            </a>
+            <p>You don't have any approved courses yet.</p>
+            {% if pending_courses %}
+              <p style="font-size: 0.8rem; color: var(--text-muted, #8A94A6);">You have pending course requests waiting for approval.</p>
+            {% else %}
+              <a href="{{ url_for('student_courses') }}" class="btn">
+                <i class="fas fa-search"></i> Browse Courses
+              </a>
+            {% endif %}
           </div>
-        {% endfor %}
+        {% endif %}
       </div>
     </div>
 
@@ -1360,25 +1464,29 @@
           <a href="{{ url_for('student_quizzes') }}" class="section-link">View All →</a>
         </div>
         <div class="quiz-results-list">
-          {% for result in quiz_results %}
-            <div class="quiz-result-item">
-              <span class="quiz-title">
-                <i class="fas fa-file-alt"></i>
-                {{ result.title }}
-              </span>
-              <span class="quiz-score {% if result.score.score >= 70 %}high{% elif result.score.score >= 50 %}medium{% else %}low{% endif %}">
-                {{ result.score.score }}%
-              </span>
-            </div>
+          {% if quiz_results %}
+            {% for result in quiz_results %}
+              <div class="quiz-result-item">
+                <span class="quiz-title">
+                  <i class="fas fa-file-alt"></i>
+                  {{ result.title }}
+                </span>
+                <span class="quiz-score {% if result.score.score >= 70 %}high{% elif result.score.score >= 50 %}medium{% else %}low{% endif %}">
+                  {{ result.score.score }}%
+                </span>
+              </div>
+            {% endfor %}
           {% else %}
             <div class="empty-state">
               <i class="fas fa-puzzle-piece"></i>
               <p>You haven't taken any quizzes yet.</p>
-              <a href="{{ url_for('student_quizzes') }}" class="btn">
-                <i class="fas fa-play"></i> Take a Quiz
-              </a>
+              {% if approved_courses %}
+                <a href="{{ url_for('student_quizzes') }}" class="btn">
+                  <i class="fas fa-play"></i> Take a Quiz
+                </a>
+              {% endif %}
             </div>
-          {% endfor %}
+          {% endif %}
         </div>
       </div>
 

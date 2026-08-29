@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Student - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+  .edit-student-page {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+
+  .edit-container {
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+    padding: 32px 36px 36px;
+  }
+
+  .edit-container .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .edit-container .header .icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm, 10px);
+    background: rgba(201, 168, 75, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-gold, #C9A84B);
+    font-size: 1.3rem;
+  }
+
+  .edit-container .header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    margin: 0;
+  }
+
+  .edit-container .header h2 span {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .edit-container .header .subtitle {
+    color: var(--text-gray, #C8CED8);
+    font-size: 0.85rem;
+    margin: 2px 0 0;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    margin-bottom: 5px;
+  }
+
+  .form-group label .required {
+    color: #EF4444;
+  }
+
+  .form-group label .optional {
+    font-weight: 400;
+    color: var(--text-muted, #8A94A6);
+    font-size: 0.7rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
+    font-size: 0.9rem;
+    color: var(--white, #FFFFFF);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+  }
+
+  .form-control:focus {
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.08);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A94A6' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  select.form-control option {
+    background: var(--secondary-bg, #253449);
+    color: var(--white, #FFFFFF);
+  }
+
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .form-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-gold, #C9A84B);
+    cursor: pointer;
+  }
+
+  .form-check label {
+    font-size: 0.85rem;
+    color: var(--text-gray, #C8CED8);
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .form-check .help-text {
+    font-size: 0.75rem;
+    color: var(--text-muted, #8A94A6);
+    margin-left: 4px;
+  }
+
+  .course-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--primary-bg, #0A1527);
+    border-radius: var(--radius-sm, 10px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  .course-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .course-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-gold, #C9A84B);
+    cursor: pointer;
+  }
+
+  .course-checkbox label {
+    font-size: 0.82rem;
+    color: var(--text-gray, #C8CED8);
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .course-checkbox .course-code {
+    font-size: 0.65rem;
+    color: var(--text-muted, #8A94A6);
+    margin-left: 4px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-block {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
+  }
+
+  .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(239, 68, 68, 0.15);
+  }
+
+  .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .suspended-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.08);
+    margin-left: auto;
+  }
+
+  @media (max-width: 768px) {
+    .edit-container {
+      padding: 20px 16px 24px;
+    }
+
+    .course-checkboxes {
+      grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  [data-theme="dark"] .edit-container {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .edit-container .header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(201, 168, 75, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.08);
+  }
+
+  [data-theme="dark"] .course-checkboxes {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .course-checkbox label {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .form-check label {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .suspended-badge {
+    background: rgba(239, 68, 68, 0.12);
+    color: #F87171;
+    border-color: rgba(239, 68, 68, 0.08);
+  }
+</style>
+
+<div class="edit-student-page">
+  <div class="edit-container">
+    <div class="header">
+      <div class="icon">
+        <i class="fas fa-user-edit"></i>
+      </div>
+      <div>
+        <h2>Edit <span>Student</span></h2>
+        <p class="subtitle">Update student profile and permissions</p>
+      </div>
+      {% if student.is_suspended %}
+        <span class="suspended-badge">
+          <i class="fas fa-ban"></i> Suspended
+        </span>
+      {% endif %}
+    </div>
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Username <span class="required">*</span></label>
+        <input type="text" name="username" class="form-control" value="{{ student.username }}" required>
+      </div>
+
+      <div class="form-group">
+        <label>Email <span class="required">*</span></label>
+        <input type="email" name="email" class="form-control" value="{{ student.email }}" required>
+      </div>
+
+      <div class="form-group">
+        <label>Role</label>
+        <select name="role" class="form-control">
+          <option value="student" {% if student.role == 'student' %}selected{% endif %}>Student</option>
+          {% if current_user.is_super_admin() %}
+            <option value="admin" {% if student.role == 'admin' %}selected{% endif %}>Admin</option>
+          {% endif %}
+        </select>
+        {% if not current_user.is_super_admin() %}
+          <small style="color: var(--text-muted, #8A94A6); font-size: 0.75rem;">
+            <i class="fas fa-info-circle"></i> Only super admins can change role
+          </small>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label>New Password <span class="optional">(Leave blank to keep current)</span></label>
+        <input type="password" name="new_password" class="form-control" placeholder="Enter new password (min 6 characters)">
+      </div>
+
+      <div class="form-group">
+        <div class="form-check">
+          <input type="checkbox" name="is_approved" id="is_approved" {% if student.is_approved %}checked{% endif %}>
+          <label for="is_approved">
+            Account Approved
+            <span class="help-text">(Student can log in)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Course Enrollments</label>
+        <div class="course-checkboxes">
+          {% for course in courses %}
+            <div class="course-checkbox">
+              <input type="checkbox" name="courses" value="{{ course.id }}" id="course_{{ course.id }}"
+                {% if course.id in enrolled_course_ids %}checked{% endif %}>
+              <label for="course_{{ course.id }}">
+                {{ course.name }}
+                <span class="course-code">({{ course.code }})</span>
+              </label>
+            </div>
+          {% else %}
+            <p style="color: var(--text-muted, #8A94A6); grid-column: 1 / -1; text-align: center; padding: 12px 0;">
+              No courses available.
+            </p>
+          {% endfor %}
+        </div>
+        <small style="color: var(--text-muted, #8A94A6); font-size: 0.75rem; display: block; margin-top: 6px;">
+          <i class="fas fa-info-circle"></i> Unchecking a course will remove the student's enrollment
+        </small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+        <a href="{{ url_for('manage_students') }}" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i> Cancel
+        </a>
+        {% if student.is_suspended %}
+          <form method="POST" action="{{ url_for('unsuspend_student', student_id=student.id) }}" style="display: inline;">
+            <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #059669, #34D399);">
+              <i class="fas fa-check-circle"></i> Unsuspend
+            </button>
+          </form>
+        {% else %}
+          <a href="{{ url_for('suspend_student', student_id=student.id) }}" class="btn btn-danger">
+            <i class="fas fa-ban"></i> Suspend
+          </a>
+        {% endif %}
+        <form method="POST" action="{{ url_for('delete_student', student_id=student.id) }}" style="display: inline;" 
+              onsubmit="return confirm('⚠️ Are you sure you want to permanently delete this student? This action cannot be undone!');">
+          <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, #DC2626, #B91C1C);">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </form>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -456,6 +456,54 @@
         box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
     }
 
+    .btn-suspend {
+        background: rgba(245, 158, 11, 0.06);
+        color: #F59E0B;
+    }
+
+    .btn-suspend:hover {
+        background: #F59E0B;
+        color: var(--white, #FFFFFF);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(245, 158, 11, 0.2);
+    }
+
+    .btn-unsuspend {
+        background: rgba(5, 150, 105, 0.06);
+        color: #059669;
+    }
+
+    .btn-unsuspend:hover {
+        background: #059669;
+        color: var(--white, #FFFFFF);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(5, 150, 105, 0.2);
+    }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.06);
+        color: #EF4444;
+    }
+
+    .btn-delete:hover {
+        background: #EF4444;
+        color: var(--white, #FFFFFF);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-edit {
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(201, 168, 75, 0.2);
+    }
+
     /* ============================================
        EMPTY STATE - Gold Theme
        ============================================ */
@@ -850,8 +898,8 @@
             <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
             <div>
                 {% set approved_count = 0 %}
-                {% for student in students %}
-                    {% if student.is_approved %}
+                {% for item in students %}
+                    {% if item.student.is_approved %}
                         {% set approved_count = approved_count + 1 %}
                     {% endif %}
                 {% endfor %}
@@ -863,8 +911,8 @@
             <div class="stat-icon purple"><i class="fas fa-book"></i></div>
             <div>
                 {% set total_enrollments = 0 %}
-                {% for student in students %}
-                    {% set total_enrollments = total_enrollments + student.enrolled_courses|length %}
+                {% for item in students %}
+                    {% set total_enrollments = total_enrollments + item.enrollments|length %}
                 {% endfor %}
                 <div class="stat-number">{{ total_enrollments }}</div>
                 <div class="stat-label">Total Enrollments</div>
@@ -911,10 +959,12 @@
                                 <span class="student-email">{{ student.email }}</span>
                             </td>
                             <td>
-                                {% for course in student.enrolled_courses %}
-                                <span class="enrollment-status pending">{{ course.name }}</span>
+                                {% for enrollment in student.enrollments %}
+                                    {% if enrollment.status == 'pending' %}
+                                        <span class="enrollment-status pending">{{ enrollment.course.name }}</span>
+                                    {% endif %}
                                 {% else %}
-                                <span style="color: var(--text-muted); font-size: 0.8rem;">No courses</span>
+                                    <span style="color: var(--text-muted); font-size: 0.8rem;">No courses</span>
                                 {% endfor %}
                             </td>
                             <td>
@@ -931,6 +981,9 @@
                                     </form>
                                     <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-action btn-reject" title="Reject Student">
                                         <i class="fas fa-times"></i>
+                                    </a>
+                                    <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn-action btn-edit" title="Edit Student">
+                                        <i class="fas fa-edit"></i>
                                     </a>
                                 </div>
                             </td>
@@ -965,23 +1018,42 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for student in students %}
+                    {% for item in students %}
+                    {% set student = item.student %}
+                    {% set enrollments = item.enrollments %}
                     <tr>
                         <td>
-                            <div class="student-name">{{ student.username }}</div>
+                            <div class="student-name">
+                                {{ student.username }}
+                                {% if student.is_suspended %}
+                                    <span class="badge badge-danger" style="font-size: 0.6rem; margin-left: 6px;">
+                                        <i class="fas fa-ban"></i> Suspended
+                                    </span>
+                                {% endif %}
+                            </div>
                         </td>
                         <td>
                             <span class="student-email">{{ student.email }}</span>
                         </td>
                         <td>
-                            {% for course in student.enrolled_courses %}
-                            <span class="enrollment-status approved">{{ course.name }}</span>
+                            {% for enrollment in enrollments %}
+                                {% if enrollment.status == 'approved' %}
+                                    <span class="enrollment-status approved">{{ enrollment.course.name }}</span>
+                                {% elif enrollment.status == 'pending' %}
+                                    <span class="enrollment-status pending">{{ enrollment.course.name }}</span>
+                                {% elif enrollment.status == 'rejected' %}
+                                    <span class="enrollment-status rejected">{{ enrollment.course.name }}</span>
+                                {% endif %}
                             {% else %}
-                            <span style="color: var(--text-muted); font-size: 0.8rem;">No courses</span>
+                                <span style="color: var(--text-muted); font-size: 0.8rem;">No courses</span>
                             {% endfor %}
                         </td>
                         <td>
-                            {% if student.is_approved %}
+                            {% if student.is_suspended %}
+                            <span class="badge badge-danger">
+                                <i class="fas fa-ban"></i> Suspended
+                            </span>
+                            {% elif student.is_approved %}
                             <span class="badge badge-success">
                                 <i class="fas fa-check-circle"></i> Approved
                             </span>
@@ -993,29 +1065,42 @@
                         </td>
                         <td>
                             <div class="action-group">
-                                {% if student.is_approved %}
-                                    <!-- Unapprove All Button -->
+                                <!-- Edit Button -->
+                                <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn-action btn-edit" title="Edit Student">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                <!-- Suspend/Unsuspend -->
+                                {% if student.is_suspended %}
+                                    <form method="POST" action="{{ url_for('unsuspend_student', student_id=student.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn-action btn-unsuspend" title="Unsuspend Student">
+                                            <i class="fas fa-check-circle"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a href="{{ url_for('suspend_student', student_id=student.id) }}" class="btn-action btn-suspend" title="Suspend Student">
+                                        <i class="fas fa-ban"></i>
+                                    </a>
+                                {% endif %}
+
+                                <!-- Delete -->
+                                <form method="POST" action="{{ url_for('delete_student', student_id=student.id) }}" style="display: inline;" 
+                                      onsubmit="return confirm('⚠️ Are you sure you want to permanently delete {{ student.username }}? This action cannot be undone!');">
+                                    <button type="submit" class="btn-action btn-delete" title="Delete Student">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Approve/Unapprove -->
+                                {% if student.is_approved and not student.is_suspended %}
                                     <form method="POST" action="{{ url_for('unapprove_student', student_id=student.id) }}" style="display: inline;">
                                         <button type="submit" class="btn-action btn-unapprove" 
-                                                onclick="return confirm('Unapprove {{ student.username }} from ALL courses? They will lose access to all courses.')" 
+                                                onclick="return confirm('Unapprove {{ student.username }} from ALL courses?')" 
                                                 title="Unapprove from All Courses">
                                             <i class="fas fa-user-slash"></i>
                                         </button>
                                     </form>
-
-                                    <!-- Unapprove Individual Course Buttons -->
-                                    {% for course in student.enrolled_courses %}
-                                    <form method="POST" action="{{ url_for('unapprove_course', student_id=student.id, course_id=course.id) }}" style="display: inline;">
-                                        <button type="submit" class="btn-action btn-unapprove-course" 
-                                                onclick="return confirm('Remove {{ student.username }} from {{ course.name }}?')" 
-                                                title="Unapprove from {{ course.name }}">
-                                            <i class="fas fa-times-circle"></i>
-                                        </button>
-                                    </form>
-                                    {% endfor %}
-                                {% endif %}
-
-                                {% if not student.is_approved %}
+                                {% elif not student.is_approved and not student.is_suspended %}
                                     <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display: inline;">
                                         <button type="submit" class="btn-action btn-approve" title="Approve Student">
                                             <i class="fas fa-check"></i>
@@ -1026,9 +1111,9 @@
                                     </a>
                                 {% endif %}
 
-                                {% if student.enrolled_courses|length > 0 %}
+                                {% if enrollments|length > 0 %}
                                     <span class="badge badge-info" style="font-size: 0.6rem;">
-                                        {{ student.enrolled_courses|length }} courses
+                                        {{ enrollments|length }} courses
                                     </span>
                                 {% endif %}
                             </div>

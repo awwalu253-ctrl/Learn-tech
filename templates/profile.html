@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Profile - A-Portal{% endblock %}
+{% block title %}My Profile - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     PROFILE PAGE - Premium Navy + Gold Theme
+     PROFILE PAGE - Modern Clean Design
      ============================================ */
   .profile-page {
     max-width: 1200px;
@@ -14,374 +14,278 @@
   }
 
   /* ============================================
-     HEADER - Gold Theme
+     PROFILE HEADER - Clean Card
      ============================================ */
-  .page-header {
-    margin-bottom: 32px;
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-
-  .page-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--white, #FFFFFF);
-    letter-spacing: -0.02em;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .page-header h1 i {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .page-header p {
-    font-size: 0.9rem;
-    color: var(--text-gray, #C8CED8);
-    margin: 4px 0 0 44px;
-  }
-
-  /* ============================================
-     PROFILE GRID
-     ============================================ */
-  .profile-grid {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 24px;
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
-  }
-
-  /* ============================================
-     PROFILE CARD - Gold Theme
-     ============================================ */
-  .profile-card {
+  .profile-header {
     background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
+    padding: 32px 36px 28px;
+    margin-bottom: 24px;
     border: 1px solid rgba(201, 168, 75, 0.04);
     box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
-    padding: 32px 24px 28px;
-    text-align: center;
-    transition: var(--transition, 0.3s ease);
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     position: relative;
     overflow: hidden;
   }
 
-  .profile-card::before {
+  .profile-header::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 3px;
     background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    opacity: 0.8;
+    opacity: 0.6;
   }
 
-  .profile-card::after {
-    content: '';
-    position: absolute;
-    bottom: -30%;
-    right: -20%;
-    width: 250px;
-    height: 250px;
-    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  .profile-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
-    border-color: rgba(201, 168, 75, 0.06);
-  }
-
-  /* Avatar */
-  .profile-avatar {
-    width: 96px;
-    height: 96px;
-    margin: 0 auto 16px;
+  .profile-avatar-large {
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.8rem;
+    font-size: 2.2rem;
+    font-weight: 700;
     color: var(--white, #FFFFFF);
     box-shadow: 0 4px 24px rgba(201, 168, 75, 0.2);
+    flex-shrink: 0;
+    text-transform: uppercase;
     position: relative;
-    animation: avatarFloat 4s ease-in-out infinite;
+    overflow: hidden;
   }
 
-  @keyframes avatarFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
+  .profile-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
-  .profile-avatar .status-dot {
+  .profile-avatar-large .initials {
+    font-size: 2.2rem;
+    font-weight: 700;
+  }
+
+  .profile-avatar-large .status-dot {
     position: absolute;
-    bottom: 4px;
-    right: 4px;
+    bottom: 2px;
+    right: 2px;
     width: 16px;
     height: 16px;
     border-radius: 50%;
     background: #059669;
     border: 3px solid var(--secondary-bg, #253449);
     box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
-    animation: statusPulse 2s ease-in-out infinite;
   }
 
-  @keyframes statusPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+  .profile-info {
+    flex: 1;
+    min-width: 150px;
   }
 
-  .profile-card h2 {
-    font-size: 1.3rem;
+  .profile-info .name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .profile-info h1 {
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--white, #FFFFFF);
-    margin: 0 0 2px;
+    margin: 0;
   }
 
-  .profile-card .profile-email {
-    font-size: 0.9rem;
-    color: var(--text-gray, #C8CED8);
-    margin: 0 0 16px;
+  .profile-info .username {
+    font-size: 0.85rem;
+    color: var(--text-muted, #8A94A6);
+    margin: 2px 0 0;
   }
 
-  /* Badges */
-  .profile-badges {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 14px;
-    border-radius: 100px;
+  .profile-info .username i {
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    margin-right: 4px;
   }
 
-  .badge-admin {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold, #C9A84B);
+  .profile-info .user-id {
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    background: rgba(201, 168, 75, 0.04);
+    padding: 2px 12px;
+    border-radius: 100px;
+    display: inline-block;
     border: 1px solid rgba(201, 168, 75, 0.04);
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.03em;
   }
 
-  .badge-student {
-    background: rgba(201, 168, 75, 0.06);
-    color: var(--primary-gold, #C9A84B);
-    border: 1px solid rgba(201, 168, 75, 0.04);
+  .profile-stats-mini {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
   }
 
-  .badge-success {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-    border: 1px solid rgba(5, 150, 105, 0.04);
-  }
-
-  .badge-warning {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-    border: 1px solid rgba(245, 158, 11, 0.04);
-  }
-
-  .badge i {
-    font-size: 0.65rem;
-  }
-
-  /* Profile Stats */
-  .profile-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(201, 168, 75, 0.04);
-  }
-
-  .stat-item {
+  .profile-stats-mini .stat-item {
     text-align: center;
+    min-width: 50px;
   }
 
-  .stat-item .stat-value {
-    display: block;
-    font-size: 1.5rem;
+  .profile-stats-mini .stat-item .number {
+    font-size: 1.4rem;
     font-weight: 800;
     color: var(--white, #FFFFFF);
     line-height: 1.2;
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    display: block;
   }
 
-  .stat-item .stat-label {
-    font-size: 0.65rem;
+  .profile-stats-mini .stat-item .label {
+    font-size: 0.6rem;
     font-weight: 600;
     color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    display: block;
+    margin-top: 2px;
   }
 
   /* ============================================
-     SETTINGS CARDS - Gold Theme
+     PROFILE GRID - 2 Columns
      ============================================ */
-  .profile-settings {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
   }
 
-  .settings-card {
+  .profile-card {
     background: var(--secondary-bg, #253449);
-    border-radius: var(--radius, 16px);
+    border-radius: var(--radius, 14px);
     border: 1px solid rgba(201, 168, 75, 0.04);
     box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
-    padding: 24px 28px;
-    transition: var(--transition, 0.3s ease);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .settings-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    opacity: 0;
+    padding: 20px 24px 24px;
     transition: var(--transition, 0.3s ease);
   }
 
-  .settings-card:hover::before {
-    opacity: 0.6;
-  }
-
-  .settings-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+  .profile-card:hover {
     border-color: rgba(201, 168, 75, 0.06);
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
   }
 
-  .settings-card h3 {
-    font-size: 1rem;
+  .profile-card .card-title {
+    font-size: 0.75rem;
     font-weight: 700;
-    color: var(--white, #FFFFFF);
-    margin: 0 0 6px;
+    color: var(--text-muted, #8A94A6);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
     gap: 10px;
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
+    padding-bottom: 12px;
   }
 
-  .settings-card h3 i {
+  .profile-card .card-title i {
     color: var(--primary-gold, #C9A84B);
-    font-size: 1.1rem;
-    width: 24px;
-    text-align: center;
+    font-size: 0.85rem;
   }
 
-  .settings-card p {
+  /* ============================================
+     INFO ROWS - Clean Layout
+     ============================================ */
+  .info-row {
+    display: flex;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
+  }
+
+  .info-row:last-child {
+    border-bottom: none;
+  }
+
+  .info-row .label {
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    width: 120px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .info-row .value {
     font-size: 0.88rem;
     color: var(--text-gray, #C8CED8);
-    margin: 0 0 16px;
-    padding-left: 34px;
+    font-weight: 500;
   }
 
-  .settings-card .btn {
+  .info-row .value .text-muted {
+    color: var(--text-muted, #8A94A6);
+    font-size: 0.8rem;
+  }
+
+  /* ============================================
+     EDIT BUTTON
+     ============================================ */
+  .btn-edit-profile {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 9px 22px;
+    gap: 6px;
+    padding: 4px 14px;
     border-radius: 60px;
     font-weight: 600;
-    font-size: 0.82rem;
-    text-decoration: none;
-    transition: var(--transition, 0.3s ease);
-    border: none;
-    cursor: pointer;
-    margin-left: 34px;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
-    color: var(--white, #FFFFFF);
-  }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--text-gray, #C8CED8);
-    border: 1.5px solid rgba(201, 168, 75, 0.04);
-  }
-
-  .btn-outline:hover {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: var(--primary-gold, #C9A84B);
+    font-size: 0.7rem;
+    background: rgba(201, 168, 75, 0.06);
     color: var(--primary-gold, #C9A84B);
-    transform: translateY(-2px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    margin-left: auto;
   }
 
-  .btn-outline i {
+  .btn-edit-profile:hover {
+    background: rgba(201, 168, 75, 0.12);
+    border-color: rgba(201, 168, 75, 0.12);
+    transform: translateY(-2px);
     color: var(--primary-gold, #C9A84B);
   }
 
   /* ============================================
-     ACCOUNT INFO - Gold Theme
+     STATUS BADGE
      ============================================ */
-  .info-items {
-    padding-left: 34px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+  .badge {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
   }
 
-  .info-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    font-size: 0.88rem;
-    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
-  }
-
-  .info-item:last-child {
-    border-bottom: none;
-  }
-
-  .info-item .info-label {
-    color: var(--text-muted, #8A94A6);
-    font-weight: 500;
-  }
-
-  .info-item .info-value {
-    color: var(--text-gray, #C8CED8);
-    font-weight: 500;
-  }
-
-  .info-item .info-value.text-success {
+  .badge-approved {
+    background: rgba(5, 150, 105, 0.08);
     color: #059669;
   }
 
-  .info-item .info-value.text-warning {
+  .badge-pending {
+    background: rgba(245, 158, 11, 0.08);
     color: #F59E0B;
+  }
+
+  .badge-suspended {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
   }
 
   /* ============================================
@@ -404,339 +308,435 @@
   @media (max-width: 992px) {
     .profile-grid {
       grid-template-columns: 1fr;
-      gap: 20px;
-    }
-
-    .profile-card {
-      max-width: 420px;
-      margin: 0 auto;
-    }
-
-    .profile-settings {
-      max-width: 600px;
-      margin: 0 auto;
+      gap: 16px;
     }
   }
 
   @media (max-width: 768px) {
-    .page-header h1 {
-      font-size: 1.3rem;
-    }
-
-    .page-header p {
-      margin-left: 0;
-    }
-
-    .profile-card {
+    .profile-header {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
       padding: 24px 16px 20px;
     }
 
-    .profile-avatar {
-      width: 76px;
-      height: 76px;
-      font-size: 2.2rem;
+    .profile-info {
+      text-align: center;
     }
 
-    .profile-avatar .status-dot {
-      width: 14px;
-      height: 14px;
-    }
-
-    .settings-card {
-      padding: 20px 18px;
-    }
-
-    .settings-card p,
-    .settings-card .btn,
-    .info-items {
-      padding-left: 0;
-    }
-
-    .settings-card h3 {
-      font-size: 0.95rem;
-    }
-
-    .settings-card .btn {
-      margin-left: 0;
-      width: 100%;
+    .profile-info .name-row {
       justify-content: center;
     }
 
-    .info-item {
+    .profile-stats-mini {
+      margin-left: 0;
+      justify-content: center;
+      width: 100%;
+      gap: 20px;
+    }
+
+    .profile-stats-mini .stat-item .number {
+      font-size: 1.2rem;
+    }
+
+    .profile-card {
+      padding: 16px 14px 18px;
+    }
+
+    .info-row {
       flex-direction: column;
       gap: 2px;
       padding: 6px 0;
     }
 
-    .profile-stats {
-      gap: 4px;
+    .info-row .label {
+      width: 100%;
+      font-size: 0.65rem;
     }
 
-    .stat-item .stat-value {
-      font-size: 1.2rem;
+    .info-row .value {
+      font-size: 0.82rem;
+    }
+
+    .profile-avatar-large {
+      width: 68px;
+      height: 68px;
+      font-size: 1.8rem;
+    }
+
+    .profile-avatar-large .status-dot {
+      width: 14px;
+      height: 14px;
+    }
+
+    .profile-info h1 {
+      font-size: 1.3rem;
+    }
+
+    .btn-edit-profile {
+      margin-left: 0;
     }
   }
 
   @media (max-width: 480px) {
-    .profile-card {
-      padding: 20px 14px 16px;
+    .profile-header {
+      padding: 16px 12px;
     }
 
-    .profile-avatar {
-      width: 64px;
-      height: 64px;
-      font-size: 1.8rem;
+    .profile-avatar-large {
+      width: 56px;
+      height: 56px;
+      font-size: 1.4rem;
     }
 
-    .profile-avatar .status-dot {
+    .profile-avatar-large .status-dot {
       width: 12px;
       height: 12px;
+      bottom: 0px;
+      right: 0px;
     }
 
-    .profile-card h2 {
+    .profile-info h1 {
       font-size: 1.1rem;
     }
 
-    .profile-badges {
-      gap: 6px;
+    .profile-info .username {
+      font-size: 0.75rem;
+    }
+
+    .profile-stats-mini {
+      gap: 14px;
+    }
+
+    .profile-stats-mini .stat-item .number {
+      font-size: 1rem;
+    }
+
+    .profile-stats-mini .stat-item .label {
+      font-size: 0.5rem;
+    }
+
+    .profile-card {
+      padding: 12px 10px 14px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .profile-card .card-title {
+      font-size: 0.65rem;
+      padding-bottom: 10px;
+    }
+
+    .info-row .label {
+      font-size: 0.6rem;
+    }
+
+    .info-row .value {
+      font-size: 0.78rem;
     }
 
     .badge {
       font-size: 0.6rem;
-      padding: 3px 10px;
-    }
-
-    .profile-stats {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .stat-item .stat-value {
-      font-size: 1.1rem;
-    }
-
-    .stat-item .stat-label {
-      font-size: 0.55rem;
-    }
-
-    .settings-card {
-      padding: 16px 14px;
-    }
-
-    .settings-card h3 {
-      font-size: 0.9rem;
-    }
-
-    .settings-card p {
-      font-size: 0.82rem;
-    }
-
-    .settings-card .btn {
-      font-size: 0.78rem;
-      padding: 8px 16px;
-    }
-
-    .info-item {
-      font-size: 0.82rem;
+      padding: 1px 10px;
     }
   }
 
   /* ============================================
      DARK MODE SUPPORT
      ============================================ */
+  [data-theme="dark"] .profile-header {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .profile-info h1 {
+    color: var(--white, #FFFFFF);
+  }
+
   [data-theme="dark"] .profile-card {
     background: var(--secondary-bg, #253449);
     border-color: rgba(201, 168, 75, 0.04);
   }
 
-  [data-theme="dark"] .profile-card h2 {
-    color: var(--white, #FFFFFF);
+  [data-theme="dark"] .profile-card .card-title {
+    color: var(--text-muted, #8A94A6);
   }
 
-  [data-theme="dark"] .profile-avatar .status-dot {
-    border-color: var(--secondary-bg, #253449);
+  [data-theme="dark"] .info-row {
+    border-color: rgba(201, 168, 75, 0.03);
   }
 
-  [data-theme="dark"] .stat-item .stat-value {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  [data-theme="dark"] .settings-card {
-    background: var(--secondary-bg, #253449);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .settings-card h3 {
-    color: var(--white, #FFFFFF);
-  }
-
-  [data-theme="dark"] .settings-card h3 i {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .info-item {
-    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
-  }
-
-  [data-theme="dark"] .info-item .info-value {
+  [data-theme="dark"] .info-row .value {
     color: var(--text-gray, #C8CED8);
   }
 
-  [data-theme="dark"] .btn-outline {
-    color: var(--text-gray, #C8CED8);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .btn-outline:hover {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: var(--primary-gold, #C9A84B);
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .btn-outline i {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .profile-card::before {
-    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-  }
-
-  [data-theme="dark"] .page-header h1 {
-    color: var(--white, #FFFFFF);
-  }
-
-  [data-theme="dark"] .badge-admin {
-    background: rgba(201, 168, 75, 0.08);
-    border-color: rgba(201, 168, 75, 0.04);
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .badge-student {
+  [data-theme="dark"] .btn-edit-profile {
     background: rgba(201, 168, 75, 0.06);
-    border-color: rgba(201, 168, 75, 0.04);
     color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
-  [data-theme="dark"] .badge-success {
+  [data-theme="dark"] .btn-edit-profile:hover {
+    background: rgba(201, 168, 75, 0.12);
+    border-color: rgba(201, 168, 75, 0.12);
+  }
+
+  [data-theme="dark"] .badge-approved {
     background: rgba(5, 150, 105, 0.08);
-    border-color: rgba(5, 150, 105, 0.04);
     color: #34D399;
   }
 
-  [data-theme="dark"] .badge-warning {
+  [data-theme="dark"] .badge-pending {
     background: rgba(245, 158, 11, 0.08);
-    border-color: rgba(245, 158, 11, 0.04);
     color: #FBBF24;
   }
 
-  [data-theme="dark"] .profile-avatar {
-    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.15);
+  [data-theme="dark"] .badge-suspended {
+    background: rgba(239, 68, 68, 0.08);
+    color: #F87171;
   }
 
-  [data-theme="dark"] .page-header p {
-    color: var(--text-gray, #C8CED8);
+  [data-theme="dark"] .profile-avatar-large .status-dot {
+    border-color: var(--secondary-bg, #253449);
   }
 
-  [data-theme="dark"] .settings-card::before {
-    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-  }
-
-  [data-theme="dark"] .profile-card .profile-email {
-    color: var(--text-gray, #C8CED8);
+  [data-theme="dark"] .profile-info .user-id {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
   }
 </style>
 
 <div class="profile-page">
-  <!-- Header -->
-  <div class="page-header">
-    <h1><i class="fas fa-user-circle"></i> My Profile</h1>
-    <p>Manage your account settings and preferences</p>
+  <!-- ============================== -->
+  <!-- PROFILE HEADER -->
+  <!-- ============================== -->
+  <div class="profile-header">
+    <div class="profile-avatar-large">
+      {% if current_user.profile_picture %}
+        <img src="{{ url_for('uploaded_file', filename=current_user.profile_picture) }}" alt="{{ current_user.username }}">
+      {% else %}
+        <span class="initials">{{ current_user.username[0]|upper }}</span>
+      {% endif %}
+      <span class="status-dot"></span>
+    </div>
+    <div class="profile-info">
+      <div class="name-row">
+        <h1>{{ current_user.username }}</h1>
+        <div class="user-id">
+          <i class="fas fa-id-card"></i> {{ '%06d'|format(current_user.id) }}
+        </div>
+      </div>
+      <div class="username">
+        <i class="fas fa-at"></i> {{ current_user.username }}
+      </div>
+    </div>
+    <div class="profile-stats-mini">
+      <div class="stat-item">
+        <span class="number">{{ current_user.get_enrolled_courses()|length }}</span>
+        <span class="label">Courses</span>
+      </div>
+      <div class="stat-item">
+        <span class="number">{{ current_user.quiz_answers|length }}</span>
+        <span class="label">Quizzes</span>
+      </div>
+      <div class="stat-item">
+        <span class="number">{{ current_user.submissions|length }}</span>
+        <span class="label">Assignments</span>
+      </div>
+      <div class="stat-item">
+        <span class="number">0</span>
+        <span class="label">Balance</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Profile Grid -->
+  <!-- ============================== -->
+  <!-- PROFILE GRID - 2 Columns -->
+  <!-- ============================== -->
   <div class="profile-grid">
-    <!-- Left: Profile Card -->
-    <div class="profile-card">
-      <div class="profile-avatar">
-        <i class="fas fa-user"></i>
-        <span class="status-dot"></span>
+    <!-- LEFT COLUMN -->
+    <div>
+      <!-- Personal Information -->
+      <div class="profile-card" style="margin-bottom: 20px;">
+        <div class="card-title">
+          <i class="fas fa-user"></i> Personal Information
+          <a href="{{ url_for('edit_student_profile') }}" class="btn-edit-profile">
+            <i class="fas fa-pen"></i> Edit
+          </a>
+        </div>
+        <div class="info-row">
+          <span class="label">Email</span>
+          <span class="value">{{ current_user.email }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Phone</span>
+          <span class="value">{{ current_user.phone if current_user.phone is defined and current_user.phone else 'Not set' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date of Birth</span>
+          <span class="value">{{ current_user.dob.strftime('%d-%m-%Y') if current_user.dob is defined and current_user.dob else 'Not set' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Enrolled Course</span>
+          <span class="value">
+            {% set enrolled = current_user.get_enrolled_courses() %}
+            {% if enrolled %}
+              {{ enrolled[0].name }}
+              {% if enrolled|length > 1 %}
+                <span class="text-muted">+{{ enrolled|length - 1 }} more</span>
+              {% endif %}
+            {% else %}
+              <span class="text-muted">No courses</span>
+            {% endif %}
+          </span>
+        </div>
       </div>
 
-      <h2>{{ current_user.username }}</h2>
-      <p class="profile-email">{{ current_user.email }}</p>
-
-      <div class="profile-badges">
-        <span class="badge {% if current_user.is_admin() %}badge-admin{% else %}badge-student{% endif %}">
-          <i class="fas fa-{% if current_user.is_admin() %}shield-alt{% else %}graduation-cap{% endif %}"></i>
-          {{ current_user.role|title }}
-        </span>
-        {% if current_user.is_approved %}
-          <span class="badge badge-success">
-            <i class="fas fa-check-circle"></i> Approved
-          </span>
-        {% else %}
-          <span class="badge badge-warning">
-            <i class="fas fa-clock"></i> Pending
-          </span>
-        {% endif %}
-      </div>
-
-      <div class="profile-stats">
-        <div class="stat-item">
-          <span class="stat-value">{{ current_user.enrolled_courses|length }}</span>
-          <span class="stat-label">Courses</span>
+      <!-- Career History -->
+      <div class="profile-card">
+        <div class="card-title">
+          <i class="fas fa-briefcase"></i> Career History
         </div>
-        <div class="stat-item">
-          <span class="stat-value">{{ current_user.quiz_answers|length }}</span>
-          <span class="stat-label">Quizzes</span>
+        <div class="info-row">
+          <span class="label">Start Date</span>
+          <span class="value">
+            {% if current_user.created_at %}
+              {{ current_user.created_at.strftime('%Y-%m-%d') }}
+            {% else %}
+              <span class="text-muted">Not set</span>
+            {% endif %}
+          </span>
         </div>
-        <div class="stat-item">
-          <span class="stat-value">{{ current_user.submissions|length }}</span>
-          <span class="stat-label">Assignments</span>
+        <div class="info-row">
+          <span class="label">Role</span>
+          <span class="value">{{ current_user.role|title if current_user.role else 'Student' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Status</span>
+          <span class="value">
+            {% if current_user.is_suspended %}
+              <span class="badge badge-suspended"><i class="fas fa-ban"></i> Suspended</span>
+            {% elif current_user.is_approved %}
+              <span class="badge badge-approved"><i class="fas fa-check-circle"></i> Active</span>
+            {% else %}
+              <span class="badge badge-pending"><i class="fas fa-clock"></i> Pending</span>
+            {% endif %}
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- Right: Settings -->
-    <div class="profile-settings">
-      <!-- Password -->
-      <div class="settings-card">
-        <h3><i class="fas fa-lock"></i> Password</h3>
-        <p>Change your password to keep your account secure.</p>
-        <a href="{{ url_for('change_password') }}" class="btn btn-primary">
-          <i class="fas fa-key"></i> Change Password
-        </a>
+    <!-- RIGHT COLUMN -->
+    <div>
+      <!-- Enrolled Courses -->
+      <div class="profile-card" style="margin-bottom: 20px;">
+        <div class="card-title">
+          <i class="fas fa-book"></i> Enrolled Courses
+        </div>
+        <div class="info-row">
+          <span class="label">Current</span>
+          <span class="value">
+            {% set enrolled = current_user.get_enrolled_courses() %}
+            {% if enrolled %}
+              {{ enrolled|length }} course{{ 's' if enrolled|length > 1 }}
+              <span class="text-muted">
+                (Avg. 
+                {% set total = 0 %}
+                {% for course in enrolled %}
+                  {% set total = total + course.get_progress_for_student(current_user.id) %}
+                {% endfor %}
+                {{ (total / enrolled|length)|int }}% complete)
+              </span>
+            {% else %}
+              <span class="text-muted">No courses</span>
+            {% endif %}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">Pending</span>
+          <span class="value">
+            {% set pending = current_user.get_pending_courses() %}
+            {% if pending %}
+              {{ pending|length }} course{{ 's' if pending|length > 1 }}
+              <span class="text-muted">awaiting approval</span>
+            {% else %}
+              <span class="text-muted">None</span>
+            {% endif %}
+          </span>
+        </div>
+        <div class="info-row" style="flex-wrap: wrap; gap: 4px;">
+          <span class="label">All Courses</span>
+          <span class="value" style="display: flex; flex-wrap: wrap; gap: 6px;">
+            {% set all_courses = current_user.get_enrolled_courses() + current_user.get_pending_courses() %}
+            {% if all_courses %}
+              {% for course in all_courses %}
+                <span class="badge {% if course in current_user.get_enrolled_courses() %}badge-approved{% else %}badge-pending{% endif %}" 
+                      style="font-size: 0.65rem; padding: 2px 10px;">
+                  {{ course.code }}
+                </span>
+              {% endfor %}
+            {% else %}
+              <span class="text-muted">No courses</span>
+            {% endif %}
+          </span>
+        </div>
       </div>
 
-      <!-- Theme -->
-      <div class="settings-card">
-        <h3><i class="fas fa-palette"></i> Theme</h3>
-        <p>Switch between light and dark mode for your preference.</p>
-        <button id="darkModeToggle" class="btn btn-outline">
-          <i class="fas fa-moon"></i> Toggle Dark Mode
-        </button>
+      <!-- Learning Stats -->
+      <div class="profile-card" style="margin-bottom: 20px;">
+        <div class="card-title">
+          <i class="fas fa-chart-bar"></i> Learning Stats
+        </div>
+        <div class="info-row">
+          <span class="label">Quizzes Taken</span>
+          <span class="value">{{ current_user.quiz_answers|length }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Assignments</span>
+          <span class="value">{{ current_user.submissions|length }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Avg. Progress</span>
+          <span class="value">
+            {% set enrolled = current_user.get_enrolled_courses() %}
+            {% if enrolled %}
+              {% set total = 0 %}
+              {% for course in enrolled %}
+                {% set total = total + course.get_progress_for_student(current_user.id) %}
+              {% endfor %}
+              {{ (total / enrolled|length)|int }}%
+            {% else %}
+              0%
+            {% endif %}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">Join Date</span>
+          <span class="value">
+            {% if current_user.created_at %}
+              {{ current_user.created_at.strftime('%b %d, %Y') }}
+            {% else %}
+              <span class="text-muted">N/A</span>
+            {% endif %}
+          </span>
+        </div>
       </div>
 
-      <!-- Account Info -->
-      <div class="settings-card">
-        <h3><i class="fas fa-info-circle"></i> Account Info</h3>
-        <div class="info-items">
-          <div class="info-item">
-            <span class="info-label">Joined</span>
-            <span class="info-value">{{ current_user.created_at.strftime('%B %d, %Y') }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Role</span>
-            <span class="info-value">{{ current_user.role|title }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Status</span>
-            <span class="info-value {% if current_user.is_approved %}text-success{% else %}text-warning{% endif %}">
-              {{ 'Approved' if current_user.is_approved else 'Pending Approval' }}
-            </span>
-          </div>
+      <!-- Quick Actions -->
+      <div class="profile-card">
+        <div class="card-title">
+          <i class="fas fa-bolt"></i> Quick Actions
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="{{ url_for('change_password') }}" class="btn-edit-profile" style="padding: 8px 18px; font-size: 0.75rem;">
+            <i class="fas fa-key"></i> Change Password
+          </a>
+          <a href="{{ url_for('student_dashboard') }}" class="btn-edit-profile" style="padding: 8px 18px; font-size: 0.75rem;">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+          </a>
+          <a href="{{ url_for('student_courses') }}" class="btn-edit-profile" style="padding: 8px 18px; font-size: 0.75rem;">
+            <i class="fas fa-book"></i> My Courses
+          </a>
         </div>
       </div>
     </div>
@@ -745,43 +745,10 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const toggle = document.getElementById('darkModeToggle');
-    if (toggle) {
-      // Set initial icon based on current theme
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      if (currentTheme === 'dark') {
-        toggle.innerHTML = '<i class="fas fa-sun"></i> Toggle Dark Mode';
-      } else {
-        toggle.innerHTML = '<i class="fas fa-moon"></i> Toggle Dark Mode';
-      }
-
-      toggle.addEventListener('click', function() {
-        fetch('{{ url_for("toggle_dark_mode") }}', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.dark_mode) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            toggle.innerHTML = '<i class="fas fa-sun"></i> Toggle Dark Mode';
-          } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-            toggle.innerHTML = '<i class="fas fa-moon"></i> Toggle Dark Mode';
-          }
-        })
-        .catch(error => {
-          console.error('Error toggling dark mode:', error);
-        });
-      });
-    }
-
     // ============================================
     // COOL ENTRY ANIMATION FOR ELEMENTS
     // ============================================
-    const cards = document.querySelectorAll('.settings-card');
+    const cards = document.querySelectorAll('.profile-card');
     cards.forEach((card, index) => {
       card.style.opacity = '0';
       card.style.transform = 'translateY(15px)';
@@ -789,12 +756,14 @@
         card.style.transition = 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
         card.style.opacity = '1';
         card.style.transform = 'translateY(0)';
-      }, 200 + index * 80);
+      }, 150 + index * 80);
     });
 
-    // Stats counter animation
-    const statValues = document.querySelectorAll('.stat-value');
-    statValues.forEach(stat => {
+    // ============================================
+    // STATS COUNTER ANIMATION
+    // ============================================
+    const statNumbers = document.querySelectorAll('.profile-stats-mini .number');
+    statNumbers.forEach(stat => {
       const text = stat.textContent;
       const number = parseInt(text);
       if (!isNaN(number)) {
@@ -812,7 +781,7 @@
       }
     });
 
-    console.log('✨ Profile Page - Gold Theme Loaded!');
+    console.log('✨ Profile Page - Modern Clean Design Loaded!');
   });
 </script>
 {% endblock %}

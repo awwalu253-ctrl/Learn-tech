@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Suspend Student - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+  .suspend-page {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .suspend-container {
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+    padding: 32px 36px 36px;
+  }
+
+  .suspend-container .warning-icon {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 16px;
+  }
+
+  .suspend-container h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    text-align: center;
+    margin: 0 0 8px;
+  }
+
+  .suspend-container h2 span {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .suspend-container .subtitle {
+    color: var(--text-gray, #C8CED8);
+    text-align: center;
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+  }
+
+  .suspend-container .student-info {
+    background: var(--primary-bg, #0A1527);
+    border-radius: var(--radius-sm, 10px);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+
+  .suspend-container .student-info .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(201, 168, 75, 0.02);
+  }
+
+  .suspend-container .student-info .info-row:last-child {
+    border-bottom: none;
+  }
+
+  .suspend-container .student-info .label {
+    color: var(--text-muted, #8A94A6);
+    font-size: 0.8rem;
+  }
+
+  .suspend-container .student-info .value {
+    color: var(--white, #FFFFFF);
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    margin-bottom: 5px;
+  }
+
+  .form-group label .required {
+    color: #EF4444;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
+    font-size: 0.9rem;
+    color: var(--white, #FFFFFF);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .form-control:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-block {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(239, 68, 68, 0.15);
+  }
+
+  .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
+  }
+
+  .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+    transform: translateY(-2px);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .warning-text {
+    color: #EF4444;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 12px;
+    background: rgba(239, 68, 68, 0.04);
+    border-radius: var(--radius-sm, 10px);
+    border: 1px solid rgba(239, 68, 68, 0.08);
+    margin-bottom: 20px;
+  }
+
+  .warning-text ul {
+    text-align: left;
+    margin: 8px 0 0;
+    padding-left: 20px;
+    color: var(--text-gray, #C8CED8);
+    font-size: 0.82rem;
+  }
+
+  @media (max-width: 768px) {
+    .suspend-container {
+      padding: 20px 16px 24px;
+    }
+
+    .form-actions {
+      flex-direction: column;
+    }
+
+    .form-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  [data-theme="dark"] .suspend-container {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .suspend-container h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .suspend-container .subtitle {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .suspend-container .student-info {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .suspend-container .student-info .value {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(201, 168, 75, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .warning-text {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .warning-text ul {
+    color: var(--text-gray, #C8CED8);
+  }
+</style>
+
+<div class="suspend-page">
+  <div class="suspend-container">
+    <div class="warning-icon">⚠️</div>
+    <h2>Suspend <span>Student</span></h2>
+    <p class="subtitle">This will prevent the student from accessing their account</p>
+
+    <div class="student-info">
+      <div class="info-row">
+        <span class="label">Username</span>
+        <span class="value">{{ student.username }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Email</span>
+        <span class="value">{{ student.email }}</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Status</span>
+        <span class="value" style="color: #059669;">
+          {% if student.is_approved %}Approved{% else %}Pending{% endif %}
+        </span>
+      </div>
+    </div>
+
+    <div class="warning-text">
+      <i class="fas fa-exclamation-triangle"></i>
+      Suspending this student will:
+      <ul>
+        <li>Prevent them from logging in</li>
+        <li>Remove their course access</li>
+        <li>Set account status to "Suspended"</li>
+      </ul>
+    </div>
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Suspension Reason <span class="required">*</span></label>
+        <textarea name="reason" class="form-control" placeholder="Enter reason for suspension..." required></textarea>
+        <small style="color: var(--text-muted, #8A94A6); font-size: 0.75rem; display: block; margin-top: 4px;">
+          <i class="fas fa-info-circle"></i> This reason will be shown to the student when they try to log in
+        </small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-danger" style="flex: 1;">
+          <i class="fas fa-ban"></i> Confirm Suspension
+        </button>
+        <a href="{{ url_for('manage_students') }}" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i> Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

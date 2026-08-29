@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.username }} - {{ course.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .student-detail-page {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .page-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .student-avatar-large {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.8rem;
+    font-weight: 700;
+    overflow: hidden;
+  }
+
+  .student-avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .page-header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    margin: 0;
+  }
+
+  .page-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-gray, #C8CED8);
+    margin: 2px 0 0;
+  }
+
+  .page-header .subtitle i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-decoration: none;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
+  }
+
+  .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: var(--primary-gold, #C8CED8);
+    color: var(--primary-gold, #C9A84B);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .section-card {
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+    padding: 20px 24px 24px;
+    margin-bottom: 20px;
+    transition: var(--transition);
+  }
+
+  .section-card:hover {
+    border-color: rgba(201, 168, 75, 0.06);
+    box-shadow: var(--shadow-md);
+  }
+
+  .section-card .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .section-card .section-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .section-card .section-header h3 i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .info-row {
+    display: flex;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
+  }
+
+  .info-row:last-child {
+    border-bottom: none;
+  }
+
+  .info-row .label {
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--text-muted, #8A94A6);
+    width: 140px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .info-row .value {
+    font-size: 0.88rem;
+    color: var(--text-gray, #C8CED8);
+    font-weight: 500;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .status-badge.approved {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .status-badge.pending {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .status-badge.rejected {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+  }
+
+  .result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
+  }
+
+  .result-item:last-child {
+    border-bottom: none;
+  }
+
+  .result-item .result-title {
+    font-size: 0.85rem;
+    color: var(--text-gray, #C8CED8);
+  }
+
+  .result-item .result-score {
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .result-item .result-score.pass {
+    color: #059669;
+  }
+
+  .result-item .result-score.fail {
+    color: #EF4444;
+  }
+
+  .result-item .result-status {
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: rgba(201, 168, 75, 0.06);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+
+  .progress-bar .fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    transition: width 1s ease;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted, #8A94A6);
+  }
+
+  .empty-state i {
+    font-size: 2rem;
+    opacity: 0.2;
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .page-header-left {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .info-row {
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .info-row .label {
+      width: 100%;
+    }
+  }
+
+  [data-theme="dark"] .section-card {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .section-card .section-header h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .result-item .result-title {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="student-detail-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="student-avatar-large">
+        {% if student.profile_picture %}
+          <img src="{{ url_for('uploaded_file', filename=student.profile_picture) }}" alt="{{ student.username }}">
+        {% else %}
+          {{ student.username[0]|upper }}
+        {% endif %}
+      </div>
+      <div>
+        <h1>{{ student.username }}</h1>
+        <p class="subtitle">
+          <i class="fas fa-envelope"></i> {{ student.email }}
+          <span style="margin: 0 8px; color: var(--text-muted);">•</span>
+          <i class="fas fa-book"></i> {{ course.name }}
+        </p>
+      </div>
+    </div>
+    <div>
+      <a href="{{ url_for('admin_course_detail', course_id=course.id) }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Course
+      </a>
+    </div>
+  </div>
+
+  <!-- Student Info -->
+  <div class="section-card">
+    <div class="section-header">
+      <h3><i class="fas fa-user"></i> Student Information</h3>
+    </div>
+    <div class="info-row">
+      <span class="label">Username</span>
+      <span class="value">{{ student.username }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Email</span>
+      <span class="value">{{ student.email }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Phone</span>
+      <span class="value">{{ student.phone if student.phone is defined and student.phone else 'Not set' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Enrollment Status</span>
+      <span class="value">
+        <span class="status-badge {{ enrollment.status }}">
+          <i class="fas fa-{% if enrollment.status == 'approved' %}check-circle{% elif enrollment.status == 'pending' %}clock{% else %}times-circle{% endif %}"></i>
+          {{ enrollment.status|title }}
+        </span>
+        {% if enrollment.status == 'rejected' and enrollment.rejection_reason %}
+          <span style="color: var(--text-muted, #8A94A6); font-size: 0.8rem; margin-left: 8px;">
+            Reason: {{ enrollment.rejection_reason }}
+          </span>
+        {% endif %}
+      </span>
+    </div>
+    <div class="info-row">
+      <span class="label">Requested</span>
+      <span class="value">{{ enrollment.requested_at.strftime('%b %d, %Y at %I:%M %p') if enrollment.requested_at else '-' }}</span>
+    </div>
+    {% if enrollment.approved_at %}
+    <div class="info-row">
+      <span class="label">Approved</span>
+      <span class="value">{{ enrollment.approved_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+    </div>
+    {% endif %}
+    <div class="info-row">
+      <span class="label">Progress</span>
+      <span class="value">
+        {{ progress }}%
+        <div class="progress-bar">
+          <div class="fill" style="width: {{ progress }}%;"></div>
+        </div>
+      </span>
+    </div>
+  </div>
+
+  <!-- Quiz Results -->
+  <div class="section-card">
+    <div class="section-header">
+      <h3><i class="fas fa-puzzle-piece"></i> Quiz Results</h3>
+      <span class="badge" style="font-size:0.65rem; font-weight:600; color:var(--text-muted);">{{ quiz_results|length }}</span>
+    </div>
+    {% if quiz_results %}
+      {% for result in quiz_results %}
+        <div class="result-item">
+          <span class="result-title">{{ result.title }}</span>
+          <span>
+            <span class="result-score {% if result.score.score >= 70 %}pass{% else %}fail{% endif %}">
+              {{ result.score.score }}%
+            </span>
+            <span class="result-status">({{ result.score.correct }}/{{ result.score.total }})</span>
+          </span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-puzzle-piece"></i>
+        <p>No quiz results available for this student.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Assignment Results -->
+  <div class="section-card">
+    <div class="section-header">
+      <h3><i class="fas fa-tasks"></i> Assignment Results</h3>
+      <span class="badge" style="font-size:0.65rem; font-weight:600; color:var(--text-muted);">{{ assignment_results|length }}</span>
+    </div>
+    {% if assignment_results %}
+      {% for result in assignment_results %}
+        <div class="result-item">
+          <span class="result-title">{{ result.title }}</span>
+          <span>
+            {% if result.is_graded %}
+              <span class="result-score {% if result.score >= 70 %}pass{% else %}fail{% endif %}">
+                {{ result.score }}%
+              </span>
+            {% else %}
+              <span class="result-status">Pending Grade</span>
+            {% endif %}
+            <span class="result-status">({{ result.submitted_at.strftime('%b %d') }})</span>
+          </span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-tasks"></i>
+        <p>No assignment submissions available for this student.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Animate progress bar
+    const fill = document.querySelector('.progress-bar .fill');
+    if (fill) {
+      const target = fill.style.width;
+      fill.style.width = '0%';
+      setTimeout(() => {
+        fill.style.width = target;
+      }, 300);
+    }
+  });
+</script>
+{% endblock %}

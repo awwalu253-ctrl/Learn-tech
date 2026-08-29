@@ -1,0 +1,760 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================
+     EDIT PROFILE - Modern Clean Design
+     ============================================ */
+  .edit-profile-page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  /* ============================================
+     EDIT CARD
+     ============================================ */
+  .edit-card {
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
+    padding: 32px 36px 32px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .edit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.6;
+  }
+
+  .edit-card:hover {
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.15));
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  /* ============================================
+     HEADER
+     ============================================ */
+  .edit-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .edit-header .icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.04));
+    border: 2px solid rgba(201, 168, 75, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 1.6rem;
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .edit-header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    margin: 0;
+  }
+
+  .edit-header h2 span {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .edit-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-gray, #C8CED8);
+    margin: 2px 0 0;
+  }
+
+  /* ============================================
+     PROFILE PICTURE UPLOAD
+     ============================================ */
+  .profile-picture-section {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .profile-picture-section .avatar-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: var(--white, #FFFFFF);
+    overflow: hidden;
+    margin: 0 auto 12px;
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
+    border: 3px solid rgba(201, 168, 75, 0.1);
+    position: relative;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .profile-picture-section .avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-picture-section .avatar-preview:hover {
+    transform: scale(1.02);
+    border-color: rgba(201, 168, 75, 0.2);
+  }
+
+  .profile-picture-section .upload-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  .profile-picture-section .upload-wrapper input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    left: 0;
+    top: 0;
+  }
+
+  .profile-picture-section .upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 18px;
+    border-radius: 60px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    pointer-events: none;
+  }
+
+  .profile-picture-section .upload-btn:hover {
+    background: rgba(201, 168, 75, 0.12);
+    border-color: rgba(201, 168, 75, 0.12);
+  }
+
+  .profile-picture-section .upload-btn i {
+    font-size: 0.7rem;
+  }
+
+  .profile-picture-section .file-name {
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 4px;
+    display: block;
+  }
+
+  .profile-picture-section .help-text {
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 6px;
+  }
+
+  /* ============================================
+     DIVIDER
+     ============================================ */
+  .form-divider {
+    border: none;
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
+    margin: 20px 0;
+  }
+
+  /* ============================================
+     FORM
+     ============================================ */
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    margin-bottom: 4px;
+  }
+
+  .form-group label .required {
+    color: #EF4444;
+  }
+
+  .form-group label .optional {
+    font-weight: 400;
+    color: var(--text-muted, #8A94A6);
+    font-size: 0.7rem;
+  }
+
+  .form-group .help-text {
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 4px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm, 10px);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
+    font-size: 0.9rem;
+    color: var(--white, #FFFFFF);
+    transition: var(--transition, 0.3s ease);
+    outline: none;
+  }
+
+  .form-control:focus {
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.08);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* ============================================
+     BUTTONS
+     ============================================ */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-block {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
+  }
+
+  .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+    transform: translateY(-2px);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .btn-group .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* ============================================
+     PASSWORD SECTION
+     ============================================ */
+  .password-section {
+    background: rgba(201, 168, 75, 0.02);
+    border-radius: var(--radius-sm, 10px);
+    padding: 16px 20px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
+    margin-top: 4px;
+  }
+
+  .password-section .section-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .password-section .section-title i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .password-section .section-title .optional {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--text-muted, #8A94A6);
+  }
+
+  /* ============================================
+     ALERTS
+     ============================================ */
+  .alert {
+    padding: 10px 16px;
+    border-radius: var(--radius-sm, 10px);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    border: 1px solid transparent;
+  }
+
+  .alert-success {
+    background: rgba(5, 150, 105, 0.06);
+    border-color: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .alert-error {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+  }
+
+  .alert-warning {
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+  }
+
+  .alert i {
+    font-size: 1rem;
+  }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
+    .edit-card {
+      padding: 24px 16px 20px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .btn-group {
+      flex-direction: column;
+    }
+
+    .btn-group .btn {
+      width: 100%;
+    }
+
+    .edit-header .icon {
+      width: 52px;
+      height: 52px;
+      font-size: 1.3rem;
+    }
+
+    .edit-header h2 {
+      font-size: 1.2rem;
+    }
+
+    .password-section {
+      padding: 14px 16px;
+    }
+
+    .profile-picture-section .avatar-preview {
+      width: 80px;
+      height: 80px;
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .edit-card {
+      padding: 18px 12px 16px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .edit-header .icon {
+      width: 44px;
+      height: 44px;
+      font-size: 1.1rem;
+    }
+
+    .edit-header h2 {
+      font-size: 1rem;
+    }
+
+    .form-control {
+      font-size: 0.82rem;
+      padding: 8px 12px;
+    }
+
+    .btn {
+      font-size: 0.78rem;
+      padding: 8px 16px;
+    }
+
+    .profile-picture-section .avatar-preview {
+      width: 68px;
+      height: 68px;
+      font-size: 1.6rem;
+    }
+  }
+
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
+  [data-theme="dark"] .edit-card {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .edit-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(201, 168, 75, 0.06);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.08);
+  }
+
+  [data-theme="dark"] .password-section {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(201, 168, 75, 0.02);
+  }
+
+  [data-theme="dark"] .password-section .section-title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .alert-success {
+    background: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.08);
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .alert-error {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.08);
+    color: #F87171;
+  }
+
+  [data-theme="dark"] .alert-warning {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.08);
+    color: #FBBF24;
+  }
+
+  [data-theme="dark"] .profile-picture-section .avatar-preview {
+    border-color: rgba(201, 168, 75, 0.08);
+  }
+
+  [data-theme="dark"] .profile-picture-section .upload-btn {
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .profile-picture-section .upload-btn:hover {
+    background: rgba(201, 168, 75, 0.12);
+    border-color: rgba(201, 168, 75, 0.12);
+  }
+</style>
+
+<div class="edit-profile-page">
+  <div class="edit-card">
+    <!-- Header -->
+    <div class="edit-header">
+      <div class="icon">
+        <i class="fas fa-user-edit"></i>
+      </div>
+      <h2>Edit <span>Profile</span></h2>
+      <p class="subtitle">Update your personal information</p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data">
+      <!-- Profile Picture -->
+      <div class="profile-picture-section">
+        <div class="avatar-preview">
+          {% if current_user.profile_picture %}
+            <img src="{{ url_for('uploaded_file', filename=current_user.profile_picture) }}" alt="{{ current_user.username }}">
+          {% else %}
+            <span>{{ current_user.username[0]|upper }}</span>
+          {% endif %}
+        </div>
+        <div class="upload-wrapper">
+          <input type="file" id="profile_picture" name="profile_picture" accept="image/*" onchange="previewImage(this)">
+          <span class="upload-btn"><i class="fas fa-camera"></i> Change Photo</span>
+        </div>
+        <span class="file-name" id="fileName">No file chosen</span>
+        <div class="help-text">
+          <i class="fas fa-info-circle"></i> Recommended: Square image, max 2MB (JPG, PNG, GIF)
+        </div>
+      </div>
+
+      <!-- Name Row -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="username">Username <span class="required">*</span></label>
+          <input type="text" id="username" name="username" class="form-control" 
+                 value="{{ current_user.username }}" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email <span class="required">*</span></label>
+          <input type="email" id="email" name="email" class="form-control" 
+                 value="{{ current_user.email }}" required>
+        </div>
+      </div>
+
+      <!-- Contact Row -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phone">Phone <span class="optional">(Optional)</span></label>
+          <input type="tel" id="phone" name="phone" class="form-control" 
+                 value="{{ current_user.phone if current_user.phone is defined else '' }}" 
+                 placeholder="Enter phone number">
+        </div>
+        <div class="form-group">
+          <label for="dob">Date of Birth <span class="optional">(Optional)</span></label>
+          <input type="date" id="dob" name="dob" class="form-control" 
+                 value="{{ current_user.dob.strftime('%Y-%m-%d') if current_user.dob is defined and current_user.dob else '' }}">
+        </div>
+      </div>
+
+      <hr class="form-divider">
+
+      <!-- Password Change Section -->
+      <div class="password-section">
+        <div class="section-title">
+          <i class="fas fa-lock"></i> Change Password
+          <span class="optional">(Optional)</span>
+        </div>
+
+        <div class="form-group">
+          <label for="current_password">Current Password</label>
+          <input type="password" id="current_password" name="current_password" class="form-control" 
+                 placeholder="Enter your current password">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new_password">New Password</label>
+            <input type="password" id="new_password" name="new_password" class="form-control" 
+                   placeholder="Enter new password (min 6 chars)">
+          </div>
+          <div class="form-group">
+            <label for="confirm_password">Confirm New Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" 
+                   placeholder="Confirm new password">
+          </div>
+        </div>
+        <div class="help-text">
+          <i class="fas fa-info-circle"></i> Password must be at least 6 characters long
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+        <a href="{{ url_for('profile') }}" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i> Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // ============================================
+  // PREVIEW IMAGE BEFORE UPLOAD
+  // ============================================
+  function previewImage(input) {
+    const preview = document.querySelector('.avatar-preview');
+    const fileName = document.getElementById('fileName');
+    
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        preview.innerHTML = `<img src="${e.target.result}" alt="Profile Preview">`;
+        fileName.textContent = input.files[0].name;
+      }
+      
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      // Reset to default
+      const username = '{{ current_user.username }}';
+      preview.innerHTML = `<span>${username[0].toUpperCase()}</span>`;
+      fileName.textContent = 'No file chosen';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // ============================================
+    // COOL ENTRY ANIMATION FOR ELEMENTS
+    // ============================================
+    const card = document.querySelector('.edit-card');
+    if (card) {
+      card.style.opacity = '0';
+      setTimeout(() => {
+        card.style.transition = 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    // ============================================
+    // FORM ENTRY ANIMATION
+    // ============================================
+    const formElements = document.querySelectorAll('.form-group, .password-section, .btn-group, .profile-picture-section');
+    formElements.forEach((el, index) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(10px)';
+      setTimeout(() => {
+        el.style.transition = 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 200 + index * 60);
+    });
+
+    // ============================================
+    // CONFIRM PASSWORD VALIDATION
+    // ============================================
+    const newPassword = document.getElementById('new_password');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    if (newPassword && confirmPassword) {
+      confirmPassword.addEventListener('input', function() {
+        if (this.value.length > 0 && this.value !== newPassword.value) {
+          this.style.borderColor = '#EF4444';
+          this.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.08)';
+        } else if (this.value.length > 0) {
+          this.style.borderColor = '#059669';
+          this.style.boxShadow = '0 0 0 3px rgba(5, 150, 105, 0.08)';
+        } else {
+          this.style.borderColor = '';
+          this.style.boxShadow = '';
+        }
+      });
+
+      newPassword.addEventListener('input', function() {
+        if (confirmPassword.value.length > 0 && this.value !== confirmPassword.value) {
+          confirmPassword.style.borderColor = '#EF4444';
+          confirmPassword.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.08)';
+        } else if (confirmPassword.value.length > 0) {
+          confirmPassword.style.borderColor = '#059669';
+          confirmPassword.style.boxShadow = '0 0 0 3px rgba(5, 150, 105, 0.08)';
+        }
+      });
+    }
+
+    // ============================================
+    // FILE INPUT STYLING - Show filename
+    // ============================================
+    const fileInput = document.getElementById('profile_picture');
+    if (fileInput) {
+      fileInput.addEventListener('change', function() {
+        const fileName = document.getElementById('fileName');
+        if (this.files && this.files[0]) {
+          fileName.textContent = this.files[0].name;
+        }
+      });
+    }
+
+    console.log('✨ Edit Profile - Modern Clean Design Loaded!');
+  });
+</script>
+{% endblock %}

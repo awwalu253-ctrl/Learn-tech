@@ -650,7 +650,7 @@
   }
 
   /* ============================================
-     PENDING APPROVALS - Gold Theme
+     PENDING STUDENT APPROVALS - Gold Theme
      ============================================ */
   .pending-header-actions {
     display: flex;
@@ -732,6 +732,20 @@
   .pending-info .course {
     font-size: 0.78rem;
     color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .pending-info .course .course-tag-pending {
+    display: inline-block;
+    padding: 1px 10px;
+    border-radius: 100px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    background: rgba(245, 158, 11, 0.06);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.04);
   }
 
   .pending-actions {
@@ -765,6 +779,118 @@
   }
 
   .btn-reject:hover {
+    background: #EF4444;
+    color: white;
+  }
+
+  /* ============================================
+     PENDING COURSE REQUESTS - NEW SECTION
+     ============================================ */
+  .course-request-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: rgba(201, 168, 75, 0.02);
+    transition: var(--transition);
+    border-left: 3px solid var(--primary-gold);
+  }
+
+  .course-request-item:hover {
+    background: rgba(201, 168, 75, 0.04);
+  }
+
+  .course-request-item .request-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(201, 168, 75, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-gold);
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(201, 168, 75, 0.08);
+  }
+
+  .course-request-item .request-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .course-request-item .request-info .student-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+  }
+
+  .course-request-item .request-info .requested-courses {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  .course-request-item .request-info .requested-courses .course-tag {
+    display: inline-block;
+    padding: 1px 10px;
+    border-radius: 100px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  .course-request-item .request-actions {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .course-request-item .request-actions .btn-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-approve-all {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+  }
+
+  .btn-approve-all:hover {
+    background: #059669;
+    color: white;
+  }
+
+  .btn-approve-one {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold);
+  }
+
+  .btn-approve-one:hover {
+    background: var(--primary-gold);
+    color: white;
+  }
+
+  .btn-reject-all {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+  }
+
+  .btn-reject-all:hover {
     background: #EF4444;
     color: white;
   }
@@ -921,6 +1047,24 @@
       font-size: 0.65rem;
       flex-wrap: wrap;
     }
+
+    .course-request-item {
+      flex-wrap: wrap;
+    }
+
+    .course-request-item .request-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+
+    .pending-item {
+      flex-wrap: wrap;
+    }
+
+    .pending-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
   }
 
   @media (max-width: 480px) {
@@ -947,22 +1091,15 @@
       font-size: 1.1rem;
     }
 
-    .pending-item {
-      flex-wrap: wrap;
+    .course-request-item .request-info .requested-courses .course-tag {
+      font-size: 0.55rem;
+      padding: 1px 6px;
     }
 
-    .pending-actions {
-      width: 100%;
-      justify-content: flex-end;
-    }
-
-    .course-item .course-stats {
-      gap: 6px;
+    .course-request-item .request-actions .btn-icon {
+      width: 24px;
+      height: 24px;
       font-size: 0.6rem;
-    }
-
-    .course-item .course-stats span {
-      display: inline-flex;
     }
 
     .stat-card .stat-number {
@@ -1041,6 +1178,24 @@
     color: var(--text-gray);
   }
 
+  [data-theme="dark"] .course-request-item {
+    background: rgba(201, 168, 75, 0.02);
+  }
+
+  [data-theme="dark"] .course-request-item:hover {
+    background: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .course-request-item .request-info .student-name {
+    color: var(--text-gray);
+  }
+
+  [data-theme="dark"] .course-request-item .request-info .requested-courses .course-tag {
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
   [data-theme="dark"] .super-stat {
     background: rgba(201, 168, 75, 0.02);
   }
@@ -1114,6 +1269,32 @@
   [data-theme="dark"] .course-item .course-stats i {
     color: var(--primary-gold);
   }
+
+  [data-theme="dark"] .btn-approve-all {
+    background: rgba(5, 150, 105, 0.08);
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .btn-approve-all:hover {
+    background: #059669;
+    color: white;
+  }
+
+  [data-theme="dark"] .btn-approve-one {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold);
+  }
+
+  [data-theme="dark"] .btn-approve-one:hover {
+    background: var(--primary-gold);
+    color: white;
+  }
+
+  [data-theme="dark"] .pending-info .course .course-tag-pending {
+    background: rgba(245, 158, 11, 0.06);
+    color: #FBBF24;
+    border-color: rgba(245, 158, 11, 0.04);
+  }
 </style>
 {% endblock %}
 
@@ -1133,7 +1314,11 @@
           <p class="welcome-subtitle">
             Here's what's happening with your courses today
             {% if pending_approvals > 0 %}
-              · <strong>{{ pending_approvals }} pending approval{{ 's' if pending_approvals > 1 }}</strong>
+            · <strong>{{ pending_approvals }} pending approval{{ 's' if pending_approvals > 1 }}</strong>
+            {% endif %}
+            {% if pending_course_requests_count > 0 %}
+            · <strong>{{ pending_course_requests_count }} pending course request{{ 's' if pending_course_requests_count
+              > 1 }}</strong>
             {% endif %}
           </p>
           <div class="last-updated">
@@ -1172,9 +1357,21 @@
       <div class="stat-label">Pending Approvals</div>
       <div class="stat-change {% if pending_approvals > 0 %}alert{% else %}neutral{% endif %}">
         {% if pending_approvals > 0 %}
-          <i class="fas fa-exclamation-circle"></i> Needs action
+        <i class="fas fa-exclamation-circle"></i> Needs action
         {% else %}
-          <i class="fas fa-check-circle"></i> All clear
+        <i class="fas fa-check-circle"></i> All clear
+        {% endif %}
+      </div>
+    </div>
+    <div class="stat-card {% if pending_course_requests_count > 0 %}has-alert{% endif %}">
+      <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+      <div class="stat-number">{{ pending_course_requests_count }}</div>
+      <div class="stat-label">Course Requests</div>
+      <div class="stat-change {% if pending_course_requests_count > 0 %}alert{% else %}neutral{% endif %}">
+        {% if pending_course_requests_count > 0 %}
+        <i class="fas fa-exclamation-circle"></i> Needs action
+        {% else %}
+        <i class="fas fa-check-circle"></i> All clear
         {% endif %}
       </div>
     </div>
@@ -1182,7 +1379,8 @@
       <div class="stat-icon"><i class="fas fa-book"></i></div>
       <div class="stat-number">{{ total_courses }}</div>
       <div class="stat-label">Active Courses</div>
-      <div class="stat-change positive"><i class="fas fa-check"></i> {{ courses|length if courses else 0 }} managed</div>
+      <div class="stat-change positive"><i class="fas fa-check"></i> {{ courses|length if courses else 0 }} managed
+      </div>
     </div>
     <div class="stat-card">
       <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
@@ -1194,12 +1392,6 @@
       <div class="stat-icon"><i class="fas fa-puzzle-piece"></i></div>
       <div class="stat-number">{{ total_quizzes }}</div>
       <div class="stat-label">Quizzes</div>
-      <div class="stat-change neutral"><i class="fas fa-check"></i> Active</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon"><i class="fas fa-tasks"></i></div>
-      <div class="stat-number">{{ total_assignments }}</div>
-      <div class="stat-label">Assignments</div>
       <div class="stat-change neutral"><i class="fas fa-check"></i> Active</div>
     </div>
   </div>
@@ -1230,11 +1422,15 @@
         </a>
 
         <!-- Manage Actions -->
+        <a href="{{ url_for('admin_course_list') }}" class="quick-action">
+          <i class="fas fa-book"></i>
+          <span>Courses</span>
+        </a>
         <a href="{{ url_for('manage_notes') }}" class="quick-action">
           <i class="fas fa-file-alt"></i>
           <span>Manage Notes</span>
           {% if total_notes > 0 %}
-            <span class="badge-count">{{ total_notes }}</span>
+          <span class="badge-count">{{ total_notes }}</span>
           {% endif %}
         </a>
         <a href="{{ url_for('manage_quizzes') }}" class="quick-action">
@@ -1249,7 +1445,7 @@
           <i class="fas fa-users"></i>
           <span>Manage Students</span>
           {% if pending_approvals > 0 %}
-            <span class="badge-count">{{ pending_approvals }}</span>
+          <span class="badge-count">{{ pending_approvals }}</span>
           {% endif %}
         </a>
 
@@ -1258,7 +1454,7 @@
           <i class="fas fa-bullhorn"></i>
           <span>Announcements</span>
           {% if announcements_count is defined and announcements_count > 0 %}
-            <span class="badge-count">{{ announcements_count }}</span>
+          <span class="badge-count">{{ announcements_count }}</span>
           {% endif %}
         </a>
         <a href="{{ url_for('export_page') }}" class="quick-action">
@@ -1268,14 +1464,14 @@
 
         <!-- Super Admin Actions -->
         {% if current_user.is_super_admin() %}
-          <a href="{{ url_for('manage_courses') }}" class="quick-action">
-            <i class="fas fa-book"></i>
-            <span>Manage Courses</span>
-          </a>
-          <a href="{{ url_for('manage_admins') }}" class="quick-action">
-            <i class="fas fa-users-cog"></i>
-            <span>Manage Admins</span>
-          </a>
+        <a href="{{ url_for('manage_admins') }}" class="quick-action">
+          <i class="fas fa-users-cog"></i>
+          <span>Manage Admins</span>
+        </a>
+        <a href="{{ url_for('create_course') }}" class="quick-action">
+          <i class="fas fa-plus-circle"></i>
+          <span>Create Course</span>
+        </a>
         {% endif %}
 
         <!-- Settings Actions -->
@@ -1283,14 +1479,14 @@
           <i class="fas fa-tags"></i>
           <span>Manage Tags</span>
           {% if tag_count is defined and tag_count > 0 %}
-            <span class="badge-count">{{ tag_count }}</span>
+          <span class="badge-count">{{ tag_count }}</span>
           {% endif %}
         </a>
         <a href="{{ url_for('admin_leaderboard') }}" class="quick-action">
           <i class="fas fa-trophy"></i>
           <span>Leaderboard</span>
           {% if total_students > 0 %}
-            <span class="badge-count">{{ total_students }}</span>
+          <span class="badge-count">{{ total_students }}</span>
           {% endif %}
         </a>
         <a href="{{ url_for('change_password') }}" class="quick-action">
@@ -1308,57 +1504,114 @@
       </div>
       <div class="activity-list">
         {% if recent_notes %}
-          {% for note in recent_notes[:5] %}
-            <div class="activity-item">
-              <span class="activity-dot gold"></span>
-              <div class="activity-info">
-                <div class="title">
-                  <a href="{{ url_for('edit_note', note_id=note.id) }}">{{ note.title }}</a>
-                </div>
-                <div class="meta">
-                  <span>{{ note.course.name }}</span>
-                  <span class="tag tag-note">Note</span>
-                  {% if note.is_new() %}
-                    <span class="tag tag-new">NEW</span>
-                  {% endif %}
-                </div>
-              </div>
-              <div class="activity-time">{{ note.created_at.strftime('%b %d') }}</div>
+        {% for note in recent_notes[:5] %}
+        <div class="activity-item">
+          <span class="activity-dot gold"></span>
+          <div class="activity-info">
+            <div class="title">
+              <a href="{{ url_for('edit_note', note_id=note.id) }}">{{ note.title }}</a>
             </div>
-          {% endfor %}
+            <div class="meta">
+              <span>{{ note.course.name }}</span>
+              <span class="tag tag-note">Note</span>
+              {% if note.is_new() %}
+              <span class="tag tag-new">NEW</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="activity-time">{{ note.created_at.strftime('%b %d') }}</div>
+        </div>
+        {% endfor %}
         {% endif %}
 
         {% if recent_quizzes %}
-          {% for quiz in recent_quizzes[:5] %}
-            <div class="activity-item">
-              <span class="activity-dot dark-gold"></span>
-              <div class="activity-info">
-                <div class="title">
-                  <a href="{{ url_for('edit_quiz_group', quiz_id=quiz.id) }}">{{ quiz.title }}</a>
-                </div>
-                <div class="meta">
-                  <span>{{ quiz.course.name }}</span>
-                  <span class="tag tag-quiz">Quiz</span>
-                </div>
-              </div>
-              <div class="activity-time">{{ quiz.created_at.strftime('%b %d') }}</div>
+        {% for quiz in recent_quizzes[:5] %}
+        <div class="activity-item">
+          <span class="activity-dot dark-gold"></span>
+          <div class="activity-info">
+            <div class="title">
+              <a href="{{ url_for('edit_quiz_group', quiz_id=quiz.id) }}">{{ quiz.title }}</a>
             </div>
-          {% endfor %}
+            <div class="meta">
+              <span>{{ quiz.course.name }}</span>
+              <span class="tag tag-quiz">Quiz</span>
+            </div>
+          </div>
+          <div class="activity-time">{{ quiz.created_at.strftime('%b %d') }}</div>
+        </div>
+        {% endfor %}
         {% endif %}
 
         {% if not recent_notes and not recent_quizzes %}
-          <div class="empty-state">
-            <i class="fas fa-inbox"></i>
-            <p>No recent activity yet</p>
-            <p style="font-size: 0.8rem; color: var(--text-muted);">Start by creating your first note or quiz!</p>
-            <a href="{{ url_for('post_note') }}" class="empty-cta">
-              <i class="fas fa-plus"></i> Create Your First Note
-            </a>
-          </div>
+        <div class="empty-state">
+          <i class="fas fa-inbox"></i>
+          <p>No recent activity yet</p>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Start by creating your first note or quiz!</p>
+          <a href="{{ url_for('post_note') }}" class="empty-cta">
+            <i class="fas fa-plus"></i> Create Your First Note
+          </a>
+        </div>
         {% endif %}
       </div>
     </div>
   </div>
+
+  <!-- ============================== -->
+  <!-- PENDING COURSE REQUESTS -->
+  <!-- ============================== -->
+  {% if pending_course_requests and pending_course_requests|length > 0 %}
+  <div class="card" style="border-color: rgba(201, 168, 75, 0.12); margin-bottom: 20px;">
+    <div class="card-header">
+      <h3><i class="fas fa-book-open" style="color: var(--primary-gold);"></i> Pending Course Requests</h3>
+      <div class="pending-header-actions">
+        <span style="font-size:0.75rem; color:var(--text-muted);">{{ pending_course_requests|length }} student{{ 's' if
+          pending_course_requests|length > 1 }} waiting</span>
+        <a href="{{ url_for('manage_students') }}" class="card-link">
+          View All <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      {% for request in pending_course_requests %}
+      <div class="course-request-item">
+        <div class="request-avatar">{{ request.student.username[0]|upper }}</div>
+        <div class="request-info">
+          <div class="student-name">{{ request.student.username }}</div>
+          <div class="requested-courses">
+            {% for course in request.courses %}
+            <span class="course-tag">{{ course.name }}</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="request-actions">
+          <!-- Approve All Courses for this Student -->
+          <form method="POST" action="{{ url_for('approve_student', student_id=request.student.id) }}"
+            style="display:inline;">
+            <button type="submit" class="btn-icon btn-approve-all" title="Approve All Courses">
+              <i class="fas fa-check-double"></i>
+            </button>
+          </form>
+          <!-- Approve Individual Courses -->
+          {% for course in request.courses %}
+          <form method="POST"
+            action="{{ url_for('approve_course', student_id=request.student.id, course_id=course.id) }}"
+            style="display:inline;">
+            <button type="submit" class="btn-icon btn-approve-one" title="Approve {{ course.name }}">
+              <i class="fas fa-check"></i>
+            </button>
+          </form>
+          {% endfor %}
+          <!-- Reject All -->
+          <a href="{{ url_for('reject_student', student_id=request.student.id) }}" class="btn-icon btn-reject-all"
+            title="Reject All">
+            <i class="fas fa-times"></i>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 
   <!-- ============================== -->
   <!-- COURSE PROGRESS -->
@@ -1367,213 +1620,225 @@
     <div class="card-header">
       <h3><i class="fas fa-chart-line"></i> Course Progress Overview</h3>
       {% if current_user.is_super_admin() %}
-        <a href="{{ url_for('manage_courses') }}" class="card-link">
-          View All <i class="fas fa-arrow-right"></i>
-        </a>
+      <a href="{{ url_for('admin_course_list') }}" class="card-link">
+        View All <i class="fas fa-arrow-right"></i>
+      </a>
       {% endif %}
     </div>
     <div class="course-progress">
       {% if courses %}
-        {% for course in courses %}
-          <div class="course-item">
-            <div class="course-name">
-              <span>{{ course.name }}</span>
-              <span class="code">{{ course.code }}</span>
-            </div>
-            <div class="progress-track">
-              {% set total_notes = course.notes|length %}
-              {% set progress_pct = (total_notes / 10 * 100) if total_notes > 0 else 0 %}
-              <div class="fill" style="width: {{ progress_pct if progress_pct <= 100 else 100 }}%;"></div>
-            </div>
-            <div class="course-stats">
-              <span><i class="fas fa-file-alt"></i> {{ course.notes|length }}</span>
-              <span><i class="fas fa-users"></i> {{ course.students|length }}</span>
-              <span><i class="fas fa-puzzle-piece"></i> {{ course.quiz_groups|length }}</span>
-              <span><i class="fas fa-tasks"></i> {{ course.assignments|length }}</span>
-            </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <div class="empty-state">
-          <i class="fas fa-book" style="opacity:0.2;"></i>
-          <p>No courses available</p>
-          {% if current_user.is_super_admin() %}
-            <a href="{{ url_for('create_course') }}" class="empty-cta">
-              <i class="fas fa-plus"></i> Create Your First Course
-            </a>
-          {% endif %}
+      {% for course in courses %}
+      <div class="course-item">
+        <div class="course-name">
+          <span>{{ course.name }}</span>
+          <span class="code">{{ course.code }}</span>
         </div>
+        <div class="progress-track">
+          {% set total_notes = course.notes|length %}
+          {% set progress_pct = (total_notes / 10 * 100) if total_notes > 0 else 0 %}
+          <div class="fill" style="width: {{ progress_pct if progress_pct <= 100 else 100 }}%;"></div>
+        </div>
+        <div class="course-stats">
+          <span><i class="fas fa-file-alt"></i> {{ course.notes|length }}</span>
+          <span><i class="fas fa-users"></i> {{ course.students|length }}</span>
+          <span><i class="fas fa-puzzle-piece"></i> {{ course.quiz_groups|length }}</span>
+          <span><i class="fas fa-tasks"></i> {{ course.assignments|length }}</span>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <div class="empty-state">
+        <i class="fas fa-book" style="opacity:0.2;"></i>
+        <p>No courses available</p>
+        {% if current_user.is_super_admin() %}
+        <a href="{{ url_for('create_course') }}" class="empty-cta">
+          <i class="fas fa-plus"></i> Create Your First Course
+        </a>
+        {% endif %}
+      </div>
       {% endif %}
     </div>
   </div>
 
   <!-- ============================== -->
-  <!-- PENDING APPROVALS -->
+  <!-- PENDING STUDENT APPROVALS -->
   <!-- ============================== -->
   {% if pending_approvals > 0 %}
-    <div class="card" style="border-color: rgba(239, 68, 68, 0.12); margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-user-clock" style="color: #EF4444;"></i> Pending Student Approvals</h3>
-        <div class="pending-header-actions">
-          <form method="POST" action="{{ url_for('bulk_approve_students') }}" style="display:inline;">
-            <button type="submit" class="btn-bulk-approve" onclick="return confirm('Approve all pending students?')">
-              <i class="fas fa-check-double"></i> Bulk Approve
-            </button>
-          </form>
-          <a href="{{ url_for('manage_students') }}" class="card-link">
-            View All <i class="fas fa-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-      <div class="pending-list">
-        {% for student in pending[:5] %}
-          <div class="pending-item">
-            <div class="pending-avatar">{{ student.username[0]|upper }}</div>
-            <div class="pending-info">
-              <div class="name">{{ student.username }}</div>
-              <div class="course">
-                Requested: {% for c in student.get_enrolled_courses()[:2] %}{{ c.name }}{% if not loop.last %}, {% endif %}{% endfor %}
-                {% if student.enrolled_courses|length > 2 %} +{{ student.enrolled_courses|length - 2 }} more{% endif %}
-              </div>
-            </div>
-            <div class="pending-actions">
-              <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display:inline;">
-                <button type="submit" class="btn-sm btn-approve"><i class="fas fa-check"></i></button>
-              </form>
-              <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-sm btn-reject"><i class="fas fa-times"></i></a>
-            </div>
-          </div>
-        {% endfor %}
-        {% if pending|length > 5 %}
-          <div style="text-align:center; margin-top:6px;">
-            <a href="{{ url_for('manage_students') }}" style="font-size:0.8rem; color:var(--primary-gold); text-decoration:none;">
-              View all {{ pending|length }} pending approvals →
-            </a>
-          </div>
-        {% endif %}
+  <div class="card" style="border-color: rgba(239, 68, 68, 0.12); margin-bottom: 20px;">
+    <div class="card-header">
+      <h3><i class="fas fa-user-clock" style="color: #EF4444;"></i> Pending Student Approvals</h3>
+      <div class="pending-header-actions">
+        <form method="POST" action="{{ url_for('bulk_approve_students') }}" style="display:inline;">
+          <button type="submit" class="btn-bulk-approve" onclick="return confirm('Approve all pending students?')">
+            <i class="fas fa-check-double"></i> Bulk Approve
+          </button>
+        </form>
+        <a href="{{ url_for('manage_students') }}" class="card-link">
+          View All <i class="fas fa-arrow-right"></i>
+        </a>
       </div>
     </div>
+    <div class="pending-list">
+      {% for student in pending[:5] %}
+      <div class="pending-item">
+        <div class="pending-avatar">{{ student.username[0]|upper }}</div>
+        <div class="pending-info">
+          <div class="name">{{ student.username }}</div>
+          <div class="course">
+            {% set pending_enrollments = student.enrollments|selectattr('status', 'equalto', 'pending')|list %}
+            {% if pending_enrollments %}
+            {% for enrollment in pending_enrollments[:3] %}
+            <span class="course-tag-pending">{{ enrollment.course.name }}</span>
+            {% endfor %}
+            {% if pending_enrollments|length > 3 %}
+            <span class="course-tag-pending">+{{ pending_enrollments|length - 3 }} more</span>
+            {% endif %}
+            {% else %}
+            <span style="color: var(--text-muted); font-size: 0.75rem;">No pending courses</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="pending-actions">
+          <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display:inline;">
+            <button type="submit" class="btn-sm btn-approve"><i class="fas fa-check"></i></button>
+          </form>
+          <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-sm btn-reject"><i
+              class="fas fa-times"></i></a>
+        </div>
+      </div>
+      {% endfor %}
+      {% if pending|length > 5 %}
+      <div style="text-align:center; margin-top:6px;">
+        <a href="{{ url_for('manage_students') }}"
+          style="font-size:0.8rem; color:var(--primary-gold); text-decoration:none;">
+          View all {{ pending|length }} pending approvals →
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
   {% endif %}
 
   <!-- ============================== -->
   <!-- SUPER ADMIN PANEL -->
   <!-- ============================== -->
   {% if current_user.is_super_admin() %}
-    <div class="card" style="border-color: rgba(201, 168, 75, 0.08);">
-      <div class="card-header">
-        <h3><i class="fas fa-crown" style="color: var(--primary-gold);"></i> Super Admin Panel</h3>
-        <span style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-gold); background:rgba(201,168,75,0.08); padding:4px 14px; border-radius:100px; border:1px solid rgba(201,168,75,0.06);">
-          <i class="fas fa-crown"></i> Super Admin
-        </span>
+  <div class="card" style="border-color: rgba(201, 168, 75, 0.08);">
+    <div class="card-header">
+      <h3><i class="fas fa-crown" style="color: var(--primary-gold);"></i> Super Admin Panel</h3>
+      <span
+        style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-gold); background:rgba(201,168,75,0.08); padding:4px 14px; border-radius:100px; border:1px solid rgba(201,168,75,0.06);">
+        <i class="fas fa-crown"></i> Super Admin
+      </span>
+    </div>
+    <div class="super-panel-grid">
+      <div class="super-stat">
+        <div class="number gold">{{ admin_count if admin_count is defined else 0 }}</div>
+        <div class="label">Admins</div>
       </div>
-      <div class="super-panel-grid">
-        <div class="super-stat">
-          <div class="number gold">{{ admin_count if admin_count is defined else 0 }}</div>
-          <div class="label">Admins</div>
-        </div>
-        <div class="super-stat">
-          <div class="number green">{{ total_courses }}</div>
-          <div class="label">Total Courses</div>
-        </div>
-        <div class="super-stat">
-          <div class="number orange">{{ total_notes }}</div>
-          <div class="label">Total Notes</div>
-        </div>
-        <div class="super-stat">
-          <div class="number purple">{{ tag_count if tag_count is defined else 0 }}</div>
-          <div class="label">Tags</div>
-        </div>
+      <div class="super-stat">
+        <div class="number green">{{ total_courses }}</div>
+        <div class="label">Total Courses</div>
+      </div>
+      <div class="super-stat">
+        <div class="number orange">{{ total_notes }}</div>
+        <div class="label">Total Notes</div>
+      </div>
+      <div class="super-stat">
+        <div class="number purple">{{ tag_count if tag_count is defined else 0 }}</div>
+        <div class="label">Tags</div>
       </div>
     </div>
+  </div>
   {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Animate progress bars with gold shimmer
-  const fills = document.querySelectorAll('.progress-track .fill');
-  fills.forEach(bar => {
-    const target = bar.style.width;
-    bar.style.width = '0%';
-    setTimeout(() => {
-      bar.style.width = target;
-    }, 200);
-  });
-
-  // Auto-dismiss flash messages
-  setTimeout(() => {
-    document.querySelectorAll('.flash-message').forEach(msg => {
-      msg.style.opacity = '0';
-      msg.style.transform = 'translateX(20px)';
-      setTimeout(() => msg.remove(), 300);
-    });
-  }, 5000);
-
-  // Live clock update for "Last updated"
-  function updateClock() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-    const hour12 = now.getHours() % 12 || 12;
-    const timeStr = `${String(hour12).padStart(2, '0')}:${minutes} ${ampm}`;
-    
-    const updatedEl = document.querySelector('.last-updated');
-    if (updatedEl) {
-      updatedEl.innerHTML = `<i class="fas fa-sync-alt"></i> Last updated: ${timeStr}`;
-    }
-  }
-
-  setInterval(updateClock, 30000);
-
-  // Confirm bulk approve
-  document.querySelectorAll('.btn-bulk-approve').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      if (!confirm('Are you sure you want to approve all pending students?')) {
-        e.preventDefault();
-      }
-    });
-  });
-
-  // Confirm individual reject
-  document.querySelectorAll('.btn-reject').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      if (!confirm('Are you sure you want to reject this student?')) {
-        e.preventDefault();
-      }
-    });
-  });
-
-  // Confirm delete actions
-  document.querySelectorAll('.confirm-delete').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
-        e.preventDefault();
-      }
-    });
-  });
-
-  // Add gold shimmer effect to stat cards on hover
-  document.querySelectorAll('.stat-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-      this.style.transition = 'all 0.3s ease';
-    });
-  });
-
-  // Quick action click feedback
-  document.querySelectorAll('.quick-action').forEach(action => {
-    action.addEventListener('click', function(e) {
-      // Add a subtle scale effect
-      this.style.transform = 'scale(0.96)';
+  document.addEventListener('DOMContentLoaded', function () {
+    // Animate progress bars with gold shimmer
+    const fills = document.querySelectorAll('.progress-track .fill');
+    fills.forEach(bar => {
+      const target = bar.style.width;
+      bar.style.width = '0%';
       setTimeout(() => {
-        this.style.transform = '';
+        bar.style.width = target;
       }, 200);
     });
-  });
 
-  console.log('✨ A-Portal Admin Dashboard with Gold Theme Loaded!');
-});
+    // Auto-dismiss flash messages
+    setTimeout(() => {
+      document.querySelectorAll('.flash-message').forEach(msg => {
+        msg.style.opacity = '0';
+        msg.style.transform = 'translateX(20px)';
+        setTimeout(() => msg.remove(), 300);
+      });
+    }, 5000);
+
+    // Live clock update for "Last updated"
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+      const hour12 = now.getHours() % 12 || 12;
+      const timeStr = `${String(hour12).padStart(2, '0')}:${minutes} ${ampm}`;
+
+      const updatedEl = document.querySelector('.last-updated');
+      if (updatedEl) {
+        updatedEl.innerHTML = `<i class="fas fa-sync-alt"></i> Last updated: ${timeStr}`;
+      }
+    }
+
+    setInterval(updateClock, 30000);
+
+    // Confirm bulk approve
+    document.querySelectorAll('.btn-bulk-approve').forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        if (!confirm('Are you sure you want to approve all pending students?')) {
+          e.preventDefault();
+        }
+      });
+    });
+
+    // Confirm individual reject
+    document.querySelectorAll('.btn-reject, .btn-reject-all').forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        if (!confirm('Are you sure you want to reject this student?')) {
+          e.preventDefault();
+        }
+      });
+    });
+
+    // Confirm delete actions
+    document.querySelectorAll('.confirm-delete').forEach(btn => {
+      btn.addEventListener('click', function (e) {
+        if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
+          e.preventDefault();
+        }
+      });
+    });
+
+    // Add gold shimmer effect to stat cards on hover
+    document.querySelectorAll('.stat-card').forEach(card => {
+      card.addEventListener('mouseenter', function () {
+        this.style.transition = 'all 0.3s ease';
+      });
+    });
+
+    // Quick action click feedback
+    document.querySelectorAll('.quick-action').forEach(action => {
+      action.addEventListener('click', function (e) {
+        // Add a subtle scale effect
+        this.style.transform = 'scale(0.96)';
+        setTimeout(() => {
+          this.style.transform = '';
+        }, 200);
+      });
+    });
+
+    console.log('✨ A-Portal Admin Dashboard with Gold Theme Loaded!');
+  });
 </script>
 {% endblock %}

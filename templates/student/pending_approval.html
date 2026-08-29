@@ -2,723 +2,614 @@
 
 {% block title %}Pending Approval - A-Portal{% endblock %}
 
-{% block extra_css %}
+{% block content %}
 <style>
-  /* ============================================
-     PENDING APPROVAL - Premium Navy + Gold Theme
-     ============================================ */
   .pending-page {
-    min-height: calc(100vh - var(--nav-height, 68px) - 120px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    background: var(--primary-bg, #0A1527);
-    position: relative;
-    overflow: hidden;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
   }
 
-  /* Background decoration - Gold theme */
-  .pending-page::before {
-    content: '';
-    position: absolute;
-    top: -40%;
-    right: -20%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(201, 168, 75, 0.04) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  .pending-page::after {
-    content: '';
-    position: absolute;
-    bottom: -30%;
-    left: -15%;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(201, 168, 75, 0.03) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  /* ============================================
-     CONTAINER - Gold Theme
-     ============================================ */
-  .pending-container {
-    max-width: 520px;
-    width: 100%;
+  .pending-card {
     background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
     border: 1px solid rgba(201, 168, 75, 0.04);
     box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
-    padding: 48px 40px 40px;
-    transition: var(--transition, 0.3s ease);
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    position: relative;
-    z-index: 1;
-    overflow: hidden;
+    padding: 40px 44px 36px;
     text-align: center;
   }
 
-  .pending-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    opacity: 0.8;
+  .pending-card .icon {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
   }
 
-  .pending-container::after {
-    content: '';
-    position: absolute;
-    bottom: -30%;
-    right: -20%;
-    width: 250px;
-    height: 250px;
-    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
-    border-radius: 50%;
-    pointer-events: none;
+  .pending-card .icon.rejected {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
   }
 
-  .pending-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
-    border-color: rgba(201, 168, 75, 0.06);
-  }
-
-  /* ============================================
-     ICON - Gold Theme
-     ============================================ */
-  .pending-icon-wrapper {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 20px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3.2rem;
-    color: var(--primary-gold, #C9A84B);
-    transition: var(--transition, 0.3s ease);
-    position: relative;
-    border: 1px solid rgba(201, 168, 75, 0.04);
-  }
-
-  .pending-icon-wrapper .pulse-ring {
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    border-radius: 50%;
-    border: 2px solid rgba(201, 168, 75, 0.15);
-    animation: pulse-ring 2s ease-in-out infinite;
-  }
-
-  .pending-icon-wrapper .pulse-ring:nth-child(2) {
-    animation-delay: 0.5s;
-    border-color: rgba(201, 168, 75, 0.08);
-  }
-
-  @keyframes pulse-ring {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1.3);
-      opacity: 0;
-    }
-  }
-
-  .pending-container:hover .pending-icon-wrapper {
-    transform: scale(1.04) rotate(-2deg);
-    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.08);
-    border-color: rgba(201, 168, 75, 0.08);
-  }
-
-  /* ============================================
-     CONTENT - Gold Theme
-     ============================================ */
-  .pending-title {
-    font-size: 1.8rem;
-    font-weight: 800;
+  .pending-card h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
     color: var(--white, #FFFFFF);
-    letter-spacing: -0.02em;
     margin: 0 0 8px;
   }
 
-  .pending-title .highlight {
+  .pending-card h2 span {
     background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .pending-subtitle {
-    font-size: 1rem;
+  .pending-card h2.rejected span {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .pending-card .subtitle {
     color: var(--text-gray, #C8CED8);
-    margin: 0 0 20px;
-    line-height: 1.7;
+    font-size: 1rem;
+    margin: 0 0 6px;
   }
 
-  .pending-subtitle strong {
+  .pending-card .status-text {
     color: var(--primary-gold, #C9A84B);
+    font-size: 0.9rem;
+    background: rgba(201, 168, 75, 0.06);
+    padding: 8px 20px;
+    border-radius: 100px;
+    display: inline-block;
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    margin-top: 4px;
   }
 
-  /* ============================================
-     STATUS CARD - Gold Theme
-     ============================================ */
-  .status-card {
-    background: rgba(201, 168, 75, 0.04);
-    border: 1px solid rgba(201, 168, 75, 0.08);
+  .pending-card .status-text.rejected {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.06);
+  }
+
+  .pending-card .status-text i {
+    margin-right: 6px;
+  }
+
+  /* Rejected Notice */
+  .rejected-notice {
+    background: rgba(239, 68, 68, 0.04);
+    border: 1px solid rgba(239, 68, 68, 0.08);
     border-radius: var(--radius-sm, 10px);
     padding: 16px 20px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    margin: 20px 0;
     text-align: left;
   }
 
-  .status-card .status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--primary-gold, #C9A84B);
-    flex-shrink: 0;
-    animation: pulse-dot 2s ease-in-out infinite;
+  .rejected-notice .notice-title {
+    font-weight: 700;
+    color: #EF4444;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
+  .rejected-notice .notice-title i {
+    font-size: 1.1rem;
   }
 
-  .status-card .status-text {
-    font-size: 0.9rem;
+  .rejected-notice .notice-message {
     color: var(--text-gray, #C8CED8);
+    font-size: 0.9rem;
+    margin: 4px 0 0 28px;
   }
 
-  .status-card .status-text strong {
+  .rejected-notice .notice-course {
     color: var(--primary-gold, #C9A84B);
+    font-weight: 600;
   }
 
-  /* ============================================
-     INFO GRID - Gold Theme
-     ============================================ */
-  .info-grid {
+  /* Stats Row */
+  .stats-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 28px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 24px 0 28px;
   }
 
-  .info-item {
+  .stat-item {
     background: var(--primary-bg, #0A1527);
     border-radius: var(--radius-sm, 10px);
-    padding: 14px 16px;
-    text-align: center;
-    transition: var(--transition, 0.3s ease);
-    border: 1px solid rgba(201, 168, 75, 0.02);
+    padding: 16px 20px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
-  .info-item:hover {
-    background: rgba(201, 168, 75, 0.02);
-    transform: translateY(-2px);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  .info-item .info-icon {
-    font-size: 1.2rem;
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .info-item .info-number {
-    font-size: 1.2rem;
-    font-weight: 700;
+  .stat-item .stat-number {
+    font-size: 1.8rem;
+    font-weight: 800;
     color: var(--white, #FFFFFF);
+    line-height: 1.2;
   }
 
-  .info-item .info-label {
-    font-size: 0.7rem;
-    font-weight: 600;
+  .stat-item .stat-label {
+    font-size: 0.75rem;
+    font-weight: 500;
     color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* ============================================
-     STEPS - Gold Theme
-     ============================================ */
-  .steps-section {
-    margin-bottom: 28px;
-    text-align: left;
+  .stat-item .stat-icon {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
   }
 
-  .steps-section .step-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-gray, #C8CED8);
-    margin-bottom: 12px;
-  }
-
-  .step-item {
-    display: flex;
-    align-items: center;
+  /* Process Steps */
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
-    padding: 8px 0;
-    opacity: 0.6;
-    transition: var(--transition, 0.3s ease);
+    margin: 20px 0 28px;
+    padding: 20px;
+    background: var(--primary-bg, #0A1527);
+    border-radius: var(--radius-sm, 10px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
-  .step-item.active {
-    opacity: 1;
-  }
-
-  .step-item .step-number {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: rgba(201, 168, 75, 0.04);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--text-muted, #8A94A6);
-    flex-shrink: 0;
-    transition: var(--transition, 0.3s ease);
-    border: 1px solid rgba(201, 168, 75, 0.02);
-  }
-
-  .step-item.active .step-number {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.2);
-  }
-
-  .step-item .step-text {
-    font-size: 0.85rem;
-    color: var(--text-muted, #8A94A6);
-  }
-
-  .step-item.active .step-text {
-    color: var(--text-gray, #C8CED8);
-    font-weight: 500;
-  }
-
-  .step-item .step-check {
-    margin-left: auto;
-    color: #059669;
-    font-size: 0.9rem;
-  }
-
-  /* ============================================
-     BUTTONS - Gold Theme
-     ============================================ */
-  .pending-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .pending-actions .btn {
-    flex: 1;
-    min-width: 120px;
-    padding: 12px 24px;
-    border-radius: 60px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: none;
-    cursor: pointer;
-    transition: var(--transition, 0.3s ease);
-    text-decoration: none;
+  .step {
     text-align: center;
+    position: relative;
+  }
+
+  .step .step-number {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  .step .step-number.active {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    border-color: var(--primary-gold, #C9A84B);
+  }
+
+  .step .step-number.rejected {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: var(--white, #FFFFFF);
+    border-color: #EF4444;
+  }
+
+  .step .step-label {
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 4px;
+    display: block;
+  }
+
+  .step .step-label.active {
+    color: var(--primary-gold, #C9A84B);
+    font-weight: 600;
+  }
+
+  .step .step-label.rejected {
+    color: #EF4444;
+    font-weight: 600;
+  }
+
+  /* Pending Courses */
+  .pending-courses {
+    margin: 20px 0 28px;
+    text-align: left;
+  }
+
+  .pending-courses h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
     gap: 8px;
   }
 
-  .btn-primary-outline {
-    background: transparent;
+  .pending-courses h4 i {
     color: var(--primary-gold, #C9A84B);
-    border: 2px solid rgba(201, 168, 75, 0.08);
   }
 
-  .btn-primary-outline:hover {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: var(--primary-gold, #C9A84B);
-    transform: translateY(-2px);
-    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.1);
+  .course-tag {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    margin: 0 6px 8px 0;
   }
 
-  .btn-logout-sm {
+  .course-tag.pending {
+    background: rgba(245, 158, 11, 0.06);
+    color: #F59E0B;
+    border-color: rgba(245, 158, 11, 0.06);
+  }
+
+  .course-tag.rejected {
     background: rgba(239, 68, 68, 0.06);
     color: #EF4444;
-    border: 1px solid rgba(239, 68, 68, 0.04);
+    border-color: rgba(239, 68, 68, 0.06);
   }
 
-  .btn-logout-sm:hover {
-    background: rgba(239, 68, 68, 0.12);
+  .course-tag .status-label {
+    font-size: 0.6rem;
+    opacity: 0.7;
+    margin-left: 4px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
+
+  .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.1);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
   }
 
-  .btn-logout-sm i {
-    font-size: 0.9rem;
+  .btn-outline {
+    background: transparent;
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
   }
 
-  /* ============================================
-     FOOTER NOTE - Gold Theme
-     ============================================ */
-  .pending-footer-note {
-    font-size: 0.75rem;
-    color: var(--text-muted, #8A94A6);
-    margin-top: 16px;
-  }
-
-  .pending-footer-note i {
+  .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: var(--primary-gold, #C9A84B);
     color: var(--primary-gold, #C9A84B);
-    margin-right: 4px;
+    transform: translateY(-2px);
   }
 
-  /* ============================================
-     ANIMATIONS
-     ============================================ */
-  @keyframes fadeUp {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .btn-danger {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(239, 68, 68, 0.15);
   }
 
-  /* ============================================
-     RESPONSIVE
-     ============================================ */
+  .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  /* Responsive */
   @media (max-width: 768px) {
-    .pending-container {
-      padding: 36px 24px 28px;
+    .pending-card {
+      padding: 28px 20px 24px;
     }
 
-    .pending-icon-wrapper {
-      width: 80px;
-      height: 80px;
-      font-size: 2.6rem;
+    .pending-card .icon {
+      font-size: 2.8rem;
     }
 
-    .pending-title {
-      font-size: 1.5rem;
+    .pending-card h2 {
+      font-size: 1.3rem;
     }
 
-    .pending-subtitle {
-      font-size: 0.92rem;
-    }
-
-    .info-grid {
+    .stats-row {
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .info-item {
-      padding: 10px 12px;
+    .process-steps {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      padding: 16px;
     }
 
-    .info-item .info-number {
-      font-size: 1rem;
-    }
-
-    .pending-actions {
+    .btn-group {
       flex-direction: column;
+      align-items: center;
     }
 
-    .pending-actions .btn {
-      min-width: unset;
+    .btn-group .btn {
+      width: 100%;
+      justify-content: center;
     }
   }
 
   @media (max-width: 480px) {
-    .pending-container {
-      padding: 28px 16px 20px;
-      border-radius: var(--radius-sm, 10px);
+    .pending-card {
+      padding: 20px 14px 18px;
     }
 
-    .pending-icon-wrapper {
-      width: 64px;
-      height: 64px;
-      font-size: 2rem;
+    .pending-card .icon {
+      font-size: 2.2rem;
     }
 
-    .pending-title {
-      font-size: 1.2rem;
+    .pending-card h2 {
+      font-size: 1.1rem;
     }
 
-    .pending-subtitle {
+    .pending-card .subtitle {
       font-size: 0.85rem;
     }
 
-    .status-card {
-      padding: 12px 14px;
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .info-grid {
+    .stats-row {
       grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      gap: 8px;
     }
 
-    .info-item {
-      padding: 8px 10px;
+    .stat-item {
+      padding: 12px 14px;
     }
 
-    .info-item .info-number {
-      font-size: 0.9rem;
+    .stat-item .stat-number {
+      font-size: 1.3rem;
     }
 
-    .info-item .info-label {
-      font-size: 0.6rem;
+    .process-steps {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 12px;
     }
 
-    .steps-section .step-title {
-      font-size: 0.8rem;
+    .step .step-number {
+      width: 28px;
+      height: 28px;
+      font-size: 0.75rem;
     }
 
-    .step-item .step-text {
-      font-size: 0.78rem;
-    }
-
-    .pending-actions .btn {
-      font-size: 0.82rem;
-      padding: 10px 16px;
-    }
-
-    .pending-footer-note {
-      font-size: 0.7rem;
+    .step .step-label {
+      font-size: 0.65rem;
     }
   }
 
-  /* ============================================
-     DARK MODE SUPPORT
-     ============================================ */
-  [data-theme="dark"] .pending-container {
+  /* Dark Mode */
+  [data-theme="dark"] .pending-card {
     background: var(--secondary-bg, #253449);
     border-color: rgba(201, 168, 75, 0.04);
   }
 
-  [data-theme="dark"] .pending-container::before {
-    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-  }
-
-  [data-theme="dark"] .pending-title {
+  [data-theme="dark"] .pending-card h2 {
     color: var(--white, #FFFFFF);
   }
 
-  [data-theme="dark"] .pending-subtitle {
-    color: var(--text-gray, #C8CED8);
-  }
-
-  [data-theme="dark"] .pending-subtitle strong {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .status-card {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: rgba(201, 168, 75, 0.08);
-  }
-
-  [data-theme="dark"] .status-card .status-text {
-    color: var(--text-gray, #C8CED8);
-  }
-
-  [data-theme="dark"] .status-card .status-text strong {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .info-item {
-    background: var(--primary-bg, #0A1527);
-    border-color: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .info-item:hover {
-    background: rgba(201, 168, 75, 0.02);
+  [data-theme="dark"] .stat-item {
+    background: rgba(255, 255, 255, 0.02);
     border-color: rgba(201, 168, 75, 0.04);
   }
 
-  [data-theme="dark"] .info-item .info-number {
+  [data-theme="dark"] .stat-item .stat-number {
     color: var(--white, #FFFFFF);
   }
 
-  [data-theme="dark"] .step-item .step-text {
-    color: var(--text-muted, #8A94A6);
-  }
-
-  [data-theme="dark"] .step-item.active .step-text {
-    color: var(--text-gray, #C8CED8);
-  }
-
-  [data-theme="dark"] .step-item .step-number {
-    background: rgba(201, 168, 75, 0.04);
-    color: var(--text-muted, #8A94A6);
-    border-color: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .step-item.active .step-number {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    color: var(--white, #FFFFFF);
-  }
-
-  [data-theme="dark"] .pending-page::before {
-    background: radial-gradient(circle, rgba(201, 168, 75, 0.04) 0%, transparent 70%);
-  }
-
-  [data-theme="dark"] .pending-page::after {
-    background: radial-gradient(circle, rgba(201, 168, 75, 0.03) 0%, transparent 70%);
-  }
-
-  [data-theme="dark"] .btn-primary-outline {
-    color: var(--primary-gold, #C9A84B);
-    border-color: rgba(201, 168, 75, 0.08);
-  }
-
-  [data-theme="dark"] .btn-primary-outline:hover {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .pending-icon-wrapper {
-    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
+  [data-theme="dark"] .process-steps {
+    background: rgba(255, 255, 255, 0.02);
     border-color: rgba(201, 168, 75, 0.04);
   }
 
-  [data-theme="dark"] .pending-container:hover .pending-icon-wrapper {
-    border-color: rgba(201, 168, 75, 0.08);
+  [data-theme="dark"] .rejected-notice {
+    background: rgba(239, 68, 68, 0.04);
+    border-color: rgba(239, 68, 68, 0.06);
   }
 
-  [data-theme="dark"] .pending-footer-note {
-    color: var(--text-muted, #8A94A6);
-  }
-
-  [data-theme="dark"] .pending-footer-note i {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .pending-icon-wrapper .pulse-ring {
-    border-color: rgba(201, 168, 75, 0.12);
-  }
-
-  [data-theme="dark"] .pending-icon-wrapper .pulse-ring:nth-child(2) {
+  [data-theme="dark"] .pending-card .status-text {
+    background: rgba(201, 168, 75, 0.06);
     border-color: rgba(201, 168, 75, 0.06);
   }
 
-  [data-theme="dark"] .steps-section .step-title {
+  [data-theme="dark"] .pending-card .status-text.rejected {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.06);
+    color: #F87171;
+  }
+
+  [data-theme="dark"] .course-tag {
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .course-tag.pending {
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.06);
+    color: #FBBF24;
+  }
+
+  [data-theme="dark"] .course-tag.rejected {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.06);
+    color: #F87171;
+  }
+
+  [data-theme="dark"] .btn-outline {
     color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
-  [data-theme="dark"] .btn-logout-sm {
-    background: rgba(239, 68, 68, 0.08);
-    color: #EF4444;
-    border-color: rgba(239, 68, 68, 0.04);
-  }
-
-  [data-theme="dark"] .btn-logout-sm:hover {
-    background: rgba(239, 68, 68, 0.16);
-  }
-
-  [data-theme="dark"] .pending-container::after {
-    background: radial-gradient(circle, rgba(201, 168, 75, 0.01), transparent);
+  [data-theme="dark"] .btn-outline:hover {
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="pending-page">
-  <div class="pending-container">
-    <!-- Icon -->
-    <div class="pending-icon-wrapper">
-      <span class="pulse-ring"></span>
-      <span class="pulse-ring"></span>
-      <i class="fas fa-clock"></i>
+  <div class="pending-card">
+    <!-- Check if student has any rejected courses -->
+    {% set has_rejected = rejected_courses|length > 0 %}
+    
+    {% if has_rejected and pending_count == 0 %}
+      <!-- All courses rejected -->
+      <div class="icon rejected">❌</div>
+      <h2 class="rejected"><span>Access Denied</span></h2>
+      <p class="subtitle">Your course requests have been rejected.</p>
+      
+      <div class="rejected-notice">
+        <div class="notice-title">
+          <i class="fas fa-exclamation-circle"></i> Rejection Details
+        </div>
+        {% for rejection in rejections %}
+          <div class="notice-message">
+            <span class="notice-course">{{ rejection.course.name }}</span>: 
+            {{ rejection.message }}
+          </div>
+        {% endfor %}
+      </div>
+      
+      <div class="status-text rejected">
+        <i class="fas fa-times-circle"></i>
+        Status: Your requests were not approved.
+      </div>
+      
+    {% elif has_rejected and pending_count > 0 %}
+      <!-- Some courses rejected, some pending -->
+      <div class="icon">⚠️</div>
+      <h2>Partial <span>Approval</span></h2>
+      <p class="subtitle">Some of your course requests have been rejected.</p>
+      
+      <div class="rejected-notice">
+        <div class="notice-title">
+          <i class="fas fa-exclamation-circle"></i> Rejected Courses
+        </div>
+        {% for rejection in rejections %}
+          <div class="notice-message">
+            <span class="notice-course">{{ rejection.course.name }}</span>: 
+            {{ rejection.message }}
+          </div>
+        {% endfor %}
+      </div>
+      
+      <div class="status-text">
+        <i class="fas fa-clock"></i>
+        Status: Some requests are still pending review.
+      </div>
+      
+    {% else %}
+      <!-- Normal pending state -->
+      <div class="icon">⏳</div>
+      <h2>Pending <span>Approval</span></h2>
+      <p class="subtitle">Your account is waiting for admin approval.</p>
+      <p class="subtitle" style="font-size: 0.9rem; color: var(--text-muted, #8A94A6);">
+        You will not be able to access course content until approved.
+      </p>
+
+      <div class="status-text">
+        <i class="fas fa-clock"></i>
+        Status: Your account is currently under review by an administrator.
+      </div>
+    {% endif %}
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-icon">📚</div>
+        <div class="stat-number">{{ pending_count if pending_count else 0 }}</div>
+        <div class="stat-label">Pending Requests</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">❌</div>
+        <div class="stat-number">{{ rejected_courses|length if rejected_courses else 0 }}</div>
+        <div class="stat-label">Rejected</div>
+      </div>
     </div>
 
-    <!-- Title -->
-    <h1 class="pending-title">
-      <span class="highlight">Pending</span> Approval
-    </h1>
-    <p class="pending-subtitle">
-      Your account is waiting for admin approval.<br>
-      You will not be able to access course content until <strong>approved</strong>.
-    </p>
-
-    <!-- Status Card -->
-    <div class="status-card">
-      <span class="status-dot"></span>
-      <span class="status-text">
-        <strong>Status:</strong> Your account is currently under review by an administrator.
-      </span>
-    </div>
-
-    <!-- Info Grid -->
-    <div class="info-grid">
-      <div class="info-item">
-        <span class="info-icon">📚</span>
-        <div class="info-number">{{ courses|length if courses else 0 }}</div>
-        <div class="info-label">Courses Requested</div>
-      </div>
-      <div class="info-item">
-        <span class="info-icon">⏳</span>
-        <div class="info-number">{{ pending_count if pending_count else 0 }}</div>
-        <div class="info-label">Pending Approvals</div>
+    <!-- Pending Courses -->
+    {% if pending_courses %}
+    <div class="pending-courses">
+      <h4><i class="fas fa-book"></i> Pending Requests</h4>
+      <div>
+        {% for course in pending_courses %}
+          <span class="course-tag pending">
+            {{ course.name }}
+            <span class="status-label">(pending)</span>
+          </span>
+        {% endfor %}
       </div>
     </div>
+    {% endif %}
 
-    <!-- Steps -->
-    <div class="steps-section">
-      <div class="step-title">📋 Approval Process</div>
-      <div class="step-item active">
-        <span class="step-number">1</span>
-        <span class="step-text">Account created</span>
-        <span class="step-check"><i class="fas fa-check-circle"></i></span>
+    <!-- Rejected Courses -->
+    {% if rejected_courses %}
+    <div class="pending-courses">
+      <h4><i class="fas fa-times-circle" style="color: #EF4444;"></i> Rejected Courses</h4>
+      <div>
+        {% for course in rejected_courses %}
+          <span class="course-tag rejected">
+            {{ course.name }}
+            <span class="status-label">(rejected)</span>
+          </span>
+        {% endfor %}
       </div>
-      <div class="step-item active">
-        <span class="step-number">2</span>
-        <span class="step-text">Courses requested</span>
-        <span class="step-check"><i class="fas fa-check-circle"></i></span>
+    </div>
+    {% endif %}
+
+    <!-- Process Steps -->
+    <div class="process-steps">
+      <div class="step">
+        <div class="step-number {% if current_user.is_approved or pending_count > 0 %}active{% endif %}">1</div>
+        <span class="step-label {% if current_user.is_approved or pending_count > 0 %}active{% endif %}">Account created</span>
       </div>
-      <div class="step-item">
-        <span class="step-number">3</span>
-        <span class="step-text">Admin review</span>
+      <div class="step">
+        <div class="step-number {% if pending_count > 0 %}active{% endif %}">2</div>
+        <span class="step-label {% if pending_count > 0 %}active{% endif %}">Courses requested</span>
       </div>
-      <div class="step-item">
-        <span class="step-number">4</span>
-        <span class="step-text">Approval & access granted</span>
+      <div class="step">
+        <div class="step-number {% if has_rejected %}rejected{% endif %}">3</div>
+        <span class="step-label {% if has_rejected %}rejected{% endif %}">Admin review</span>
+      </div>
+      <div class="step">
+        <div class="step-number {% if current_user.is_approved %}active{% endif %}">4</div>
+        <span class="step-label {% if current_user.is_approved %}active{% endif %}">Approval & access</span>
       </div>
     </div>
 
     <!-- Actions -->
-    <div class="pending-actions">
-      <a href="{{ url_for('student_courses') }}" class="btn btn-primary-outline">
-        <i class="fas fa-sync-alt"></i> Check Status
-      </a>
-      <a href="{{ url_for('logout') }}" class="btn btn-logout-sm">
+    <div class="btn-group">
+      {% if pending_count > 0 %}
+        <a href="{{ url_for('student_courses') }}" class="btn btn-primary">
+          <i class="fas fa-search"></i> Browse Courses
+        </a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}" class="btn btn-outline">
         <i class="fas fa-sign-out-alt"></i> Logout
       </a>
     </div>
-
-    <p class="pending-footer-note">
-      <i class="fas fa-info-circle"></i> You will be notified once your account is approved.
+    <p style="font-size: 0.75rem; color: var(--text-muted, #8A94A6); margin-top: 16px;">
+      <i class="fas fa-bell"></i> You will be notified once your account is approved.
     </p>
   </div>
 </div>
