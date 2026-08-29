@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Assignments - Awwalu Devs{% endblock %}
+{% block title %}Manage Assignments - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     MANAGE ASSIGNMENTS - Premium Theme
+     MANAGE ASSIGNMENTS - Premium Navy + Gold Theme
      ============================================ */
   .manage-assignments {
     max-width: 1360px;
@@ -13,7 +13,9 @@
     padding: 0;
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -35,24 +37,25 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0;
   }
 
   .page-header h1 span {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,7 +63,7 @@
 
   .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
   }
 
@@ -72,18 +75,18 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
-    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.2);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
     border: none;
     cursor: pointer;
   }
 
   .btn-create:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
@@ -91,7 +94,9 @@
     font-size: 0.9em;
   }
 
-  /* Stats Row */
+  /* ============================================
+     STATS ROW - Gold Theme
+     ============================================ */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -102,11 +107,11 @@
   }
 
   .stat-mini {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 16px 18px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     display: flex;
     align-items: center;
     gap: 14px;
@@ -114,8 +119,9 @@
   }
 
   .stat-mini:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .stat-mini .stat-icon {
@@ -129,9 +135,9 @@
     flex-shrink: 0;
   }
 
-  .stat-mini .stat-icon.orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
+  .stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.red {
@@ -140,8 +146,8 @@
   }
 
   .stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.green {
@@ -152,24 +158,26 @@
   .stat-mini .stat-number {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
   }
 
   .stat-mini .stat-label {
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* Table Container */
+  /* ============================================
+     TABLE - Gold Theme
+     ============================================ */
   .table-wrapper {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     overflow: hidden;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
@@ -177,7 +185,7 @@
   }
 
   .table-wrapper:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
   }
 
   .table-scroll {
@@ -192,8 +200,8 @@
   }
 
   .assignment-table thead {
-    background: var(--bg, #F8FAFC);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .assignment-table thead th {
@@ -203,12 +211,12 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     white-space: nowrap;
   }
 
   .assignment-table tbody tr {
-    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
     transition: var(--transition, 0.3s ease);
   }
 
@@ -217,15 +225,18 @@
   }
 
   .assignment-table tbody tr:hover {
-    background: rgba(245, 158, 11, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .assignment-table tbody td {
     padding: 14px 20px;
     vertical-align: middle;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
+  /* ============================================
+     ASSIGNMENT TITLE CELL - Gold Theme
+     ============================================ */
   .assignment-title-cell {
     display: flex;
     align-items: center;
@@ -236,20 +247,24 @@
     width: 36px;
     height: 36px;
     border-radius: var(--radius-sm, 8px);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.9rem;
     flex-shrink: 0;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .assignment-title {
     font-weight: 600;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
   }
 
+  /* ============================================
+     COURSE BADGE - Gold Theme
+     ============================================ */
   .course-badge {
     display: inline-flex;
     align-items: center;
@@ -258,22 +273,24 @@
     border-radius: 100px;
     font-size: 0.75rem;
     font-weight: 500;
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue, #2563EB);
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .course-badge i {
     font-size: 0.7rem;
   }
 
-  /* Due Date Status */
+  /* ============================================
+     DUE DATE STATUS - Gold Theme
+     ============================================ */
   .due-date {
     display: flex;
     align-items: center;
     gap: 6px;
     font-size: 0.82rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .due-date i {
@@ -289,11 +306,11 @@
   }
 
   .due-date.soon {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .due-date.soon i {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .due-date.upcoming {
@@ -304,17 +321,38 @@
     color: #059669;
   }
 
-  /* Submission Count */
+  .due-status-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 1px 8px;
+    border-radius: 100px;
+    margin-left: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .due-status-badge.overdue {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  .due-status-badge.soon {
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.08);
+  }
+
+  /* ============================================
+     SUBMISSION COUNT - Gold Theme
+     ============================================ */
   .submission-count {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .submission-count i {
-    color: var(--text-muted, #94A3B8);
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.8rem;
   }
 
@@ -324,11 +362,14 @@
     border-radius: 100px;
     font-size: 0.7rem;
     font-weight: 600;
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
-  /* Action Buttons */
+  /* ============================================
+     ACTION BUTTONS - Gold Theme
+     ============================================ */
   .action-group {
     display: flex;
     align-items: center;
@@ -355,13 +396,14 @@
   }
 
   .btn-view {
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .btn-view:hover {
-    background: rgba(37, 99, 235, 0.12);
+    background: rgba(201, 168, 75, 0.12);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(201, 168, 75, 0.15);
   }
 
   .btn-edit {
@@ -372,6 +414,7 @@
   .btn-edit:hover {
     background: rgba(245, 158, 11, 0.12);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
   }
 
   .btn-delete {
@@ -382,9 +425,12 @@
   .btn-delete:hover {
     background: rgba(239, 68, 68, 0.12);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
   }
 
-  /* Empty State */
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
   .empty-state {
     text-align: center;
     padding: 48px 20px;
@@ -392,23 +438,25 @@
 
   .empty-state i {
     font-size: 2.5rem;
-    color: var(--text-muted, #94A3B8);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
   }
 
   .empty-state h3 {
     font-size: 1.1rem;
-    color: var(--text, #1E293B);
+    color: var(--white, #FFFFFF);
     margin-bottom: 4px;
   }
 
   .empty-state p {
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.9rem;
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -420,7 +468,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -548,25 +598,32 @@
       font-size: 0.6rem;
       padding: 0 8px;
     }
+
+    .due-status-badge {
+      font-size: 0.5rem;
+      padding: 0 6px;
+    }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .table-wrapper {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .assignment-table thead {
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .assignment-table tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .assignment-table tbody tr:hover {
-    background: rgba(245, 158, 11, 0.04);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .assignment-title {
@@ -574,8 +631,8 @@
   }
 
   [data-theme="dark"] .stat-mini {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .stat-mini .stat-number {
@@ -583,36 +640,40 @@
   }
 
   [data-theme="dark"] .submission-count {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .course-badge {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-view {
-    background: rgba(37, 99, 235, 0.08);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-view:hover {
-    background: rgba(37, 99, 235, 0.16);
+    background: rgba(201, 168, 75, 0.12);
   }
 
   [data-theme="dark"] .btn-edit {
-    background: rgba(245, 158, 11, 0.08);
+    background: rgba(245, 158, 11, 0.06);
+    color: #F59E0B;
   }
 
   [data-theme="dark"] .btn-edit:hover {
-    background: rgba(245, 158, 11, 0.16);
+    background: rgba(245, 158, 11, 0.12);
   }
 
   [data-theme="dark"] .btn-delete {
-    background: rgba(239, 68, 68, 0.08);
+    background: rgba(239, 68, 68, 0.06);
+    color: #EF4444;
   }
 
   [data-theme="dark"] .btn-delete:hover {
-    background: rgba(239, 68, 68, 0.16);
+    background: rgba(239, 68, 68, 0.12);
   }
 
   [data-theme="dark"] .page-header h1 {
@@ -624,11 +685,12 @@
   }
 
   [data-theme="dark"] .assignment-icon-box {
-    background: rgba(245, 158, 11, 0.12);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .due-date {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .due-date.overdue {
@@ -636,11 +698,41 @@
   }
 
   [data-theme="dark"] .due-date.soon {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .due-date.upcoming {
     color: #059669;
+  }
+
+  [data-theme="dark"] .submission-count i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .submission-count .count-badge {
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .due-status-badge.overdue {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  [data-theme="dark"] .due-status-badge.soon {
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.08);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.blue {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -664,7 +756,7 @@
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-mini">
-      <div class="stat-icon orange"><i class="fas fa-tasks"></i></div>
+      <div class="stat-icon gold"><i class="fas fa-tasks"></i></div>
       <div>
         <div class="stat-number">{{ assignments|length }}</div>
         <div class="stat-label">Total Assignments</div>
@@ -733,9 +825,9 @@
                   <i class="fas fa-{% if is_overdue %}exclamation-circle{% elif is_soon %}clock{% else %}calendar-check{% endif %}"></i>
                   {{ assignment.due_date.strftime('%b %d, %Y %H:%M') }}
                   {% if is_overdue %}
-                    <span style="font-size:0.65rem; font-weight:600; color:#EF4444; background:rgba(239,68,68,0.08); padding:1px 8px; border-radius:100px; margin-left:4px;">OVERDUE</span>
+                    <span class="due-status-badge overdue">OVERDUE</span>
                   {% elif is_soon %}
-                    <span style="font-size:0.65rem; font-weight:600; color:#F59E0B; background:rgba(245,158,11,0.08); padding:1px 8px; border-radius:100px; margin-left:4px;">SOON</span>
+                    <span class="due-status-badge soon">SOON</span>
                   {% endif %}
                 </span>
               </td>
@@ -789,6 +881,15 @@
         }
       });
     });
+
+    // Add hover animation to stat cards
+    document.querySelectorAll('.stat-mini').forEach(stat => {
+      stat.addEventListener('mouseenter', function() {
+        this.style.transition = 'all 0.3s ease';
+      });
+    });
+
+    console.log('✨ Manage Assignments - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

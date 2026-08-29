@@ -1,26 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard - Awwalu Devs{% endblock %}
+{% block title %}Admin Dashboard - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
   /* ============================================
-     PREMIUM THEME: Navy + Electric Blue
+     PREMIUM THEME: Deep Navy + Elegant Gold
      ============================================ */
   :root {
-    --navy: #0F172A;
-    --blue: #2563EB;
-    --cyan: #22D3EE;
-    --bg: #F8FAFC;
-    --text: #1E293B;
-    --text-light: #64748B;
-    --text-muted: #94A3B8;
+    --primary-bg: #0A1527;
+    --secondary-bg: #253449;
+    --primary-gold: #C9A84B;
+    --dark-gold: #8F7E48;
     --white: #FFFFFF;
-    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
-    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
-    --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
-    --shadow-lg: 0 20px 60px rgba(15, 23, 42, 0.12);
-    --shadow-xl: 0 30px 80px rgba(15, 23, 42, 0.16);
+    --text-gray: #C8CED8;
+    --text-muted: #8A94A6;
+    --shadow-xs: 0 1px 2px rgba(10, 21, 39, 0.04);
+    --shadow-sm: 0 2px 8px rgba(10, 21, 39, 0.06);
+    --shadow-md: 0 8px 30px rgba(10, 21, 39, 0.08);
+    --shadow-lg: 0 20px 60px rgba(10, 21, 39, 0.12);
+    --shadow-xl: 0 30px 80px rgba(10, 21, 39, 0.16);
     --radius: 16px;
     --radius-sm: 10px;
     --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
@@ -34,21 +33,21 @@
     margin: 0 auto;
     padding: 28px 24px 60px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg);
+    background: var(--primary-bg);
     min-height: 100vh;
   }
 
   /* ============================================
-     TOP WELCOME BANNER
+     TOP WELCOME BANNER - Gold Theme
      ============================================ */
   .welcome-banner {
-    background: var(--navy);
+    background: var(--secondary-bg);
     border-radius: var(--radius);
     padding: 32px 40px;
     margin-bottom: 28px;
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(201, 168, 75, 0.08);
     opacity: 0;
     animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
@@ -60,7 +59,7 @@
     right: -10%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.10) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -72,7 +71,7 @@
     left: 0;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.05) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -97,14 +96,14 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--white);
     font-size: 1.4rem;
     font-weight: 700;
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.25);
     flex-shrink: 0;
   }
 
@@ -117,20 +116,20 @@
   }
 
   .welcome-text h1 span {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .welcome-text .welcome-subtitle {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-gray);
     font-size: 0.95rem;
     margin: 2px 0 0;
   }
 
   .welcome-text .welcome-subtitle strong {
-    color: var(--cyan);
+    color: var(--primary-gold);
     font-weight: 600;
   }
 
@@ -159,31 +158,32 @@
   }
 
   .btn-welcome-primary {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
     color: var(--white);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.25);
   }
 
   .btn-welcome-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 8px 30px rgba(201, 168, 75, 0.35);
   }
 
   .btn-welcome-outline {
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--text-gray);
+    border: 1px solid rgba(201, 168, 75, 0.08);
   }
 
   .btn-welcome-outline:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(201, 168, 75, 0.12);
+    border-color: rgba(201, 168, 75, 0.15);
     transform: translateY(-2px);
+    color: var(--primary-gold);
   }
 
   .last-updated {
     font-size: 0.7rem;
-    color: rgba(255, 255, 255, 0.35);
+    color: var(--text-muted);
     margin-top: 6px;
     display: flex;
     align-items: center;
@@ -195,7 +195,7 @@
   }
 
   /* ============================================
-     STATS ROW
+     STATS ROW - Gold Accents
      ============================================ */
   .stats-row {
     display: grid;
@@ -205,10 +205,10 @@
   }
 
   .stat-card {
-    background: var(--white);
+    background: var(--secondary-bg);
     padding: 18px 16px 16px;
     border-radius: var(--radius);
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     box-shadow: var(--shadow-xs);
     text-align: center;
     transition: var(--transition);
@@ -232,7 +232,7 @@
     left: 0;
     width: 100%;
     height: 3px;
-    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    background: linear-gradient(90deg, var(--primary-gold), var(--dark-gold));
     opacity: 0;
     transition: var(--transition);
   }
@@ -240,7 +240,7 @@
   .stat-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-md);
-    border-color: rgba(37, 99, 235, 0.08);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .stat-card:hover::before {
@@ -270,17 +270,17 @@
     display: inline-block;
   }
 
-  .stat-card:nth-child(1) .stat-icon { color: var(--blue); }
+  .stat-card:nth-child(1) .stat-icon { color: var(--primary-gold); }
   .stat-card:nth-child(2) .stat-icon { color: #EF4444; }
-  .stat-card:nth-child(3) .stat-icon { color: #7C3AED; }
-  .stat-card:nth-child(4) .stat-icon { color: #059669; }
-  .stat-card:nth-child(5) .stat-icon { color: #EC4899; }
-  .stat-card:nth-child(6) .stat-icon { color: #F59E0B; }
+  .stat-card:nth-child(3) .stat-icon { color: var(--primary-gold); }
+  .stat-card:nth-child(4) .stat-icon { color: var(--primary-gold); }
+  .stat-card:nth-child(5) .stat-icon { color: var(--primary-gold); }
+  .stat-card:nth-child(6) .stat-icon { color: var(--primary-gold); }
 
   .stat-number {
     font-size: 1.7rem;
     font-weight: 800;
-    color: var(--navy);
+    color: var(--white);
     line-height: 1.2;
     letter-spacing: -0.02em;
   }
@@ -306,13 +306,13 @@
   }
 
   .stat-change.positive {
-    color: #059669;
-    background: rgba(5, 150, 105, 0.08);
+    color: var(--primary-gold);
+    background: rgba(201, 168, 75, 0.08);
   }
 
   .stat-change.neutral {
     color: var(--text-muted);
-    background: rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   .stat-change.alert {
@@ -337,10 +337,10 @@
   }
 
   .card {
-    background: var(--white);
+    background: var(--secondary-bg);
     border-radius: var(--radius);
     padding: 24px 24px 28px;
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     box-shadow: var(--shadow-xs);
     transition: var(--transition);
     opacity: 0;
@@ -348,7 +348,7 @@
   }
 
   .card:hover {
-    border-color: rgba(37, 99, 235, 0.06);
+    border-color: rgba(201, 168, 75, 0.06);
     box-shadow: var(--shadow-md);
   }
 
@@ -362,7 +362,7 @@
   .card-header h3 {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--navy);
+    color: var(--white);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -370,24 +370,24 @@
   }
 
   .card-header h3 i {
-    color: var(--blue);
+    color: var(--primary-gold);
     font-size: 1.1em;
   }
 
   .card-header .card-link {
     font-size: 0.8rem;
-    color: var(--blue);
+    color: var(--primary-gold);
     text-decoration: none;
     font-weight: 500;
     transition: var(--transition);
   }
 
   .card-header .card-link:hover {
-    color: var(--cyan);
+    color: var(--dark-gold);
   }
 
   /* ============================================
-     QUICK ACTIONS GRID
+     QUICK ACTIONS GRID - Gold Themed
      ============================================ */
   .quick-actions {
     display: grid;
@@ -402,31 +402,32 @@
     gap: 6px;
     padding: 18px 12px 16px;
     border-radius: var(--radius-sm);
-    background: var(--bg);
-    border: 1px solid transparent;
+    background: rgba(201, 168, 75, 0.02);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     cursor: pointer;
     transition: var(--transition);
     text-decoration: none;
-    color: var(--text);
+    color: var(--text-gray);
     position: relative;
   }
 
   .quick-action:hover {
-    background: var(--white);
-    border-color: rgba(37, 99, 235, 0.12);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.12);
     box-shadow: var(--shadow-sm);
     transform: translateY(-2px);
   }
 
   .quick-action i {
     font-size: 1.5rem;
-    color: var(--blue);
+    color: var(--primary-gold);
     transition: var(--transition);
   }
 
   .quick-action:hover i {
-    color: var(--cyan);
+    color: var(--primary-gold);
     transform: scale(1.05);
+    filter: brightness(1.2);
   }
 
   .quick-action span {
@@ -444,7 +445,7 @@
     font-weight: 700;
     padding: 2px 8px;
     border-radius: 100px;
-    border: 2px solid var(--white);
+    border: 2px solid var(--secondary-bg);
     animation: pulse-badge 2s ease-in-out infinite;
   }
 
@@ -468,12 +469,12 @@
     gap: 14px;
     padding: 12px 14px;
     border-radius: var(--radius-sm);
-    background: var(--bg);
+    background: rgba(201, 168, 75, 0.02);
     transition: var(--transition);
   }
 
   .activity-item:hover {
-    background: rgba(37, 99, 235, 0.03);
+    background: rgba(201, 168, 75, 0.04);
     transform: translateX(4px);
   }
 
@@ -484,8 +485,8 @@
     flex-shrink: 0;
   }
 
-  .activity-dot.blue { background: var(--blue); }
-  .activity-dot.purple { background: #7C3AED; }
+  .activity-dot.gold { background: var(--primary-gold); }
+  .activity-dot.dark-gold { background: var(--dark-gold); }
   .activity-dot.green { background: #059669; }
   .activity-dot.orange { background: #F59E0B; }
   .activity-dot.red { background: #EF4444; }
@@ -498,16 +499,16 @@
   .activity-info .title {
     font-weight: 500;
     font-size: 0.9rem;
-    color: var(--text);
+    color: var(--text-gray);
   }
 
   .activity-info .title a {
-    color: var(--text);
+    color: var(--text-gray);
     text-decoration: none;
   }
 
   .activity-info .title a:hover {
-    color: var(--blue);
+    color: var(--primary-gold);
   }
 
   .activity-info .meta {
@@ -528,9 +529,9 @@
     letter-spacing: 0.04em;
   }
 
-  .tag-note { background: rgba(37, 99, 235, 0.08); color: var(--blue); }
-  .tag-quiz { background: rgba(124, 58, 237, 0.08); color: #7C3AED; }
-  .tag-assignment { background: rgba(245, 158, 11, 0.08); color: #F59E0B; }
+  .tag-note { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); }
+  .tag-quiz { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); }
+  .tag-assignment { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); }
   .tag-new { background: rgba(5, 150, 105, 0.08); color: #059669; }
 
   .activity-time {
@@ -551,7 +552,7 @@
   }
 
   .empty-state p {
-    color: var(--text-light);
+    color: var(--text-gray);
     margin: 8px 0 0;
     font-size: 0.9rem;
   }
@@ -563,7 +564,7 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.8rem;
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
     color: var(--white);
     text-decoration: none;
     transition: var(--transition);
@@ -571,11 +572,11 @@
 
   .empty-state .empty-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.25);
   }
 
   /* ============================================
-     COURSE PROGRESS - OPTIMIZED
+     COURSE PROGRESS
      ============================================ */
   .course-progress {
     display: flex;
@@ -588,14 +589,16 @@
     flex-direction: column;
     gap: 4px;
     padding: 12px 14px;
-    background: var(--bg);
+    background: rgba(201, 168, 75, 0.02);
     border-radius: var(--radius-sm);
     transition: var(--transition);
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .course-item:hover {
-    background: rgba(37, 99, 235, 0.03);
+    background: rgba(201, 168, 75, 0.04);
     transform: translateX(4px);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   .course-item .course-name {
@@ -603,6 +606,7 @@
     justify-content: space-between;
     font-size: 0.9rem;
     font-weight: 500;
+    color: var(--text-gray);
   }
 
   .course-item .course-name .code {
@@ -613,7 +617,7 @@
 
   .course-item .progress-track {
     height: 4px;
-    background: rgba(15, 23, 42, 0.06);
+    background: rgba(201, 168, 75, 0.06);
     border-radius: 4px;
     overflow: hidden;
   }
@@ -621,7 +625,7 @@
   .course-item .progress-track .fill {
     height: 100%;
     border-radius: 4px;
-    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    background: linear-gradient(90deg, var(--primary-gold), var(--dark-gold));
     transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     width: 0%;
   }
@@ -642,10 +646,11 @@
 
   .course-item .course-stats i {
     font-size: 0.7rem;
+    color: var(--primary-gold);
   }
 
   /* ============================================
-     PENDING APPROVALS
+     PENDING APPROVALS - Gold Theme
      ============================================ */
   .pending-header-actions {
     display: flex;
@@ -691,23 +696,23 @@
     gap: 12px;
     padding: 10px 14px;
     border-radius: var(--radius-sm);
-    background: var(--bg);
+    background: rgba(201, 168, 75, 0.02);
     transition: var(--transition);
   }
 
   .pending-item:hover {
-    background: rgba(37, 99, 235, 0.03);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   .pending-avatar {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--white);
     font-weight: 700;
     font-size: 0.85rem;
     flex-shrink: 0;
@@ -721,6 +726,7 @@
   .pending-info .name {
     font-weight: 500;
     font-size: 0.9rem;
+    color: var(--text-gray);
   }
 
   .pending-info .course {
@@ -764,7 +770,7 @@
   }
 
   /* ============================================
-     SUPER ADMIN PANEL
+     SUPER ADMIN PANEL - Gold Theme
      ============================================ */
   .super-panel-grid {
     display: grid;
@@ -775,24 +781,26 @@
   .super-stat {
     text-align: center;
     padding: 14px 12px;
-    background: var(--bg);
+    background: rgba(201, 168, 75, 0.02);
     border-radius: var(--radius-sm);
     transition: var(--transition);
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .super-stat:hover {
-    background: rgba(37, 99, 235, 0.04);
+    background: rgba(201, 168, 75, 0.04);
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   .super-stat .number {
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--navy);
+    color: var(--white);
     line-height: 1.2;
   }
 
-  .super-stat .number.blue { color: var(--blue); }
+  .super-stat .number.gold { color: var(--primary-gold); }
   .super-stat .number.green { color: #059669; }
   .super-stat .number.orange { color: #F59E0B; }
   .super-stat .number.purple { color: #7C3AED; }
@@ -966,12 +974,12 @@
      DARK MODE OVERRIDES
      ============================================ */
   [data-theme="dark"] .admin-dashboard {
-    background: var(--bg);
+    background: var(--primary-bg);
   }
 
   [data-theme="dark"] .stat-card {
-    background: var(--white);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .stat-card .stat-number {
@@ -979,8 +987,8 @@
   }
 
   [data-theme="dark"] .card {
-    background: var(--white);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .card-header h3 {
@@ -988,56 +996,57 @@
   }
 
   [data-theme="dark"] .quick-action {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
+    color: var(--text-gray);
   }
 
   [data-theme="dark"] .quick-action:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(37, 99, 235, 0.1);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.1);
   }
 
   [data-theme="dark"] .quick-action span {
-    color: var(--text-muted);
+    color: var(--text-gray);
   }
 
   [data-theme="dark"] .activity-item {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .activity-item:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .activity-info .title {
-    color: var(--white);
+    color: var(--text-gray);
   }
 
   [data-theme="dark"] .activity-info .title a {
-    color: var(--white);
+    color: var(--text-gray);
   }
 
   [data-theme="dark"] .activity-info .title a:hover {
-    color: var(--cyan);
+    color: var(--primary-gold);
   }
 
   [data-theme="dark"] .pending-item {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .pending-item:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .pending-info .name {
-    color: var(--white);
+    color: var(--text-gray);
   }
 
   [data-theme="dark"] .super-stat {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .super-stat:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .super-stat .number {
@@ -1045,24 +1054,24 @@
   }
 
   [data-theme="dark"] .empty-state p {
-    color: var(--text-muted);
+    color: var(--text-gray);
   }
 
   [data-theme="dark"] .stat-change.neutral {
     color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .course-item {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .course-item:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .course-item .course-name {
-    color: var(--white);
+    color: var(--text-gray);
   }
 
   [data-theme="dark"] .course-item .course-name .code {
@@ -1073,9 +1082,9 @@
     color: var(--text-muted);
   }
 
-  [data-theme="dark"] .tag-note { background: rgba(37, 99, 235, 0.12); color: var(--cyan); }
-  [data-theme="dark"] .tag-quiz { background: rgba(124, 58, 237, 0.12); color: #A78BFA; }
-  [data-theme="dark"] .tag-assignment { background: rgba(245, 158, 11, 0.12); color: #F59E0B; }
+  [data-theme="dark"] .tag-note { background: rgba(201, 168, 75, 0.12); color: var(--primary-gold); }
+  [data-theme="dark"] .tag-quiz { background: rgba(201, 168, 75, 0.12); color: var(--primary-gold); }
+  [data-theme="dark"] .tag-assignment { background: rgba(201, 168, 75, 0.12); color: var(--primary-gold); }
   [data-theme="dark"] .tag-new { background: rgba(5, 150, 105, 0.12); color: #34D399; }
 
   [data-theme="dark"] .btn-bulk-approve {
@@ -1095,11 +1104,15 @@
   }
 
   [data-theme="dark"] .quick-action .badge-count {
-    border-color: var(--white);
+    border-color: var(--secondary-bg);
   }
 
   [data-theme="dark"] .welcome-banner {
-    border-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .course-item .course-stats i {
+    color: var(--primary-gold);
   }
 </style>
 {% endblock %}
@@ -1297,7 +1310,7 @@
         {% if recent_notes %}
           {% for note in recent_notes[:5] %}
             <div class="activity-item">
-              <span class="activity-dot blue"></span>
+              <span class="activity-dot gold"></span>
               <div class="activity-info">
                 <div class="title">
                   <a href="{{ url_for('edit_note', note_id=note.id) }}">{{ note.title }}</a>
@@ -1318,7 +1331,7 @@
         {% if recent_quizzes %}
           {% for quiz in recent_quizzes[:5] %}
             <div class="activity-item">
-              <span class="activity-dot purple"></span>
+              <span class="activity-dot dark-gold"></span>
               <div class="activity-info">
                 <div class="title">
                   <a href="{{ url_for('edit_quiz_group', quiz_id=quiz.id) }}">{{ quiz.title }}</a>
@@ -1348,7 +1361,7 @@
   </div>
 
   <!-- ============================== -->
-  <!-- COURSE PROGRESS - OPTIMIZED -->
+  <!-- COURSE PROGRESS -->
   <!-- ============================== -->
   <div class="card" style="margin-bottom: 20px;">
     <div class="card-header">
@@ -1433,7 +1446,7 @@
         {% endfor %}
         {% if pending|length > 5 %}
           <div style="text-align:center; margin-top:6px;">
-            <a href="{{ url_for('manage_students') }}" style="font-size:0.8rem; color:var(--blue); text-decoration:none;">
+            <a href="{{ url_for('manage_students') }}" style="font-size:0.8rem; color:var(--primary-gold); text-decoration:none;">
               View all {{ pending|length }} pending approvals →
             </a>
           </div>
@@ -1446,16 +1459,16 @@
   <!-- SUPER ADMIN PANEL -->
   <!-- ============================== -->
   {% if current_user.is_super_admin() %}
-    <div class="card" style="border-color: rgba(124, 58, 237, 0.12);">
+    <div class="card" style="border-color: rgba(201, 168, 75, 0.08);">
       <div class="card-header">
-        <h3><i class="fas fa-crown" style="color: #7C3AED;"></i> Super Admin Panel</h3>
-        <span style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#7C3AED; background:rgba(124,58,237,0.08); padding:4px 14px; border-radius:100px;">
+        <h3><i class="fas fa-crown" style="color: var(--primary-gold);"></i> Super Admin Panel</h3>
+        <span style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-gold); background:rgba(201,168,75,0.08); padding:4px 14px; border-radius:100px; border:1px solid rgba(201,168,75,0.06);">
           <i class="fas fa-crown"></i> Super Admin
         </span>
       </div>
       <div class="super-panel-grid">
         <div class="super-stat">
-          <div class="number blue">{{ admin_count if admin_count is defined else 0 }}</div>
+          <div class="number gold">{{ admin_count if admin_count is defined else 0 }}</div>
           <div class="label">Admins</div>
         </div>
         <div class="super-stat">
@@ -1479,7 +1492,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Animate progress bars
+  // Animate progress bars with gold shimmer
   const fills = document.querySelectorAll('.progress-track .fill');
   fills.forEach(bar => {
     const target = bar.style.width;
@@ -1513,7 +1526,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Update clock every 30 seconds
   setInterval(updateClock, 30000);
 
   // Confirm bulk approve
@@ -1542,6 +1554,26 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+  // Add gold shimmer effect to stat cards on hover
+  document.querySelectorAll('.stat-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transition = 'all 0.3s ease';
+    });
+  });
+
+  // Quick action click feedback
+  document.querySelectorAll('.quick-action').forEach(action => {
+    action.addEventListener('click', function(e) {
+      // Add a subtle scale effect
+      this.style.transform = 'scale(0.96)';
+      setTimeout(() => {
+        this.style.transform = '';
+      }, 200);
+    });
+  });
+
+  console.log('✨ A-Portal Admin Dashboard with Gold Theme Loaded!');
 });
 </script>
 {% endblock %}

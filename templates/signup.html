@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Sign Up - Awwalu Devs{% endblock %}
+{% block title %}Sign Up - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     SIGNUP PAGE - Premium Theme
+     SIGNUP PAGE - Premium Navy + Gold Theme with Animations
      ============================================ */
   .signup-page {
     min-height: calc(100vh - var(--nav-height, 68px) - 120px);
@@ -13,55 +13,120 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     position: relative;
     overflow: hidden;
   }
 
-  /* Background decoration with floating blobs */
-  .signup-page::before {
-    content: '';
+  /* ============================================
+     ANIMATED PARTICLES
+     ============================================ */
+  .particles-container {
     position: absolute;
-    top: -40%;
-    right: -20%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
-    border-radius: 50%;
+    inset: 0;
+    overflow: hidden;
     pointer-events: none;
-    animation: floatBlob 20s ease-in-out infinite alternate;
+    z-index: 0;
   }
 
-  .signup-page::after {
-    content: '';
+  .particle {
     position: absolute;
-    bottom: -30%;
-    left: -15%;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.03) 0%, transparent 70%);
+    width: 4px;
+    height: 4px;
+    background: var(--primary-gold, #C9A84B);
     border-radius: 50%;
-    pointer-events: none;
-    animation: floatBlob 25s ease-in-out infinite alternate-reverse;
+    opacity: 0;
+    animation: particleFloat 14s ease-in-out infinite;
   }
 
-  @keyframes floatBlob {
+  .particle:nth-child(1) { left: 5%; animation-delay: 0s; width: 3px; height: 3px; }
+  .particle:nth-child(2) { left: 12%; animation-delay: 1.5s; width: 5px; height: 5px; }
+  .particle:nth-child(3) { left: 20%; animation-delay: 3s; width: 2px; height: 2px; }
+  .particle:nth-child(4) { left: 28%; animation-delay: 0.8s; width: 4px; height: 4px; }
+  .particle:nth-child(5) { left: 36%; animation-delay: 2.2s; width: 3px; height: 3px; }
+  .particle:nth-child(6) { left: 44%; animation-delay: 3.8s; width: 6px; height: 6px; }
+  .particle:nth-child(7) { left: 52%; animation-delay: 1.2s; width: 2px; height: 2px; }
+  .particle:nth-child(8) { left: 60%; animation-delay: 2.6s; width: 4px; height: 4px; }
+  .particle:nth-child(9) { left: 68%; animation-delay: 4.2s; width: 3px; height: 3px; }
+  .particle:nth-child(10) { left: 76%; animation-delay: 0.5s; width: 5px; height: 5px; }
+  .particle:nth-child(11) { left: 84%; animation-delay: 1.8s; width: 2px; height: 2px; }
+  .particle:nth-child(12) { left: 92%; animation-delay: 3.2s; width: 4px; height: 4px; }
+
+  @keyframes particleFloat {
+    0% { 
+      transform: translateY(100vh) rotate(0deg) scale(0);
+      opacity: 0;
+    }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { 
+      transform: translateY(-10vh) rotate(720deg) scale(1);
+      opacity: 0;
+    }
+  }
+
+  /* ============================================
+     ANIMATED GRADIENT ORBS
+     ============================================ */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    opacity: 0.25;
+    animation: orbFloat 18s ease-in-out infinite alternate;
+  }
+
+  .orb--1 {
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, var(--primary-gold, #C9A84B), transparent);
+    top: -180px;
+    right: -120px;
+    animation-delay: 0s;
+  }
+
+  .orb--2 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, var(--dark-gold, #8F7E48), transparent);
+    bottom: -120px;
+    left: -60px;
+    animation-delay: -6s;
+  }
+
+  .orb--3 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.12), transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -12s;
+    opacity: 0.1;
+  }
+
+  @keyframes orbFloat {
     0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(40px, -30px) scale(1.1); }
+    100% { transform: translate(70px, -50px) scale(1.15); }
   }
 
-  /* Container */
+  /* ============================================
+     CONTAINER - Gold Theme with Glass Effect
+     ============================================ */
   .signup-container {
     max-width: 520px;
     width: 100%;
-    background: var(--white, #FFFFFF);
+    background: rgba(37, 52, 73, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    box-shadow: 0 20px 60px rgba(10, 21, 39, 0.4);
     padding: 40px 36px 36px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: containerAppear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     position: relative;
     z-index: 1;
     overflow: hidden;
@@ -73,16 +138,59 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary-gold, #C9A84B), transparent);
     opacity: 0.6;
+    animation: shimmerLine 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmerLine {
+    0% { opacity: 0.2; transform: translateX(-100%); }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.2; transform: translateX(100%); }
+  }
+
+  @keyframes containerAppear {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
 
   .signup-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    border-color: rgba(201, 168, 75, 0.12);
+    box-shadow: 0 30px 80px rgba(10, 21, 39, 0.5);
   }
 
-  /* Header */
+  /* ============================================
+     CORNER ACCENTS
+     ============================================ */
+  .corner-accent {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(201, 168, 75, 0.05);
+    opacity: 0.4;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .corner-accent--tl { top: 12px; left: 12px; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+  .corner-accent--tr { top: 12px; right: 12px; border-left: none; border-bottom: none; border-radius: 0 4px 0 0; }
+  .corner-accent--bl { bottom: 12px; left: 12px; border-right: none; border-top: none; border-radius: 0 0 0 4px; }
+  .corner-accent--br { bottom: 12px; right: 12px; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
+
+  .signup-container:hover .corner-accent {
+    border-color: rgba(201, 168, 75, 0.15);
+    opacity: 0.6;
+  }
+
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .signup-header {
     text-align: center;
     margin-bottom: 28px;
@@ -93,30 +201,47 @@
     height: 72px;
     margin: 0 auto 16px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.04));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    position: relative;
+  }
+
+  .signup-header .icon-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    animation: iconPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.08); opacity: 0.6; }
   }
 
   .signup-container:hover .icon-wrapper {
     transform: scale(1.04) rotate(-2deg);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 4px 30px rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .signup-header h2 {
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0 0 6px;
   }
 
   .signup-header h2 span {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -124,14 +249,17 @@
 
   .signup-header p {
     font-size: 0.9rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0;
+    opacity: 0.7;
   }
 
-  /* Info Box - New */
+  /* ============================================
+     INFO BOX - Gold Theme
+     ============================================ */
   .info-box {
-    background: rgba(37, 99, 235, 0.04);
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.06);
     border-radius: var(--radius-sm, 10px);
     padding: 12px 16px;
     margin-bottom: 24px;
@@ -141,7 +269,7 @@
   }
 
   .info-box i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1rem;
     margin-top: 2px;
     flex-shrink: 0;
@@ -149,28 +277,17 @@
 
   .info-box .info-text {
     font-size: 0.82rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     line-height: 1.6;
   }
 
   .info-box .info-text strong {
-    color: var(--navy, #0F172A);
+    color: var(--primary-gold, #C9A84B);
   }
 
-  [data-theme="dark"] .info-box {
-    background: rgba(37, 99, 235, 0.06);
-    border-color: rgba(37, 99, 235, 0.08);
-  }
-
-  [data-theme="dark"] .info-box .info-text {
-    color: var(--text-muted, #64748B);
-  }
-
-  [data-theme="dark"] .info-box .info-text strong {
-    color: var(--white, #FFFFFF);
-  }
-
-  /* Form */
+  /* ============================================
+     FORM - Gold Theme
+     ============================================ */
   .signup-form {
     display: flex;
     flex-direction: column;
@@ -186,17 +303,23 @@
   .form-group label {
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .form-group label i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.85rem;
     width: 18px;
     text-align: center;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .form-group:focus-within label i {
+    color: var(--primary-gold, #C9A84B);
+    filter: brightness(1.3);
   }
 
   .form-group label .required {
@@ -207,7 +330,7 @@
 
   .form-group label .optional {
     font-weight: 400;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.7rem;
   }
 
@@ -217,28 +340,45 @@
     align-items: center;
   }
 
+  .form-group .input-wrapper::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    transition: var(--transition, 0.3s ease);
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  .form-group:focus-within .input-wrapper::before {
+    width: 80%;
+  }
+
   .form-group .input-wrapper input {
     width: 100%;
     padding: 12px 16px;
     padding-right: 48px;
     border-radius: var(--radius-sm, 10px);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
-    background: var(--bg, #F8FAFC);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
+    background: rgba(10, 21, 39, 0.5);
     font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
     outline: none;
   }
 
   .form-group .input-wrapper input:focus {
-    border-color: var(--blue, #2563EB);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-    background: var(--white, #FFFFFF);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(10, 21, 39, 0.7);
+    box-shadow: 0 0 0 4px rgba(201, 168, 75, 0.04);
   }
 
   .form-group .input-wrapper input::placeholder {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.85rem;
   }
 
@@ -259,7 +399,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -268,11 +408,22 @@
   }
 
   .form-group .input-wrapper .toggle-password:hover {
-    color: var(--text, #1E293B);
-    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-gray, #C8CED8);
+    background: rgba(201, 168, 75, 0.04);
   }
 
-  /* Password Strength */
+  /* ============================================
+     NAME ROW
+     ============================================ */
+  .name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* ============================================
+     PASSWORD STRENGTH - Gold Theme
+     ============================================ */
   .password-strength {
     margin-top: 4px;
     display: flex;
@@ -283,7 +434,7 @@
   .password-strength .strength-bar {
     flex: 1;
     height: 4px;
-    background: rgba(15, 23, 42, 0.06);
+    background: rgba(201, 168, 75, 0.06);
     border-radius: 4px;
     overflow: hidden;
   }
@@ -298,33 +449,14 @@
   .password-strength .strength-text {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     min-width: 56px;
     text-align: right;
   }
 
-  /* Full Name - New */
-  .name-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  /* Error message */
-  .error-message {
-    font-size: 0.78rem;
-    color: #EF4444;
-    margin-top: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .error-message i {
-    font-size: 0.7rem;
-  }
-
-  /* Course Selection */
+  /* ============================================
+     COURSE CHECKBOX GRID - Gold Theme
+     ============================================ */
   .courses-checkbox-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -340,12 +472,12 @@
   }
 
   .courses-checkbox-grid::-webkit-scrollbar-track {
-    background: var(--bg);
+    background: rgba(201, 168, 75, 0.02);
     border-radius: 4px;
   }
 
   .courses-checkbox-grid::-webkit-scrollbar-thumb {
-    background: var(--blue);
+    background: var(--primary-gold, #C9A84B);
     border-radius: 4px;
   }
 
@@ -354,22 +486,22 @@
     align-items: center;
     gap: 10px;
     padding: 10px 14px;
-    border: 2px solid rgba(15, 23, 42, 0.04);
+    border: 2px solid rgba(201, 168, 75, 0.04);
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: var(--transition);
-    background: var(--bg);
+    background: rgba(10, 21, 39, 0.5);
   }
 
   .checkbox-card:hover {
-    border-color: var(--blue);
-    background: rgba(37, 99, 235, 0.02);
+    border-color: rgba(201, 168, 75, 0.08);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .checkbox-card input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    accent-color: var(--blue);
+    accent-color: var(--primary-gold, #C9A84B);
     cursor: pointer;
     flex-shrink: 0;
   }
@@ -377,40 +509,42 @@
   .checkbox-label {
     font-weight: 500;
     font-size: 0.85rem;
-    color: var(--text);
+    color: var(--text-gray, #C8CED8);
     flex: 1;
   }
 
   .checkbox-code {
     font-size: 0.65rem;
     font-weight: 600;
-    color: var(--text-muted);
-    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-muted, #8A94A6);
+    background: rgba(201, 168, 75, 0.04);
     padding: 2px 10px;
     border-radius: 100px;
     font-family: 'Inter', monospace;
     letter-spacing: 0.03em;
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .checkbox-card.selected {
-    border-color: var(--blue);
-    background: rgba(37, 99, 235, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   .checkbox-card.selected .checkbox-label {
-    color: var(--blue);
+    color: var(--primary-gold, #C9A84B);
     font-weight: 600;
   }
 
   .checkbox-card.selected .checkbox-code {
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   .no-courses {
     grid-column: 1 / -1;
     text-align: center;
-    color: var(--text-muted);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.9rem;
     padding: 12px 0;
   }
@@ -424,7 +558,9 @@
     gap: 4px;
   }
 
-  /* Terms - New */
+  /* ============================================
+     TERMS CHECK - Gold Theme
+     ============================================ */
   .terms-check {
     display: flex;
     align-items: flex-start;
@@ -435,7 +571,7 @@
   .terms-check input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    accent-color: var(--blue);
+    accent-color: var(--primary-gold, #C9A84B);
     cursor: pointer;
     flex-shrink: 0;
     margin-top: 2px;
@@ -443,22 +579,63 @@
 
   .terms-check .terms-text {
     font-size: 0.82rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     line-height: 1.5;
   }
 
   .terms-check .terms-text a {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     text-decoration: none;
     font-weight: 500;
     transition: var(--transition, 0.3s ease);
+    position: relative;
+  }
+
+  .terms-check .terms-text a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--primary-gold, #C9A84B);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .terms-check .terms-text a:hover::after {
+    width: 100%;
   }
 
   .terms-check .terms-text a:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--dark-gold, #8F7E48);
   }
 
-  /* Submit Button */
+  /* ============================================
+     ERROR MESSAGES
+     ============================================ */
+  .error-message {
+    font-size: 0.78rem;
+    color: #EF4444;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: errorShake 0.4s ease;
+  }
+
+  @keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .error-message i {
+    font-size: 0.7rem;
+  }
+
+  /* ============================================
+     SUBMIT BUTTON - Gold Theme with Animation
+     ============================================ */
   .btn-submit {
     display: inline-flex;
     align-items: center;
@@ -468,24 +645,42 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.9rem;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
     border: none;
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
     width: 100%;
     margin-top: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: skewX(-20deg);
+    transition: var(--transition, 0.6s ease);
+  }
+
+  .btn-submit:hover::before {
+    left: 100%;
   }
 
   .btn-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
   .btn-submit:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
   }
 
   .btn-submit:disabled {
@@ -516,49 +711,59 @@
     to { transform: rotate(360deg); }
   }
 
-  /* Footer */
+  /* ============================================
+     FOOTER - Gold Theme
+     ============================================ */
   .signup-footer {
     text-align: center;
     margin-top: 24px;
     padding-top: 20px;
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .signup-footer p {
     font-size: 0.88rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0;
-  }
-
-  .signup-footer p a {
-    color: var(--blue, #2563EB);
-    text-decoration: none;
-    font-weight: 600;
+    opacity: 0.7;
     transition: var(--transition, 0.3s ease);
   }
 
+  .signup-footer p:hover {
+    opacity: 1;
+  }
+
+  .signup-footer p a {
+    color: var(--primary-gold, #C9A84B);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition, 0.3s ease);
+    position: relative;
+  }
+
+  .signup-footer p a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--primary-gold, #C9A84B);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .signup-footer p a:hover::after {
+    width: 100%;
+  }
+
   .signup-footer p a:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--dark-gold, #8F7E48);
   }
 
-  /* Animations */
-  @keyframes fadeUp {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
-    .signup-page {
-      padding: 30px 16px;
-    }
-
     .signup-container {
       padding: 32px 24px 28px;
     }
@@ -587,6 +792,11 @@
     .btn-submit {
       padding: 12px 24px;
       font-size: 0.85rem;
+    }
+
+    .corner-accent {
+      width: 28px;
+      height: 28px;
     }
   }
 
@@ -653,16 +863,22 @@
     .info-box .info-text {
       font-size: 0.78rem;
     }
+
+    .corner-accent {
+      display: none;
+    }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .signup-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: rgba(37, 52, 73, 0.85);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .signup-container::before {
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, transparent, var(--primary-gold, #C9A84B), transparent);
   }
 
   [data-theme="dark"] .signup-header h2 {
@@ -670,150 +886,209 @@
   }
 
   [data-theme="dark"] .signup-header .icon-wrapper {
-    background: rgba(37, 99, 235, 0.12);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .signup-container:hover .icon-wrapper {
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .form-group label {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-group .input-wrapper input {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.06);
-    color: var(--white, #FFFFFF);
+    background: rgba(10, 21, 39, 0.5);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-group .input-wrapper input:focus {
-    border-color: var(--cyan, #22D3EE);
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(10, 21, 39, 0.7);
+    box-shadow: 0 0 0 4px rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .form-group .input-wrapper input::placeholder {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .form-group .input-wrapper .toggle-password {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .form-group .input-wrapper .toggle-password:hover {
-    color: var(--white, #FFFFFF);
-    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-gray, #C8CED8);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .password-strength .strength-bar {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .password-strength .strength-text {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .signup-footer {
-    border-top-color: rgba(255, 255, 255, 0.04);
+    border-top-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .signup-footer p {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .signup-footer p a {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .signup-footer p a:hover {
-    color: var(--blue, #2563EB);
+    color: var(--dark-gold, #8F7E48);
   }
 
   [data-theme="dark"] .signup-page::before {
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.04) 0%, transparent 70%);
   }
 
   [data-theme="dark"] .signup-page::after {
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.02) 0%, transparent 70%);
   }
 
   [data-theme="dark"] .btn-submit {
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.12);
   }
 
   [data-theme="dark"] .btn-submit:hover {
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.2);
   }
 
   [data-theme="dark"] .checkbox-card {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: rgba(10, 21, 39, 0.5);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .checkbox-card:hover {
-    background: rgba(37, 99, 235, 0.06);
-    border-color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .checkbox-card .checkbox-label {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .checkbox-card.selected {
-    border-color: var(--cyan, #22D3EE);
-    background: rgba(37, 99, 235, 0.06);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .checkbox-card.selected .checkbox-label {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .checkbox-card.selected .checkbox-code {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .terms-check .terms-text {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .terms-check .terms-text a {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .terms-check .terms-text a:hover {
-    color: var(--blue, #2563EB);
+    color: var(--dark-gold, #8F7E48);
   }
 
   [data-theme="dark"] .signup-header p {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .no-courses {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .info-box {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .info-box .info-text {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .info-box .info-text strong {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .form-group label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .checkbox-card input[type="checkbox"] {
+    accent-color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .terms-check input[type="checkbox"] {
+    accent-color: var(--primary-gold, #C9A84B);
   }
 </style>
 
 <div class="signup-page">
+  <!-- Particles Background -->
+  <div class="particles-container">
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+  </div>
+
+  <!-- Gradient Orbs -->
+  <div class="orb orb--1"></div>
+  <div class="orb orb--2"></div>
+  <div class="orb orb--3"></div>
+
+  <!-- Sign Up Form -->
   <div class="signup-container">
+    <!-- Corner Accents -->
+    <div class="corner-accent corner-accent--tl"></div>
+    <div class="corner-accent corner-accent--tr"></div>
+    <div class="corner-accent corner-accent--bl"></div>
+    <div class="corner-accent corner-accent--br"></div>
+
     <!-- Header -->
     <div class="signup-header">
       <div class="icon-wrapper">
         <i class="fas fa-user-plus"></i>
       </div>
       <h2>Create <span>Account</span></h2>
-      <p>Join Awwalu Devs and start learning today</p>
+      <p>Join A-Portal and start learning today</p>
     </div>
 
-    <!-- Info Box - New -->
+    <!-- Info Box -->
     <div class="info-box">
       <i class="fas fa-info-circle"></i>
       <div class="info-text">
-        <strong>Welcome to Awwalu Devs!</strong> Create your account to access courses, 
+        <strong>Welcome to A-Portal!</strong> Create your account to access courses, 
         take quizzes, and track your learning progress. All fields marked with <strong>*</strong> are required.
       </div>
     </div>
 
     <!-- Form -->
     <form method="POST" class="signup-form" id="signupForm" novalidate>
-      <!-- Full Name - New -->
+      <!-- Full Name -->
       <div class="name-row">
         <div class="form-group">
           <label for="first_name">
@@ -980,7 +1255,7 @@
         </div>
       </div>
 
-      <!-- Terms - New -->
+      <!-- Terms -->
       <div class="terms-check">
         <input type="checkbox" id="terms" name="terms" required>
         <label for="terms" class="terms-text">
@@ -1097,7 +1372,6 @@
         } else {
           card.classList.remove('selected');
         }
-        // Hide course error when any is selected
         if (document.querySelectorAll('input[name="courses"]:checked').length > 0) {
           courseError.style.display = 'none';
         }
@@ -1127,26 +1401,22 @@
     form.addEventListener('submit', function(e) {
       let isValid = true;
 
-      // Validate first name
       if (!firstName.value.trim()) {
         firstName.classList.add('error');
         isValid = false;
       }
 
-      // Validate last name
       if (!lastName.value.trim()) {
         lastName.classList.add('error');
         isValid = false;
       }
 
-      // Validate username
       if (!username.value.trim() || username.value.trim().length < 3) {
         username.classList.add('error');
         usernameError.style.display = 'flex';
         isValid = false;
       }
 
-      // Validate email
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!email.value.trim() || !emailPattern.test(email.value.trim())) {
         email.classList.add('error');
@@ -1154,21 +1424,18 @@
         isValid = false;
       }
 
-      // Validate password
       if (!password.value || password.value.length < 6) {
         password.classList.add('error');
         passwordError.style.display = 'flex';
         isValid = false;
       }
 
-      // Validate confirm password
       if (password.value !== confirmPassword.value) {
         confirmPassword.classList.add('error');
         confirmError.style.display = 'flex';
         isValid = false;
       }
 
-      // Validate courses
       const checkedCourses = document.querySelectorAll('input[name="courses"]:checked');
       if (checkedCourses.length === 0) {
         courseError.style.display = 'flex';
@@ -1177,7 +1444,6 @@
         courseError.style.display = 'none';
       }
 
-      // Validate terms
       if (!terms.checked) {
         termsError.style.display = 'flex';
         isValid = false;
@@ -1187,7 +1453,6 @@
 
       if (!isValid) {
         e.preventDefault();
-        // Focus first error
         if (firstName.classList.contains('error')) {
           firstName.focus();
         } else if (lastName.classList.contains('error')) {
@@ -1204,7 +1469,6 @@
         return;
       }
 
-      // Show loading state
       submitBtn.classList.add('loading');
       submitBtn.disabled = true;
     });
@@ -1220,6 +1484,22 @@
         }
       });
     });
+
+    // ============================================
+    // COOL ENTRY ANIMATION FOR FORM ELEMENTS
+    // ============================================
+    const formElements = document.querySelectorAll('.form-group, .info-box, .terms-check, .btn-submit, .signup-footer');
+    formElements.forEach((el, index) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(15px)';
+      setTimeout(() => {
+        el.style.transition = 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 200 + index * 80);
+    });
+
+    console.log('✨ Premium Sign Up Page with Cool Animations Loaded!');
   });
 </script>
 {% endblock %}

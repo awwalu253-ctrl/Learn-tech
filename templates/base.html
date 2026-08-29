@@ -12,7 +12,7 @@
     
     <style>
         /* ============================================
-           PREMIUM THEME: Navy + Electric Blue
+           PREMIUM THEME: Deep Navy + Elegant Gold
            ============================================ */
         * {
             margin: 0;
@@ -21,18 +21,17 @@
         }
 
         :root {
-            --navy: #0F172A;
-            --blue: #2563EB;
-            --cyan: #22D3EE;
-            --bg: #F8FAFC;
-            --text: #1E293B;
-            --text-light: #64748B;
-            --text-muted: #94A3B8;
+            --primary-bg: #0A1527;
+            --secondary-bg: #253449;
+            --primary-gold: #C9A84B;
+            --dark-gold: #8F7E48;
             --white: #FFFFFF;
-            --border: rgba(15, 23, 42, 0.06);
-            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
-            --shadow-md: 0 4px 20px rgba(15, 23, 42, 0.06);
-            --shadow-lg: 0 12px 48px rgba(15, 23, 42, 0.08);
+            --text-gray: #C8CED8;
+            --text-muted: #8A94A6;
+            --border-gold: rgba(201, 168, 75, 0.12);
+            --shadow-sm: 0 1px 3px rgba(10, 21, 39, 0.08);
+            --shadow-md: 0 4px 20px rgba(10, 21, 39, 0.12);
+            --shadow-lg: 0 12px 48px rgba(10, 21, 39, 0.16);
             --radius: 14px;
             --radius-sm: 8px;
             --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -40,12 +39,12 @@
         }
 
         [data-theme="dark"] {
-            --bg: #0B1120;
-            --text: #F1F5F9;
-            --text-light: #94A3B8;
-            --text-muted: #64748B;
-            --white: #1E293B;
-            --border: rgba(255, 255, 255, 0.04);
+            --primary-bg: #0A1527;
+            --secondary-bg: #1A2A40;
+            --text-gray: #C8CED8;
+            --text-muted: #8A94A6;
+            --white: #1A2A40;
+            --border-gold: rgba(201, 168, 75, 0.08);
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
             --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
             --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5);
@@ -57,8 +56,8 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            background: var(--primary-bg);
+            color: var(--text-gray);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -69,31 +68,34 @@
 
         a {
             text-decoration: none;
-            color: var(--blue);
+            color: var(--primary-gold);
             transition: var(--transition);
         }
 
         a:hover {
-            color: var(--cyan);
+            color: var(--dark-gold);
         }
 
         /* ============================================
-           SCROLLBAR
+           SCROLLBAR - Gold Themed
            ============================================ */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: transparent;
+            background: var(--primary-bg);
         }
         ::-webkit-scrollbar-thumb {
-            background: var(--blue);
+            background: var(--primary-gold);
             border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-gold);
         }
 
         /* ============================================
-           UNIQUE LOADING ANIMATION
+           UNIQUE LOADING ANIMATION - Gold Theme
            ============================================ */
         #loadingOverlay {
             position: fixed;
@@ -101,7 +103,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg);
+            background: var(--primary-bg);
             z-index: 99999;
             display: flex;
             align-items: center;
@@ -119,12 +121,8 @@
             pointer-events: none;
         }
 
-        [data-theme="dark"] #loadingOverlay {
-            background: var(--bg);
-        }
-
         /* ============================================
-           PREMIUM LOADER: GRADIENT RING + ORBITING DOTS
+           PREMIUM LOADER: GOLD GRADIENT RING
            ============================================ */
         .loader-wrapper {
             position: relative;
@@ -135,23 +133,23 @@
             justify-content: center;
         }
 
-        /* Outer ring with gradient */
+        /* Outer ring with gold gradient */
         .loader-ring {
             position: absolute;
             width: 100%;
             height: 100%;
             border-radius: 50%;
             border: 3px solid transparent;
-            border-top-color: var(--blue);
-            border-right-color: var(--cyan);
+            border-top-color: var(--primary-gold);
+            border-right-color: var(--dark-gold);
             animation: ringSpin 1.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
         }
 
         .loader-ring:nth-child(2) {
             width: 85%;
             height: 85%;
-            border-top-color: var(--cyan);
-            border-right-color: var(--blue);
+            border-top-color: var(--dark-gold);
+            border-right-color: var(--primary-gold);
             animation-duration: 1.8s;
             animation-direction: reverse;
         }
@@ -159,8 +157,8 @@
         .loader-ring:nth-child(3) {
             width: 65%;
             height: 65%;
-            border-top-color: var(--blue);
-            border-right-color: var(--cyan);
+            border-top-color: var(--primary-gold);
+            border-right-color: var(--dark-gold);
             animation-duration: 2.4s;
         }
 
@@ -169,29 +167,29 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Center logo pulse */
+        /* Center logo pulse - Gold */
         .loader-center {
             position: relative;
             z-index: 2;
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--white);
             font-size: 1.2rem;
-            box-shadow: 0 0 40px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 0 40px rgba(201, 168, 75, 0.2);
             animation: centerPulse 2s ease-in-out infinite;
         }
 
         @keyframes centerPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(37, 99, 235, 0.2); }
-            50% { transform: scale(1.08); box-shadow: 0 0 60px rgba(37, 99, 235, 0.35); }
+            0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(201, 168, 75, 0.2); }
+            50% { transform: scale(1.08); box-shadow: 0 0 60px rgba(201, 168, 75, 0.35); }
         }
 
-        /* Floating gradient dots */
+        /* Floating gold dots */
         .loader-dots-container {
             display: flex;
             gap: 12px;
@@ -202,33 +200,33 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--blue);
+            background: var(--primary-gold);
             animation: dotFloat 1.4s ease-in-out infinite;
         }
 
         .loader-dot:nth-child(1) {
             animation-delay: 0s;
-            background: var(--blue);
+            background: var(--primary-gold);
         }
 
         .loader-dot:nth-child(2) {
             animation-delay: 0.2s;
-            background: var(--cyan);
+            background: var(--dark-gold);
         }
 
         .loader-dot:nth-child(3) {
             animation-delay: 0.4s;
-            background: var(--blue);
+            background: var(--primary-gold);
         }
 
         .loader-dot:nth-child(4) {
             animation-delay: 0.6s;
-            background: var(--cyan);
+            background: var(--dark-gold);
         }
 
         .loader-dot:nth-child(5) {
             animation-delay: 0.8s;
-            background: var(--blue);
+            background: var(--primary-gold);
         }
 
         @keyframes dotFloat {
@@ -242,19 +240,19 @@
             }
         }
 
-        /* Animated loading text */
+        /* Animated loading text - Gold */
         .loader-text-wrapper {
             display: flex;
             align-items: center;
             gap: 4px;
             font-size: 0.9rem;
             font-weight: 500;
-            color: var(--text-light);
+            color: var(--text-gray);
             letter-spacing: 0.04em;
         }
 
         [data-theme="dark"] .loader-text-wrapper {
-            color: var(--text-muted);
+            color: var(--text-gray);
         }
 
         .loader-text-wrapper .letter {
@@ -275,22 +273,10 @@
 
         @keyframes letterFloat {
             0%, 100% { transform: translateY(0); opacity: 0.4; }
-            50% { transform: translateY(-4px); opacity: 1; color: var(--blue); }
+            50% { transform: translateY(-4px); opacity: 1; color: var(--primary-gold); }
         }
 
-        [data-theme="dark"] .loader-text-wrapper .letter {
-            color: var(--text-muted);
-        }
-
-        [data-theme="dark"] .loader-text-wrapper .letter:nth-child(odd) {
-            color: var(--blue);
-        }
-
-        [data-theme="dark"] .loader-text-wrapper .letter:nth-child(even) {
-            color: var(--cyan);
-        }
-
-        /* Progress bar with shimmer */
+        /* Progress bar with gold shimmer */
         .loader-progress-wrapper {
             width: 200px;
             display: flex;
@@ -302,21 +288,21 @@
         .loader-progress-track {
             width: 100%;
             height: 3px;
-            background: rgba(15, 23, 42, 0.06);
+            background: rgba(201, 168, 75, 0.06);
             border-radius: 4px;
             overflow: hidden;
             position: relative;
         }
 
         [data-theme="dark"] .loader-progress-track {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(201, 168, 75, 0.06);
         }
 
         .loader-progress-fill {
             height: 100%;
             width: 0%;
             border-radius: 4px;
-            background: linear-gradient(90deg, var(--blue), var(--cyan), var(--blue));
+            background: linear-gradient(90deg, var(--primary-gold), var(--dark-gold), var(--primary-gold));
             background-size: 200% 100%;
             animation: progressFill 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards, shimmer 1.5s ease-in-out infinite 2.5s;
         }
@@ -343,12 +329,8 @@
             text-transform: uppercase;
         }
 
-        [data-theme="dark"] .loader-progress-label {
-            color: var(--text-muted);
-        }
-
         /* ============================================
-           NAVBAR
+           NAVBAR - Deep Navy + Gold Accents
            ============================================ */
         .navbar {
             position: fixed;
@@ -356,21 +338,22 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(10, 21, 39, 0.92);
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
             height: var(--nav-height);
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid rgba(201, 168, 75, 0.08);
             transition: var(--transition);
         }
 
         [data-theme="dark"] .navbar {
-            background: rgba(11, 17, 32, 0.92);
-            border-bottom: 1px solid var(--border);
+            background: rgba(10, 21, 39, 0.95);
+            border-bottom: 1px solid rgba(201, 168, 75, 0.06);
         }
 
         .navbar.scrolled {
             box-shadow: var(--shadow-md);
+            border-bottom-color: rgba(201, 168, 75, 0.12);
         }
 
         .navbar-container {
@@ -390,43 +373,39 @@
             gap: 10px;
             font-size: 1.15rem;
             font-weight: 800;
-            color: var(--navy);
+            color: var(--white);
             letter-spacing: -0.02em;
             flex-shrink: 0;
-        }
-
-        [data-theme="dark"] .navbar-brand {
-            color: var(--white);
         }
 
         .navbar-brand .logo-icon {
             width: 36px;
             height: 36px;
             border-radius: var(--radius-sm);
-            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--white);
             font-size: 1.1rem;
-            box-shadow: 0 2px 12px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 2px 12px rgba(201, 168, 75, 0.25);
             transition: var(--transition);
         }
 
         .navbar-brand:hover .logo-icon {
             transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 4px 20px rgba(201, 168, 75, 0.35);
         }
 
         .navbar-brand .logo-text {
-            background: linear-gradient(135deg, var(--navy), var(--blue));
+            background: linear-gradient(135deg, var(--white), var(--primary-gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         [data-theme="dark"] .navbar-brand .logo-text {
-            background: linear-gradient(135deg, var(--white), var(--blue));
+            background: linear-gradient(135deg, var(--white), var(--primary-gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -440,7 +419,7 @@
             background: none;
             border: none;
             font-size: 1.5rem;
-            color: var(--text);
+            color: var(--white);
             cursor: pointer;
             padding: 10px 14px;
             border-radius: var(--radius-sm);
@@ -449,16 +428,8 @@
             line-height: 1;
         }
 
-        [data-theme="dark"] .navbar-toggle {
-            color: var(--white);
-        }
-
         .navbar-toggle:hover {
-            background: rgba(15, 23, 42, 0.06);
-        }
-
-        [data-theme="dark"] .navbar-toggle:hover {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(201, 168, 75, 0.06);
         }
 
         .navbar-toggle .fa-bars {
@@ -478,7 +449,7 @@
         }
 
         /* ============================================
-           NAVBAR MENU
+           NAVBAR MENU - Gold Hover States
            ============================================ */
         .navbar-menu {
             display: flex;
@@ -500,60 +471,44 @@
             border-radius: 100px;
             font-size: 0.82rem;
             font-weight: 500;
-            color: var(--text);
+            color: var(--text-gray);
             transition: var(--transition);
             white-space: nowrap;
             letter-spacing: 0.01em;
         }
 
-        [data-theme="dark"] .navbar-nav a {
-            color: var(--text-light);
-        }
-
         .navbar-nav a i {
             font-size: 0.9em;
-            opacity: 0.6;
+            opacity: 0.5;
             transition: var(--transition);
+            color: var(--text-muted);
         }
 
         .navbar-nav a:hover {
-            color: var(--blue);
-            background: rgba(37, 99, 235, 0.08);
-        }
-
-        [data-theme="dark"] .navbar-nav a:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--cyan);
+            color: var(--primary-gold);
+            background: rgba(201, 168, 75, 0.06);
         }
 
         .navbar-nav a:hover i {
             opacity: 1;
+            color: var(--primary-gold);
         }
 
         .navbar-nav a.active {
-            color: var(--blue);
-            background: rgba(37, 99, 235, 0.08);
+            color: var(--primary-gold);
+            background: rgba(201, 168, 75, 0.08);
             font-weight: 600;
-        }
-
-        [data-theme="dark"] .navbar-nav a.active {
-            background: rgba(37, 99, 235, 0.15);
-            color: var(--cyan);
         }
 
         .navbar-nav a.active i {
             opacity: 1;
-            color: var(--blue);
-        }
-
-        [data-theme="dark"] .navbar-nav a.active i {
-            color: var(--cyan);
+            color: var(--primary-gold);
         }
 
         .nav-divider {
             width: 1px;
             height: 28px;
-            background: var(--border);
+            background: rgba(201, 168, 75, 0.08);
             margin: 0 8px;
         }
 
@@ -566,30 +521,32 @@
             color: #EF4444 !important;
         }
 
+        .btn-logout:hover i {
+            color: #EF4444 !important;
+        }
+
         .btn-signup {
-            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
             color: var(--white) !important;
             padding: 7px 22px !important;
             font-weight: 600 !important;
-            box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
         }
 
         .btn-signup:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 24px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
             color: var(--white) !important;
+            background: linear-gradient(135deg, var(--dark-gold), var(--primary-gold));
         }
 
-        [data-theme="dark"] .btn-signup {
-            box-shadow: 0 2px 16px rgba(37, 99, 235, 0.12);
-        }
-
-        [data-theme="dark"] .btn-signup:hover {
-            box-shadow: 0 4px 24px rgba(37, 99, 235, 0.2);
+        .btn-signup i {
+            color: var(--white) !important;
+            opacity: 0.8 !important;
         }
 
         /* ============================================
-           FLASH MESSAGES
+           FLASH MESSAGES - Gold Themed
            ============================================ */
         .flash-container {
             position: fixed;
@@ -611,16 +568,11 @@
             gap: 12px;
             padding: 14px 18px;
             border-radius: var(--radius-sm);
-            background: var(--white);
+            background: var(--secondary-bg);
             box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
+            border: 1px solid rgba(201, 168, 75, 0.06);
             animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
             position: relative;
-        }
-
-        [data-theme="dark"] .flash-message {
-            background: var(--white);
-            border-color: var(--border);
         }
 
         .flash-message .flash-icon {
@@ -640,6 +592,7 @@
             font-size: 0.9rem;
             line-height: 1.5;
             padding-right: 8px;
+            color: var(--text-gray);
         }
 
         .flash-message .flash-close {
@@ -656,38 +609,33 @@
         }
 
         .flash-message .flash-close:hover {
-            color: var(--text);
-            background: rgba(15, 23, 42, 0.04);
-        }
-
-        [data-theme="dark"] .flash-message .flash-close:hover {
-            background: rgba(255, 255, 255, 0.04);
             color: var(--white);
+            background: rgba(201, 168, 75, 0.06);
         }
 
         .flash-success .flash-icon {
-            background: rgba(5, 150, 105, 0.1);
-            color: #059669;
+            background: rgba(201, 168, 75, 0.12);
+            color: var(--primary-gold);
         }
-        .flash-success { border-left: 3px solid #059669; }
+        .flash-success { border-left: 3px solid var(--primary-gold); }
 
         .flash-error .flash-icon {
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.12);
             color: #EF4444;
         }
         .flash-error { border-left: 3px solid #EF4444; }
 
         .flash-warning .flash-icon {
-            background: rgba(245, 158, 11, 0.1);
+            background: rgba(245, 158, 11, 0.12);
             color: #F59E0B;
         }
         .flash-warning { border-left: 3px solid #F59E0B; }
 
         .flash-info .flash-icon {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--blue);
+            background: rgba(201, 168, 75, 0.12);
+            color: var(--primary-gold);
         }
-        .flash-info { border-left: 3px solid var(--blue); }
+        .flash-info { border-left: 3px solid var(--primary-gold); }
 
         @keyframes slideIn {
             0% { opacity: 0; transform: translateX(30px) scale(0.97); }
@@ -706,18 +654,13 @@
         }
 
         /* ============================================
-           FOOTER
+           FOOTER - Navy + Gold
            ============================================ */
         .footer {
-            background: var(--white);
-            border-top: 1px solid var(--border);
+            background: var(--secondary-bg);
+            border-top: 1px solid rgba(201, 168, 75, 0.06);
             padding: 20px 0;
             margin-top: auto;
-        }
-
-        [data-theme="dark"] .footer {
-            background: var(--white);
-            border-top: 1px solid var(--border);
         }
 
         .footer-container {
@@ -737,15 +680,11 @@
             gap: 8px;
             font-weight: 700;
             font-size: 0.95rem;
-            color: var(--navy);
-        }
-
-        [data-theme="dark"] .footer-brand {
             color: var(--white);
         }
 
         .footer-brand i {
-            background: linear-gradient(135deg, var(--blue), var(--cyan));
+            background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -773,17 +712,14 @@
             color: var(--text-muted);
             transition: var(--transition);
             font-size: 0.85rem;
+            border: 1px solid rgba(201, 168, 75, 0.04);
         }
 
         .footer-links a:hover {
-            color: var(--blue);
-            background: rgba(37, 99, 235, 0.04);
+            color: var(--primary-gold);
+            background: rgba(201, 168, 75, 0.06);
+            border-color: rgba(201, 168, 75, 0.1);
             transform: translateY(-2px);
-        }
-
-        [data-theme="dark"] .footer-links a:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--cyan);
         }
 
         /* ============================================
@@ -799,17 +735,13 @@
                 top: var(--nav-height);
                 left: 0;
                 right: 0;
-                background: var(--white);
+                background: var(--primary-bg);
                 padding: 16px 20px 24px;
-                border-bottom: 1px solid var(--border);
+                border-bottom: 1px solid rgba(201, 168, 75, 0.06);
                 box-shadow: var(--shadow-md);
                 display: none;
                 max-height: calc(100vh - var(--nav-height));
                 overflow-y: auto;
-            }
-
-            [data-theme="dark"] .navbar-menu {
-                background: var(--white);
             }
 
             .navbar-menu.open {
@@ -839,6 +771,12 @@
                 border-radius: var(--radius-sm);
                 font-size: 0.9rem;
                 justify-content: flex-start;
+                color: var(--text-gray);
+            }
+
+            .navbar-nav a:hover {
+                background: rgba(201, 168, 75, 0.06);
+                color: var(--primary-gold);
             }
 
             .nav-divider {
@@ -925,7 +863,7 @@
 </head>
 <body>
     <!-- ==========================================
-    UNIQUE LOADING OVERLAY
+    UNIQUE LOADING OVERLAY - Gold Theme
     ========================================== -->
     <div id="loadingOverlay">
         <div class="loader-wrapper">
@@ -967,7 +905,7 @@
     </div>
 
     <!-- ==========================================
-    NAVBAR
+    NAVBAR - Navy + Gold
     ========================================== -->
     <nav class="navbar" id="navbar">
         <div class="navbar-container">
@@ -1015,7 +953,7 @@
     </nav>
 
     <!-- ==========================================
-    FLASH MESSAGES
+    FLASH MESSAGES - Gold Themed
     ========================================== -->
     <div class="flash-container" id="flashContainer">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -1041,7 +979,7 @@
     </main>
 
     <!-- ==========================================
-    FOOTER
+    FOOTER - Navy + Gold
     ========================================== -->
     <footer class="footer">
         <div class="footer-container">
@@ -1068,7 +1006,6 @@
             // ========================================
             const loadingOverlay = document.getElementById('loadingOverlay');
             if (loadingOverlay) {
-                // Hide overlay after page is fully loaded
                 setTimeout(function() {
                     loadingOverlay.classList.add('hidden');
                 }, 1200);

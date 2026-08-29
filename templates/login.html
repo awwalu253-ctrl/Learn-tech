@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Awwalu Devs{% endblock %}
+{% block title %}Login - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     LOGIN PAGE - Premium Theme
+     LOGIN PAGE - Premium Design with Cool Animations
      ============================================ */
   .login-page {
     min-height: calc(100vh - var(--nav-height, 68px) - 120px);
@@ -13,57 +13,130 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     position: relative;
     overflow: hidden;
   }
 
-  /* Background decoration with floating blobs */
-  .login-page::before {
-    content: '';
+  /* ============================================
+     ANIMATED BACKGROUND - Particles Effect
+     ============================================ */
+  .particles-container {
     position: absolute;
-    top: -40%;
-    right: -20%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
-    border-radius: 50%;
+    inset: 0;
+    overflow: hidden;
     pointer-events: none;
-    animation: floatBlob 20s ease-in-out infinite alternate;
+    z-index: 0;
   }
 
-  .login-page::after {
-    content: '';
+  .particle {
     position: absolute;
-    bottom: -30%;
-    left: -15%;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.03) 0%, transparent 70%);
+    width: 4px;
+    height: 4px;
+    background: var(--primary-gold, #C9A84B);
     border-radius: 50%;
-    pointer-events: none;
-    animation: floatBlob 25s ease-in-out infinite alternate-reverse;
-  }
-
-  @keyframes floatBlob {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(40px, -30px) scale(1.1); }
-  }
-
-  /* Container */
-  .login-container {
-    max-width: 440px;
-    width: 100%;
-    background: var(--white, #FFFFFF);
-    border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
-    padding: 40px 36px 36px;
-    transition: var(--transition, 0.3s ease);
     opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: particleFloat 12s ease-in-out infinite;
+  }
+
+  .particle:nth-child(1) { left: 5%; animation-delay: 0s; width: 3px; height: 3px; }
+  .particle:nth-child(2) { left: 12%; animation-delay: 1s; width: 5px; height: 5px; }
+  .particle:nth-child(3) { left: 20%; animation-delay: 2s; width: 2px; height: 2px; }
+  .particle:nth-child(4) { left: 28%; animation-delay: 0.5s; width: 4px; height: 4px; }
+  .particle:nth-child(5) { left: 36%; animation-delay: 1.5s; width: 3px; height: 3px; }
+  .particle:nth-child(6) { left: 44%; animation-delay: 2.5s; width: 6px; height: 6px; }
+  .particle:nth-child(7) { left: 52%; animation-delay: 0.8s; width: 2px; height: 2px; }
+  .particle:nth-child(8) { left: 60%; animation-delay: 1.8s; width: 4px; height: 4px; }
+  .particle:nth-child(9) { left: 68%; animation-delay: 2.8s; width: 3px; height: 3px; }
+  .particle:nth-child(10) { left: 76%; animation-delay: 0.3s; width: 5px; height: 5px; }
+  .particle:nth-child(11) { left: 84%; animation-delay: 1.3s; width: 2px; height: 2px; }
+  .particle:nth-child(12) { left: 92%; animation-delay: 2.3s; width: 4px; height: 4px; }
+
+  @keyframes particleFloat {
+    0% { 
+      transform: translateY(100vh) rotate(0deg) scale(0);
+      opacity: 0;
+    }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { 
+      transform: translateY(-10vh) rotate(720deg) scale(1);
+      opacity: 0;
+    }
+  }
+
+  /* ============================================
+     ANIMATED GRADIENT ORBS
+     ============================================ */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    opacity: 0.3;
+    animation: orbFloat 15s ease-in-out infinite alternate;
+  }
+
+  .orb--1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--primary-gold, #C9A84B), transparent);
+    top: -150px;
+    right: -100px;
+    animation-delay: 0s;
+  }
+
+  .orb--2 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--dark-gold, #8F7E48), transparent);
+    bottom: -100px;
+    left: -50px;
+    animation-delay: -5s;
+  }
+
+  .orb--3 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.15), transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -10s;
+    opacity: 0.15;
+  }
+
+  @keyframes orbFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, -40px) scale(1.1); }
+  }
+
+  /* ============================================
+     CONTAINER - Gold Theme
+     ============================================ */
+  .login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 460px;
+    width: 100%;
     position: relative;
     z-index: 1;
+  }
+
+  .login-container {
+    width: 100%;
+    background: rgba(37, 52, 73, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(201, 168, 75, 0.08);
+    box-shadow: 0 20px 60px rgba(10, 21, 39, 0.4);
+    padding: 44px 40px 40px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: containerAppear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
     overflow: hidden;
   }
 
@@ -73,19 +146,90 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary-gold, #C9A84B), transparent);
     opacity: 0.6;
+    animation: shimmerLine 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmerLine {
+    0% { opacity: 0.3; transform: translateX(-100%); }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.3; transform: translateX(100%); }
+  }
+
+  @keyframes containerAppear {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
   }
 
   .login-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    border-color: rgba(201, 168, 75, 0.15);
+    box-shadow: 0 30px 80px rgba(10, 21, 39, 0.5);
   }
 
-  /* Header */
+  /* ============================================
+     DECORATIVE CORNER ACCENTS
+     ============================================ */
+  .corner-accent {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(201, 168, 75, 0.06);
+    opacity: 0.4;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .corner-accent--tl {
+    top: 12px;
+    left: 12px;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 4px 0 0 0;
+  }
+
+  .corner-accent--tr {
+    top: 12px;
+    right: 12px;
+    border-left: none;
+    border-bottom: none;
+    border-radius: 0 4px 0 0;
+  }
+
+  .corner-accent--bl {
+    bottom: 12px;
+    left: 12px;
+    border-right: none;
+    border-top: none;
+    border-radius: 0 0 0 4px;
+  }
+
+  .corner-accent--br {
+    bottom: 12px;
+    right: 12px;
+    border-left: none;
+    border-top: none;
+    border-radius: 0 0 4px 0;
+  }
+
+  .login-container:hover .corner-accent {
+    border-color: rgba(201, 168, 75, 0.15);
+    opacity: 0.6;
+  }
+
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .login-header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 34px;
+    position: relative;
   }
 
   .login-header .icon-wrapper {
@@ -93,42 +237,82 @@
     height: 72px;
     margin: 0 auto 16px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.04));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    position: relative;
+  }
+
+  .login-header .icon-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    animation: iconPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.08); opacity: 0.6; }
   }
 
   .login-container:hover .icon-wrapper {
-    transform: scale(1.04) rotate(-2deg);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+    transform: scale(1.04);
+    box-shadow: 0 4px 30px rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.1);
   }
 
   .login-header h2 {
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0 0 6px;
+    position: relative;
   }
 
   .login-header h2 span {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    position: relative;
+  }
+
+  .login-header h2 span::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-gold, #C9A84B), transparent);
+    opacity: 0.3;
+    animation: underlineShimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes underlineShimmer {
+    0% { transform: scaleX(0.3); opacity: 0; }
+    50% { transform: scaleX(1); opacity: 0.4; }
+    100% { transform: scaleX(0.3); opacity: 0; }
   }
 
   .login-header p {
     font-size: 0.9rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0;
+    opacity: 0.7;
   }
 
-  /* Form */
+  /* ============================================
+     FORM - Gold Theme
+     ============================================ */
   .login-form {
     display: flex;
     flex-direction: column;
@@ -144,17 +328,24 @@
   .form-group label {
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: var(--transition, 0.3s ease);
   }
 
   .form-group label i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.85rem;
     width: 18px;
     text-align: center;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .form-group:focus-within label i {
+    color: var(--primary-gold, #C9A84B);
+    filter: brightness(1.3);
   }
 
   .form-group label .required {
@@ -167,6 +358,24 @@
     position: relative;
     display: flex;
     align-items: center;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .form-group .input-wrapper::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    transition: var(--transition, 0.3s ease);
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+
+  .form-group:focus-within .input-wrapper::before {
+    width: 80%;
   }
 
   .form-group .input-wrapper input {
@@ -174,23 +383,23 @@
     padding: 12px 16px;
     padding-right: 48px;
     border-radius: var(--radius-sm, 10px);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
-    background: var(--bg, #F8FAFC);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
+    background: rgba(10, 21, 39, 0.5);
     font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
     outline: none;
   }
 
   .form-group .input-wrapper input:focus {
-    border-color: var(--blue, #2563EB);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-    background: var(--white, #FFFFFF);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(10, 21, 39, 0.7);
+    box-shadow: 0 0 0 4px rgba(201, 168, 75, 0.04);
   }
 
   .form-group .input-wrapper input::placeholder {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.85rem;
   }
 
@@ -211,7 +420,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -220,10 +429,13 @@
   }
 
   .form-group .input-wrapper .toggle-password:hover {
-    color: var(--text, #1E293B);
-    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-gray, #C8CED8);
+    background: rgba(201, 168, 75, 0.04);
   }
 
+  /* ============================================
+     FORM OPTIONS - Gold Theme
+     ============================================ */
   .form-options {
     display: flex;
     align-items: center;
@@ -236,31 +448,62 @@
     align-items: center;
     gap: 8px;
     font-size: 0.82rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .form-options .remember-me:hover {
+    color: var(--white, #FFFFFF);
   }
 
   .form-options .remember-me input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: var(--blue, #2563EB);
+    accent-color: var(--primary-gold, #C9A84B);
     cursor: pointer;
     border-radius: 4px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .form-options .remember-me input[type="checkbox"]:checked {
+    animation: checkPop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes checkPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
   }
 
   .form-options .forgot-link {
     font-size: 0.82rem;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     text-decoration: none;
     font-weight: 500;
     transition: var(--transition, 0.3s ease);
+    position: relative;
+  }
+
+  .form-options .forgot-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--primary-gold, #C9A84B);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .form-options .forgot-link:hover::after {
+    width: 100%;
   }
 
   .form-options .forgot-link:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--dark-gold, #8F7E48);
   }
 
-  /* Error message */
   .error-message {
     font-size: 0.78rem;
     color: #EF4444;
@@ -268,13 +511,22 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    animation: errorShake 0.4s ease;
+  }
+
+  @keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
   }
 
   .error-message i {
     font-size: 0.7rem;
   }
 
-  /* Submit Button */
+  /* ============================================
+     SUBMIT BUTTON - Gold Theme with Animation
+     ============================================ */
   .btn-submit {
     display: inline-flex;
     align-items: center;
@@ -284,24 +536,42 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.9rem;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
     border: none;
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
     width: 100%;
     margin-top: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: skewX(-20deg);
+    transition: var(--transition, 0.6s ease);
+  }
+
+  .btn-submit:hover::before {
+    left: 100%;
   }
 
   .btn-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
   .btn-submit:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
   }
 
   .btn-submit:disabled {
@@ -332,49 +602,59 @@
     to { transform: rotate(360deg); }
   }
 
-  /* Footer */
+  /* ============================================
+     FOOTER - Gold Theme
+     ============================================ */
   .login-footer {
     text-align: center;
     margin-top: 24px;
     padding-top: 20px;
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .login-footer p {
     font-size: 0.88rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0;
-  }
-
-  .login-footer p a {
-    color: var(--blue, #2563EB);
-    text-decoration: none;
-    font-weight: 600;
+    opacity: 0.7;
     transition: var(--transition, 0.3s ease);
   }
 
+  .login-footer p:hover {
+    opacity: 1;
+  }
+
+  .login-footer p a {
+    color: var(--primary-gold, #C9A84B);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition, 0.3s ease);
+    position: relative;
+  }
+
+  .login-footer p a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--primary-gold, #C9A84B);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .login-footer p a:hover::after {
+    width: 100%;
+  }
+
   .login-footer p a:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--dark-gold, #8F7E48);
   }
 
-  /* Animations */
-  @keyframes fadeUp {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
-    .login-page {
-      padding: 30px 16px;
-    }
-
     .login-container {
       padding: 32px 24px 28px;
     }
@@ -398,6 +678,20 @@
     .btn-submit {
       padding: 12px 24px;
       font-size: 0.85rem;
+    }
+
+    .corner-accent {
+      width: 28px;
+      height: 28px;
+    }
+
+    .orb--1 {
+      width: 250px;
+      height: 250px;
+    }
+    .orb--2 {
+      width: 200px;
+      height: 200px;
     }
   }
 
@@ -447,16 +741,26 @@
     .login-footer p {
       font-size: 0.82rem;
     }
+
+    .corner-accent {
+      display: none;
+    }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .login-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: rgba(37, 52, 73, 0.85);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .login-container:hover {
+    border-color: rgba(201, 168, 75, 0.12);
   }
 
   [data-theme="dark"] .login-container::before {
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, transparent, var(--primary-gold, #C9A84B), transparent);
   }
 
   [data-theme="dark"] .login-header h2 {
@@ -464,163 +768,198 @@
   }
 
   [data-theme="dark"] .login-header .icon-wrapper {
-    background: rgba(37, 99, 235, 0.12);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .form-group label {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-group .input-wrapper input {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.06);
-    color: var(--white, #FFFFFF);
+    background: rgba(10, 21, 39, 0.5);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-group .input-wrapper input:focus {
-    border-color: var(--cyan, #22D3EE);
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(10, 21, 39, 0.7);
+    box-shadow: 0 0 0 4px rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .form-group .input-wrapper input::placeholder {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .form-group .input-wrapper .toggle-password {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .form-group .input-wrapper .toggle-password:hover {
-    color: var(--white, #FFFFFF);
-    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-gray, #C8CED8);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .form-options .remember-me {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-options .forgot-link {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .form-options .forgot-link:hover {
-    color: var(--blue, #2563EB);
+    color: var(--dark-gold, #8F7E48);
   }
 
   [data-theme="dark"] .login-footer {
-    border-top-color: rgba(255, 255, 255, 0.04);
+    border-top-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .login-footer p {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .login-footer p a {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .login-footer p a:hover {
-    color: var(--blue, #2563EB);
-  }
-
-  [data-theme="dark"] .login-page::before {
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
-  }
-
-  [data-theme="dark"] .login-page::after {
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
+    color: var(--dark-gold, #8F7E48);
   }
 
   [data-theme="dark"] .btn-submit {
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.12);
   }
 
   [data-theme="dark"] .btn-submit:hover {
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.2);
+  }
+
+  [data-theme="dark"] .form-options .remember-me input[type="checkbox"] {
+    accent-color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .login-header p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .form-group label i {
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
 <div class="login-page">
-  <div class="login-container">
-    <!-- Header -->
-    <div class="login-header">
-      <div class="icon-wrapper">
-        <i class="fas fa-graduation-cap"></i>
-      </div>
-      <h2>Welcome <span>Back</span></h2>
-      <p>Login to continue your learning journey</p>
-    </div>
+  <!-- Particles Background -->
+  <div class="particles-container">
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+  </div>
 
-    <!-- Form -->
-    <form method="POST" class="login-form" id="loginForm" novalidate>
-      <!-- Username -->
-      <div class="form-group">
-        <label for="username">
-          <i class="fas fa-user"></i> Username
-          <span class="required">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            class="form-control" 
-            placeholder="Enter your username" 
-            required
-            autofocus
-            autocomplete="username"
-          >
-        </div>
-        <div class="error-message" id="usernameError" style="display: none;">
-          <i class="fas fa-exclamation-circle"></i> Please enter your username
-        </div>
-      </div>
+  <!-- Gradient Orbs -->
+  <div class="orb orb--1"></div>
+  <div class="orb orb--2"></div>
+  <div class="orb orb--3"></div>
 
-      <!-- Password -->
-      <div class="form-group">
-        <label for="password">
-          <i class="fas fa-lock"></i> Password
-          <span class="required">*</span>
-        </label>
-        <div class="input-wrapper">
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            class="form-control" 
-            placeholder="Enter your password" 
-            required
-            autocomplete="current-password"
-          >
-          <button type="button" class="toggle-password" onclick="togglePassword('password')" aria-label="Toggle password visibility">
-            <i class="fas fa-eye"></i>
-          </button>
+  <!-- Login Form -->
+  <div class="login-wrapper">
+    <div class="login-container">
+      <!-- Corner Accents -->
+      <div class="corner-accent corner-accent--tl"></div>
+      <div class="corner-accent corner-accent--tr"></div>
+      <div class="corner-accent corner-accent--bl"></div>
+      <div class="corner-accent corner-accent--br"></div>
+
+      <!-- Header -->
+      <div class="login-header">
+        <div class="icon-wrapper">
+          <i class="fas fa-graduation-cap"></i>
         </div>
-        <div class="error-message" id="passwordError" style="display: none;">
-          <i class="fas fa-exclamation-circle"></i> Please enter your password
-        </div>
+        <h2>Welcome <span>Back</span></h2>
+        <p>Login to continue your learning journey</p>
       </div>
 
-      <!-- Options -->
-      <div class="form-options">
-        <label class="remember-me">
-          <input type="checkbox" name="remember" id="remember">
-          Remember me
-        </label>
-        <a href="#" class="forgot-link">Forgot password?</a>
+      <!-- Form -->
+      <form method="POST" class="login-form" id="loginForm" novalidate>
+        <!-- Username -->
+        <div class="form-group">
+          <label for="username">
+            <i class="fas fa-user"></i> Username
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="username" 
+              name="username" 
+              class="form-control" 
+              placeholder="Enter your username" 
+              required
+              autofocus
+              autocomplete="username"
+            >
+          </div>
+          <div class="error-message" id="usernameError" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> Please enter your username
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">
+            <i class="fas fa-lock"></i> Password
+            <span class="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-control" 
+              placeholder="Enter your password" 
+              required
+              autocomplete="current-password"
+            >
+            <button type="button" class="toggle-password" onclick="togglePassword('password')" aria-label="Toggle password visibility">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="error-message" id="passwordError" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> Please enter your password
+          </div>
+        </div>
+
+        <!-- Options -->
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" name="remember" id="remember">
+            Remember me
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Login</span>
+          <span class="spinner"></span>
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
       </div>
-
-      <!-- Submit -->
-      <button type="submit" class="btn-submit" id="submitBtn">
-        <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Login</span>
-        <span class="spinner"></span>
-      </button>
-    </form>
-
-    <!-- Footer -->
-    <div class="login-footer">
-      <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
     </div>
   </div>
 </div>
@@ -703,6 +1042,22 @@
         }
       });
     });
+
+    // ============================================
+    // COOL ENTRY ANIMATION FOR FORM ELEMENTS
+    // ============================================
+    const formElements = document.querySelectorAll('.form-group, .form-options, .btn-submit, .login-footer');
+    formElements.forEach((el, index) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(15px)';
+      setTimeout(() => {
+        el.style.transition = 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 300 + index * 100);
+    });
+
+    console.log('✨ Premium Login Page with Cool Animations Loaded!');
   });
 </script>
 {% endblock %}

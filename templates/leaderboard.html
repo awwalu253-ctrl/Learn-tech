@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Leaderboard - Awwalu Devs{% endblock %}
+{% block title %}Leaderboard - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     LEADERBOARD - Premium Theme
+     LEADERBOARD - Premium Navy + Gold Theme
      ============================================ */
   .leaderboard-page {
     max-width: 900px;
@@ -13,7 +13,9 @@
     padding: 0;
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -35,24 +37,25 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0;
   }
 
   .page-header h1 span {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,11 +63,13 @@
 
   .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
   }
 
-  /* Stats Row */
+  /* ============================================
+     STATS ROW - Gold Theme
+     ============================================ */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -75,11 +80,11 @@
   }
 
   .stat-mini {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 16px 18px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     display: flex;
     align-items: center;
     gap: 14px;
@@ -87,8 +92,9 @@
   }
 
   .stat-mini:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .stat-mini .stat-icon {
@@ -103,41 +109,43 @@
   }
 
   .stat-mini .stat-icon.gold {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.purple {
-    background: rgba(124, 58, 237, 0.08);
-    color: #7C3AED;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-number {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
   }
 
   .stat-mini .stat-label {
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* Leaderboard Container */
+  /* ============================================
+     LEADERBOARD CONTAINER - Gold Theme
+     ============================================ */
   .leaderboard-container {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     overflow: hidden;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
@@ -145,34 +153,38 @@
   }
 
   .leaderboard-container:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
   }
 
-  /* Header Row */
+  /* ============================================
+     HEADER ROW - Gold Theme
+     ============================================ */
   .leaderboard-header {
     display: grid;
     grid-template-columns: 70px 1fr 100px 1fr;
     padding: 14px 24px;
-    background: var(--bg, #F8FAFC);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
   .leaderboard-header .rank { text-align: center; }
   .leaderboard-header .score { text-align: center; }
   .leaderboard-header .details { text-align: right; }
 
-  /* Row */
+  /* ============================================
+     LEADERBOARD ROW - Gold Theme
+     ============================================ */
   .leaderboard-row {
     display: grid;
     grid-template-columns: 70px 1fr 100px 1fr;
     padding: 14px 24px;
     align-items: center;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.02);
     transition: var(--transition, 0.3s ease);
   }
 
@@ -181,12 +193,12 @@
   }
 
   .leaderboard-row:hover {
-    background: rgba(37, 99, 235, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .leaderboard-row.highlight-row {
-    background: rgba(245, 158, 11, 0.04);
-    border-left: 3px solid #F59E0B;
+    background: rgba(201, 168, 75, 0.04);
+    border-left: 3px solid var(--primary-gold, #C9A84B);
     position: relative;
   }
 
@@ -197,31 +209,34 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, #F59E0B, #EF4444);
+    background: linear-gradient(180deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     border-radius: 0 2px 2px 0;
   }
 
-  /* Rank */
+  /* ============================================
+     RANK - Gold Theme
+     ============================================ */
   .rank {
     text-align: center;
     font-weight: 700;
     font-size: 0.9rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .rank .rank-number {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
   .rank .gold {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.4rem;
+    animation: crownFloat 3s ease-in-out infinite;
   }
 
   .rank .silver {
-    color: #94A3B8;
+    color: #9CA3AF;
     font-size: 1.3rem;
   }
 
@@ -230,7 +245,14 @@
     font-size: 1.3rem;
   }
 
-  /* Student Info */
+  @keyframes crownFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-4px) scale(1.05); }
+  }
+
+  /* ============================================
+     STUDENT INFO - Gold Theme
+     ============================================ */
   .student-info {
     display: flex;
     align-items: center;
@@ -246,34 +268,37 @@
     justify-content: center;
     font-weight: 700;
     font-size: 0.8rem;
-    color: white;
+    color: var(--white, #FFFFFF);
     flex-shrink: 0;
   }
 
   .student-avatar.gold-bg {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.25);
   }
 
   .student-avatar.silver-bg {
-    background: linear-gradient(135deg, #94A3B8, #64748B);
+    background: linear-gradient(135deg, #9CA3AF, #6B7280);
+    box-shadow: 0 2px 12px rgba(156, 163, 175, 0.2);
   }
 
   .student-avatar.bronze-bg {
     background: linear-gradient(135deg, #D97706, #F59E0B);
+    box-shadow: 0 2px 12px rgba(217, 119, 6, 0.2);
   }
 
   .student-avatar.default-bg {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   .student-avatar.highlight-bg {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
-    box-shadow: 0 2px 12px rgba(245, 158, 11, 0.25);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.3);
   }
 
   .student-name {
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--white, #FFFFFF);
     font-size: 0.9rem;
   }
 
@@ -284,15 +309,17 @@
     letter-spacing: 0.04em;
     padding: 2px 10px;
     border-radius: 100px;
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
   }
 
   .student-badge.you {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
-  /* Score */
+  /* ============================================
+     SCORE - Gold Theme
+     ============================================ */
   .score {
     text-align: center;
   }
@@ -303,11 +330,11 @@
   }
 
   .score-value.excellent {
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .score-value.good {
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .score-value.needs-improvement {
@@ -318,7 +345,9 @@
     color: #EF4444;
   }
 
-  /* Details */
+  /* ============================================
+     DETAILS - Gold Theme
+     ============================================ */
   .details {
     text-align: right;
     display: flex;
@@ -329,21 +358,24 @@
 
   .detail-item {
     font-size: 0.75rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     display: flex;
     align-items: center;
     gap: 4px;
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     padding: 2px 10px;
     border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .detail-item i {
     font-size: 0.65rem;
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Empty State */
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
   .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -351,27 +383,29 @@
 
   .empty-state i {
     font-size: 3rem;
-    color: var(--text-muted, #94A3B8);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 16px;
   }
 
   .empty-state p {
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     font-size: 1rem;
     margin: 0;
   }
 
   .empty-state .text-muted {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.9rem;
     margin-top: 4px;
   }
 
-  /* Your Rank Banner */
+  /* ============================================
+     YOUR RANK BANNER - Gold Theme
+     ============================================ */
   .your-rank-banner {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
-    border: 1px solid rgba(245, 158, 11, 0.12);
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.06), rgba(143, 126, 72, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.08);
     border-radius: var(--radius-sm, 10px);
     padding: 14px 20px;
     margin: 16px 24px 0;
@@ -385,29 +419,31 @@
   .your-rank-banner .rank-label {
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .your-rank-banner .rank-label i {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .your-rank-banner .rank-position {
     font-size: 1.1rem;
     font-weight: 800;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .your-rank-banner .rank-score {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--text-light, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -430,6 +466,11 @@
     }
   }
 
+  @keyframes medalGlow {
+    0%, 100% { filter: drop-shadow(0 2px 8px rgba(201, 168, 75, 0.2)); }
+    50% { filter: drop-shadow(0 2px 16px rgba(201, 168, 75, 0.4)); }
+  }
+
   .leaderboard-row {
     animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     opacity: 0;
@@ -446,7 +487,9 @@
   .leaderboard-row:nth-child(9) { animation-delay: 0.29s; }
   .leaderboard-row:nth-child(10) { animation-delay: 0.32s; }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -479,7 +522,7 @@
       grid-template-columns: 1fr;
       gap: 6px;
       padding: 16px 18px;
-      border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+      border-bottom: 1px solid rgba(201, 168, 75, 0.04);
     }
 
     .leaderboard-row:last-child {
@@ -513,7 +556,7 @@
     }
 
     .leaderboard-row.highlight-row {
-      border-left: 3px solid #F59E0B;
+      border-left: 3px solid var(--primary-gold, #C9A84B);
     }
 
     .leaderboard-row.highlight-row::after {
@@ -618,27 +661,29 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .leaderboard-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .leaderboard-header {
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom-color: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .leaderboard-row {
-    border-bottom-color: rgba(255, 255, 255, 0.02);
+    border-bottom-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .leaderboard-row:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .leaderboard-row.highlight-row {
-    background: rgba(245, 158, 11, 0.06);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .student-name {
@@ -646,8 +691,8 @@
   }
 
   [data-theme="dark"] .stat-mini {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .stat-mini .stat-number {
@@ -655,20 +700,21 @@
   }
 
   [data-theme="dark"] .detail-item {
-    background: rgba(255, 255, 255, 0.02);
-    color: var(--text-muted, #64748B);
+    background: var(--primary-bg, #0A1527);
+    color: var(--text-muted, #8A94A6);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .rank .rank-number {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .score-value.excellent {
-    color: #34D399;
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .score-value.good {
-    color: #A78BFA;
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .score-value.needs-improvement {
@@ -680,12 +726,12 @@
   }
 
   [data-theme="dark"] .your-rank-banner {
-    background: rgba(245, 158, 11, 0.06);
-    border-color: rgba(245, 158, 11, 0.08);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .your-rank-banner .rank-label {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .page-header h1 {
@@ -693,7 +739,38 @@
   }
 
   [data-theme="dark"] .student-avatar.default-bg {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
+
+  [data-theme="dark"] .detail-item i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .rank .gold {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .your-rank-banner .rank-position {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .page-header .subtitle {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.purple {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.blue {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -802,4 +879,40 @@
     {% endfor %}
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ============================================
+    // STATS COUNTER ANIMATION
+    // ============================================
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+      const text = stat.textContent;
+      const number = parseInt(text);
+      if (!isNaN(number)) {
+        let current = 0;
+        const increment = Math.ceil(number / 25);
+        const counter = setInterval(() => {
+          current += increment;
+          if (current >= number) {
+            stat.textContent = text;
+            clearInterval(counter);
+          } else {
+            stat.textContent = current;
+          }
+        }, 40);
+      }
+    });
+
+    // ============================================
+    // ADD GLOW EFFECT TO TOP 3 MEDALS
+    // ============================================
+    const topMedals = document.querySelectorAll('.rank .gold, .rank .silver, .rank .bronze');
+    topMedals.forEach((medal, index) => {
+      medal.style.animationDelay = (index * 0.5) + 's';
+    });
+
+    console.log('✨ Leaderboard - Gold Theme Loaded!');
+  });
+</script>
 {% endblock %}

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Assignments - Awwalu Devs{% endblock %}
+{% block title %}Assignments - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     ASSIGNMENTS - Premium Theme
+     ASSIGNMENTS - Premium Navy + Gold Theme
      ============================================ */
   .assignments-page {
     max-width: 1200px;
@@ -13,7 +13,9 @@
     padding: 0;
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -35,24 +37,25 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0;
   }
 
   .page-header h1 span {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,11 +63,13 @@
 
   .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
   }
 
-  /* Stats Row */
+  /* ============================================
+     STATS ROW - Gold Theme
+     ============================================ */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -75,11 +80,11 @@
   }
 
   .stat-mini {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 16px 18px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     display: flex;
     align-items: center;
     gap: 14px;
@@ -87,8 +92,9 @@
   }
 
   .stat-mini:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .stat-mini .stat-icon {
@@ -102,9 +108,9 @@
     flex-shrink: 0;
   }
 
-  .stat-mini .stat-icon.orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
+  .stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.green {
@@ -112,32 +118,34 @@
     color: #059669;
   }
 
+  .stat-mini .stat-icon.blue {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
   .stat-mini .stat-icon.red {
     background: rgba(239, 68, 68, 0.08);
     color: #EF4444;
   }
 
-  .stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
-  }
-
   .stat-mini .stat-number {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
   }
 
   .stat-mini .stat-label {
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* Assignments Grid */
+  /* ============================================
+     ASSIGNMENTS GRID - Gold Theme
+     ============================================ */
   .assignments-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -146,12 +154,14 @@
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
   }
 
-  /* Assignment Card */
+  /* ============================================
+     ASSIGNMENT CARD - Gold Theme
+     ============================================ */
   .assignment-card {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 24px 22px 22px;
     transition: var(--transition, 0.3s ease);
     display: flex;
@@ -167,15 +177,15 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     opacity: 0;
     transition: var(--transition, 0.3s ease);
   }
 
   .assignment-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
     transform: translateY(-4px);
-    border-color: rgba(245, 158, 11, 0.06);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .assignment-card:hover::before {
@@ -189,14 +199,17 @@
 
   .assignment-card.graded::before {
     opacity: 1;
-    background: linear-gradient(90deg, #059669, #34D399);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   .assignment-card.submitted::before {
     opacity: 1;
-    background: linear-gradient(90deg, #F59E0B, #D97706);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), #D97706);
   }
 
+  /* ============================================
+     CARD HEADER - Gold Theme
+     ============================================ */
   .assignment-card-header {
     display: flex;
     align-items: flex-start;
@@ -208,7 +221,7 @@
   .assignment-card-header h3 {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
     line-height: 1.3;
   }
@@ -216,18 +229,19 @@
   .assignment-card-header .assignment-course {
     font-size: 0.65rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
-    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-muted, #8A94A6);
+    background: rgba(201, 168, 75, 0.04);
     padding: 2px 12px;
     border-radius: 100px;
     white-space: nowrap;
     font-family: 'Inter', monospace;
     letter-spacing: 0.02em;
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .assignment-description {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     line-height: 1.6;
     margin: 0 0 14px;
     flex: 1;
@@ -237,21 +251,24 @@
     overflow: hidden;
   }
 
-  /* Assignment Meta */
+  /* ============================================
+     ASSIGNMENT META - Gold Theme
+     ============================================ */
   .assignment-meta {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
     margin-bottom: 12px;
     padding: 10px 14px;
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     border-radius: var(--radius-sm, 8px);
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .assignment-meta span {
     font-size: 0.78rem;
     font-weight: 500;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -259,17 +276,18 @@
 
   .assignment-meta span i {
     font-size: 0.75rem;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .assignment-meta span .due-soon {
     font-size: 0.6rem;
     font-weight: 700;
-    color: #F59E0B;
-    background: rgba(245, 158, 11, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.08);
     padding: 1px 8px;
     border-radius: 100px;
     margin-left: 4px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .assignment-meta span .past-due-label {
@@ -280,9 +298,12 @@
     padding: 1px 8px;
     border-radius: 100px;
     margin-left: 4px;
+    border: 1px solid rgba(239, 68, 68, 0.04);
   }
 
-  /* Status Badge */
+  /* ============================================
+     STATUS BADGE - Gold Theme
+     ============================================ */
   .assignment-status {
     margin-bottom: 14px;
   }
@@ -300,34 +321,36 @@
   }
 
   .status-badge.pending {
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue, #2563EB);
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .status-badge.submitted {
-    background: rgba(245, 158, 11, 0.06);
-    color: #F59E0B;
-    border: 1px solid rgba(245, 158, 11, 0.06);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .status-badge.graded {
     background: rgba(5, 150, 105, 0.06);
     color: #059669;
-    border: 1px solid rgba(5, 150, 105, 0.06);
+    border: 1px solid rgba(5, 150, 105, 0.04);
   }
 
   .status-badge.past-due {
     background: rgba(239, 68, 68, 0.06);
     color: #EF4444;
-    border: 1px solid rgba(239, 68, 68, 0.06);
+    border: 1px solid rgba(239, 68, 68, 0.04);
   }
 
   .status-badge i {
     font-size: 0.7rem;
   }
 
-  /* Buttons */
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
   .btn-block {
     width: 100%;
   }
@@ -345,29 +368,48 @@
     transition: var(--transition, 0.3s ease);
     border: none;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: skewX(-20deg);
+    transition: var(--transition, 0.6s ease);
+  }
+
+  .btn:hover::after {
+    left: 100%;
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 24px rgba(245, 158, 11, 0.25);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
   .btn-outline {
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
   }
 
   .btn-outline:hover:not(:disabled) {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: #F59E0B;
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
   }
 
@@ -378,7 +420,7 @@
   }
 
   .btn-outline i {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .btn-outline.success i {
@@ -389,52 +431,58 @@
     color: #EF4444;
   }
 
-  /* Feedback */
+  /* ============================================
+     FEEDBACK - Gold Theme
+     ============================================ */
   .assignment-feedback {
     margin-top: 14px;
     padding: 12px 16px;
-    background: rgba(5, 150, 105, 0.04);
-    border: 1px solid rgba(5, 150, 105, 0.06);
+    background: rgba(201, 168, 75, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     border-radius: var(--radius-sm, 8px);
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     line-height: 1.6;
   }
 
   .assignment-feedback strong {
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Empty State */
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
   .empty-state {
     text-align: center;
     padding: 60px 20px;
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     grid-column: 1 / -1;
   }
 
   .empty-state i {
     font-size: 3rem;
-    color: var(--text-muted, #94A3B8);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 16px;
   }
 
   .empty-state p {
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     font-size: 1rem;
     margin: 0;
   }
 
   .empty-state .text-muted {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.9rem;
     margin-top: 4px;
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -446,7 +494,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -589,10 +639,12 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .stat-mini {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .stat-mini .stat-number {
@@ -600,16 +652,16 @@
   }
 
   [data-theme="dark"] .assignment-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .assignment-card:hover {
-    border-color: rgba(245, 158, 11, 0.1);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .assignment-card::before {
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .assignment-card.past-due::before {
@@ -617,11 +669,11 @@
   }
 
   [data-theme="dark"] .assignment-card.graded::before {
-    background: linear-gradient(90deg, #059669, #34D399);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .assignment-card.submitted::before {
-    background: linear-gradient(90deg, #F59E0B, #D97706);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), #D97706);
   }
 
   [data-theme="dark"] .assignment-card-header h3 {
@@ -629,46 +681,50 @@
   }
 
   [data-theme="dark"] .assignment-card-header .assignment-course {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .assignment-description {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .assignment-meta {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .assignment-meta span {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .assignment-meta span i {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .assignment-meta span .due-soon {
-    color: #F59E0B;
-    background: rgba(245, 158, 11, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .assignment-meta span .past-due-label {
     color: #EF4444;
     background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.04);
   }
 
   [data-theme="dark"] .status-badge.pending {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.06);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .status-badge.submitted {
-    background: rgba(245, 158, 11, 0.08);
-    border-color: rgba(245, 158, 11, 0.06);
-    color: #F59E0B;
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .status-badge.graded {
@@ -684,17 +740,18 @@
   }
 
   [data-theme="dark"] .btn-outline {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .btn-outline:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: #F59E0B;
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-outline i {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-outline.success i {
@@ -706,22 +763,26 @@
   }
 
   [data-theme="dark"] .assignment-feedback {
-    background: rgba(5, 150, 105, 0.06);
-    border-color: rgba(5, 150, 105, 0.08);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .assignment-feedback strong {
-    color: #34D399;
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .empty-state {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .empty-state p {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .empty-state .text-muted {
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .page-header h1 {
@@ -729,11 +790,25 @@
   }
 
   [data-theme="dark"] .btn-primary {
-    box-shadow: 0 2px 16px rgba(245, 158, 11, 0.12);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.12);
   }
 
   [data-theme="dark"] .btn-primary:hover {
-    box-shadow: 0 4px 24px rgba(245, 158, 11, 0.2);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.2);
+  }
+
+  [data-theme="dark"] .page-header .subtitle {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.blue {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -754,7 +829,7 @@
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-mini">
-      <div class="stat-icon orange"><i class="fas fa-tasks"></i></div>
+      <div class="stat-icon gold"><i class="fas fa-tasks"></i></div>
       <div>
         <div class="stat-number">{{ assignment_data|length }}</div>
         <div class="stat-label">Total Assignments</div>
@@ -857,4 +932,46 @@
     {% endfor %}
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ============================================
+    // COOL ENTRY ANIMATION FOR CARDS
+    // ============================================
+    const cards = document.querySelectorAll('.assignment-card');
+    cards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        card.style.transition = 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 150 + index * 80);
+    });
+
+    // ============================================
+    // STATS COUNTER ANIMATION
+    // ============================================
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+      const text = stat.textContent;
+      const number = parseInt(text);
+      if (!isNaN(number)) {
+        let current = 0;
+        const increment = Math.ceil(number / 25);
+        const counter = setInterval(() => {
+          current += increment;
+          if (current >= number) {
+            stat.textContent = text;
+            clearInterval(counter);
+          } else {
+            stat.textContent = current;
+          }
+        }, 40);
+      }
+    });
+
+    console.log('✨ Assignments - Gold Theme Loaded!');
+  });
+</script>
 {% endblock %}

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Grade Submission - Awwalu Devs{% endblock %}
+{% block title %}Grade Submission - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     GRADE SUBMISSION - Premium Theme
+     GRADE SUBMISSION - Premium Navy + Gold Theme
      ============================================ */
   .grade-page {
     max-width: 700px;
@@ -13,12 +13,14 @@
     padding: 0;
   }
 
-  /* Container */
+  /* ============================================
+     CONTAINER - Gold Theme
+     ============================================ */
   .grade-container {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
     padding: 40px 40px 36px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
@@ -34,15 +36,30 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #059669, #34D399);
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .grade-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.02), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .grade-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .grade-header {
     text-align: center;
     margin-bottom: 28px;
@@ -53,30 +70,32 @@
     height: 64px;
     margin: 0 auto 16px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(52, 211, 153, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
     transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .grade-container:hover .icon-wrapper {
     transform: scale(1.04) rotate(-2deg);
-    box-shadow: 0 4px 20px rgba(5, 150, 105, 0.08);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .grade-header h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0 0 4px;
   }
 
   .grade-header h2 span {
-    background: linear-gradient(135deg, #059669, #34D399);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -85,33 +104,35 @@
   .grade-header .assignment-title {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     margin: 0 0 2px;
   }
 
   .grade-header .assignment-title i {
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
     margin-right: 4px;
   }
 
   .grade-header .student-name {
     font-size: 0.9rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0;
   }
 
   .grade-header .student-name i {
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
     margin-right: 4px;
   }
 
-  /* Submission Details */
+  /* ============================================
+     SUBMISSION DETAILS - Gold Theme
+     ============================================ */
   .submission-details {
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     border-radius: var(--radius-sm, 10px);
     padding: 20px 22px;
     margin-bottom: 24px;
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .submission-details .detail-row {
@@ -128,16 +149,21 @@
   .submission-details .detail-label {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     display: block;
     margin-bottom: 2px;
   }
 
+  .submission-details .detail-label i {
+    color: var(--primary-gold, #C9A84B);
+    margin-right: 4px;
+  }
+
   .submission-details .detail-value {
     font-size: 0.9rem;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .submission-content {
@@ -145,13 +171,13 @@
   }
 
   .submission-content .content-box {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius-sm, 8px);
     padding: 14px 16px;
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     font-size: 0.9rem;
     line-height: 1.7;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     max-height: 200px;
     overflow-y: auto;
     white-space: pre-wrap;
@@ -167,7 +193,7 @@
   }
 
   .submission-content .content-box::-webkit-scrollbar-thumb {
-    background: #059669;
+    background: var(--primary-gold, #C9A84B);
     border-radius: 10px;
   }
 
@@ -191,17 +217,18 @@
     border-radius: 60px;
     font-weight: 500;
     font-size: 0.85rem;
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
     text-decoration: none;
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     transition: var(--transition, 0.3s ease);
   }
 
   .submission-attachment .attachment-link:hover {
-    background: rgba(37, 99, 235, 0.1);
-    border-color: rgba(37, 99, 235, 0.12);
+    background: rgba(201, 168, 75, 0.1);
+    border-color: rgba(201, 168, 75, 0.08);
     transform: translateY(-2px);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .submission-attachment .attachment-link i {
@@ -213,16 +240,16 @@
     flex-wrap: wrap;
     gap: 16px;
     padding-top: 12px;
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .submission-meta .meta-item {
     font-size: 0.82rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   .submission-meta .meta-item strong {
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .submission-meta .status-badge {
@@ -238,9 +265,9 @@
   }
 
   .submission-meta .status-badge.graded {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-    border: 1px solid rgba(5, 150, 105, 0.06);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .submission-meta .status-badge.pending {
@@ -249,7 +276,9 @@
     border: 1px solid rgba(245, 158, 11, 0.06);
   }
 
-  /* Form */
+  /* ============================================
+     FORM - Gold Theme
+     ============================================ */
   .grade-form {
     display: flex;
     flex-direction: column;
@@ -265,14 +294,14 @@
   .form-group label {
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .form-group label i {
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.85rem;
     width: 18px;
     text-align: center;
@@ -286,13 +315,13 @@
 
   .form-group label .optional {
     font-weight: 400;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.7rem;
   }
 
   .form-group .helper-text {
     font-size: 0.75rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     margin-top: 2px;
     display: flex;
     align-items: center;
@@ -301,31 +330,31 @@
 
   .form-group .helper-text i {
     font-size: 0.7rem;
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .form-control {
     width: 100%;
     padding: 12px 16px;
     border-radius: var(--radius-sm, 10px);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
-    background: var(--bg, #F8FAFC);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
+    background: var(--primary-bg, #0A1527);
     font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
     outline: none;
     appearance: none;
   }
 
   .form-control:focus {
-    border-color: #059669;
-    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.08);
-    background: var(--white, #FFFFFF);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   .form-control::placeholder {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.85rem;
   }
 
@@ -356,7 +385,9 @@
     margin: 0;
   }
 
-  /* Score display */
+  /* ============================================
+     SCORE DISPLAY - Gold Theme
+     ============================================ */
   .score-display {
     display: flex;
     align-items: center;
@@ -365,10 +396,35 @@
 
   .score-display .score-max {
     font-size: 0.82rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
-  /* Error Message */
+  /* ============================================
+     CHARACTER COUNTER - Gold Theme
+     ============================================ */
+  .char-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 4px;
+  }
+
+  .char-counter .count {
+    font-weight: 600;
+  }
+
+  .char-counter .count.warning {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .char-counter .count.danger {
+    color: #EF4444;
+  }
+
+  /* ============================================
+     ERROR MESSAGE - Gold Theme
+     ============================================ */
   .error-message {
     font-size: 0.78rem;
     color: #EF4444;
@@ -382,7 +438,9 @@
     font-size: 0.7rem;
   }
 
-  /* Buttons */
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -400,14 +458,14 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #059669, #34D399);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 16px rgba(5, 150, 105, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(5, 150, 105, 0.25);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
@@ -423,26 +481,29 @@
 
   .btn-outline {
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
     margin-top: 8px;
   }
 
   .btn-outline:hover {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: #059669;
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
   }
 
   .btn-outline i {
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .btn-block {
     width: 100%;
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -454,7 +515,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .grade-container {
       padding: 28px 20px 24px;
@@ -575,14 +638,16 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .grade-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .grade-container::before {
-    background: linear-gradient(90deg, #059669, #34D399);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .grade-header h2 {
@@ -590,60 +655,65 @@
   }
 
   [data-theme="dark"] .grade-header .assignment-title {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .grade-header .icon-wrapper {
-    background: rgba(5, 150, 105, 0.12);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .grade-container:hover .icon-wrapper {
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .form-group label {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-control {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.06);
-    color: var(--white, #FFFFFF);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-control:focus {
-    border-color: #34D399;
-    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.08);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   [data-theme="dark"] .form-control::placeholder {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .submission-details {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .submission-content .content-box {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #94A3B8);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .submission-meta {
-    border-top-color: rgba(255, 255, 255, 0.04);
+    border-top-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .submission-meta .meta-item {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .submission-meta .meta-item strong {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .submission-meta .status-badge.graded {
-    background: rgba(5, 150, 105, 0.08);
-    border-color: rgba(5, 150, 105, 0.06);
-    color: #34D399;
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .submission-meta .status-badge.pending {
@@ -653,40 +723,75 @@
   }
 
   [data-theme="dark"] .submission-attachment .attachment-link {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.06);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .submission-attachment .attachment-link:hover {
-    background: rgba(37, 99, 235, 0.12);
-    border-color: rgba(37, 99, 235, 0.1);
+    background: rgba(201, 168, 75, 0.1);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .btn-outline {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: #34D399;
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-outline i {
-    color: #34D399;
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .form-group .helper-text {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .form-group .helper-text i {
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .grade-header .student-name {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .submission-content .content-box::-webkit-scrollbar-thumb {
-    background: #34D399;
+    background: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .form-group label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .grade-header .assignment-title i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .grade-header .student-name i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .submission-details .detail-label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .char-counter .count.warning {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .form-control.error {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+  }
+
+  [data-theme="dark"] .form-control.error:focus {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16) !important;
   }
 </style>
 
@@ -819,7 +924,9 @@
     const submitBtn = document.getElementById('submitBtn');
     const maxScore = {{ submission.assignment.max_score }};
 
-    // Feedback character counter
+    // ============================================
+    // FEEDBACK CHARACTER COUNTER
+    // ============================================
     if (feedback && feedbackCount) {
       feedback.addEventListener('input', function() {
         const len = this.value.length;
@@ -828,7 +935,23 @@
       });
     }
 
-    // Real-time score validation
+    // ============================================
+    // AUTO-RESIZE TEXTAREA
+    // ============================================
+    if (feedback) {
+      feedback.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+      });
+      setTimeout(() => {
+        feedback.style.height = 'auto';
+        feedback.style.height = Math.min(feedback.scrollHeight, 200) + 'px';
+      }, 100);
+    }
+
+    // ============================================
+    // REAL-TIME SCORE VALIDATION
+    // ============================================
     if (score) {
       score.addEventListener('input', function() {
         const val = parseFloat(this.value);
@@ -843,7 +966,9 @@
       });
     }
 
-    // Form validation
+    // ============================================
+    // FORM VALIDATION
+    // ============================================
     form.addEventListener('submit', function(e) {
       let isValid = true;
 
@@ -877,6 +1002,38 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
     });
+
+    // ============================================
+    // REMOVE ERROR STATE ON FOCUS
+    // ============================================
+    score.addEventListener('focus', function() {
+      this.classList.remove('error');
+      scoreError.style.display = 'none';
+    });
+
+    // ============================================
+    // KEYBOARD SHORTCUT: Ctrl+Enter to submit
+    // ============================================
+    feedback.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'Enter') {
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    // ============================================
+    // GOLD THEME - ANIMATE ON LOAD
+    // ============================================
+    const container = document.querySelector('.grade-container');
+    if (container) {
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        container.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    console.log('✨ Grade Submission - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

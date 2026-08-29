@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Admins - Awwalu Devs{% endblock %}
+{% block title %}Manage Admins - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     MANAGE ADMINS - Premium Theme
+     MANAGE ADMINS - Premium Navy + Gold Theme
      ============================================ */
   .manage-admins {
     max-width: 1360px;
@@ -13,7 +13,9 @@
     padding: 0;
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -35,24 +37,25 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0;
   }
 
   .page-header h1 span {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,7 +63,7 @@
 
   .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
   }
 
@@ -72,18 +75,18 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
     border: none;
     cursor: pointer;
   }
 
   .btn-create:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
@@ -91,12 +94,14 @@
     font-size: 0.9em;
   }
 
-  /* Table Container */
+  /* ============================================
+     TABLE CONTAINER - Gold Theme
+     ============================================ */
   .table-wrapper {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     overflow: hidden;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
@@ -104,7 +109,7 @@
   }
 
   .table-wrapper:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
   }
 
   .table-scroll {
@@ -119,8 +124,8 @@
   }
 
   .admin-table thead {
-    background: var(--bg, #F8FAFC);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .admin-table thead th {
@@ -130,12 +135,12 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     white-space: nowrap;
   }
 
   .admin-table tbody tr {
-    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
     transition: var(--transition, 0.3s ease);
   }
 
@@ -144,15 +149,18 @@
   }
 
   .admin-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .admin-table tbody td {
     padding: 14px 20px;
     vertical-align: middle;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
+  /* ============================================
+     USER CELL - Gold Theme
+     ============================================ */
   .admin-table .user-cell {
     display: flex;
     align-items: center;
@@ -163,27 +171,30 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--white, #FFFFFF);
     font-weight: 700;
     font-size: 0.8rem;
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(201, 168, 75, 0.2);
   }
 
   .admin-table .user-name {
     font-weight: 600;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
   }
 
   .admin-table .user-email {
     font-size: 0.82rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
-  /* Badges */
+  /* ============================================
+     BADGES - Gold Theme
+     ============================================ */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -197,35 +208,37 @@
   }
 
   .badge-super {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(34, 211, 238, 0.06));
-    color: var(--blue, #2563EB);
-    border: 1px solid rgba(37, 99, 235, 0.08);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.06);
   }
 
   .badge-super i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .badge-admin {
-    background: rgba(124, 58, 237, 0.08);
-    color: #7C3AED;
-    border: 1px solid rgba(124, 58, 237, 0.06);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .badge-admin i {
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Course Tags */
+  /* ============================================
+     COURSE TAGS - Gold Theme
+     ============================================ */
   .course-tag {
     display: inline-block;
     padding: 2px 12px;
     border-radius: 100px;
     font-size: 0.7rem;
     font-weight: 500;
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue, #2563EB);
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     margin: 2px 4px 2px 0;
     white-space: nowrap;
   }
@@ -235,11 +248,13 @@
   }
 
   .text-muted {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.82rem;
   }
 
-  /* Action Buttons */
+  /* ============================================
+     ACTION BUTTONS - Gold Theme
+     ============================================ */
   .action-group {
     display: flex;
     align-items: center;
@@ -266,13 +281,14 @@
   }
 
   .btn-edit {
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .btn-edit:hover {
-    background: rgba(37, 99, 235, 0.12);
+    background: rgba(201, 168, 75, 0.12);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(201, 168, 75, 0.15);
   }
 
   .btn-delete {
@@ -283,6 +299,7 @@
   .btn-delete:hover {
     background: rgba(239, 68, 68, 0.12);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
   }
 
   .btn-delete:disabled {
@@ -292,7 +309,7 @@
 
   .super-label {
     font-size: 0.75rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -300,10 +317,12 @@
   }
 
   .super-label i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Empty State */
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
   .empty-state {
     text-align: center;
     padding: 48px 20px;
@@ -311,23 +330,25 @@
 
   .empty-state i {
     font-size: 2.5rem;
-    color: var(--text-muted, #94A3B8);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
   }
 
   .empty-state h3 {
     font-size: 1.1rem;
-    color: var(--text, #1E293B);
+    color: var(--white, #FFFFFF);
     margin-bottom: 4px;
   }
 
   .empty-state p {
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.9rem;
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -339,7 +360,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -429,23 +452,25 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .table-wrapper {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .admin-table thead {
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .admin-table tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .admin-table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .admin-table .user-name {
@@ -453,30 +478,35 @@
   }
 
   [data-theme="dark"] .badge-super {
-    background: rgba(37, 99, 235, 0.15);
-    border-color: rgba(37, 99, 235, 0.1);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .badge-admin {
-    background: rgba(124, 58, 237, 0.12);
-    border-color: rgba(124, 58, 237, 0.08);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .course-tag {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-edit {
-    background: rgba(37, 99, 235, 0.08);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-edit:hover {
-    background: rgba(37, 99, 235, 0.16);
+    background: rgba(201, 168, 75, 0.12);
   }
 
   [data-theme="dark"] .btn-delete {
     background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
   }
 
   [data-theme="dark"] .btn-delete:hover {
@@ -489,6 +519,34 @@
 
   [data-theme="dark"] .empty-state h3 {
     color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .admin-table .user-email {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .super-label {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .super-label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .text-muted {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .badge-super i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .badge-admin i {
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -592,14 +650,40 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Confirm delete
+    // ============================================
+    // CONFIRM DELETE
+    // ============================================
     document.querySelectorAll('.confirm-delete').forEach(btn => {
       btn.addEventListener('click', function(e) {
-        if (!confirm('Are you sure you want to delete this admin?')) {
+        if (!confirm('⚠️ Are you sure you want to delete this admin? This action cannot be undone.')) {
           e.preventDefault();
         }
       });
     });
+
+    // ============================================
+    // ADD HOVER ANIMATION TO ROWS
+    // ============================================
+    document.querySelectorAll('.admin-table tbody tr').forEach(row => {
+      row.addEventListener('mouseenter', function() {
+        this.style.transition = 'background 0.3s ease';
+      });
+    });
+
+    // ============================================
+    // GOLD THEME - ANIMATE STATS ON LOAD
+    // ============================================
+    const tableWrapper = document.querySelector('.table-wrapper');
+    if (tableWrapper) {
+      tableWrapper.style.opacity = '0';
+      setTimeout(() => {
+        tableWrapper.style.opacity = '1';
+        tableWrapper.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        tableWrapper.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    console.log('✨ Manage Admins - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

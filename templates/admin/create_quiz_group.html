@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Create Quiz - Awwalu Devs{% endblock %}
+{% block title %}Create Quiz - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     CREATE QUIZ - Premium Theme with Preview
+     CREATE QUIZ - Premium Navy + Gold Theme
      ============================================ */
   .create-quiz-page {
     max-width: 1400px;
@@ -13,6 +13,9 @@
     padding: 0;
   }
 
+  /* ============================================
+     LAYOUT - Gold Accented
+     ============================================ */
   .quiz-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -20,14 +23,14 @@
     align-items: start;
   }
 
-  /* ==========================================
-     FORM CONTAINER
-     ========================================== */
+  /* ============================================
+     FORM CONTAINER - Gold Theme
+     ============================================ */
   .quiz-container {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
     padding: 32px 32px 28px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
@@ -43,22 +46,35 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #7C3AED, #EC4899);
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .quiz-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.02), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .quiz-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
-  /* ==========================================
-     PREVIEW CONTAINER
-     ========================================== */
+  /* ============================================
+     PREVIEW CONTAINER - Gold Theme
+     ============================================ */
   .preview-container {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
     padding: 32px 32px 28px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
@@ -77,12 +93,25 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #22D3EE, #2563EB);
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--dark-gold, #8F7E48), var(--primary-gold, #C9A84B));
+    opacity: 0.8;
+  }
+
+  .preview-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .preview-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .preview-header {
@@ -91,14 +120,14 @@
     justify-content: space-between;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.06);
     flex-shrink: 0;
   }
 
   .preview-header h3 {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
     display: flex;
     align-items: center;
@@ -106,17 +135,18 @@
   }
 
   .preview-header h3 i {
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.9rem;
   }
 
   .preview-header .preview-badge {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
-    background: var(--bg, #F8FAFC);
+    color: var(--text-gray, #C8CED8);
+    background: rgba(201, 168, 75, 0.06);
     padding: 2px 12px;
     border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .preview-body {
@@ -130,28 +160,29 @@
   }
 
   .preview-body::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .preview-body::-webkit-scrollbar-thumb {
-    background: #7C3AED;
+    background: var(--primary-gold, #C9A84B);
     border-radius: 10px;
   }
 
-  /* ==========================================
-     PREVIEW QUESTION CARDS
-     ========================================== */
+  /* ============================================
+     PREVIEW QUESTION CARDS - Gold Theme
+     ============================================ */
   .preview-question {
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     border-radius: var(--radius-sm, 10px);
     padding: 16px 18px;
     margin-bottom: 12px;
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     transition: var(--transition, 0.3s ease);
   }
 
   .preview-question:hover {
-    border-color: rgba(124, 58, 237, 0.06);
+    border-color: rgba(201, 168, 75, 0.08);
+    transform: translateX(4px);
   }
 
   .preview-question .pq-header {
@@ -164,22 +195,23 @@
   .preview-question .pq-number {
     font-size: 0.7rem;
     font-weight: 700;
-    color: #7C3AED;
-    background: rgba(124, 58, 237, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.08);
     padding: 1px 10px;
     border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .preview-question .pq-text {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--white, #FFFFFF);
     margin: 0 0 8px;
     line-height: 1.4;
   }
 
   .preview-question .pq-text.empty {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-weight: 400;
     font-style: italic;
   }
@@ -192,7 +224,7 @@
 
   .preview-question .pq-option {
     font-size: 0.78rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -201,17 +233,17 @@
 
   .preview-question .pq-option .pq-letter {
     font-weight: 700;
-    color: var(--text-muted, #94A3B8);
+    color: var(--primary-gold, #C9A84B);
     min-width: 18px;
     font-size: 0.7rem;
   }
 
   .preview-question .pq-option .pq-value {
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .preview-question .pq-option .pq-value.empty {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-style: italic;
   }
 
@@ -226,40 +258,43 @@
     background: rgba(5, 150, 105, 0.06);
     padding: 1px 10px;
     border-radius: 100px;
+    border: 1px solid rgba(5, 150, 105, 0.04);
   }
 
   .preview-question .pq-correct .pq-answer {
     font-weight: 700;
-    color: #059669;
+    color: #34D399;
   }
 
   .preview-empty {
     text-align: center;
     padding: 40px 20px;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
   .preview-empty i {
     font-size: 2.5rem;
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
     display: block;
   }
 
   .preview-empty h4 {
     font-size: 1rem;
-    color: var(--text, #1E293B);
+    color: var(--white, #FFFFFF);
     margin: 0 0 4px;
   }
 
   .preview-empty p {
     font-size: 0.85rem;
+    color: var(--text-gray, #C8CED8);
     margin: 0;
   }
 
-  /* ==========================================
-     HEADER STYLES
-     ========================================== */
+  /* ============================================
+     HEADER STYLES - Gold Theme
+     ============================================ */
   .quiz-header {
     text-align: center;
     margin-bottom: 28px;
@@ -270,30 +305,32 @@
     height: 60px;
     margin: 0 auto 14px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(236, 72, 153, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
     transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .quiz-container:hover .icon-wrapper {
     transform: scale(1.04) rotate(-2deg);
-    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.08);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .quiz-header h2 {
     font-size: 1.4rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0 0 4px;
   }
 
   .quiz-header h2 span {
-    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -301,13 +338,13 @@
 
   .quiz-header p {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0;
   }
 
-  /* ==========================================
-     FORM STYLES
-     ========================================== */
+  /* ============================================
+     FORM STYLES - Gold Theme
+     ============================================ */
   .quiz-form {
     display: flex;
     flex-direction: column;
@@ -323,14 +360,14 @@
   .form-group label {
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .form-group label i {
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.8rem;
     width: 16px;
     text-align: center;
@@ -344,7 +381,7 @@
 
   .form-group label .optional {
     font-weight: 400;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.65rem;
   }
 
@@ -352,24 +389,24 @@
     width: 100%;
     padding: 10px 14px;
     border-radius: var(--radius-sm, 10px);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
-    background: var(--bg, #F8FAFC);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
+    background: var(--primary-bg, #0A1527);
     font-size: 0.85rem;
     font-family: 'Inter', sans-serif;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
     outline: none;
     appearance: none;
   }
 
   .form-control:focus {
-    border-color: #7C3AED;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
-    background: var(--white, #FFFFFF);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   .form-control::placeholder {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.82rem;
   }
 
@@ -381,7 +418,7 @@
   }
 
   select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     padding-right: 40px;
@@ -390,6 +427,8 @@
 
   select.form-control option {
     padding: 8px;
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
   }
 
   input[type="number"].form-control {
@@ -404,13 +443,13 @@
 
   .form-divider {
     border: none;
-    border-top: 1px solid rgba(15, 23, 42, 0.06);
+    border-top: 1px solid rgba(201, 168, 75, 0.06);
     margin: 2px 0 6px;
   }
 
-  /* ==========================================
-     QUESTIONS SECTION
-     ========================================== */
+  /* ============================================
+     QUESTIONS SECTION - Gold Theme
+     ============================================ */
   .questions-section {
     display: flex;
     flex-direction: column;
@@ -427,20 +466,25 @@
   .questions-section .section-label h3 {
     font-size: 0.95rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
+  .questions-section .section-label h3 i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
   .questions-section .section-label .question-count {
     font-size: 0.65rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
-    background: var(--bg, #F8FAFC);
+    color: var(--text-gray, #C8CED8);
+    background: rgba(201, 168, 75, 0.06);
     padding: 2px 12px;
     border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   #questionsContainer {
@@ -457,28 +501,28 @@
   }
 
   #questionsContainer::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(201, 168, 75, 0.02);
   }
 
   #questionsContainer::-webkit-scrollbar-thumb {
-    background: #7C3AED;
+    background: var(--primary-gold, #C9A84B);
     border-radius: 10px;
   }
 
-  /* ==========================================
-     QUESTION GROUP
-     ========================================== */
+  /* ============================================
+     QUESTION GROUP - Gold Theme
+     ============================================ */
   .question-group {
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     border-radius: var(--radius-sm, 10px);
     padding: 16px 18px 14px;
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     transition: var(--transition, 0.3s ease);
     position: relative;
   }
 
   .question-group:hover {
-    border-color: rgba(124, 58, 237, 0.06);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .question-group .question-header {
@@ -491,7 +535,7 @@
   .question-group .question-header h4 {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
     margin: 0;
     display: flex;
     align-items: center;
@@ -505,8 +549,8 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #7C3AED, #EC4899);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
     font-size: 0.6rem;
     font-weight: 700;
   }
@@ -514,7 +558,7 @@
   .question-group .question-header .remove-btn {
     background: none;
     border: none;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     cursor: pointer;
     padding: 4px 8px;
     border-radius: 6px;
@@ -534,11 +578,11 @@
   .question-group .form-group label {
     font-size: 0.72rem;
     font-weight: 500;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .question-group .form-group label i {
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.7rem;
     width: 14px;
     text-align: center;
@@ -547,17 +591,17 @@
   .question-group .form-control {
     padding: 8px 12px;
     font-size: 0.82rem;
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
   }
 
   .question-group .form-control:focus {
-    border-color: #7C3AED;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.06);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
   }
 
-  /* ==========================================
-     OPTIONS GRID
-     ========================================== */
+  /* ============================================
+     OPTIONS GRID - Gold Theme
+     ============================================ */
   .options-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -572,7 +616,7 @@
   .options-grid .form-group label {
     font-size: 0.65rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -584,15 +628,16 @@
     line-height: 18px;
     text-align: center;
     border-radius: 50%;
-    background: rgba(124, 58, 237, 0.08);
-    color: #7C3AED;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.6rem;
     font-weight: 700;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
-  /* ==========================================
-     BUTTONS
-     ========================================== */
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -613,31 +658,36 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 16px rgba(124, 58, 237, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 24px rgba(124, 58, 237, 0.25);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
   }
 
   .btn-outline {
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
   }
 
   .btn-outline:hover {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: #7C3AED;
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
   }
 
   .btn-outline i {
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .btn-add-question {
@@ -646,8 +696,8 @@
     font-weight: 600;
     font-size: 0.82rem;
     background: transparent;
-    color: #7C3AED;
-    border: 1.5px dashed rgba(124, 58, 237, 0.2);
+    color: var(--primary-gold, #C9A84B);
+    border: 1.5px dashed rgba(201, 168, 75, 0.15);
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
     display: inline-flex;
@@ -659,14 +709,14 @@
   }
 
   .btn-add-question:hover {
-    border-color: #7C3AED;
-    background: rgba(124, 58, 237, 0.02);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.02);
     transform: translateY(-2px);
   }
 
-  /* ==========================================
+  /* ============================================
      ANIMATIONS
-     ========================================== */
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -689,13 +739,18 @@
     }
   }
 
+  @keyframes goldPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 75, 0); }
+    50% { box-shadow: 0 0 40px rgba(201, 168, 75, 0.1); }
+  }
+
   .question-group {
     animation: fadeIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* ==========================================
+  /* ============================================
      RESPONSIVE
-     ========================================== */
+     ============================================ */
   @media (max-width: 1024px) {
     .quiz-layout {
       grid-template-columns: 1fr;
@@ -838,100 +893,92 @@
     }
   }
 
-  /* ==========================================
-     DARK MODE
-     ========================================== */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .quiz-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .preview-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
-  }
-
-  [data-theme="dark"] .quiz-container::before,
-  [data-theme="dark"] .preview-container::before {
-    opacity: 0.8;
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .quiz-header h2 {
     color: var(--white, #FFFFFF);
   }
 
-  [data-theme="dark"] .quiz-header .icon-wrapper {
-    background: rgba(124, 58, 237, 0.12);
-  }
-
   [data-theme="dark"] .form-group label {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-control {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.06);
-    color: var(--white, #FFFFFF);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-control:focus {
-    border-color: #7C3AED;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   [data-theme="dark"] .form-control::placeholder {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   }
 
   [data-theme="dark"] select.form-control option {
-    background: var(--white, #1E293B);
-    color: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .question-group {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .question-group:hover {
-    border-color: rgba(124, 58, 237, 0.1);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .question-group .question-header h4 {
-    color: #7C3AED;
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .question-group .form-control {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--secondary-bg, #253449);
   }
 
   [data-theme="dark"] .btn-outline {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: #7C3AED;
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-add-question {
-    color: #7C3AED;
-    border-color: rgba(124, 58, 237, 0.15);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.1);
   }
 
   [data-theme="dark"] .btn-add-question:hover {
-    border-color: #7C3AED;
-    background: rgba(124, 58, 237, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .form-divider {
-    border-top-color: rgba(255, 255, 255, 0.04);
+    border-top-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .questions-section .section-label h3 {
@@ -939,12 +986,15 @@
   }
 
   [data-theme="dark"] .questions-section .section-label .question-count {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .options-grid .form-group label .letter {
-    background: rgba(124, 58, 237, 0.12);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .preview-header h3 {
@@ -952,17 +1002,18 @@
   }
 
   [data-theme="dark"] .preview-header .preview-badge {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .preview-question {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .preview-question:hover {
-    border-color: rgba(124, 58, 237, 0.1);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .preview-question .pq-text {
@@ -970,24 +1021,28 @@
   }
 
   [data-theme="dark"] .preview-question .pq-text.empty {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .preview-question .pq-option .pq-value {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .preview-question .pq-option .pq-value.empty {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .preview-empty h4 {
     color: var(--white, #FFFFFF);
   }
 
-  [data-theme="dark"] #questionsContainer::-webkit-scrollbar-thumb,
-  [data-theme="dark"] .preview-body::-webkit-scrollbar-thumb {
-    background: #7C3AED;
+  [data-theme="dark"] .preview-empty p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .preview-body::-webkit-scrollbar-thumb,
+  [data-theme="dark"] #questionsContainer::-webkit-scrollbar-thumb {
+    background: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -997,10 +1052,10 @@
     <div class="quiz-container">
       <div class="quiz-header">
         <div class="icon-wrapper">
-          <i class="fas fa-plus-circle"></i>
+          <i class="fas fa-pencil-alt"></i>
         </div>
         <h2>Create <span>Quiz</span></h2>
-        <p>Add a new quiz with multiple questions</p>
+        <p>Design engaging quizzes with multiple questions</p>
       </div>
 
       <form method="POST" id="quizForm" class="quiz-form" novalidate>
@@ -1050,7 +1105,7 @@
         <!-- Questions -->
         <div class="questions-section">
           <div class="section-label">
-            <h3><i class="fas fa-question-circle" style="color:#7C3AED;"></i>Questions</h3>
+            <h3><i class="fas fa-question-circle"></i> Questions</h3>
             <span class="question-count" id="questionCount">0</span>
           </div>
 

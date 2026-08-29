@@ -5,7 +5,7 @@
 {% block content %}
 <style>
   /* ============================================
-     404 ERROR PAGE - Premium Theme
+     404 ERROR PAGE - Premium Navy + Gold Theme
      ============================================ */
   .error-page {
     min-height: calc(100vh - var(--nav-height, 68px) - 120px);
@@ -13,12 +13,12 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     position: relative;
     overflow: hidden;
   }
 
-  /* Animated background blobs */
+  /* Animated background blobs - Gold theme */
   .error-page::before {
     content: '';
     position: absolute;
@@ -26,7 +26,7 @@
     right: -20%;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.04) 0%, transparent 70%);
     border-radius: 50%;
     animation: floatBlob 20s ease-in-out infinite alternate;
     pointer-events: none;
@@ -39,7 +39,7 @@
     left: -15%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.03) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.02) 0%, transparent 70%);
     border-radius: 50%;
     animation: floatBlob 25s ease-in-out infinite alternate-reverse;
     pointer-events: none;
@@ -50,14 +50,16 @@
     100% { transform: translate(40px, -30px) scale(1.1); }
   }
 
-  /* Container */
+  /* ============================================
+     CONTAINER - Gold Theme
+     ============================================ */
   .error-container {
     max-width: 520px;
     width: 100%;
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
     padding: 48px 40px 40px;
     text-align: center;
     transition: var(--transition, 0.3s ease);
@@ -75,29 +77,45 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .error-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .error-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
     transform: translateY(-4px);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
-  /* Error Icon */
+  /* ============================================
+     ERROR ICON - Gold Theme
+     ============================================ */
   .error-icon {
     width: 100px;
     height: 100px;
     margin: 0 auto 20px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3rem;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     transition: var(--transition, 0.3s ease);
     position: relative;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .error-icon::after {
@@ -105,7 +123,7 @@
     position: absolute;
     inset: -8px;
     border-radius: 50%;
-    border: 2px dashed rgba(245, 158, 11, 0.15);
+    border: 2px dashed rgba(201, 168, 75, 0.08);
     animation: spin 20s linear infinite;
   }
 
@@ -115,16 +133,19 @@
 
   .error-container:hover .error-icon {
     transform: scale(1.04) rotate(-4deg);
-    box-shadow: 0 4px 30px rgba(245, 158, 11, 0.08);
+    box-shadow: 0 4px 30px rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
-  /* Numbers */
+  /* ============================================
+     ERROR NUMBER - Gold Theme
+     ============================================ */
   .error-number {
     font-size: 6rem;
     font-weight: 900;
     line-height: 1;
     letter-spacing: -0.04em;
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -146,17 +167,20 @@
     50% { transform: translateY(-8px); }
   }
 
+  /* ============================================
+     TITLE & MESSAGE - Gold Theme
+     ============================================ */
   .error-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0 0 8px;
     letter-spacing: -0.02em;
   }
 
   .error-message {
     font-size: 0.95rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0 0 28px;
     line-height: 1.7;
   }
@@ -172,16 +196,18 @@
     75% { transform: rotate(-10deg); }
   }
 
-  /* Suggestions */
+  /* ============================================
+     SUGGESTIONS - Gold Theme
+     ============================================ */
   .error-suggestions {
     display: flex;
     flex-direction: column;
     gap: 8px;
     margin-bottom: 28px;
     padding: 16px 20px;
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     border-radius: var(--radius-sm, 10px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.02);
     text-align: left;
   }
 
@@ -190,8 +216,16 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .error-suggestions .suggestion-label i {
+    color: var(--primary-gold, #C9A84B);
+    font-size: 0.7rem;
   }
 
   .error-suggestions .suggestion-item {
@@ -199,28 +233,31 @@
     align-items: center;
     gap: 10px;
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .error-suggestions .suggestion-item i {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.8rem;
     width: 20px;
     text-align: center;
   }
 
   .error-suggestions .suggestion-item a {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
+    font-weight: 500;
   }
 
   .error-suggestions .suggestion-item a:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--dark-gold, #8F7E48);
     text-decoration: underline;
   }
 
-  /* Buttons */
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -237,14 +274,14 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
   }
 
   .btn-primary:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
@@ -254,19 +291,20 @@
 
   .btn-secondary {
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
     margin-left: 8px;
   }
 
   .btn-secondary:hover {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-3px);
   }
 
   .btn-secondary i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .error-actions {
@@ -276,7 +314,9 @@
     justify-content: center;
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeScale {
     0% {
       opacity: 0;
@@ -288,7 +328,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .error-container {
       padding: 36px 28px 32px;
@@ -379,14 +421,16 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .error-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .error-container::before {
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .error-title {
@@ -394,57 +438,75 @@
   }
 
   [data-theme="dark"] .error-icon {
-    background: rgba(245, 158, 11, 0.12);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .error-container:hover .error-icon {
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .error-number {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   [data-theme="dark"] .error-suggestions {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .error-suggestions .suggestion-item {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .error-suggestions .suggestion-item a {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .error-suggestions .suggestion-item a:hover {
-    color: var(--blue, #2563EB);
+    color: var(--dark-gold, #8F7E48);
+  }
+
+  [data-theme="dark"] .error-suggestions .suggestion-label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .error-suggestions .suggestion-item i {
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-secondary {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-secondary i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .error-page::before {
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.04) 0%, transparent 70%);
   }
 
   [data-theme="dark"] .error-page::after {
-    background: radial-gradient(circle, rgba(34, 211, 238, 0.04) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.02) 0%, transparent 70%);
   }
 
   [data-theme="dark"] .error-icon::after {
-    border-color: rgba(245, 158, 11, 0.08);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .error-message {
+    color: var(--text-gray, #C8CED8);
   }
 </style>
 

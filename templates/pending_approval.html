@@ -1,33 +1,830 @@
 {% extends "base.html" %}
 
-{% block title %}Pending Approval - Awwalu Devs{% endblock %}
+{% block title %}Pending Approval - A-Portal{% endblock %}
 
 {% block content %}
+<style>
+  /* ============================================
+     PENDING APPROVAL - Premium Navy + Gold Theme
+     ============================================ */
+  .auth-page {
+    min-height: calc(100vh - var(--nav-height, 68px) - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--primary-bg, #0A1527);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ============================================
+     ANIMATED PARTICLES
+     ============================================ */
+  .particles-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--primary-gold, #C9A84B);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFloat 12s ease-in-out infinite;
+  }
+
+  .particle:nth-child(1) { left: 5%; animation-delay: 0s; width: 3px; height: 3px; }
+  .particle:nth-child(2) { left: 15%; animation-delay: 1.2s; width: 5px; height: 5px; }
+  .particle:nth-child(3) { left: 25%; animation-delay: 2.4s; width: 2px; height: 2px; }
+  .particle:nth-child(4) { left: 35%; animation-delay: 0.6s; width: 4px; height: 4px; }
+  .particle:nth-child(5) { left: 45%; animation-delay: 1.8s; width: 3px; height: 3px; }
+  .particle:nth-child(6) { left: 55%; animation-delay: 3s; width: 6px; height: 6px; }
+  .particle:nth-child(7) { left: 65%; animation-delay: 0.9s; width: 2px; height: 2px; }
+  .particle:nth-child(8) { left: 75%; animation-delay: 2.1s; width: 4px; height: 4px; }
+  .particle:nth-child(9) { left: 85%; animation-delay: 3.3s; width: 3px; height: 3px; }
+  .particle:nth-child(10) { left: 95%; animation-delay: 0.3s; width: 5px; height: 5px; }
+
+  @keyframes particleFloat {
+    0% { 
+      transform: translateY(100vh) rotate(0deg) scale(0);
+      opacity: 0;
+    }
+    10% { opacity: 0.5; }
+    90% { opacity: 0.5; }
+    100% { 
+      transform: translateY(-10vh) rotate(720deg) scale(1);
+      opacity: 0;
+    }
+  }
+
+  /* ============================================
+     ANIMATED GRADIENT ORBS
+     ============================================ */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    opacity: 0.2;
+    animation: orbFloat 16s ease-in-out infinite alternate;
+  }
+
+  .orb--1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--primary-gold, #C9A84B), transparent);
+    top: -150px;
+    right: -100px;
+    animation-delay: 0s;
+  }
+
+  .orb--2 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--dark-gold, #8F7E48), transparent);
+    bottom: -100px;
+    left: -50px;
+    animation-delay: -5s;
+  }
+
+  .orb--3 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.08), transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: -10s;
+    opacity: 0.08;
+  }
+
+  @keyframes orbFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, -40px) scale(1.1); }
+  }
+
+  /* ============================================
+     CONTAINER - Gold Theme with Glass Effect
+     ============================================ */
+  .auth-container {
+    max-width: 480px;
+    width: 100%;
+    background: rgba(37, 52, 73, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius, 16px);
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    box-shadow: 0 20px 60px rgba(10, 21, 39, 0.4);
+    padding: 44px 40px 40px;
+    transition: var(--transition, 0.3s ease);
+    opacity: 0;
+    animation: containerAppear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary-gold, #C9A84B), transparent);
+    opacity: 0.6;
+    animation: shimmerLine 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmerLine {
+    0% { opacity: 0.2; transform: translateX(-100%); }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.2; transform: translateX(100%); }
+  }
+
+  @keyframes containerAppear {
+    0% {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .auth-container:hover {
+    border-color: rgba(201, 168, 75, 0.12);
+    box-shadow: 0 30px 80px rgba(10, 21, 39, 0.5);
+  }
+
+  /* ============================================
+     CORNER ACCENTS
+     ============================================ */
+  .corner-accent {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(201, 168, 75, 0.05);
+    opacity: 0.4;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .corner-accent--tl { top: 12px; left: 12px; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+  .corner-accent--tr { top: 12px; right: 12px; border-left: none; border-bottom: none; border-radius: 0 4px 0 0; }
+  .corner-accent--bl { bottom: 12px; left: 12px; border-right: none; border-top: none; border-radius: 0 0 0 4px; }
+  .corner-accent--br { bottom: 12px; right: 12px; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
+
+  .auth-container:hover .corner-accent {
+    border-color: rgba(201, 168, 75, 0.15);
+    opacity: 0.6;
+  }
+
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
+  .auth-header {
+    margin-bottom: 32px;
+  }
+
+  .auth-header .auth-icon-wrapper {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.04));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--primary-gold, #C9A84B);
+    transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    position: relative;
+  }
+
+  .auth-header .auth-icon-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    animation: iconPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.08); opacity: 0.6; }
+  }
+
+  .auth-container:hover .auth-icon-wrapper {
+    transform: scale(1.04) rotate(-2deg);
+    box-shadow: 0 4px 30px rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.08);
+  }
+
+  .auth-header h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--white, #FFFFFF);
+    letter-spacing: -0.02em;
+    margin: 0 0 6px;
+  }
+
+  .auth-header h2 span {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .auth-header p {
+    font-size: 0.9rem;
+    color: var(--text-gray, #C8CED8);
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  /* ============================================
+     PENDING CONTENT - Gold Theme
+     ============================================ */
+  .pending-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* Animated Hourglass */
+  .pending-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: rgba(201, 168, 75, 0.04);
+    border: 2px solid rgba(201, 168, 75, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--primary-gold, #C9A84B);
+    animation: pendingPulse 2s ease-in-out infinite;
+    position: relative;
+  }
+
+  .pending-icon::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px dashed rgba(201, 168, 75, 0.06);
+    animation: spin 20s linear infinite;
+  }
+
+  @keyframes pendingPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(201, 168, 75, 0); }
+    50% { transform: scale(1.04); box-shadow: 0 0 40px rgba(201, 168, 75, 0.08); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .pending-content h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    margin: 0;
+  }
+
+  .pending-content p {
+    font-size: 0.92rem;
+    color: var(--text-gray, #C8CED8);
+    margin: 0;
+    line-height: 1.7;
+    max-width: 380px;
+  }
+
+  .pending-content .text-muted {
+    font-size: 0.82rem;
+    color: var(--text-muted, #8A94A6);
+  }
+
+  /* ============================================
+     LOADING DOTS - Gold Theme
+     ============================================ */
+  .loading-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 4px 0;
+  }
+
+  .loading-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--primary-gold, #C9A84B);
+    opacity: 0.3;
+    animation: dotPulse 1.4s ease-in-out infinite;
+  }
+
+  .loading-dots span:nth-child(1) { animation-delay: 0s; }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dotPulse {
+    0%, 100% { transform: scale(0.6); opacity: 0.3; }
+    50% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ============================================
+     STATUS STEPS - Gold Theme
+     ============================================ */
+  .status-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 320px;
+    margin: 4px auto;
+    padding: 16px 20px;
+    background: rgba(10, 21, 39, 0.3);
+    border-radius: var(--radius-sm, 10px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+  }
+
+  .step-item .step-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .step-item .step-dot.completed {
+    background: #059669;
+    box-shadow: 0 0 12px rgba(5, 150, 105, 0.2);
+  }
+
+  .step-item .step-dot.active {
+    background: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 12px rgba(201, 168, 75, 0.2);
+    animation: dotActive 1.5s ease-in-out infinite;
+  }
+
+  .step-item .step-dot.pending {
+    background: var(--text-muted, #8A94A6);
+  }
+
+  @keyframes dotActive {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  .step-item .step-label {
+    font-size: 0.82rem;
+    color: var(--text-gray, #C8CED8);
+  }
+
+  .step-item .step-label.completed {
+    color: #059669;
+  }
+
+  .step-item .step-label.active {
+    color: var(--primary-gold, #C9A84B);
+    font-weight: 600;
+  }
+
+  .step-item .step-label.pending {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  .step-item .step-check {
+    margin-left: auto;
+    color: #059669;
+    font-size: 0.85rem;
+  }
+
+  /* ============================================
+     PENDING ACTIONS - Gold Theme
+     ============================================ */
+  .pending-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pending-actions .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: skewX(-20deg);
+    transition: var(--transition, 0.6s ease);
+  }
+
+  .btn-primary:hover::before {
+    left: 100%;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
+  }
+
+  .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+    transform: translateY(-2px);
+  }
+
+  .btn-outline i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  /* ============================================
+     FOOTER NOTE
+     ============================================ */
+  .pending-footer-note {
+    font-size: 0.72rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  .pending-footer-note i {
+    color: var(--primary-gold, #C9A84B);
+    margin-right: 4px;
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
+    .auth-container {
+      padding: 32px 24px 28px;
+    }
+
+    .auth-header .auth-icon-wrapper {
+      width: 60px;
+      height: 60px;
+      font-size: 1.6rem;
+    }
+
+    .auth-header h2 {
+      font-size: 1.4rem;
+    }
+
+    .pending-icon {
+      width: 80px;
+      height: 80px;
+      font-size: 2.4rem;
+    }
+
+    .pending-actions {
+      flex-direction: column;
+    }
+
+    .pending-actions .btn {
+      min-width: unset;
+    }
+
+    .corner-accent {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .auth-container {
+      padding: 24px 16px 20px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .auth-header .auth-icon-wrapper {
+      width: 52px;
+      height: 52px;
+      font-size: 1.4rem;
+    }
+
+    .auth-header h2 {
+      font-size: 1.2rem;
+    }
+
+    .auth-header p {
+      font-size: 0.82rem;
+    }
+
+    .pending-icon {
+      width: 64px;
+      height: 64px;
+      font-size: 2rem;
+    }
+
+    .pending-content h3 {
+      font-size: 1.05rem;
+    }
+
+    .pending-content p {
+      font-size: 0.85rem;
+    }
+
+    .status-steps {
+      padding: 12px 14px;
+    }
+
+    .step-item .step-label {
+      font-size: 0.75rem;
+    }
+
+    .pending-actions .btn {
+      font-size: 0.82rem;
+      padding: 10px 16px;
+    }
+
+    .corner-accent {
+      display: none;
+    }
+
+    .pending-footer-note {
+      font-size: 0.68rem;
+    }
+  }
+
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
+  [data-theme="dark"] .auth-container {
+    background: rgba(37, 52, 73, 0.85);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .auth-container::before {
+    background: linear-gradient(90deg, transparent, var(--primary-gold, #C9A84B), transparent);
+  }
+
+  [data-theme="dark"] .auth-header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .auth-header .auth-icon-wrapper {
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .auth-container:hover .auth-icon-wrapper {
+    border-color: rgba(201, 168, 75, 0.08);
+  }
+
+  [data-theme="dark"] .pending-content h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .pending-content p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .pending-content .text-muted {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .pending-icon {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .status-steps {
+    background: rgba(10, 21, 39, 0.3);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .step-item .step-label {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .step-item .step-label.active {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .btn-primary {
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.12);
+  }
+
+  [data-theme="dark"] .btn-primary:hover {
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.2);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .pending-footer-note {
+    border-top-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .pending-footer-note i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .auth-header p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .pending-icon::after {
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+</style>
+
 <div class="auth-page">
-    <div class="auth-container glass-morphism text-center">
-        <div class="auth-header">
-            <i class="fas fa-clock auth-icon" style="color: var(--warning);"></i>
-            <h2>Account Pending Approval</h2>
-            <p>Your account is waiting for admin approval</p>
-        </div>
-        
-        <div class="pending-content">
-            <div class="pending-icon">
-                <i class="fas fa-hourglass-half"></i>
-            </div>
-            <h3>Thank you for registering!</h3>
-            <p>Your account has been created successfully. An admin needs to approve your account before you can access the courses.</p>
-            <p class="text-muted">You will receive a notification once your account is approved.</p>
-            
-            <div class="pending-actions">
-                <a href="{{ url_for('logout') }}" class="btn btn-outline">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-                <a href="{{ url_for('login') }}" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i> Check Status
-                </a>
-            </div>
-        </div>
+  <!-- Particles Background -->
+  <div class="particles-container">
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+    <span class="particle"></span>
+  </div>
+
+  <!-- Gradient Orbs -->
+  <div class="orb orb--1"></div>
+  <div class="orb orb--2"></div>
+  <div class="orb orb--3"></div>
+
+  <!-- Pending Approval Container -->
+  <div class="auth-container">
+    <!-- Corner Accents -->
+    <div class="corner-accent corner-accent--tl"></div>
+    <div class="corner-accent corner-accent--tr"></div>
+    <div class="corner-accent corner-accent--bl"></div>
+    <div class="corner-accent corner-accent--br"></div>
+
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="auth-icon-wrapper">
+        <i class="fas fa-clock"></i>
+      </div>
+      <h2>Pending <span>Approval</span></h2>
+      <p>Your account is waiting for admin approval</p>
     </div>
+
+    <!-- Pending Content -->
+    <div class="pending-content">
+      <!-- Animated Hourglass -->
+      <div class="pending-icon">
+        <i class="fas fa-hourglass-half"></i>
+      </div>
+
+      <h3>Thank you for registering!</h3>
+      <p>Your account has been created successfully. An admin needs to approve your account before you can access the courses.</p>
+      <p class="text-muted">You will receive a notification once your account is approved.</p>
+
+      <!-- Loading Dots -->
+      <div class="loading-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <!-- Status Steps -->
+      <div class="status-steps">
+        <div class="step-item">
+          <span class="step-dot completed"></span>
+          <span class="step-label completed">Account created</span>
+          <span class="step-check"><i class="fas fa-check-circle"></i></span>
+        </div>
+        <div class="step-item">
+          <span class="step-dot active"></span>
+          <span class="step-label active">Waiting for admin approval</span>
+        </div>
+        <div class="step-item">
+          <span class="step-dot pending"></span>
+          <span class="step-label pending">Access granted</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="pending-actions">
+        <a href="{{ url_for('logout') }}" class="btn btn-outline">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary">
+          <i class="fas fa-sync-alt"></i> Check Status
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer Note -->
+    <div class="pending-footer-note">
+      <i class="fas fa-info-circle"></i> You will be notified once your account is approved.
+    </div>
+  </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ============================================
+    // COOL ENTRY ANIMATION FOR ELEMENTS
+    // ============================================
+    const elements = document.querySelectorAll('.pending-content > *:not(.status-steps)');
+    elements.forEach((el, index) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(15px)';
+      setTimeout(() => {
+        el.style.transition = 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 300 + index * 80);
+    });
+
+    // Status steps animation
+    const steps = document.querySelectorAll('.step-item');
+    steps.forEach((step, index) => {
+      step.style.opacity = '0';
+      step.style.transform = 'translateX(-10px)';
+      setTimeout(() => {
+        step.style.transition = 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+        step.style.opacity = '1';
+        step.style.transform = 'translateX(0)';
+      }, 500 + index * 100);
+    });
+
+    console.log('✨ Pending Approval Page - Gold Theme Loaded!');
+  });
+</script>
 {% endblock %}

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}{{ course.name }} - Awwalu Devs{% endblock %}
+{% block title %}{{ course.name }} - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     COURSE VIEW - Premium Theme
+     COURSE VIEW - Premium Navy + Gold Theme
      ============================================ */
   .course-page {
     max-width: 1200px;
@@ -13,12 +13,14 @@
     padding: 0;
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .course-header {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 28px 32px;
     margin-bottom: 28px;
     transition: var(--transition, 0.3s ease);
@@ -35,12 +37,25 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .course-header::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .course-header:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   .course-header-top {
@@ -60,7 +75,7 @@
   .course-header-info h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0 0 4px;
     display: flex;
     align-items: center;
@@ -68,7 +83,7 @@
   }
 
   .course-header-info h1 i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .course-header-info .course-meta {
@@ -77,33 +92,38 @@
     gap: 16px;
     flex-wrap: wrap;
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .course-header-info .course-meta .meta-item {
     display: flex;
     align-items: center;
     gap: 4px;
-    background: var(--bg, #F8FAFC);
+    background: rgba(201, 168, 75, 0.02);
     padding: 2px 12px;
     border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .course-header-info .course-meta .meta-item i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.75rem;
   }
 
   .course-header-info .course-meta .course-code {
     font-weight: 600;
-    color: var(--blue, #2563EB);
-    background: rgba(37, 99, 235, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.06);
     padding: 2px 14px;
     border-radius: 100px;
     font-family: 'Inter', monospace;
     letter-spacing: 0.03em;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
+  /* ============================================
+     COURSE PROGRESS - Gold Theme
+     ============================================ */
   .course-progress-large {
     margin-top: 12px;
     max-width: 400px;
@@ -114,17 +134,17 @@
     justify-content: space-between;
     font-size: 0.78rem;
     font-weight: 600;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin-bottom: 4px;
   }
 
   .course-progress-large .progress-label .percentage {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .course-progress-large .progress-track {
     height: 6px;
-    background: rgba(15, 23, 42, 0.06);
+    background: rgba(201, 168, 75, 0.06);
     border-radius: 6px;
     overflow: hidden;
   }
@@ -132,11 +152,14 @@
   .course-progress-large .progress-track .fill {
     height: 100%;
     border-radius: 6px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     width: 0%;
   }
 
+  /* ============================================
+     BACK BUTTON - Gold Theme
+     ============================================ */
   .btn-back {
     display: inline-flex;
     align-items: center;
@@ -146,41 +169,47 @@
     font-weight: 600;
     font-size: 0.82rem;
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
     flex-shrink: 0;
   }
 
   .btn-back:hover {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
   }
 
   .btn-back i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Course Content */
+  /* ============================================
+     COURSE CONTENT - Gold Theme
+     ============================================ */
   .course-content {
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
   }
 
-  /* Notes Section */
+  /* ============================================
+     NOTES SECTION - Gold Theme
+     ============================================ */
   .notes-section {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 24px 28px 28px;
     transition: var(--transition, 0.3s ease);
   }
 
   .notes-section:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   .section-header {
@@ -195,7 +224,7 @@
   .section-header h2 {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
     display: flex;
     align-items: center;
@@ -203,18 +232,22 @@
   }
 
   .section-header h2 i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .section-header .note-count {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
-    background: var(--bg, #F8FAFC);
+    color: var(--text-muted, #8A94A6);
+    background: rgba(201, 168, 75, 0.02);
     padding: 2px 12px;
     border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
+  /* ============================================
+     SEARCH & FILTER - Gold Theme
+     ============================================ */
   .search-filter {
     display: flex;
     gap: 10px;
@@ -224,28 +257,28 @@
   .search-filter .form-control {
     padding: 8px 14px;
     border-radius: var(--radius-sm, 8px);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
-    background: var(--bg, #F8FAFC);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
+    background: var(--primary-bg, #0A1527);
     font-size: 0.82rem;
     font-family: 'Inter', sans-serif;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
     outline: none;
     min-width: 150px;
   }
 
   .search-filter .form-control:focus {
-    border-color: var(--blue, #2563EB);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.06);
-    background: var(--white, #FFFFFF);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   .search-filter .form-control::placeholder {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
   .search-filter select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     padding-right: 34px;
@@ -255,9 +288,13 @@
 
   .search-filter select.form-control option {
     padding: 6px;
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
   }
 
-  /* Notes List */
+  /* ============================================
+     NOTES LIST - Gold Theme
+     ============================================ */
   .notes-list {
     display: flex;
     flex-direction: column;
@@ -265,17 +302,17 @@
   }
 
   .note-item {
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     border-radius: var(--radius-sm, 10px);
     padding: 18px 20px;
-    border: 1px solid rgba(15, 23, 42, 0.03);
+    border: 1px solid rgba(201, 168, 75, 0.02);
     transition: var(--transition, 0.3s ease);
   }
 
   .note-item:hover {
-    background: var(--white, #FFFFFF);
-    border-color: rgba(37, 99, 235, 0.06);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.06);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     transform: translateX(4px);
   }
 
@@ -291,18 +328,18 @@
   .note-item-header h3 {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
   }
 
   .note-item-header h3 a {
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
   }
 
   .note-item-header h3 a:hover {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .note-item-header .badge-new {
@@ -312,14 +349,20 @@
     letter-spacing: 0.04em;
     padding: 1px 10px;
     border-radius: 100px;
-    background: linear-gradient(135deg, #059669, #34D399);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
     margin-left: 6px;
+    animation: goldPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes goldPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 75, 0); }
+    50% { box-shadow: 0 0 40px rgba(201, 168, 75, 0.1); }
   }
 
   .note-item-header .note-date {
     font-size: 0.75rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     white-space: nowrap;
   }
 
@@ -334,11 +377,11 @@
   .note-item-meta .tag-badge {
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--blue, #2563EB);
-    background: rgba(37, 99, 235, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.06);
     padding: 1px 12px;
     border-radius: 100px;
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .note-item-meta .file-indicator {
@@ -355,13 +398,16 @@
 
   .note-item-meta .note-author {
     font-size: 0.7rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
   .note-item-actions {
     margin-top: 2px;
   }
 
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
   .btn-sm {
     display: inline-flex;
     align-items: center;
@@ -377,18 +423,20 @@
   }
 
   .btn-primary-sm {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
   }
 
   .btn-primary-sm:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
     color: var(--white, #FFFFFF);
   }
 
-  /* Empty State */
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
   .empty-state {
     text-align: center;
     padding: 40px 20px;
@@ -396,42 +444,48 @@
 
   .empty-state i {
     font-size: 2.5rem;
-    color: var(--text-muted, #94A3B8);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
   }
 
   .empty-state p {
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.95rem;
     margin: 0;
   }
 
   .empty-state .text-muted {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.85rem;
     margin-top: 4px;
   }
 
-  /* No results */
+  /* ============================================
+     NO RESULTS - Gold Theme
+     ============================================ */
   .no-results {
     text-align: center;
     padding: 30px 20px;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
   .no-results i {
     font-size: 1.5rem;
     margin-bottom: 8px;
     opacity: 0.3;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .no-results p {
     font-size: 0.9rem;
     margin: 0;
+    color: var(--text-gray, #C8CED8);
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -443,7 +497,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .course-header {
       padding: 20px 18px;
@@ -610,14 +666,16 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .course-header {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .course-header::before {
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .course-header-info h1 {
@@ -625,18 +683,20 @@
   }
 
   [data-theme="dark"] .course-header-info .course-meta .meta-item {
-    background: rgba(255, 255, 255, 0.02);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.02);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .course-header-info .course-meta .course-code {
-    background: rgba(37, 99, 235, 0.12);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .notes-section {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .section-header h2 {
@@ -644,43 +704,44 @@
   }
 
   [data-theme="dark"] .section-header .note-count {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.02);
+    color: var(--text-muted, #8A94A6);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .search-filter .form-control {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.06);
-    color: var(--white, #FFFFFF);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .search-filter .form-control:focus {
-    border-color: var(--cyan, #22D3EE);
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.06);
-    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   [data-theme="dark"] .search-filter .form-control::placeholder {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .search-filter select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   }
 
   [data-theme="dark"] .search-filter select.form-control option {
-    background: var(--white, #1E293B);
-    color: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .note-item {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.03);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .note-item:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(37, 99, 235, 0.1);
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .note-item-header h3 {
@@ -692,59 +753,84 @@
   }
 
   [data-theme="dark"] .note-item-header h3 a:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .note-item-header .note-date {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .note-item-meta .tag-badge {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.06);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .note-item-meta .note-author {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .btn-back {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .btn-back:hover {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-back i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .course-progress-large .progress-track {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .course-progress-large .progress-label .percentage {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .empty-state p {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .empty-state .text-muted {
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .note-item-header .badge-new {
-    background: linear-gradient(135deg, #059669, #34D399);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .btn-primary-sm {
-    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
   }
 
   [data-theme="dark"] .btn-primary-sm:hover {
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
+  }
+
+  [data-theme="dark"] .no-results p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .no-results i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .course-header-info .course-meta .meta-item i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .section-header h2 i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .course-header-info h1 i {
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -898,6 +984,21 @@
         fill.style.width = target;
       }, 400);
     }
+
+    // ============================================
+    // GOLD THEME - ANIMATE ON LOAD
+    // ============================================
+    const container = document.querySelector('.course-page');
+    if (container) {
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        container.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    console.log('✨ Course View - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

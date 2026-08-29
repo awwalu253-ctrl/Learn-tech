@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Announcements - Awwalu Devs{% endblock %}
+{% block title %}Manage Announcements - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
   /* ============================================
-     MANAGE ANNOUNCEMENTS - Premium Navy + Blue Theme
+     MANAGE ANNOUNCEMENTS - Premium Navy + Gold Theme
      ============================================ */
   .manage-announcements {
     max-width: 1360px;
@@ -13,7 +13,9 @@
     padding: 0;
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -35,24 +37,25 @@
     width: 48px;
     height: 48px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
     letter-spacing: -0.02em;
   }
 
   .page-header h1 span {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,7 +63,7 @@
 
   .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
   }
 
@@ -78,26 +81,28 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
-    color: var(--white);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
     text-decoration: none;
-    transition: var(--transition);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
+    transition: var(--transition, 0.3s ease);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
     border: none;
     cursor: pointer;
   }
 
   .btn-create:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.3);
-    color: var(--white);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
   }
 
   .btn-create i {
     font-size: 0.9em;
   }
 
-  /* Stats Row */
+  /* ============================================
+     STATS ROW - Gold Theme
+     ============================================ */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -108,11 +113,11 @@
   }
 
   .stat-mini {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 16px 18px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     display: flex;
     align-items: center;
     gap: 14px;
@@ -120,8 +125,9 @@
   }
 
   .stat-mini:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .stat-mini .stat-icon {
@@ -135,19 +141,19 @@
     flex-shrink: 0;
   }
 
-  .stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
+  .stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.cyan {
-    background: rgba(34, 211, 238, 0.08);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.purple {
-    background: rgba(124, 58, 237, 0.08);
-    color: #7C3AED;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.green {
@@ -158,24 +164,26 @@
   .stat-mini .stat-number {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
   }
 
   .stat-mini .stat-label {
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* Announcement Card */
+  /* ============================================
+     ANNOUNCEMENT CARD - Gold Theme
+     ============================================ */
   .announcement-card {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 24px 28px;
     margin-bottom: 16px;
     transition: var(--transition, 0.3s ease);
@@ -192,14 +200,14 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     opacity: 0;
-    transition: var(--transition);
+    transition: var(--transition, 0.3s ease);
   }
 
   .announcement-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
-    border-color: rgba(37, 99, 235, 0.06);
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.06);
     transform: translateY(-2px);
   }
 
@@ -208,13 +216,13 @@
   }
 
   .announcement-card.pinned {
-    border-left: 4px solid var(--blue, #2563EB);
-    background: rgba(37, 99, 235, 0.02);
+    border-left: 4px solid var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .announcement-card.pinned::before {
     opacity: 1;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   .announcement-card:nth-child(1) { animation-delay: 0.05s; }
@@ -223,7 +231,9 @@
   .announcement-card:nth-child(4) { animation-delay: 0.20s; }
   .announcement-card:nth-child(5) { animation-delay: 0.25s; }
 
-  /* Card Header */
+  /* ============================================
+     CARD HEADER - Gold Theme
+     ============================================ */
   .announcement-header {
     display: flex;
     justify-content: space-between;
@@ -242,7 +252,7 @@
   .announcement-title h3 {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--navy);
+    color: var(--white, #FFFFFF);
     margin: 0;
   }
 
@@ -256,14 +266,14 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .announcement-meta {
     font-size: 0.78rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #8A94A6);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -279,17 +289,20 @@
 
   .announcement-meta .meta-item i {
     font-size: 0.7rem;
+    color: var(--primary-gold, #C9A84B);
     opacity: 0.7;
   }
 
   .announcement-meta .author-name {
     font-weight: 500;
-    color: var(--text-light);
+    color: var(--text-gray, #C8CED8);
   }
 
-  /* Card Content */
+  /* ============================================
+     CARD CONTENT - Gold Theme
+     ============================================ */
   .announcement-content {
-    color: var(--text-light);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.92rem;
     line-height: 1.7;
     margin: 8px 0 14px;
@@ -303,13 +316,15 @@
     margin-bottom: 0;
   }
 
-  /* Card Actions */
+  /* ============================================
+     CARD ACTIONS - Gold Theme
+     ============================================ */
   .announcement-actions {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
     padding-top: 14px;
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .btn-sm {
@@ -332,23 +347,25 @@
   }
 
   .btn-pin {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .btn-pin:hover {
-    background: var(--blue, #2563EB);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
     transform: translateY(-1px);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.2);
   }
 
   .btn-unpin {
-    background: rgba(15, 23, 42, 0.04);
-    color: var(--text-muted);
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
   }
 
   .btn-unpin:hover {
-    background: rgba(15, 23, 42, 0.08);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-1px);
   }
 
@@ -359,36 +376,39 @@
 
   .btn-delete:hover {
     background: #EF4444;
-    color: white;
+    color: var(--white, #FFFFFF);
     transform: translateY(-1px);
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
   }
 
-  /* Empty State */
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
   .empty-state {
     text-align: center;
     padding: 60px 20px;
-    background: var(--white);
-    border-radius: var(--radius);
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
   }
 
   .empty-state i {
     font-size: 3rem;
-    color: var(--text-muted);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
   }
 
   .empty-state h3 {
     font-size: 1.1rem;
-    color: var(--text);
+    color: var(--white, #FFFFFF);
     margin-bottom: 4px;
   }
 
   .empty-state p {
-    color: var(--text-light);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.9rem;
   }
 
@@ -399,24 +419,30 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
-    color: var(--white);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
     text-decoration: none;
-    transition: var(--transition);
+    transition: var(--transition, 0.3s ease);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
   }
 
   .empty-state .empty-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% { opacity: 0; transform: translateY(16px); }
     100% { opacity: 1; transform: translateY(0); }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -558,10 +584,12 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .stat-mini {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .stat-mini .stat-number {
@@ -569,12 +597,12 @@
   }
 
   [data-theme="dark"] .announcement-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .announcement-card:hover {
-    border-color: rgba(37, 99, 235, 0.1);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .announcement-title h3 {
@@ -582,38 +610,39 @@
   }
 
   [data-theme="dark"] .announcement-content {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .announcement-meta {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .announcement-meta .author-name {
-    color: var(--text-light, #94A3B8);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .announcement-actions {
-    border-top-color: rgba(255, 255, 255, 0.04);
+    border-top-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .btn-pin {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-pin:hover {
-    background: var(--blue, #2563EB);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
   }
 
   [data-theme="dark"] .btn-unpin {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted);
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .btn-unpin:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-delete {
@@ -623,12 +652,12 @@
 
   [data-theme="dark"] .btn-delete:hover {
     background: #EF4444;
-    color: white;
+    color: var(--white, #FFFFFF);
   }
 
   [data-theme="dark"] .empty-state {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .empty-state h3 {
@@ -636,7 +665,7 @@
   }
 
   [data-theme="dark"] .empty-state p {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .page-header h1 {
@@ -644,13 +673,18 @@
   }
 
   [data-theme="dark"] .announcement-card.pinned {
-    background: rgba(37, 99, 235, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-left-color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .pin-badge {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.06);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .announcement-meta .meta-item i {
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 {% endblock %}
@@ -678,7 +712,7 @@
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-mini">
-      <div class="stat-icon blue"><i class="fas fa-bullhorn"></i></div>
+      <div class="stat-icon gold"><i class="fas fa-bullhorn"></i></div>
       <div>
         <div class="stat-number">{{ announcements|length }}</div>
         <div class="stat-label">Total Announcements</div>
@@ -786,6 +820,15 @@
         setTimeout(() => msg.remove(), 300);
       });
     }, 5000);
+
+    // Add hover animation to stat cards
+    document.querySelectorAll('.stat-mini').forEach(stat => {
+      stat.addEventListener('mouseenter', function() {
+        this.style.transition = 'all 0.3s ease';
+      });
+    });
+
+    console.log('✨ Manage Announcements - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

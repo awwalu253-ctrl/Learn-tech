@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Reject Student - Awwalu Devs{% endblock %}
+{% block title %}Reject Student - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     REJECT STUDENT - Premium Theme
+     REJECT STUDENT - Premium Navy + Gold Theme
      ============================================ */
   .reject-page {
     max-width: 600px;
@@ -13,12 +13,14 @@
     padding: 0;
   }
 
-  /* Container */
+  /* ============================================
+     CONTAINER - Gold Theme with Danger Accent
+     ============================================ */
   .reject-container {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
     padding: 40px 40px 36px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
@@ -35,14 +37,29 @@
     right: 0;
     height: 4px;
     background: linear-gradient(90deg, #EF4444, #DC2626);
-    opacity: 0.6;
+    opacity: 0.8;
+  }
+
+  .reject-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .reject-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme with Danger Accent
+     ============================================ */
   .reject-header {
     text-align: center;
     margin-bottom: 32px;
@@ -53,24 +70,26 @@
     height: 72px;
     margin: 0 auto 16px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.06));
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(201, 168, 75, 0.04));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
     color: #EF4444;
     transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(239, 68, 68, 0.06);
   }
 
   .reject-container:hover .icon-wrapper {
     transform: scale(1.04) rotate(-2deg);
     box-shadow: 0 4px 20px rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.08);
   }
 
   .reject-header h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0 0 4px;
   }
@@ -85,22 +104,24 @@
   .reject-header .student-name {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     margin: 0;
   }
 
   .reject-header .student-name i {
-    color: #EF4444;
+    color: var(--primary-gold, #C9A84B);
     margin-right: 4px;
   }
 
   .reject-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 4px 0 0;
   }
 
-  /* Warning Box */
+  /* ============================================
+     WARNING BOX - Danger Theme
+     ============================================ */
   .warning-box {
     background: rgba(239, 68, 68, 0.04);
     border: 1px solid rgba(239, 68, 68, 0.08);
@@ -121,7 +142,7 @@
 
   .warning-box .warning-text {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     line-height: 1.6;
   }
 
@@ -129,7 +150,9 @@
     color: #EF4444;
   }
 
-  /* Form */
+  /* ============================================
+     FORM - Gold Theme
+     ============================================ */
   .reject-form {
     display: flex;
     flex-direction: column;
@@ -145,14 +168,14 @@
   .form-group label {
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .form-group label i {
-    color: #EF4444;
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.85rem;
     width: 18px;
     text-align: center;
@@ -168,11 +191,11 @@
     width: 100%;
     padding: 12px 16px;
     border-radius: var(--radius-sm, 10px);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
-    background: var(--bg, #F8FAFC);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
+    background: var(--primary-bg, #0A1527);
     font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
     outline: none;
     appearance: none;
@@ -181,17 +204,22 @@
   .form-control:focus {
     border-color: #EF4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
-    background: var(--white, #FFFFFF);
+    background: var(--primary-bg, #0A1527);
   }
 
   .form-control::placeholder {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.85rem;
   }
 
   .form-control.error {
     border-color: #EF4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+  }
+
+  .form-control.error:focus {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
   }
 
   textarea.form-control {
@@ -202,7 +230,7 @@
   }
 
   select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     padding-right: 40px;
@@ -211,14 +239,18 @@
 
   select.form-control option {
     padding: 8px;
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
   }
 
-  /* Character Counter */
+  /* ============================================
+     CHARACTER COUNTER - Gold Theme
+     ============================================ */
   .char-counter {
     display: flex;
     justify-content: flex-end;
     font-size: 0.7rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     margin-top: 4px;
   }
 
@@ -227,14 +259,32 @@
   }
 
   .char-counter .count.warning {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .char-counter .count.danger {
     color: #EF4444;
   }
 
-  /* Buttons */
+  /* ============================================
+     ERROR MESSAGE
+     ============================================ */
+  .error-message {
+    font-size: 0.78rem;
+    color: #EF4444;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .error-message i {
+    font-size: 0.7rem;
+  }
+
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -275,14 +325,15 @@
 
   .btn-outline {
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
     margin-top: 8px;
   }
 
   .btn-outline:hover {
-    background: rgba(15, 23, 42, 0.02);
+    background: rgba(201, 168, 75, 0.04);
     border-color: #EF4444;
+    color: #EF4444;
     transform: translateY(-2px);
   }
 
@@ -294,7 +345,9 @@
     width: 100%;
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -306,7 +359,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .reject-container {
       padding: 28px 20px 24px;
@@ -397,12 +452,23 @@
     .warning-box .warning-text {
       font-size: 0.78rem;
     }
+
+    select.form-control {
+      background-position: right 12px center;
+      padding-right: 34px;
+    }
+
+    select.form-control option {
+      background: var(--secondary-bg, #253449);
+    }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .reject-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .reject-container::before {
@@ -414,59 +480,75 @@
   }
 
   [data-theme="dark"] .reject-header .student-name {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .reject-header .icon-wrapper {
-    background: rgba(239, 68, 68, 0.12);
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.06);
+  }
+
+  [data-theme="dark"] .reject-container:hover .icon-wrapper {
+    border-color: rgba(239, 68, 68, 0.08);
   }
 
   [data-theme="dark"] .form-group label {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-control {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.06);
-    color: var(--white, #FFFFFF);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-control:focus {
     border-color: #EF4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--primary-bg, #0A1527);
   }
 
   [data-theme="dark"] .form-control::placeholder {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .form-control.error {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+  }
+
+  [data-theme="dark"] .form-control.error:focus {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16) !important;
   }
 
   [data-theme="dark"] select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   }
 
   [data-theme="dark"] select.form-control option {
-    background: var(--white, #1E293B);
-    color: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .warning-box {
-    background: rgba(239, 68, 68, 0.06);
+    background: rgba(239, 68, 68, 0.04);
     border-color: rgba(239, 68, 68, 0.08);
   }
 
   [data-theme="dark"] .warning-box .warning-text {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .btn-outline {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.04);
     border-color: #EF4444;
+    color: #EF4444;
   }
 
   [data-theme="dark"] .btn-outline i {
@@ -474,7 +556,11 @@
   }
 
   [data-theme="dark"] .char-counter {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .char-counter .count.warning {
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-danger {
@@ -483,6 +569,18 @@
 
   [data-theme="dark"] .btn-danger:hover {
     box-shadow: 0 4px 28px rgba(239, 68, 68, 0.2);
+  }
+
+  [data-theme="dark"] .reject-header .subtitle {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .reject-header .student-name i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .form-group label i {
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -523,7 +621,7 @@
             <option value="{{ course.id }}">{{ course.name }} ({{ course.code }})</option>
           {% endfor %}
         </select>
-        <div class="error-message" id="courseError" style="display: none; font-size:0.78rem; color:#EF4444; margin-top:4px;">
+        <div class="error-message" id="courseError" style="display: none;">
           <i class="fas fa-exclamation-circle"></i> Please select a course
         </div>
       </div>
@@ -569,7 +667,9 @@
     const courseError = document.getElementById('courseError');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Character counter
+    // ============================================
+    // CHARACTER COUNTER - Gold Theme
+    // ============================================
     if (messageInput && charCount) {
       messageInput.addEventListener('input', function() {
         const len = this.value.length;
@@ -578,7 +678,19 @@
       });
     }
 
-    // Remove error on change
+    // ============================================
+    // AUTO-RESIZE TEXTAREA
+    // ============================================
+    if (messageInput) {
+      messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+      });
+    }
+
+    // ============================================
+    // REMOVE ERROR ON CHANGE
+    // ============================================
     courseSelect.addEventListener('change', function() {
       this.classList.remove('error');
       courseError.style.display = 'none';
@@ -588,7 +700,9 @@
       this.classList.remove('error');
     });
 
-    // Form validation
+    // ============================================
+    // FORM VALIDATION
+    // ============================================
     form.addEventListener('submit', function(e) {
       let isValid = true;
 
@@ -628,6 +742,30 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
     });
+
+    // ============================================
+    // KEYBOARD SHORTCUT: Ctrl+Enter to submit
+    // ============================================
+    messageInput.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'Enter') {
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    // ============================================
+    // GOLD THEME - ANIMATE ON LOAD
+    // ============================================
+    const container = document.querySelector('.reject-container');
+    if (container) {
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        container.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    console.log('✨ Reject Student - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

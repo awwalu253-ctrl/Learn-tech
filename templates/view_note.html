@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}{{ note.title }} - Awwalu Devs{% endblock %}
+{% block title %}{{ note.title }} - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     VIEW NOTE - Premium Theme
+     VIEW NOTE - Premium Navy + Gold Theme
      ============================================ */
   .view-note-page {
     max-width: 900px;
@@ -13,12 +13,14 @@
     padding: 0;
   }
 
-  /* Container */
+  /* ============================================
+     CONTAINER - Gold Theme
+     ============================================ */
   .note-container {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
     padding: 40px 44px 36px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
@@ -34,15 +36,30 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .note-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .note-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
-  /* Header / Navigation */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .note-header {
     display: flex;
     flex-wrap: wrap;
@@ -51,7 +68,7 @@
     gap: 12px;
     margin-bottom: 20px;
     padding-bottom: 16px;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .note-nav {
@@ -69,20 +86,21 @@
     font-weight: 600;
     font-size: 0.82rem;
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
   }
 
   .btn-back:hover {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
   }
 
   .btn-back i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .note-meta {
@@ -97,25 +115,26 @@
     align-items: center;
     gap: 4px;
     font-size: 0.78rem;
-    color: var(--text-muted, #94A3B8);
-    background: var(--bg, #F8FAFC);
+    color: var(--text-muted, #8A94A6);
+    background: rgba(201, 168, 75, 0.02);
     padding: 4px 12px;
     border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .note-meta .meta-item i {
     font-size: 0.7rem;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .tag-badge {
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--blue, #2563EB);
-    background: rgba(37, 99, 235, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.06);
     padding: 4px 12px;
     border-radius: 100px;
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -133,27 +152,37 @@
     letter-spacing: 0.04em;
     padding: 2px 12px;
     border-radius: 100px;
-    background: linear-gradient(135deg, #059669, #34D399);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    animation: goldPulse 2s ease-in-out infinite;
   }
 
-  /* Title */
+  @keyframes goldPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 75, 0); }
+    50% { box-shadow: 0 0 40px rgba(201, 168, 75, 0.1); }
+  }
+
+  /* ============================================
+     TITLE - Gold Theme
+     ============================================ */
   .note-title {
     font-size: 1.8rem;
     font-weight: 800;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0 0 20px;
   }
 
-  /* Content */
+  /* ============================================
+     CONTENT - Gold Theme
+     ============================================ */
   .note-content {
     font-size: 1rem;
     line-height: 1.8;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     padding: 20px 0 16px;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .note-content p {
@@ -168,7 +197,7 @@
   .note-content h2,
   .note-content h3,
   .note-content h4 {
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 1.5em 0 0.5em;
     font-weight: 700;
     letter-spacing: -0.01em;
@@ -189,35 +218,38 @@
   }
 
   .note-content blockquote {
-    border-left: 4px solid var(--blue, #2563EB);
+    border-left: 4px solid var(--primary-gold, #C9A84B);
     padding: 0.8em 1.2em;
     margin: 0 0 1.2em;
-    background: rgba(37, 99, 235, 0.03);
+    background: rgba(201, 168, 75, 0.02);
     border-radius: 0 var(--radius-sm, 8px) var(--radius-sm, 8px) 0;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .note-content pre {
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     padding: 1em 1.2em;
     border-radius: var(--radius-sm, 8px);
     overflow-x: auto;
     font-size: 0.9rem;
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.02);
     margin: 0 0 1.2em;
+    color: var(--text-gray, #C8CED8);
   }
 
   .note-content code {
     font-family: 'Inter', monospace;
-    background: rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.06);
     padding: 0.1em 0.4em;
     border-radius: 4px;
     font-size: 0.9em;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .note-content pre code {
     background: transparent;
     padding: 0;
+    color: var(--text-gray, #C8CED8);
   }
 
   .note-content img {
@@ -228,13 +260,13 @@
   }
 
   .note-content a {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
   }
 
   .note-content a:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--dark-gold, #8F7E48);
     text-decoration: underline;
   }
 
@@ -248,57 +280,66 @@
   .note-content table th,
   .note-content table td {
     padding: 0.6em 1em;
-    border: 1px solid rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     text-align: left;
   }
 
   .note-content table th {
-    background: var(--bg, #F8FAFC);
+    background: rgba(201, 168, 75, 0.02);
     font-weight: 600;
+    color: var(--white, #FFFFFF);
   }
 
-  /* Attachment */
+  .note-content table td {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  /* ============================================
+     ATTACHMENT - Gold Theme
+     ============================================ */
   .note-attachment {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 14px 18px;
     margin-top: 18px;
-    background: rgba(37, 99, 235, 0.04);
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.02);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     border-radius: var(--radius-sm, 10px);
     transition: var(--transition, 0.3s ease);
   }
 
   .note-attachment:hover {
-    background: rgba(37, 99, 235, 0.06);
-    border-color: rgba(37, 99, 235, 0.1);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   .note-attachment i {
     font-size: 1.1rem;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .note-attachment a {
     font-weight: 600;
     font-size: 0.9rem;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
   }
 
   .note-attachment a:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--dark-gold, #8F7E48);
   }
 
   .note-attachment .file-size {
     font-size: 0.75rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     margin-left: auto;
   }
 
-  /* Footer */
+  /* ============================================
+     FOOTER - Gold Theme
+     ============================================ */
   .note-footer {
     display: flex;
     flex-wrap: wrap;
@@ -307,30 +348,30 @@
     gap: 12px;
     margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .note-footer .note-author {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-muted, #8A94A6);
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
   .note-footer .note-author i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.8rem;
   }
 
   .note-footer .note-author strong {
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     font-weight: 600;
   }
 
   .note-footer .note-updated {
     font-size: 0.78rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     display: flex;
     align-items: center;
     gap: 4px;
@@ -338,9 +379,12 @@
 
   .note-footer .note-updated i {
     font-size: 0.7rem;
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -352,7 +396,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .note-container {
       padding: 28px 24px 24px;
@@ -468,14 +514,16 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .note-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .note-container::before {
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .note-title {
@@ -483,7 +531,7 @@
   }
 
   [data-theme="dark"] .note-content {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .note-content h1,
@@ -494,71 +542,83 @@
   }
 
   [data-theme="dark"] .note-content blockquote {
-    background: rgba(37, 99, 235, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.02);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .note-content pre {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.02);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .note-content code {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .note-content pre code {
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .note-content a {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .note-content a:hover {
-    color: var(--blue, #2563EB);
+    color: var(--dark-gold, #8F7E48);
   }
 
   [data-theme="dark"] .note-content table th {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .note-content table td {
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .note-content table th,
   [data-theme="dark"] .note-content table td {
-    border-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .note-meta .meta-item {
-    background: rgba(255, 255, 255, 0.02);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.02);
+    color: var(--text-muted, #8A94A6);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .tag-badge {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.06);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .note-attachment {
-    background: rgba(37, 99, 235, 0.04);
-    border-color: rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .note-attachment:hover {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.1);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .note-attachment a {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .note-attachment a:hover {
-    color: var(--blue, #2563EB);
+    color: var(--dark-gold, #8F7E48);
   }
 
   [data-theme="dark"] .note-footer {
-    border-top-color: rgba(255, 255, 255, 0.04);
+    border-top-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .note-footer .note-author {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .note-footer .note-author strong {
@@ -566,33 +626,50 @@
   }
 
   [data-theme="dark"] .note-footer .note-updated {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .btn-back {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .btn-back:hover {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-back i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .note-header {
-    border-bottom-color: rgba(255, 255, 255, 0.04);
+    border-bottom-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .note-content {
-    border-bottom-color: rgba(255, 255, 255, 0.04);
+    border-bottom-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .badge-new {
-    background: linear-gradient(135deg, #059669, #34D399);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
+
+  [data-theme="dark"] .note-meta .meta-item i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .note-footer .note-author i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .note-footer .note-updated i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .note-attachment i {
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -650,4 +727,51 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ============================================
+    // GOLD THEME - ANIMATE ON LOAD
+    // ============================================
+    const container = document.querySelector('.note-container');
+    if (container) {
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        container.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    // ============================================
+    // COOL ENTRY ANIMATION FOR CONTENT
+    // ============================================
+    const content = document.querySelector('.note-content');
+    if (content) {
+      content.style.opacity = '0';
+      content.style.transform = 'translateY(15px)';
+      setTimeout(() => {
+        content.style.transition = 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+        content.style.opacity = '1';
+        content.style.transform = 'translateY(0)';
+      }, 300);
+    }
+
+    // ============================================
+    // ANIMATE META ITEMS
+    // ============================================
+    const metaItems = document.querySelectorAll('.meta-item, .tag-badge, .badge-new');
+    metaItems.forEach((item, index) => {
+      item.style.opacity = '0';
+      item.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        item.style.transition = 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+        item.style.opacity = '1';
+        item.style.transform = 'scale(1)';
+      }, 200 + index * 80);
+    });
+
+    console.log('✨ View Note - Gold Theme Loaded!');
+  });
+</script>
 {% endblock %}

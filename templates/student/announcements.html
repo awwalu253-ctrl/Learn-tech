@@ -1,82 +1,119 @@
 {% extends "base.html" %}
 
-{% block title %}Announcements - Awwalu Devs{% endblock %}
+{% block title %}Announcements - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
-.announcements-page {
+  /* ============================================
+     ANNOUNCEMENTS - Premium Navy + Gold Theme
+     ============================================ */
+  .announcements-page {
     max-width: 900px;
     margin: 0 auto;
     padding: 0;
-}
+  }
 
-.page-header {
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
+  .page-header {
     margin-bottom: 28px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
+  }
 
-.page-header h1 {
+  .page-header h1 {
     font-size: 1.6rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     display: flex;
     align-items: center;
     gap: 12px;
     margin: 0;
-}
+  }
 
-.page-header h1 i {
-    color: var(--blue, #2563EB);
-}
+  .page-header h1 i {
+    color: var(--primary-gold, #C9A84B);
+  }
 
-.page-header p {
-    color: var(--text-light, #64748B);
+  .page-header p {
+    color: var(--text-gray, #C8CED8);
     margin: 4px 0 0;
-}
+    font-size: 0.95rem;
+  }
 
-.announcement-item {
-    background: var(--white, #FFFFFF);
+  /* ============================================
+     ANNOUNCEMENT ITEM - Gold Theme
+     ============================================ */
+  .announcement-item {
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 24px 28px;
     margin-bottom: 16px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
+    position: relative;
+    overflow: hidden;
+  }
 
-.announcement-item:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
-    border-color: rgba(37, 99, 235, 0.06);
-}
+  .announcement-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0;
+    transition: var(--transition, 0.3s ease);
+  }
 
-.announcement-item.pinned {
-    border-left: 4px solid #F59E0B;
-    background: rgba(245, 158, 11, 0.02);
-}
+  .announcement-item:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.06);
+    transform: translateY(-2px);
+  }
 
-.announcement-item .header {
+  .announcement-item:hover::before {
+    opacity: 1;
+  }
+
+  .announcement-item.pinned {
+    border-left: 4px solid var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.02);
+  }
+
+  .announcement-item.pinned::before {
+    opacity: 1;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
+
+  /* ============================================
+     ANNOUNCEMENT CONTENT - Gold Theme
+     ============================================ */
+  .announcement-item .header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 12px;
     margin-bottom: 6px;
-}
+  }
 
-.announcement-item .header h2 {
+  .announcement-item .header h2 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--navy);
+    color: var(--white, #FFFFFF);
     margin: 0;
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-}
+  }
 
-.pin-label {
+  .pin-label {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -84,104 +121,237 @@
     border-radius: 100px;
     font-size: 0.6rem;
     font-weight: 600;
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-}
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
 
-.announcement-item .meta {
+  .announcement-item .meta {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #8A94A6);
     display: flex;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-}
+  }
 
-.announcement-item .content {
-    color: var(--text-light);
+  .announcement-item .meta i {
+    color: var(--primary-gold, #C9A84B);
+    font-size: 0.7rem;
+  }
+
+  .announcement-item .content {
+    color: var(--text-gray, #C8CED8);
     font-size: 0.95rem;
     line-height: 1.8;
     margin: 10px 0 0;
-}
+  }
 
-.announcement-item .content p {
+  .announcement-item .content p {
     margin: 0 0 10px;
-}
+  }
 
-.announcement-item .content p:last-child {
+  .announcement-item .content p:last-child {
     margin-bottom: 0;
-}
+  }
 
-.empty-state {
+  .announcement-item .content a {
+    color: var(--primary-gold, #C9A84B);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .announcement-item .content a:hover {
+    color: var(--dark-gold, #8F7E48);
+    text-decoration: underline;
+  }
+
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
+  .empty-state {
     text-align: center;
     padding: 60px 20px;
-    background: var(--white);
-    border-radius: var(--radius);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-}
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 14px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
 
-.empty-state i {
+  .empty-state i {
     font-size: 3rem;
-    color: var(--text-muted);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
-}
+  }
 
-.empty-state h3 {
+  .empty-state h3 {
     font-size: 1.1rem;
-    color: var(--text);
+    color: var(--white, #FFFFFF);
     margin-bottom: 4px;
-}
+  }
 
-.empty-state p {
-    color: var(--text-light);
+  .empty-state p {
+    color: var(--text-gray, #C8CED8);
     font-size: 0.9rem;
-}
+  }
 
-@keyframes fadeUp {
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeUp {
     0% { opacity: 0; transform: translateY(16px); }
     100% { opacity: 1; transform: translateY(0); }
-}
+  }
 
-.announcement-item:nth-child(1) { animation-delay: 0.05s; }
-.announcement-item:nth-child(2) { animation-delay: 0.10s; }
-.announcement-item:nth-child(3) { animation-delay: 0.15s; }
+  .announcement-item:nth-child(1) { animation-delay: 0.05s; }
+  .announcement-item:nth-child(2) { animation-delay: 0.10s; }
+  .announcement-item:nth-child(3) { animation-delay: 0.15s; }
+  .announcement-item:nth-child(4) { animation-delay: 0.20s; }
+  .announcement-item:nth-child(5) { animation-delay: 0.25s; }
 
-@media (max-width: 768px) {
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
     .announcements-page {
-        padding: 0 4px;
+      padding: 0 4px;
     }
     
     .announcement-item {
-        padding: 18px 16px;
+      padding: 18px 16px;
     }
     
     .announcement-item .header {
-        flex-direction: column;
+      flex-direction: column;
     }
     
     .announcement-item .header h2 {
-        font-size: 1rem;
+      font-size: 1rem;
     }
     
     .announcement-item .meta {
-        font-size: 0.7rem;
+      font-size: 0.7rem;
     }
-}
 
-@media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.3rem;
+    }
+  }
+
+  @media (max-width: 480px) {
     .announcement-item {
-        padding: 14px 12px;
+      padding: 14px 12px;
     }
     
     .announcement-item .header h2 {
-        font-size: 0.9rem;
+      font-size: 0.9rem;
     }
     
     .announcement-item .content {
-        font-size: 0.85rem;
+      font-size: 0.85rem;
     }
-}
+
+    .page-header h1 {
+      font-size: 1.1rem;
+    }
+
+    .page-header p {
+      font-size: 0.85rem;
+    }
+
+    .empty-state {
+      padding: 40px 16px;
+    }
+
+    .empty-state i {
+      font-size: 2.2rem;
+    }
+
+    .empty-state h3 {
+      font-size: 0.95rem;
+    }
+
+    .empty-state p {
+      font-size: 0.82rem;
+    }
+
+    .pin-label {
+      font-size: 0.5rem;
+      padding: 1px 8px;
+    }
+  }
+
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
+  [data-theme="dark"] .announcement-item {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .announcement-item:hover {
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .announcement-item.pinned {
+    background: rgba(201, 168, 75, 0.02);
+    border-left-color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .announcement-item .header h2 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .announcement-item .content {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .announcement-item .meta {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .announcement-item .meta i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .announcement-item .content a {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .announcement-item .content a:hover {
+    color: var(--dark-gold, #8F7E48);
+  }
+
+  [data-theme="dark"] .pin-label {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .empty-state {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .empty-state h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .page-header p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .announcement-item::before {
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
 </style>
 {% endblock %}
 
@@ -222,4 +392,32 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ============================================
+        // GOLD THEME - ANIMATE ON LOAD
+        // ============================================
+        const container = document.querySelector('.announcements-page');
+        if (container) {
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        // ============================================
+        // ADD HOVER ANIMATION TO ANNOUNCEMENT ITEMS
+        // ============================================
+        document.querySelectorAll('.announcement-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s ease';
+            });
+        });
+
+        console.log('✨ Announcements - Gold Theme Loaded!');
+    });
+</script>
 {% endblock %}

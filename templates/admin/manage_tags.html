@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Tags - Awwalu Devs{% endblock %}
+{% block title %}Manage Tags - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     MANAGE TAGS - Premium Theme
+     MANAGE TAGS - Premium Navy + Gold Theme
      ============================================ */
   .manage-tags {
     max-width: 800px;
@@ -13,7 +13,9 @@
     padding: 0;
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -35,24 +37,25 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0;
   }
 
   .page-header h1 span {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -60,11 +63,13 @@
 
   .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
   }
 
-  /* Stats Row */
+  /* ============================================
+     STATS ROW - Gold Theme
+     ============================================ */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -75,11 +80,11 @@
   }
 
   .stat-mini {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 16px 18px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     display: flex;
     align-items: center;
     gap: 14px;
@@ -87,8 +92,9 @@
   }
 
   .stat-mini:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .stat-mini .stat-icon {
@@ -102,9 +108,9 @@
     flex-shrink: 0;
   }
 
-  .stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue, #2563EB);
+  .stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-icon.green {
@@ -113,40 +119,56 @@
   }
 
   .stat-mini .stat-icon.orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .stat-mini .stat-number {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
   }
 
   .stat-mini .stat-label {
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* Add Tag Card */
+  /* ============================================
+     ADD TAG CARD - Gold Theme
+     ============================================ */
   .add-tag-card {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 24px 28px;
     margin-bottom: 20px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .add-tag-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.6;
   }
 
   .add-tag-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   .add-tag-card .card-header {
@@ -157,14 +179,14 @@
   }
 
   .add-tag-card .card-header i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.2rem;
   }
 
   .add-tag-card .card-header h3 {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
   }
 
@@ -183,24 +205,24 @@
     flex: 1;
     padding: 10px 16px;
     border-radius: var(--radius-sm, 10px);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
-    background: var(--bg, #F8FAFC);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
+    background: var(--primary-bg, #0A1527);
     font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
     outline: none;
     min-width: 0;
   }
 
   .add-tag-form .form-control:focus {
-    border-color: var(--blue, #2563EB);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-    background: var(--white, #FFFFFF);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   .add-tag-form .form-control::placeholder {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.85rem;
   }
 
@@ -212,18 +234,18 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
     border: none;
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
     white-space: nowrap;
   }
 
   .btn-add:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
@@ -231,12 +253,14 @@
     transform: translateY(0);
   }
 
-  /* Table Container */
+  /* ============================================
+     TABLE - Gold Theme
+     ============================================ */
   .table-wrapper {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     overflow: hidden;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
@@ -244,7 +268,7 @@
   }
 
   .table-wrapper:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
   }
 
   .table-scroll {
@@ -259,8 +283,8 @@
   }
 
   .tag-table thead {
-    background: var(--bg, #F8FAFC);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .tag-table thead th {
@@ -270,12 +294,12 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     white-space: nowrap;
   }
 
   .tag-table tbody tr {
-    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
     transition: var(--transition, 0.3s ease);
   }
 
@@ -284,15 +308,18 @@
   }
 
   .tag-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .tag-table tbody td {
     padding: 14px 20px;
     vertical-align: middle;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
+  /* ============================================
+     TAG BADGE - Gold Theme
+     ============================================ */
   .tag-name-cell {
     display: flex;
     align-items: center;
@@ -307,10 +334,16 @@
     border-radius: 100px;
     font-size: 0.85rem;
     font-weight: 600;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
-    color: var(--blue, #2563EB);
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     font-family: 'Inter', monospace;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .tag-badge:hover {
+    background: rgba(201, 168, 75, 0.12);
+    transform: scale(1.02);
   }
 
   .tag-badge i {
@@ -326,20 +359,24 @@
     border-radius: 100px;
     font-size: 0.75rem;
     font-weight: 600;
-    background: rgba(5, 150, 105, 0.06);
-    color: #059669;
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .count-badge i {
     font-size: 0.65rem;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .date-text {
     font-size: 0.82rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
-  /* Action Buttons */
+  /* ============================================
+     ACTION BUTTONS - Gold Theme
+     ============================================ */
   .action-group {
     display: flex;
     align-items: center;
@@ -373,9 +410,12 @@
   .btn-delete:hover {
     background: rgba(239, 68, 68, 0.12);
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
   }
 
-  /* Empty State */
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
   .empty-state {
     text-align: center;
     padding: 48px 20px;
@@ -383,23 +423,25 @@
 
   .empty-state i {
     font-size: 2.5rem;
-    color: var(--text-muted, #94A3B8);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
   }
 
   .empty-state h3 {
     font-size: 1.1rem;
-    color: var(--text, #1E293B);
+    color: var(--white, #FFFFFF);
     margin-bottom: 4px;
   }
 
   .empty-state p {
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.9rem;
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -411,7 +453,14 @@
     }
   }
 
-  /* Responsive */
+  @keyframes goldPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 75, 0); }
+    50% { box-shadow: 0 0 40px rgba(201, 168, 75, 0.1); }
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -560,10 +609,12 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .add-tag-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .add-tag-card .card-header h3 {
@@ -571,48 +622,48 @@
   }
 
   [data-theme="dark"] .add-tag-form .form-control {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.06);
-    color: var(--white, #FFFFFF);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .add-tag-form .form-control:focus {
-    border-color: var(--cyan, #22D3EE);
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   [data-theme="dark"] .add-tag-form .form-control::placeholder {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .table-wrapper {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .tag-table thead {
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .tag-table tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .tag-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.04);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .tag-badge {
-    background: rgba(37, 99, 235, 0.12);
-    border-color: rgba(37, 99, 235, 0.08);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .stat-mini {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .stat-mini .stat-number {
@@ -620,12 +671,18 @@
   }
 
   [data-theme="dark"] .count-badge {
-    background: rgba(5, 150, 105, 0.08);
-    color: #34D399;
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .count-badge i {
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-delete {
     background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
   }
 
   [data-theme="dark"] .btn-delete:hover {
@@ -640,8 +697,26 @@
     color: var(--white, #FFFFFF);
   }
 
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-gray, #C8CED8);
+  }
+
   [data-theme="dark"] .date-text {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .add-tag-card .card-header i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .stat-mini .stat-icon.orange {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 
@@ -662,7 +737,7 @@
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-mini">
-      <div class="stat-icon blue"><i class="fas fa-tags"></i></div>
+      <div class="stat-icon gold"><i class="fas fa-tags"></i></div>
       <div>
         <div class="stat-number">{{ tags|length }}</div>
         <div class="stat-label">Total Tags</div>
@@ -766,7 +841,9 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Confirm delete
+    // ============================================
+    // CONFIRM DELETE
+    // ============================================
     document.querySelectorAll('.confirm-delete').forEach(btn => {
       btn.addEventListener('click', function(e) {
         const tagName = this.closest('tr')?.querySelector('.tag-badge')?.textContent?.trim() || 'this tag';
@@ -776,11 +853,44 @@
       });
     });
 
-    // Auto-focus input on page load
+    // ============================================
+    // AUTO-FOCUS INPUT ON PAGE LOAD
+    // ============================================
     const input = document.querySelector('input[name="name"]');
     if (input) {
       input.focus();
     }
+
+    // ============================================
+    // GOLD THEME - ANIMATE ON LOAD
+    // ============================================
+    const container = document.querySelector('.manage-tags');
+    if (container) {
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        container.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    // ============================================
+    // ADD TAG FORM - ENTER KEY SUPPORT
+    // ============================================
+    const form = document.querySelector('.add-tag-form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        const input = this.querySelector('input[name="name"]');
+        if (input && input.value.trim().length < 2) {
+          e.preventDefault();
+          alert('Tag name must be at least 2 characters.');
+          input.focus();
+          return;
+        }
+      });
+    }
+
+    console.log('✨ Manage Tags - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

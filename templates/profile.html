@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Profile - Awwalu Devs{% endblock %}
+{% block title %}Profile - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     PROFILE PAGE - Premium Theme
+     PROFILE PAGE - Premium Navy + Gold Theme
      ============================================ */
   .profile-page {
     max-width: 1200px;
@@ -13,7 +13,9 @@
     padding: 0;
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .page-header {
     margin-bottom: 32px;
     opacity: 0;
@@ -23,7 +25,7 @@
   .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0;
     display: flex;
@@ -32,7 +34,7 @@
   }
 
   .page-header h1 i {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -40,11 +42,13 @@
 
   .page-header p {
     font-size: 0.9rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 4px 0 0 44px;
   }
 
-  /* Profile Grid */
+  /* ============================================
+     PROFILE GRID
+     ============================================ */
   .profile-grid {
     display: grid;
     grid-template-columns: 340px 1fr;
@@ -54,13 +58,13 @@
   }
 
   /* ============================================
-     PROFILE CARD (Left)
+     PROFILE CARD - Gold Theme
      ============================================ */
   .profile-card {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 32px 24px 28px;
     text-align: center;
     transition: var(--transition, 0.3s ease);
@@ -75,27 +79,47 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .profile-card::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .profile-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
+  /* Avatar */
   .profile-avatar {
     width: 96px;
     height: 96px;
     margin: 0 auto 16px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2.8rem;
     color: var(--white, #FFFFFF);
-    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.2);
     position: relative;
+    animation: avatarFloat 4s ease-in-out infinite;
+  }
+
+  @keyframes avatarFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
 
   .profile-avatar .status-dot {
@@ -106,23 +130,30 @@
     height: 16px;
     border-radius: 50%;
     background: #059669;
-    border: 3px solid var(--white, #FFFFFF);
+    border: 3px solid var(--secondary-bg, #253449);
     box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
+    animation: statusPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes statusPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
   }
 
   .profile-card h2 {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0 0 2px;
   }
 
   .profile-card .profile-email {
     font-size: 0.9rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0 0 16px;
   }
 
+  /* Badges */
   .profile-badges {
     display: flex;
     flex-wrap: wrap;
@@ -144,27 +175,27 @@
   }
 
   .badge-admin {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(34, 211, 238, 0.06));
-    color: var(--blue, #2563EB);
-    border: 1px solid rgba(37, 99, 235, 0.08);
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .badge-student {
-    background: rgba(124, 58, 237, 0.08);
-    color: #7C3AED;
-    border: 1px solid rgba(124, 58, 237, 0.06);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .badge-success {
     background: rgba(5, 150, 105, 0.08);
     color: #059669;
-    border: 1px solid rgba(5, 150, 105, 0.06);
+    border: 1px solid rgba(5, 150, 105, 0.04);
   }
 
   .badge-warning {
     background: rgba(245, 158, 11, 0.08);
     color: #F59E0B;
-    border: 1px solid rgba(245, 158, 11, 0.06);
+    border: 1px solid rgba(245, 158, 11, 0.04);
   }
 
   .badge i {
@@ -177,7 +208,7 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     padding-top: 20px;
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .stat-item {
@@ -188,9 +219,9 @@
     display: block;
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
-    background: linear-gradient(135deg, var(--navy, #0F172A), var(--blue, #2563EB));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -199,13 +230,13 @@
   .stat-item .stat-label {
     font-size: 0.65rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
   /* ============================================
-     SETTINGS CARDS (Right)
+     SETTINGS CARDS - Gold Theme
      ============================================ */
   .profile-settings {
     display: flex;
@@ -214,22 +245,41 @@
   }
 
   .settings-card {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 24px 28px;
+    transition: var(--transition, 0.3s ease);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .settings-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0;
     transition: var(--transition, 0.3s ease);
   }
 
+  .settings-card:hover::before {
+    opacity: 0.6;
+  }
+
   .settings-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   .settings-card h3 {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0 0 6px;
     display: flex;
     align-items: center;
@@ -237,7 +287,7 @@
   }
 
   .settings-card h3 i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.1rem;
     width: 24px;
     text-align: center;
@@ -245,7 +295,7 @@
 
   .settings-card p {
     font-size: 0.88rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0 0 16px;
     padding-left: 34px;
   }
@@ -266,34 +316,37 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
   .btn-outline {
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
   }
 
   .btn-outline:hover {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
   }
 
   .btn-outline i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Account Info Items */
+  /* ============================================
+     ACCOUNT INFO - Gold Theme
+     ============================================ */
   .info-items {
     padding-left: 34px;
     display: flex;
@@ -306,7 +359,7 @@
     justify-content: space-between;
     padding: 4px 0;
     font-size: 0.88rem;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
   }
 
   .info-item:last-child {
@@ -314,12 +367,12 @@
   }
 
   .info-item .info-label {
-    color: var(--text-light, #64748B);
+    color: var(--text-muted, #8A94A6);
     font-weight: 500;
   }
 
   .info-item .info-value {
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     font-weight: 500;
   }
 
@@ -488,27 +541,31 @@
   }
 
   /* ============================================
-     DARK MODE
+     DARK MODE SUPPORT
      ============================================ */
   [data-theme="dark"] .profile-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .profile-card h2 {
     color: var(--white, #FFFFFF);
   }
 
+  [data-theme="dark"] .profile-avatar .status-dot {
+    border-color: var(--secondary-bg, #253449);
+  }
+
   [data-theme="dark"] .stat-item .stat-value {
-    background: linear-gradient(135deg, var(--white, #FFFFFF), var(--blue, #2563EB));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   [data-theme="dark"] .settings-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .settings-card h3 {
@@ -516,33 +573,34 @@
   }
 
   [data-theme="dark"] .settings-card h3 i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .info-item {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
   }
 
   [data-theme="dark"] .info-item .info-value {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .btn-outline {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-outline i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .profile-card::before {
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .page-header h1 {
@@ -550,31 +608,43 @@
   }
 
   [data-theme="dark"] .badge-admin {
-    background: rgba(37, 99, 235, 0.15);
-    border-color: rgba(37, 99, 235, 0.1);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .badge-student {
-    background: rgba(124, 58, 237, 0.12);
-    border-color: rgba(124, 58, 237, 0.08);
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .badge-success {
-    background: rgba(5, 150, 105, 0.12);
-    border-color: rgba(5, 150, 105, 0.08);
+    background: rgba(5, 150, 105, 0.08);
+    border-color: rgba(5, 150, 105, 0.04);
+    color: #34D399;
   }
 
   [data-theme="dark"] .badge-warning {
-    background: rgba(245, 158, 11, 0.12);
-    border-color: rgba(245, 158, 11, 0.08);
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.04);
+    color: #FBBF24;
   }
 
   [data-theme="dark"] .profile-avatar {
-    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.15);
   }
 
-  [data-theme="dark"] .profile-avatar .status-dot {
-    border-color: var(--white, #1E293B);
+  [data-theme="dark"] .page-header p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .settings-card::before {
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
+
+  [data-theme="dark"] .profile-card .profile-email {
+    color: var(--text-gray, #C8CED8);
   }
 </style>
 
@@ -677,6 +747,14 @@
   document.addEventListener('DOMContentLoaded', function() {
     const toggle = document.getElementById('darkModeToggle');
     if (toggle) {
+      // Set initial icon based on current theme
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      if (currentTheme === 'dark') {
+        toggle.innerHTML = '<i class="fas fa-sun"></i> Toggle Dark Mode';
+      } else {
+        toggle.innerHTML = '<i class="fas fa-moon"></i> Toggle Dark Mode';
+      }
+
       toggle.addEventListener('click', function() {
         fetch('{{ url_for("toggle_dark_mode") }}', {
           method: 'POST',
@@ -699,6 +777,42 @@
         });
       });
     }
+
+    // ============================================
+    // COOL ENTRY ANIMATION FOR ELEMENTS
+    // ============================================
+    const cards = document.querySelectorAll('.settings-card');
+    cards.forEach((card, index) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(15px)';
+      setTimeout(() => {
+        card.style.transition = 'all 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, 200 + index * 80);
+    });
+
+    // Stats counter animation
+    const statValues = document.querySelectorAll('.stat-value');
+    statValues.forEach(stat => {
+      const text = stat.textContent;
+      const number = parseInt(text);
+      if (!isNaN(number)) {
+        let current = 0;
+        const increment = Math.ceil(number / 30);
+        const counter = setInterval(() => {
+          current += increment;
+          if (current >= number) {
+            stat.textContent = text;
+            clearInterval(counter);
+          } else {
+            stat.textContent = current;
+          }
+        }, 50);
+      }
+    });
+
+    console.log('✨ Profile Page - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

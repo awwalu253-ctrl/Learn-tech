@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Edit Note - Awwalu Devs{% endblock %}
+{% block title %}Edit Note - A-Portal{% endblock %}
 
 {% block content %}
 <style>
   /* ============================================
-     EDIT NOTE - Premium Theme
+     EDIT NOTE - Premium Navy + Gold Theme
      ============================================ */
   .edit-note-page {
     max-width: 800px;
@@ -13,12 +13,14 @@
     padding: 0;
   }
 
-  /* Container */
+  /* ============================================
+     CONTAINER - Gold Theme
+     ============================================ */
   .note-container {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
     padding: 40px 40px 36px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
@@ -34,15 +36,30 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .note-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.02), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .note-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
-  /* Header */
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .note-header {
     text-align: center;
     margin-bottom: 32px;
@@ -53,30 +70,32 @@
     height: 64px;
     margin: 0 auto 16px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .note-container:hover .icon-wrapper {
     transform: scale(1.04) rotate(-2deg);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .note-header h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0 0 4px;
   }
 
   .note-header h2 span {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -85,25 +104,27 @@
   .note-header .note-title {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     margin: 0 0 2px;
   }
 
   .note-header .note-title i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     margin-right: 4px;
   }
 
   .note-header p {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0;
   }
 
-  /* Info Box */
+  /* ============================================
+     INFO BOX - Gold Theme
+     ============================================ */
   .info-box {
-    background: rgba(37, 99, 235, 0.04);
-    border: 1px solid rgba(37, 99, 235, 0.06);
+    background: rgba(201, 168, 75, 0.03);
+    border: 1px solid rgba(201, 168, 75, 0.06);
     border-radius: var(--radius-sm, 10px);
     padding: 12px 16px;
     margin-bottom: 24px;
@@ -113,16 +134,18 @@
   }
 
   .info-box i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1rem;
   }
 
   .info-box .info-text {
     font-size: 0.82rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
-  /* Form */
+  /* ============================================
+     FORM - Gold Theme
+     ============================================ */
   .note-form {
     display: flex;
     flex-direction: column;
@@ -138,14 +161,14 @@
   .form-group label {
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .form-group label i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.85rem;
     width: 18px;
     text-align: center;
@@ -159,7 +182,7 @@
 
   .form-group label .optional {
     font-weight: 400;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.7rem;
   }
 
@@ -167,24 +190,24 @@
     width: 100%;
     padding: 12px 16px;
     border-radius: var(--radius-sm, 10px);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
-    background: var(--bg, #F8FAFC);
+    border: 1.5px solid rgba(201, 168, 75, 0.04);
+    background: var(--primary-bg, #0A1527);
     font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
     outline: none;
     appearance: none;
   }
 
   .form-control:focus {
-    border-color: var(--blue, #2563EB);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
-    background: var(--white, #FFFFFF);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   .form-control::placeholder {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.85rem;
   }
 
@@ -206,7 +229,7 @@
   }
 
   select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     padding-right: 40px;
@@ -215,14 +238,18 @@
 
   select.form-control option {
     padding: 8px;
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
   }
 
-  /* Character Counter */
+  /* ============================================
+     CHARACTER COUNTER - Gold Theme
+     ============================================ */
   .char-counter {
     display: flex;
     justify-content: flex-end;
     font-size: 0.7rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     margin-top: 4px;
   }
 
@@ -231,7 +258,7 @@
   }
 
   .char-counter .count.warning {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
   .char-counter .count.danger {
@@ -251,41 +278,45 @@
     font-size: 0.7rem;
   }
 
-  /* Current Attachment */
+  /* ============================================
+     CURRENT ATTACHMENT - Gold Theme
+     ============================================ */
   .current-attachment {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 12px 16px;
-    background: rgba(5, 150, 105, 0.04);
-    border: 1px solid rgba(5, 150, 105, 0.06);
+    background: rgba(201, 168, 75, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.06);
     border-radius: var(--radius-sm, 8px);
   }
 
   .current-attachment i {
-    color: #059669;
+    color: var(--primary-gold, #C9A84B);
     font-size: 1rem;
   }
 
   .current-attachment a {
     font-weight: 500;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
   }
 
   .current-attachment a:hover {
-    color: var(--cyan, #22D3EE);
+    color: var(--dark-gold, #8F7E48);
     text-decoration: underline;
   }
 
   .current-attachment .file-size {
     font-size: 0.75rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     margin-left: auto;
   }
 
-  /* File Upload */
+  /* ============================================
+     FILE UPLOAD - Gold Theme
+     ============================================ */
   .file-upload-wrapper {
     display: flex;
     flex-direction: column;
@@ -303,33 +334,33 @@
     justify-content: center;
     gap: 8px;
     padding: 32px 20px;
-    border: 2px dashed rgba(15, 23, 42, 0.06);
+    border: 2px dashed rgba(201, 168, 75, 0.06);
     border-radius: var(--radius-sm, 10px);
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
     text-align: center;
   }
 
   .file-upload-label:hover {
-    border-color: var(--blue, #2563EB);
-    background: rgba(37, 99, 235, 0.02);
+    border-color: rgba(201, 168, 75, 0.15);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .file-upload-label i {
     font-size: 2rem;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .file-upload-label .upload-text {
     font-size: 0.9rem;
     font-weight: 500;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .file-upload-label .upload-hint {
     font-size: 0.8rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
   .file-upload-label .file-name {
@@ -344,19 +375,21 @@
   }
 
   .file-upload-label.dragover {
-    border-color: var(--blue, #2563EB);
-    background: rgba(37, 99, 235, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.04);
     transform: scale(1.01);
   }
 
   .text-muted {
     font-size: 0.75rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-align: center;
     margin-top: 4px;
   }
 
-  /* Buttons */
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -374,14 +407,14 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
   }
 
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
   }
 
@@ -397,26 +430,29 @@
 
   .btn-outline {
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1.5px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1.5px solid rgba(201, 168, 75, 0.06);
     margin-top: 8px;
   }
 
   .btn-outline:hover {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
   }
 
   .btn-outline i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
   }
 
   .btn-block {
     width: 100%;
   }
 
-  /* Animations */
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -428,7 +464,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .note-container {
       padding: 28px 20px 24px;
@@ -567,14 +605,16 @@
     }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .note-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .note-container::before {
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .note-header h2 {
@@ -582,107 +622,155 @@
   }
 
   [data-theme="dark"] .note-header .note-title {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .note-header .icon-wrapper {
-    background: rgba(37, 99, 235, 0.12);
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .note-container:hover .icon-wrapper {
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .form-group label {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-control {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.06);
-    color: var(--white, #FFFFFF);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .form-control:focus {
-    border-color: var(--cyan, #22D3EE);
-    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.08);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   [data-theme="dark"] .form-control::placeholder {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   }
 
   [data-theme="dark"] select.form-control option {
-    background: var(--white, #1E293B);
-    color: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .file-upload-label {
-    border-color: rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
   }
 
   [data-theme="dark"] .file-upload-label:hover {
-    border-color: var(--cyan, #22D3EE);
-    background: rgba(37, 99, 235, 0.04);
+    border-color: rgba(201, 168, 75, 0.15);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .file-upload-label .upload-text {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .file-upload-label.dragover {
-    border-color: var(--cyan, #22D3EE);
-    background: rgba(37, 99, 235, 0.06);
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .btn-outline {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .btn-outline i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .text-muted {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .info-box {
-    background: rgba(37, 99, 235, 0.06);
-    border-color: rgba(37, 99, 235, 0.08);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .info-box .info-text {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .char-counter {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .char-counter .count.warning {
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .current-attachment {
-    background: rgba(5, 150, 105, 0.06);
-    border-color: rgba(5, 150, 105, 0.08);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
   [data-theme="dark"] .current-attachment a {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .current-attachment a:hover {
-    color: var(--blue, #2563EB);
+    color: var(--dark-gold, #8F7E48);
+  }
+
+  [data-theme="dark"] .current-attachment i {
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .note-header p {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .form-group label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .note-header .note-title i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .info-box i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .file-upload-label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .file-upload-label .file-name {
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .file-upload-label .file-name.has-file {
+    color: #34D399;
+  }
+
+  [data-theme="dark"] .form-control.error {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+  }
+
+  [data-theme="dark"] .form-control.error:focus {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16) !important;
   }
 </style>
 
@@ -844,7 +932,9 @@
     const fileName = document.getElementById('fileName');
     const fileLabel = document.getElementById('fileLabel');
 
-    // Character counters
+    // ============================================
+    // CHARACTER COUNTERS
+    // ============================================
     if (title && titleCount) {
       title.addEventListener('input', function() {
         const len = this.value.length;
@@ -861,7 +951,24 @@
       });
     }
 
-    // File upload handling
+    // ============================================
+    // AUTO-RESIZE TEXTAREA
+    // ============================================
+    if (content) {
+      content.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 500) + 'px';
+      });
+      // Trigger resize on load
+      setTimeout(() => {
+        content.style.height = 'auto';
+        content.style.height = Math.min(content.scrollHeight, 500) + 'px';
+      }, 100);
+    }
+
+    // ============================================
+    // FILE UPLOAD HANDLING - Gold Theme
+    // ============================================
     if (fileInput) {
       fileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
@@ -927,21 +1034,17 @@
       });
     }
 
-    // Auto-resize textarea
-    if (content) {
-      content.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 500) + 'px';
-      });
-    }
-
-    // Remove error on change
+    // ============================================
+    // REMOVE ERROR ON CHANGE
+    // ============================================
     courseSelect.addEventListener('change', function() {
       this.classList.remove('error');
       courseError.style.display = 'none';
     });
 
-    // Form validation
+    // ============================================
+    // FORM VALIDATION
+    // ============================================
     form.addEventListener('submit', function(e) {
       let isValid = true;
 
@@ -992,6 +1095,41 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
     });
+
+    // ============================================
+    // REMOVE ERROR STATE ON FOCUS
+    // ============================================
+    title.addEventListener('focus', function() {
+      this.classList.remove('error');
+    });
+
+    content.addEventListener('focus', function() {
+      this.classList.remove('error');
+    });
+
+    // ============================================
+    // KEYBOARD SHORTCUT: Ctrl+Enter to submit
+    // ============================================
+    content.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'Enter') {
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+
+    // ============================================
+    // GOLD THEME - ANIMATE ON LOAD
+    // ============================================
+    const container = document.querySelector('.note-container');
+    if (container) {
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        container.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    console.log('✨ Edit Note - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}

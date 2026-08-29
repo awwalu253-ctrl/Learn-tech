@@ -1,158 +1,240 @@
 {% extends "base.html" %}
 
-{% block title %}Post Announcement - Awwalu Devs{% endblock %}
+{% block title %}Post Announcement - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
-.post-announcement {
+  /* ============================================
+     POST ANNOUNCEMENT - Premium Navy + Gold Theme
+     ============================================ */
+  .post-announcement {
     max-width: 800px;
     margin: 0 auto;
-}
+  }
 
-.page-header {
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
+  .page-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
     margin-bottom: 28px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
+  }
 
-.page-header-left {
+  .page-header-left {
     display: flex;
     align-items: center;
     gap: 14px;
-}
+  }
 
-.page-header-icon {
+  .page-header-icon {
     width: 48px;
     height: 48px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
-}
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
 
-.page-header h1 {
+  .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
-}
+    letter-spacing: -0.02em;
+  }
 
-.page-header h1 span {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+  .page-header h1 span {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}
+  }
 
-.page-header .subtitle {
+  .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
-}
+  }
 
-.form-container {
-    background: var(--white, #FFFFFF);
+  /* ============================================
+     FORM CONTAINER - Gold Theme
+     ============================================ */
+  .form-container {
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
     padding: 32px;
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
-}
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+    transition: var(--transition, 0.3s ease);
+    position: relative;
+    overflow: hidden;
+  }
 
-.form-group {
+  .form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .form-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .form-container:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  /* ============================================
+     FORM ELEMENTS - Gold Theme
+     ============================================ */
+  .form-group {
     margin-bottom: 20px;
-}
+    position: relative;
+    z-index: 1;
+  }
 
-.form-group label {
+  .form-group label {
     display: block;
     font-weight: 600;
     font-size: 0.9rem;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     margin-bottom: 6px;
-}
+  }
 
-.form-group label i {
-    color: var(--blue);
+  .form-group label i {
+    color: var(--primary-gold, #C9A84B);
     margin-right: 6px;
-}
+  }
 
-.form-control {
+  .form-group label .required {
+    color: #EF4444;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+
+  .form-control {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid rgba(15, 23, 42, 0.06);
+    border: 2px solid rgba(201, 168, 75, 0.04);
     border-radius: 10px;
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
-    background: var(--bg, #F8FAFC);
-    color: var(--text, #1E293B);
+    background: var(--primary-bg, #0A1527);
+    color: var(--text-gray, #C8CED8);
     transition: var(--transition, 0.3s ease);
-}
+  }
 
-.form-control:focus {
+  .form-control:focus {
     outline: none;
-    border-color: var(--blue);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.06);
-    background: var(--white);
-}
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 4px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
+  }
 
-.form-control::placeholder {
-    color: var(--text-muted, #94A3B8);
-}
+  .form-control::placeholder {
+    color: var(--text-muted, #8A94A6);
+  }
 
-textarea.form-control {
+  textarea.form-control {
     min-height: 180px;
     resize: vertical;
-}
+  }
 
-.checkbox-group {
+  /* ============================================
+     CHECKBOX GROUP - Gold Theme (Fixed)
+     ============================================ */
+  .checkbox-group {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    background: var(--bg, #F8FAFC);
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--primary-bg, #0A1527);
     border-radius: 10px;
-    border: 2px solid rgba(15, 23, 42, 0.04);
+    border: 2px solid rgba(201, 168, 75, 0.04);
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
-}
+    user-select: none;
+  }
 
-.checkbox-group:hover {
-    border-color: var(--blue);
-}
+  .checkbox-group:hover {
+    border-color: rgba(201, 168, 75, 0.08);
+    background: rgba(201, 168, 75, 0.02);
+  }
 
-.checkbox-group input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--blue);
+  .checkbox-group.active {
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.04);
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-gold, #C9A84B);
     cursor: pointer;
-}
+    flex-shrink: 0;
+  }
 
-.checkbox-group label {
+  .checkbox-group .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin: 0;
     cursor: pointer;
     font-weight: 500;
-}
+    color: var(--text-gray, #C8CED8);
+    flex-wrap: wrap;
+  }
 
-.checkbox-group .helper-text {
+  .checkbox-group .checkbox-label i {
+    color: var(--primary-gold, #C9A84B);
+    font-size: 0.9rem;
+  }
+
+  .checkbox-group .helper-text {
     font-weight: 400;
-    color: var(--text-muted);
+    color: var(--text-muted, #8A94A6);
     font-size: 0.8rem;
-}
+    margin-left: 4px;
+  }
 
-.btn-group {
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
+  .btn-group {
     display: flex;
     gap: 12px;
     margin-top: 8px;
     flex-wrap: wrap;
-}
+    position: relative;
+    z-index: 1;
+  }
 
-.btn {
+  .btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -164,56 +246,299 @@ textarea.form-control {
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
     text-decoration: none;
-}
+    font-family: 'Inter', sans-serif;
+  }
 
-.btn-primary {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
-    color: var(--white);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
-}
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
 
-.btn-primary:hover {
+  .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.3);
-    color: var(--white);
-}
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+  }
 
-.btn-outline {
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-outline {
     background: transparent;
-    color: var(--text);
-    border: 2px solid rgba(15, 23, 42, 0.06);
-}
+    color: var(--text-gray, #C8CED8);
+    border: 2px solid rgba(201, 168, 75, 0.06);
+  }
 
-.btn-outline:hover {
-    background: var(--bg);
-    border-color: var(--text-muted);
+  .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
-}
+  }
 
-@keyframes fadeUp {
+  .btn-outline i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  /* ============================================
+     CHARACTER COUNTER - Gold Theme
+     ============================================ */
+  .char-counter {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 4px;
+  }
+
+  .char-counter .count {
+    font-weight: 600;
+  }
+
+  .char-counter .count.warning {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .char-counter .count.danger {
+    color: #EF4444;
+  }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeUp {
     0% { opacity: 0; transform: translateY(16px); }
     100% { opacity: 1; transform: translateY(0); }
-}
+  }
 
-@media (max-width: 768px) {
+  @keyframes goldPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 75, 0); }
+    50% { box-shadow: 0 0 40px rgba(201, 168, 75, 0.1); }
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
     .form-container {
-        padding: 20px;
+      padding: 20px;
     }
     
     .page-header {
-        flex-direction: column;
-        align-items: flex-start;
+      flex-direction: column;
+      align-items: flex-start;
     }
     
     .btn-group {
-        flex-direction: column;
+      flex-direction: column;
     }
     
     .btn {
-        width: 100%;
-        justify-content: center;
+      width: 100%;
+      justify-content: center;
     }
-}
+
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .form-control {
+      padding: 10px 14px;
+      font-size: 0.9rem;
+    }
+
+    textarea.form-control {
+      min-height: 140px;
+    }
+
+    .checkbox-group {
+      padding: 12px 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .form-container {
+      padding: 16px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .page-header h1 {
+      font-size: 1rem;
+    }
+
+    .page-header .subtitle {
+      font-size: 0.78rem;
+    }
+
+    .form-group label {
+      font-size: 0.82rem;
+    }
+
+    .form-control {
+      padding: 8px 12px;
+      font-size: 0.85rem;
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+    }
+
+    .checkbox-group {
+      padding: 10px 12px;
+    }
+
+    .checkbox-group .checkbox-label {
+      font-size: 0.82rem;
+    }
+
+    .checkbox-group .helper-text {
+      font-size: 0.72rem;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 0.82rem;
+    }
+  }
+
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
+  [data-theme="dark"] .form-container {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .form-container::before {
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
+
+  [data-theme="dark"] .form-container:hover {
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .form-group label {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .form-control {
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .form-control:focus {
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 4px rgba(201, 168, 75, 0.06);
+    background: var(--primary-bg, #0A1527);
+  }
+
+  [data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .checkbox-group {
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .checkbox-group:hover {
+    border-color: rgba(201, 168, 75, 0.08);
+    background: rgba(201, 168, 75, 0.02);
+  }
+
+  [data-theme="dark"] .checkbox-group.active {
+    border-color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .checkbox-group .checkbox-label {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .checkbox-group .helper-text {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .btn-outline {
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .btn-outline:hover {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .btn-outline i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .page-header .subtitle {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .char-counter {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .char-counter .count.warning {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .form-group label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .checkbox-group .checkbox-label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .checkbox-group input[type="checkbox"] {
+    accent-color: var(--primary-gold, #C9A84B);
+  }
+
+  /* ============================================
+     ERROR STATE
+     ============================================ */
+  .form-control.error {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08) !important;
+  }
+
+  .form-control.error:focus {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important;
+  }
+
+  [data-theme="dark"] .form-control.error {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important;
+  }
+
+  [data-theme="dark"] .form-control.error:focus {
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.16) !important;
+  }
 </style>
 {% endblock %}
 
@@ -235,29 +560,57 @@ textarea.form-control {
     </div>
 
     <div class="form-container">
-        <form method="POST">
+        <form method="POST" id="announcementForm" novalidate>
             <div class="form-group">
-                <label for="title"><i class="fas fa-heading"></i> Announcement Title</label>
-                <input type="text" id="title" name="title" class="form-control" placeholder="Enter a clear, descriptive title" required>
+                <label for="title">
+                    <i class="fas fa-heading"></i> Announcement Title
+                    <span class="required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="title" 
+                    name="title" 
+                    class="form-control" 
+                    placeholder="Enter a clear, descriptive title"
+                    required
+                    maxlength="200"
+                    autofocus
+                >
+                <div class="char-counter">
+                    <span class="count" id="titleCount">0</span> / 200
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="content"><i class="fas fa-file-alt"></i> Content</label>
-                <textarea id="content" name="content" class="form-control" placeholder="Write your announcement here..." required></textarea>
+                <label for="content">
+                    <i class="fas fa-file-alt"></i> Content
+                    <span class="required">*</span>
+                </label>
+                <textarea 
+                    id="content" 
+                    name="content" 
+                    class="form-control" 
+                    placeholder="Write your announcement here..."
+                    required
+                    maxlength="5000"
+                ></textarea>
+                <div class="char-counter">
+                    <span class="count" id="contentCount">0</span> / 5000
+                </div>
             </div>
 
             <div class="form-group">
-                <div class="checkbox-group" onclick="this.querySelector('input[type=checkbox]').click()">
+                <div class="checkbox-group" id="checkboxGroup">
                     <input type="checkbox" id="is_pinned" name="is_pinned">
-                    <label for="is_pinned">
-                        <i class="fas fa-thumbtack" style="color: #F59E0B;"></i> Pin this announcement
+                    <label for="is_pinned" class="checkbox-label">
+                        <i class="fas fa-thumbtack"></i> Pin this announcement
                         <span class="helper-text">(Pinned announcements appear at the top)</span>
                     </label>
                 </div>
             </div>
 
             <div class="btn-group">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
                     <i class="fas fa-paper-plane"></i> Post Announcement
                 </button>
                 <a href="{{ url_for('manage_announcements') }}" class="btn btn-outline">
@@ -267,4 +620,163 @@ textarea.form-control {
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('announcementForm');
+        const title = document.getElementById('title');
+        const content = document.getElementById('content');
+        const titleCount = document.getElementById('titleCount');
+        const contentCount = document.getElementById('contentCount');
+        const submitBtn = document.getElementById('submitBtn');
+        const checkbox = document.getElementById('is_pinned');
+        const checkboxGroup = document.getElementById('checkboxGroup');
+
+        // ============================================
+        // FIXED: CHECKBOX TOGGLE FUNCTIONALITY
+        // ============================================
+        // Click on the checkbox group toggles the checkbox
+        checkboxGroup.addEventListener('click', function(e) {
+            // Don't trigger if clicking directly on the checkbox (it handles itself)
+            if (e.target === checkbox) {
+                return;
+            }
+            // Toggle the checkbox
+            checkbox.checked = !checkbox.checked;
+            // Update the active state
+            updateCheckboxState();
+        });
+
+        // Also toggle when clicking the label
+        const label = checkboxGroup.querySelector('.checkbox-label');
+        if (label) {
+            label.addEventListener('click', function(e) {
+                e.preventDefault();
+                checkbox.checked = !checkbox.checked;
+                updateCheckboxState();
+            });
+        }
+
+        // Update checkbox state on change
+        checkbox.addEventListener('change', function() {
+            updateCheckboxState();
+        });
+
+        // Function to update the visual state of the checkbox group
+        function updateCheckboxState() {
+            if (checkbox.checked) {
+                checkboxGroup.classList.add('active');
+                // Add a subtle animation
+                checkboxGroup.style.transition = 'all 0.3s ease';
+                checkboxGroup.style.transform = 'scale(1.01)';
+                setTimeout(() => {
+                    checkboxGroup.style.transform = 'scale(1)';
+                }, 200);
+            } else {
+                checkboxGroup.classList.remove('active');
+            }
+        }
+
+        // Initialize the state
+        updateCheckboxState();
+
+        // ============================================
+        // CHARACTER COUNTERS
+        // ============================================
+        if (title && titleCount) {
+            title.addEventListener('input', function() {
+                const len = this.value.length;
+                titleCount.textContent = len;
+                titleCount.className = 'count' + (len > 180 ? ' warning' : '') + (len >= 200 ? ' danger' : '');
+            });
+        }
+
+        if (content && contentCount) {
+            content.addEventListener('input', function() {
+                const len = this.value.length;
+                contentCount.textContent = len;
+                contentCount.className = 'count' + (len > 4500 ? ' warning' : '') + (len >= 5000 ? ' danger' : '');
+            });
+        }
+
+        // ============================================
+        // AUTO-RESIZE TEXTAREA
+        // ============================================
+        if (content) {
+            content.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        // ============================================
+        // FORM VALIDATION
+        // ============================================
+        form.addEventListener('submit', function(e) {
+            const titleVal = title.value.trim();
+            const contentVal = content.value.trim();
+
+            if (!titleVal) {
+                e.preventDefault();
+                title.classList.add('error');
+                title.focus();
+                alert('Please enter an announcement title.');
+                return;
+            }
+
+            if (!contentVal) {
+                e.preventDefault();
+                content.classList.add('error');
+                content.focus();
+                alert('Please enter the announcement content.');
+                return;
+            }
+
+            // Confirm before posting
+            const pinText = checkbox.checked ? ' (Pinned)' : '';
+            if (!confirm(`Post announcement "${titleVal}"?${pinText}`)) {
+                e.preventDefault();
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+        });
+
+        // ============================================
+        // REMOVE ERROR STATE ON FOCUS
+        // ============================================
+        title.addEventListener('focus', function() {
+            this.classList.remove('error');
+        });
+
+        content.addEventListener('focus', function() {
+            this.classList.remove('error');
+        });
+
+        // ============================================
+        // KEYBOARD SHORTCUT: Ctrl+Enter to submit
+        // ============================================
+        content.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // ============================================
+        // ADD GOLD THEME ANIMATION ON LOAD
+        // ============================================
+        const container = document.querySelector('.form-container');
+        if (container) {
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        console.log('✨ Post Announcement - Gold Theme Loaded!');
+    });
+</script>
 {% endblock %}

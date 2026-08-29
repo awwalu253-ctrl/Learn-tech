@@ -1,36 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Students - Awwalu Devs{% endblock %}
+{% block title %}Manage Students - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
     /* ============================================
-   MANAGE STUDENTS - Premium Theme
-   ============================================ */
-    :root {
-        --navy: #0F172A;
-        --blue: #2563EB;
-        --cyan: #22D3EE;
-        --bg: #F8FAFC;
-        --text: #1E293B;
-        --text-light: #64748B;
-        --text-muted: #94A3B8;
-        --white: #FFFFFF;
-        --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
-        --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
-        --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
-        --radius: 16px;
-        --radius-sm: 10px;
-        --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
+       MANAGE STUDENTS - Premium Navy + Gold Theme
+       ============================================ */
     .manage-students {
         max-width: 1360px;
         margin: 0 auto;
         padding: 0;
     }
 
-    /* Page Header */
+    /* ============================================
+       PAGE HEADER - Gold Theme
+       ============================================ */
     .page-header {
         display: flex;
         flex-wrap: wrap;
@@ -52,24 +37,25 @@
         width: 48px;
         height: 48px;
         border-radius: var(--radius-sm, 10px);
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+        background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--blue, #2563EB);
+        color: var(--primary-gold, #C9A84B);
         font-size: 1.3rem;
+        border: 1px solid rgba(201, 168, 75, 0.04);
     }
 
     .page-header h1 {
         font-size: 1.5rem;
         font-weight: 700;
-        color: var(--navy, #0F172A);
+        color: var(--white, #FFFFFF);
         letter-spacing: -0.02em;
         margin: 0;
     }
 
     .page-header h1 span {
-        background: linear-gradient(135deg, var(--blue), var(--cyan));
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -77,7 +63,7 @@
 
     .page-header .subtitle {
         font-size: 0.85rem;
-        color: var(--text-light, #64748B);
+        color: var(--text-gray, #C8CED8);
         margin: 2px 0 0;
     }
 
@@ -95,18 +81,18 @@
         border-radius: 60px;
         font-weight: 600;
         font-size: 0.85rem;
-        background: linear-gradient(135deg, #059669, #34D399);
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
         color: var(--white, #FFFFFF);
         text-decoration: none;
         transition: var(--transition);
-        box-shadow: 0 2px 16px rgba(5, 150, 105, 0.2);
+        box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
         border: none;
         cursor: pointer;
     }
 
     .btn-bulk:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 28px rgba(5, 150, 105, 0.3);
+        box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
         color: var(--white);
     }
 
@@ -114,7 +100,9 @@
         font-size: 0.9em;
     }
 
-    /* Stats Row */
+    /* ============================================
+       STATS ROW - Gold Theme
+       ============================================ */
     .stats-row {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -125,11 +113,11 @@
     }
 
     .stat-mini {
-        background: var(--white, #FFFFFF);
+        background: var(--secondary-bg, #253449);
         padding: 16px 18px;
         border-radius: var(--radius, 14px);
-        border: 1px solid rgba(15, 23, 42, 0.04);
-        box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
         display: flex;
         align-items: center;
         gap: 14px;
@@ -137,8 +125,9 @@
     }
 
     .stat-mini:hover {
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
         transform: translateY(-2px);
+        border-color: rgba(201, 168, 75, 0.08);
     }
 
     .stat-mini .stat-icon {
@@ -152,9 +141,9 @@
         flex-shrink: 0;
     }
 
-    .stat-mini .stat-icon.blue {
-        background: rgba(37, 99, 235, 0.08);
-        color: var(--blue);
+    .stat-mini .stat-icon.gold {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
     }
 
     .stat-mini .stat-icon.green {
@@ -163,36 +152,38 @@
     }
 
     .stat-mini .stat-icon.orange {
-        background: rgba(245, 158, 11, 0.08);
-        color: #F59E0B;
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
     }
 
     .stat-mini .stat-icon.purple {
-        background: rgba(124, 58, 237, 0.08);
-        color: #7C3AED;
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
     }
 
     .stat-mini .stat-number {
         font-size: 1.3rem;
         font-weight: 700;
-        color: var(--navy);
+        color: var(--white, #FFFFFF);
         line-height: 1.2;
     }
 
     .stat-mini .stat-label {
         font-size: 0.7rem;
         font-weight: 500;
-        color: var(--text-muted);
+        color: var(--text-muted, #8A94A6);
         text-transform: uppercase;
         letter-spacing: 0.04em;
     }
 
-    /* Section Cards */
+    /* ============================================
+       SECTION CARD - Gold Theme
+       ============================================ */
     .section-card {
-        background: var(--white, #FFFFFF);
+        background: var(--secondary-bg, #253449);
         border-radius: var(--radius);
-        border: 1px solid rgba(15, 23, 42, 0.04);
-        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
         overflow: hidden;
         transition: var(--transition);
         margin-bottom: 24px;
@@ -201,12 +192,13 @@
     }
 
     .section-card:hover {
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+        border-color: rgba(201, 168, 75, 0.06);
     }
 
     .section-card-header {
         padding: 16px 24px;
-        border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+        border-bottom: 1px solid rgba(201, 168, 75, 0.04);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -217,7 +209,7 @@
     .section-card-header h2 {
         font-size: 1rem;
         font-weight: 700;
-        color: var(--navy);
+        color: var(--white, #FFFFFF);
         display: flex;
         align-items: center;
         gap: 10px;
@@ -225,12 +217,12 @@
     }
 
     .section-card-header h2 i {
-        color: var(--blue);
+        color: var(--primary-gold, #C9A84B);
     }
 
     .section-card-header .badge-count {
-        background: var(--blue);
-        color: white;
+        background: var(--primary-gold, #C9A84B);
+        color: var(--white, #FFFFFF);
         font-size: 0.7rem;
         padding: 2px 12px;
         border-radius: 100px;
@@ -242,7 +234,9 @@
         overflow-x: auto;
     }
 
-    /* Table */
+    /* ============================================
+       TABLE - Gold Theme
+       ============================================ */
     .admin-table {
         width: 100%;
         border-collapse: collapse;
@@ -250,8 +244,8 @@
     }
 
     .admin-table thead {
-        background: var(--bg, #F8FAFC);
-        border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+        background: rgba(201, 168, 75, 0.02);
+        border-bottom: 1px solid rgba(201, 168, 75, 0.04);
     }
 
     .admin-table thead th {
@@ -261,12 +255,12 @@
         font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: var(--text-muted);
+        color: var(--text-muted, #8A94A6);
         white-space: nowrap;
     }
 
     .admin-table tbody tr {
-        border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+        border-bottom: 1px solid rgba(201, 168, 75, 0.03);
         transition: var(--transition);
     }
 
@@ -275,26 +269,28 @@
     }
 
     .admin-table tbody tr:hover {
-        background: rgba(37, 99, 235, 0.02);
+        background: rgba(201, 168, 75, 0.02);
     }
 
     .admin-table tbody td {
         padding: 12px 20px;
         vertical-align: middle;
-        color: var(--text);
+        color: var(--text-gray, #C8CED8);
     }
 
     .student-name {
         font-weight: 600;
-        color: var(--navy);
+        color: var(--white, #FFFFFF);
     }
 
     .student-email {
         font-size: 0.85rem;
-        color: var(--text-light);
+        color: var(--text-gray, #C8CED8);
     }
 
-    /* Enrollment Status Badges */
+    /* ============================================
+       ENROLLMENT STATUS BADGES - Gold Theme
+       ============================================ */
     .enrollment-status {
         display: inline-block;
         padding: 2px 12px;
@@ -311,9 +307,9 @@
     }
 
     .enrollment-status.approved {
-        background: rgba(5, 150, 105, 0.08);
-        color: #059669;
-        border: 1px solid rgba(5, 150, 105, 0.06);
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+        border: 1px solid rgba(201, 168, 75, 0.04);
     }
 
     .enrollment-status.rejected {
@@ -328,9 +324,10 @@
         border-radius: 100px;
         font-size: 0.7rem;
         font-weight: 500;
-        background: rgba(37, 99, 235, 0.06);
-        color: var(--blue);
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold, #C9A84B);
         margin: 2px 4px 2px 0;
+        border: 1px solid rgba(201, 168, 75, 0.04);
     }
 
     .badge {
@@ -344,27 +341,31 @@
     }
 
     .badge-success {
-        background: rgba(5, 150, 105, 0.08);
-        color: #059669;
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+        border: 1px solid rgba(201, 168, 75, 0.04);
     }
 
     .badge-warning {
         background: rgba(245, 158, 11, 0.08);
         color: #F59E0B;
+        border: 1px solid rgba(245, 158, 11, 0.06);
     }
 
     .badge-danger {
         background: rgba(239, 68, 68, 0.08);
         color: #EF4444;
+        border: 1px solid rgba(239, 68, 68, 0.06);
     }
 
     .badge-info {
-        background: rgba(37, 99, 235, 0.08);
-        color: var(--blue);
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+        border: 1px solid rgba(201, 168, 75, 0.04);
     }
 
     /* ============================================
-       ACTION BUTTONS - Complete Set
+       ACTION BUTTONS - Gold Theme
        ============================================ */
     .action-group {
         display: flex;
@@ -392,14 +393,15 @@
     }
 
     .btn-approve {
-        background: rgba(5, 150, 105, 0.06);
-        color: #059669;
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold, #C9A84B);
     }
 
     .btn-approve:hover {
-        background: #059669;
-        color: white;
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
         transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(201, 168, 75, 0.2);
     }
 
     .btn-reject {
@@ -409,8 +411,9 @@
 
     .btn-reject:hover {
         background: #EF4444;
-        color: white;
+        color: var(--white, #FFFFFF);
         transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
     }
 
     .btn-unapprove {
@@ -420,19 +423,21 @@
 
     .btn-unapprove:hover {
         background: #EF4444;
-        color: white;
+        color: var(--white, #FFFFFF);
         transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
     }
 
     .btn-restore {
-        background: rgba(37, 99, 235, 0.06);
-        color: var(--blue);
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold, #C9A84B);
     }
 
     .btn-restore:hover {
-        background: var(--blue);
-        color: white;
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
         transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(201, 168, 75, 0.2);
     }
 
     .btn-unapprove-course {
@@ -446,11 +451,14 @@
 
     .btn-unapprove-course:hover {
         background: #EF4444;
-        color: white;
+        color: var(--white, #FFFFFF);
         transform: translateY(-2px);
+        box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
     }
 
-    /* Empty State */
+    /* ============================================
+       EMPTY STATE - Gold Theme
+       ============================================ */
     .empty-state {
         text-align: center;
         padding: 40px 20px;
@@ -458,23 +466,25 @@
 
     .empty-state i {
         font-size: 2.5rem;
-        color: var(--text-muted);
-        opacity: 0.2;
+        color: var(--primary-gold, #C9A84B);
+        opacity: 0.15;
         margin-bottom: 12px;
     }
 
     .empty-state h3 {
         font-size: 1.1rem;
-        color: var(--text);
+        color: var(--white, #FFFFFF);
         margin-bottom: 4px;
     }
 
     .empty-state p {
-        color: var(--text-light);
+        color: var(--text-gray, #C8CED8);
         font-size: 0.9rem;
     }
 
-    /* Checkbox */
+    /* ============================================
+       CHECKBOX - Gold Theme
+       ============================================ */
     .checkbox-cell {
         width: 40px;
     }
@@ -482,11 +492,13 @@
     .checkbox-cell input[type="checkbox"] {
         width: 16px;
         height: 16px;
-        accent-color: var(--blue);
+        accent-color: var(--primary-gold, #C9A84B);
         cursor: pointer;
     }
 
-    /* Animations */
+    /* ============================================
+       ANIMATIONS
+       ============================================ */
     @keyframes fadeUp {
         from {
             opacity: 0;
@@ -498,7 +510,9 @@
         }
     }
 
-    /* Responsive */
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
     @media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -656,14 +670,16 @@
         }
     }
 
-    /* Dark Mode */
+    /* ============================================
+       DARK MODE SUPPORT
+       ============================================ */
     [data-theme="dark"] .section-card {
-        background: var(--white, #1E293B);
-        border-color: rgba(255, 255, 255, 0.04);
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 
     [data-theme="dark"] .section-card-header {
-        border-color: rgba(255, 255, 255, 0.04);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 
     [data-theme="dark"] .section-card-header h2 {
@@ -671,16 +687,16 @@
     }
 
     [data-theme="dark"] .admin-table thead {
-        background: rgba(255, 255, 255, 0.02);
-        border-color: rgba(255, 255, 255, 0.04);
+        background: rgba(201, 168, 75, 0.02);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 
     [data-theme="dark"] .admin-table tbody tr {
-        border-color: rgba(255, 255, 255, 0.02);
+        border-color: rgba(201, 168, 75, 0.02);
     }
 
     [data-theme="dark"] .admin-table tbody tr:hover {
-        background: rgba(37, 99, 235, 0.04);
+        background: rgba(201, 168, 75, 0.02);
     }
 
     [data-theme="dark"] .student-name {
@@ -688,8 +704,8 @@
     }
 
     [data-theme="dark"] .stat-mini {
-        background: var(--white, #1E293B);
-        border-color: rgba(255, 255, 255, 0.04);
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 
     [data-theme="dark"] .stat-mini .stat-number {
@@ -704,44 +720,90 @@
         color: var(--white, #FFFFFF);
     }
 
+    [data-theme="dark"] .empty-state p {
+        color: var(--text-gray, #C8CED8);
+    }
+
     [data-theme="dark"] .tag-badge {
-        background: rgba(37, 99, 235, 0.12);
-        color: var(--cyan, #22D3EE);
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold, #C9A84B);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 
     [data-theme="dark"] .badge-success {
-        background: rgba(5, 150, 105, 0.12);
-        color: #34D399;
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 
     [data-theme="dark"] .badge-warning {
-        background: rgba(245, 158, 11, 0.12);
+        background: rgba(245, 158, 11, 0.08);
         color: #FBBF24;
+        border-color: rgba(245, 158, 11, 0.06);
     }
 
     [data-theme="dark"] .badge-danger {
-        background: rgba(239, 68, 68, 0.12);
+        background: rgba(239, 68, 68, 0.08);
         color: #F87171;
+        border-color: rgba(239, 68, 68, 0.06);
     }
 
     [data-theme="dark"] .badge-info {
-        background: rgba(37, 99, 235, 0.12);
-        color: var(--cyan, #22D3EE);
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 
     [data-theme="dark"] .enrollment-status.pending {
         background: rgba(245, 158, 11, 0.12);
         color: #FBBF24;
+        border-color: rgba(245, 158, 11, 0.06);
     }
 
     [data-theme="dark"] .enrollment-status.approved {
-        background: rgba(5, 150, 105, 0.12);
-        color: #34D399;
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 
     [data-theme="dark"] .enrollment-status.rejected {
         background: rgba(239, 68, 68, 0.12);
         color: #F87171;
+        border-color: rgba(239, 68, 68, 0.06);
+    }
+
+    [data-theme="dark"] .btn-approve {
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    [data-theme="dark"] .btn-approve:hover {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .checkbox-cell input[type="checkbox"] {
+        accent-color: var(--primary-gold, #C9A84B);
+    }
+
+    [data-theme="dark"] .section-card-header .badge-count {
+        background: var(--primary-gold, #C9A84B);
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .stat-mini .stat-icon.gold {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    [data-theme="dark"] .stat-mini .stat-icon.orange {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    [data-theme="dark"] .stat-mini .stat-icon.purple {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
     }
 </style>
 {% endblock %}
@@ -771,7 +833,7 @@
     <!-- Stats Row -->
     <div class="stats-row">
         <div class="stat-mini">
-            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+            <div class="stat-icon gold"><i class="fas fa-users"></i></div>
             <div>
                 <div class="stat-number">{{ students|length if students else 0 }}</div>
                 <div class="stat-label">Total Students</div>
@@ -812,7 +874,7 @@
 
     <!-- Pending Approvals Section -->
     {% if pending and pending|length > 0 %}
-    <div class="section-card" style="border-color: rgba(245, 158, 11, 0.15);">
+    <div class="section-card" style="border-color: rgba(245, 158, 11, 0.12);">
         <div class="section-card-header">
             <h2>
                 <i class="fas fa-clock" style="color: #F59E0B;"></i>
@@ -993,7 +1055,9 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Select all pending checkboxes
+        // ============================================
+        // SELECT ALL PENDING CHECKBOXES
+        // ============================================
         const selectAll = document.getElementById('selectAllPending');
         const pendingCheckboxes = document.querySelectorAll('.pending-checkbox');
 
@@ -1005,7 +1069,9 @@
             });
         }
 
-        // Update bulk approve button state
+        // ============================================
+        // UPDATE BULK APPROVE BUTTON STATE
+        // ============================================
         pendingCheckboxes.forEach(cb => {
             cb.addEventListener('change', function () {
                 const checked = document.querySelectorAll('.pending-checkbox:checked');
@@ -1016,13 +1082,15 @@
                         btn.style.opacity = '1';
                     } else {
                         btn.innerHTML = '<i class="fas fa-check-double"></i> Bulk Approve All';
-                        btn.style.opacity = '0.6';
+                        btn.style.opacity = '0.8';
                     }
                 }
             });
         });
 
-        // Confirm delete/reject actions
+        // ============================================
+        // CONFIRM DELETE/REJECT ACTIONS
+        // ============================================
         document.querySelectorAll('.btn-reject').forEach(btn => {
             btn.addEventListener('click', function (e) {
                 if (!confirm('Are you sure you want to reject this student? This will remove all their pending course requests.')) {
@@ -1039,7 +1107,9 @@
             });
         });
 
-        // Confirm unapprove actions
+        // ============================================
+        // CONFIRM UNAPPROVE ACTIONS
+        // ============================================
         document.querySelectorAll('.btn-unapprove').forEach(btn => {
             btn.addEventListener('click', function (e) {
                 if (!confirm('Are you sure you want to unapprove this student from ALL courses? They will lose access to all courses.')) {
@@ -1048,14 +1118,9 @@
             });
         });
 
-        document.querySelectorAll('.btn-unapprove-course').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                // The confirm is already in the onclick attribute
-                // This is just a fallback
-            });
-        });
-
-        // Bulk approve confirmation
+        // ============================================
+        // BULK APPROVE CONFIRMATION
+        // ============================================
         document.querySelector('.btn-bulk')?.addEventListener('click', function (e) {
             const checked = document.querySelectorAll('.pending-checkbox:checked');
             if (checked.length === 0) {
@@ -1065,6 +1130,21 @@
                 e.preventDefault();
             }
         });
+
+        // ============================================
+        // GOLD THEME - ANIMATE ON LOAD
+        // ============================================
+        const container = document.querySelector('.manage-students');
+        if (container) {
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        console.log('✨ Manage Students - Gold Theme Loaded!');
     });
 </script>
 {% endblock %}

@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Quizzes - Awwalu Devs{% endblock %}
+{% block title %}Manage Quizzes - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
 /* ============================================
-   MANAGE QUIZZES - Premium Theme
+   MANAGE QUIZZES - Premium Navy + Gold Theme
    ============================================ */
 :root {
-    --navy: #0F172A;
-    --blue: #2563EB;
-    --cyan: #22D3EE;
-    --bg: #F8FAFC;
-    --text: #1E293B;
-    --text-light: #64748B;
-    --text-muted: #94A3B8;
+    --primary-bg: #0A1527;
+    --secondary-bg: #253449;
+    --primary-gold: #C9A84B;
+    --dark-gold: #8F7E48;
     --white: #FFFFFF;
-    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
-    --shadow-md: 0 8px 30px rgba(15, 23, 42, 0.08);
+    --text-gray: #C8CED8;
+    --text-muted: #8A94A6;
+    --shadow-sm: 0 2px 8px rgba(10, 21, 39, 0.06);
+    --shadow-md: 0 8px 30px rgba(10, 21, 39, 0.08);
+    --shadow-lg: 0 20px 60px rgba(10, 21, 39, 0.12);
     --radius: 16px;
     --radius-sm: 10px;
     --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
@@ -29,7 +29,44 @@
     padding: 0;
 }
 
-/* Page Header */
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes goldPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 75, 0); }
+    50% { box-shadow: 0 0 40px rgba(201, 168, 75, 0.1); }
+}
+
+@keyframes slideInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes rotateGold {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============================================
+   PAGE HEADER - Unique Gold Accent
+   ============================================ */
 .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -51,24 +88,40 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.12), rgba(143, 126, 72, 0.08));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header-icon::after {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: conic-gradient(from 0deg, transparent, rgba(201, 168, 75, 0.05), transparent, rgba(201, 168, 75, 0.05), transparent);
+    animation: rotateGold 8s linear infinite;
+}
+
+.page-header-icon i {
+    position: relative;
+    z-index: 1;
 }
 
 .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0;
 }
 
 .page-header h1 span {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -76,10 +129,13 @@
 
 .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
 }
 
+/* ============================================
+   CREATE BUTTON - Gold Gradient
+   ============================================ */
 .btn-create {
     display: inline-flex;
     align-items: center;
@@ -88,26 +144,43 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
-    color: var(--white);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
     text-decoration: none;
     transition: var(--transition);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.2);
     border: none;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-create::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+.btn-create:hover::before {
+    transform: translateX(100%);
 }
 
 .btn-create:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 28px rgba(37, 99, 235, 0.3);
-    color: var(--white);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.3);
+    color: var(--white, #FFFFFF);
 }
 
 .btn-create i {
     font-size: 0.9em;
 }
 
-/* Stats Row - FIXED: No sum with pipe */
+/* ============================================
+   STATS ROW - Unique Card Design
+   ============================================ */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -118,20 +191,39 @@
 }
 
 .stat-mini {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 16px 18px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     display: flex;
     align-items: center;
     gap: 14px;
     transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-mini::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.stat-mini:hover::before {
+    opacity: 1;
 }
 
 .stat-mini:hover {
     box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    border-color: rgba(201, 168, 75, 0.08);
 }
 
 .stat-mini .stat-icon {
@@ -143,11 +235,16 @@
     justify-content: center;
     font-size: 1.1rem;
     flex-shrink: 0;
+    transition: var(--transition);
 }
 
-.stat-mini .stat-icon.blue {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--blue);
+.stat-mini:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+.stat-mini .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
 }
 
 .stat-mini .stat-icon.green {
@@ -168,32 +265,47 @@
 .stat-mini .stat-number {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--navy);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
 }
 
 .stat-mini .stat-label {
     font-size: 0.7rem;
     font-weight: 500;
-    color: var(--text-muted);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
 
-/* Table Container */
+/* ============================================
+   TABLE CONTAINER - Premium Gold Accent
+   ============================================ */
 .table-wrapper {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius);
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
     transition: var(--transition);
+    position: relative;
+}
+
+.table-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-gold, #C9A84B), transparent);
+    opacity: 0.3;
 }
 
 .table-wrapper:hover {
     box-shadow: var(--shadow-md);
+    border-color: rgba(201, 168, 75, 0.06);
 }
 
 .table-scroll {
@@ -201,6 +313,9 @@
     padding: 0 4px 4px 0;
 }
 
+/* ============================================
+   QUIZ TABLE - Unique Styling
+   ============================================ */
 .quiz-table {
     width: 100%;
     border-collapse: collapse;
@@ -208,8 +323,8 @@
 }
 
 .quiz-table thead {
-    background: var(--bg, #F8FAFC);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
 }
 
 .quiz-table thead th {
@@ -219,12 +334,16 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted);
+    color: var(--text-muted, #8A94A6);
     white-space: nowrap;
 }
 
+.quiz-table thead th:last-child {
+    text-align: right;
+}
+
 .quiz-table tbody tr {
-    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
     transition: var(--transition);
 }
 
@@ -233,67 +352,159 @@
 }
 
 .quiz-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.02);
+    background: rgba(201, 168, 75, 0.02);
+    transform: translateX(4px);
 }
 
 .quiz-table tbody td {
     padding: 14px 20px;
     vertical-align: middle;
-    color: var(--text);
+    color: var(--text-gray, #C8CED8);
 }
 
+/* ============================================
+   QUIZ TITLE CELL - Unique Design
+   ============================================ */
 .quiz-title-cell {
-    font-weight: 600;
-    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.quiz-title-cell .quiz-code {
+.quiz-icon-box {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm, 8px);
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.04));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-gold, #C9A84B);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+}
+
+.quiz-title-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.quiz-title-text .title {
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    transition: var(--transition);
+}
+
+.quiz-title-text .title a {
+    color: var(--white, #FFFFFF);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.quiz-title-text .title a:hover {
+    color: var(--primary-gold, #C9A84B);
+}
+
+.quiz-title-text .quiz-code {
     font-size: 0.7rem;
     font-weight: 400;
-    color: var(--text-muted);
+    color: var(--text-muted, #8A94A6);
     font-family: 'Inter', monospace;
 }
 
+/* ============================================
+   BADGES & TAGS - Gold Theme
+   ============================================ */
 .course-tag {
     display: inline-block;
-    padding: 2px 12px;
+    padding: 3px 14px;
     border-radius: 100px;
     font-size: 0.7rem;
     font-weight: 500;
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    transition: var(--transition);
+}
+
+.course-tag:hover {
+    background: rgba(201, 168, 75, 0.1);
+    transform: scale(1.02);
 }
 
 .count-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 2px 12px;
+    padding: 3px 12px;
     border-radius: 100px;
     font-size: 0.75rem;
     font-weight: 600;
+    transition: var(--transition);
+}
+
+.count-badge:hover {
+    transform: scale(1.05);
 }
 
 .count-badge.questions {
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
 }
 
 .count-badge.students {
     background: rgba(5, 150, 105, 0.06);
     color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.04);
 }
 
 .count-badge i {
     font-size: 0.7rem;
+    opacity: 0.7;
 }
 
-/* Action Buttons */
+/* ============================================
+   STATUS INDICATOR - New Element
+   ============================================ */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 12px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status-indicator.active {
+    background: rgba(5, 150, 105, 0.06);
+    color: #059669;
+}
+
+.status-indicator .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-indicator.active .dot {
+    background: #059669;
+    animation: goldPulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   ACTION BUTTONS - Gold Hover
+   ============================================ */
 .action-group {
     display: flex;
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .btn-action {
@@ -308,20 +519,30 @@
     transition: var(--transition);
     text-decoration: none;
     font-size: 0.8rem;
+    position: relative;
 }
 
 .btn-action i {
     font-size: 0.8rem;
+    transition: var(--transition);
+}
+
+.btn-action:hover i {
+    transform: scale(1.1);
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
 }
 
 .btn-edit {
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue);
+    background: rgba(245, 158, 11, 0.06);
+    color: #F59E0B;
 }
 
 .btn-edit:hover {
-    background: rgba(37, 99, 235, 0.12);
-    transform: translateY(-1px);
+    background: rgba(245, 158, 11, 0.12);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
 }
 
 .btn-delete {
@@ -331,56 +552,113 @@
 
 .btn-delete:hover {
     background: rgba(239, 68, 68, 0.12);
-    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
 }
 
 .btn-view {
-    background: rgba(124, 58, 237, 0.06);
-    color: #7C3AED;
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
 }
 
 .btn-view:hover {
-    background: rgba(124, 58, 237, 0.12);
-    transform: translateY(-1px);
+    background: rgba(201, 168, 75, 0.12);
+    box-shadow: 0 2px 8px rgba(201, 168, 75, 0.15);
 }
 
-/* Empty State */
+.btn-action .tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: var(--secondary-bg, #253449);
+    color: var(--white, #FFFFFF);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--transition);
+    border: 1px solid rgba(201, 168, 75, 0.06);
+}
+
+.btn-action:hover .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* ============================================
+   EMPTY STATE - Premium Design
+   ============================================ */
 .empty-state {
     text-align: center;
-    padding: 48px 20px;
+    padding: 60px 20px;
 }
 
-.empty-state i {
+.empty-state .empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: rgba(201, 168, 75, 0.04);
+    border: 2px dashed rgba(201, 168, 75, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 2.5rem;
-    color: var(--text-muted);
-    opacity: 0.2;
-    margin-bottom: 12px;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.4;
+    transition: var(--transition);
+}
+
+.empty-state:hover .empty-icon {
+    opacity: 0.6;
+    transform: scale(1.02);
 }
 
 .empty-state h3 {
     font-size: 1.1rem;
-    color: var(--text);
+    color: var(--white, #FFFFFF);
     margin-bottom: 4px;
 }
 
 .empty-state p {
-    color: var(--text-light);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.9rem;
 }
 
-/* Animations */
-@keyframes fadeUp {
-    0% {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.empty-state .empty-cta {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 24px;
+    border-radius: 60px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    text-decoration: none;
+    transition: var(--transition);
 }
 
-/* Responsive */
+.empty-state .empty-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+}
+
+/* ============================================
+   DATE TEXT
+   ============================================ */
+.date-text {
+    font-size: 0.78rem;
+    color: var(--text-muted, #8A94A6);
+    white-space: nowrap;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 768px) {
     .page-header {
         flex-direction: column;
@@ -422,12 +700,12 @@
 
     .course-tag {
         font-size: 0.65rem;
-        padding: 1px 10px;
+        padding: 2px 10px;
     }
 
     .count-badge {
         font-size: 0.65rem;
-        padding: 1px 10px;
+        padding: 2px 10px;
     }
 
     .action-group {
@@ -445,6 +723,10 @@
     }
 
     .quiz-title-cell {
+        gap: 8px;
+    }
+
+    .quiz-title-text .title {
         font-size: 0.85rem;
     }
 }
@@ -493,13 +775,18 @@
         font-size: 0.75rem;
     }
 
-    .quiz-title-cell {
+    .quiz-title-text .title {
         font-size: 0.78rem;
     }
 
-    .quiz-title-cell .quiz-code {
+    .quiz-title-text .quiz-code {
         font-size: 0.6rem;
-        display: block;
+    }
+
+    .quiz-icon-box {
+        width: 24px;
+        height: 24px;
+        font-size: 0.6rem;
     }
 
     .course-tag {
@@ -529,34 +816,54 @@
     .btn-action i {
         font-size: 0.6rem;
     }
+
+    .date-text {
+        font-size: 0.65rem;
+    }
+
+    .empty-state .empty-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
 }
 
-/* Dark Mode */
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
 [data-theme="dark"] .table-wrapper {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .quiz-table thead {
-    background: rgba(255, 255, 255, 0.02);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .quiz-table tbody tr {
-    border-color: rgba(255, 255, 255, 0.02);
+    border-color: rgba(201, 168, 75, 0.02);
 }
 
 [data-theme="dark"] .quiz-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.04);
+    background: rgba(201, 168, 75, 0.02);
 }
 
-[data-theme="dark"] .quiz-title-cell {
+[data-theme="dark"] .quiz-title-text .title {
     color: var(--white, #FFFFFF);
 }
 
+[data-theme="dark"] .quiz-title-text .title a {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .quiz-title-text .title a:hover {
+    color: var(--primary-gold, #C9A84B);
+}
+
 [data-theme="dark"] .stat-mini {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .stat-mini .stat-number {
@@ -568,29 +875,49 @@
 }
 
 [data-theme="dark"] .course-tag {
-    background: rgba(37, 99, 235, 0.12);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
 }
 
 [data-theme="dark"] .count-badge.questions {
-    background: rgba(37, 99, 235, 0.08);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
 }
 
 [data-theme="dark"] .count-badge.students {
-    background: rgba(5, 150, 105, 0.08);
+    background: rgba(5, 150, 105, 0.06);
     color: #34D399;
 }
 
 [data-theme="dark"] .empty-state h3 {
     color: var(--white, #FFFFFF);
 }
+
+[data-theme="dark"] .empty-state p {
+    color: var(--text-gray, #C8CED8);
+}
+
+[data-theme="dark"] .btn-action .tooltip {
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.06);
+}
+
+[data-theme="dark"] .date-text {
+    color: var(--text-muted, #8A94A6);
+}
+
+[data-theme="dark"] .status-indicator.active {
+    background: rgba(5, 150, 105, 0.06);
+    color: #34D399;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="manage-quizzes">
-    <!-- Header -->
+    <!-- ==========================================
+    HEADER - Gold Accent
+    ========================================== -->
     <div class="page-header">
         <div class="page-header-left">
             <div class="page-header-icon">
@@ -606,10 +933,12 @@
         </a>
     </div>
 
-    <!-- Stats Row - FIXED: No sum with pipe -->
+    <!-- ==========================================
+    STATS ROW - Unique Cards
+    ========================================== -->
     <div class="stats-row">
         <div class="stat-mini">
-            <div class="stat-icon blue"><i class="fas fa-puzzle-piece"></i></div>
+            <div class="stat-icon gold"><i class="fas fa-puzzle-piece"></i></div>
             <div>
                 <div class="stat-number">{{ quizzes|length if quizzes else 0 }}</div>
                 <div class="stat-label">Total Quizzes</div>
@@ -647,7 +976,9 @@
         </div>
     </div>
 
-    <!-- Table -->
+    <!-- ==========================================
+    TABLE - Premium Design
+    ========================================== -->
     <div class="table-wrapper">
         <div class="table-scroll">
             <table class="quiz-table">
@@ -657,6 +988,7 @@
                         <th>Course</th>
                         <th>Questions</th>
                         <th>Attempts</th>
+                        <th>Status</th>
                         <th>Created</th>
                         <th style="text-align: right;">Actions</th>
                     </tr>
@@ -666,8 +998,15 @@
                         <tr>
                             <td>
                                 <div class="quiz-title-cell">
-                                    {{ quiz.title }}
-                                    <span class="quiz-code">#{{ quiz.id }}</span>
+                                    <div class="quiz-icon-box">
+                                        <i class="fas fa-puzzle-piece"></i>
+                                    </div>
+                                    <div class="quiz-title-text">
+                                        <span class="title">
+                                            <a href="{{ url_for('edit_quiz_group', quiz_id=quiz.id) }}">{{ quiz.title }}</a>
+                                        </span>
+                                        <span class="quiz-code">#{{ quiz.id }}</span>
+                                    </div>
                                 </div>
                             </td>
                             <td>
@@ -683,17 +1022,28 @@
                                     <i class="fas fa-users"></i> {{ quiz.answers|length }}
                                 </span>
                             </td>
-                            <td style="font-size: 0.8rem; color: var(--text-muted);">
-                                {{ quiz.created_at.strftime('%b %d, %Y') }}
+                            <td>
+                                <span class="status-indicator active">
+                                    <span class="dot"></span> Active
+                                </span>
+                            </td>
+                            <td>
+                                <span class="date-text">{{ quiz.created_at.strftime('%b %d, %Y') }}</span>
                             </td>
                             <td style="text-align: right;">
                                 <div class="action-group" style="justify-content: flex-end;">
                                     <a href="{{ url_for('edit_quiz_group', quiz_id=quiz.id) }}" class="btn-action btn-edit" title="Edit Quiz">
                                         <i class="fas fa-edit"></i>
+                                        <span class="tooltip">Edit</span>
+                                    </a>
+                                    <a href="#" class="btn-action btn-view" title="View Quiz">
+                                        <i class="fas fa-eye"></i>
+                                        <span class="tooltip">View</span>
                                     </a>
                                     <form method="POST" action="{{ url_for('delete_quiz_group', quiz_id=quiz.id) }}" style="display: inline;">
                                         <button type="submit" class="btn-action btn-delete confirm-delete" title="Delete Quiz">
                                             <i class="fas fa-trash-alt"></i>
+                                            <span class="tooltip">Delete</span>
                                         </button>
                                     </form>
                                 </div>
@@ -701,13 +1051,15 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="empty-state">
-                                    <i class="fas fa-puzzle-piece"></i>
+                                    <div class="empty-icon">
+                                        <i class="fas fa-puzzle-piece"></i>
+                                    </div>
                                     <h3>No quizzes available</h3>
-                                    <p>Create your first quiz to get started.</p>
-                                    <a href="{{ url_for('create_quiz_group') }}" class="btn-create" style="margin-top: 16px; font-size: 0.85rem;">
-                                        <i class="fas fa-plus"></i> Create Quiz
+                                    <p>Create your first quiz to engage your students.</p>
+                                    <a href="{{ url_for('create_quiz_group') }}" class="empty-cta">
+                                        <i class="fas fa-plus"></i> Create Your First Quiz
                                     </a>
                                 </div>
                             </td>
@@ -723,7 +1075,9 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Confirm delete
+    // ============================================
+    // CONFIRM DELETE
+    // ============================================
     document.querySelectorAll('.confirm-delete').forEach(btn => {
         btn.addEventListener('click', function(e) {
             if (!confirm('Are you sure you want to delete this quiz? All associated questions and answers will also be deleted. This action cannot be undone.')) {
@@ -731,6 +1085,77 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // ============================================
+    // ADD RIPPLE EFFECT TO BUTTONS
+    // ============================================
+    document.querySelectorAll('.btn-create, .empty-cta').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.style.cssText = `
+                position: absolute;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.2);
+                pointer-events: none;
+                left: ${x - 25}px;
+                top: ${y - 25}px;
+                transform: scale(0);
+                animation: rippleEffect 0.6s ease-out forwards;
+            `;
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+
+    // ============================================
+    // ADD RIPPLE ANIMATION
+    // ============================================
+    if (!document.querySelector('#rippleStyle')) {
+        const style = document.createElement('style');
+        style.id = 'rippleStyle';
+        style.textContent = `
+            @keyframes rippleEffect {
+                0% { transform: scale(0); opacity: 1; }
+                100% { transform: scale(3); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // ============================================
+    // STAT CARD HOVER ANIMATION
+    // ============================================
+    document.querySelectorAll('.stat-mini').forEach(stat => {
+        stat.addEventListener('mouseenter', function() {
+            const icon = this.querySelector('.stat-icon');
+            if (icon) {
+                icon.style.transition = 'transform 0.3s ease';
+            }
+        });
+    });
+
+    // ============================================
+    // TABLE ROW ANIMATION - Staggered Entry
+    // ============================================
+    const rows = document.querySelectorAll('.quiz-table tbody tr:not(:only-child)');
+    rows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.animation = `slideInLeft 0.4s ease ${0.1 + index * 0.05}s forwards`;
+    });
+
+    console.log('✨ Manage Quizzes - Gold Theme Loaded!');
 });
 </script>
 {% endblock %}

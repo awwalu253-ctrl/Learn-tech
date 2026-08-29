@@ -1,115 +1,180 @@
 {% extends "base.html" %}
 
-{% block title %}Export Reports - Awwalu Devs{% endblock %}
+{% block title %}Export Reports - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
-.export-page {
+  /* ============================================
+     EXPORT REPORTS - Premium Navy + Gold Theme
+     ============================================ */
+  .export-page {
     max-width: 800px;
     margin: 0 auto;
-}
+  }
 
-.page-header {
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
+  .page-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
     margin-bottom: 28px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
+  }
 
-.page-header-left {
+  .page-header-left {
     display: flex;
     align-items: center;
     gap: 14px;
-}
+  }
 
-.page-header-icon {
+  .page-header-icon {
     width: 48px;
     height: 48px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
-}
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
 
-.page-header h1 {
+  .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
-}
+    letter-spacing: -0.02em;
+  }
 
-.page-header h1 span {
-    background: linear-gradient(135deg, var(--blue), var(--cyan));
+  .page-header h1 span {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}
+  }
 
-.page-header .subtitle {
+  .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
-}
+  }
 
-.export-grid {
+  /* ============================================
+     EXPORT GRID - Gold Theme
+     ============================================ */
+  .export-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-}
+  }
 
-.export-card {
-    background: var(--white, #FFFFFF);
+  /* ============================================
+     EXPORT CARD - Gold Theme
+     ============================================ */
+  .export-card {
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
-    padding: 24px 28px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+    padding: 28px 24px 24px;
     text-align: center;
     transition: var(--transition, 0.3s ease);
-}
+    position: relative;
+    overflow: hidden;
+  }
 
-.export-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
-    transform: translateY(-4px);
-    border-color: rgba(37, 99, 235, 0.06);
-}
+  .export-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0;
+    transition: var(--transition, 0.3s ease);
+  }
 
-.export-card .icon {
-    font-size: 2.5rem;
+  .export-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+    transform: translateY(-6px);
+    border-color: rgba(201, 168, 75, 0.08);
+  }
+
+  .export-card:hover::before {
+    opacity: 1;
+  }
+
+  .export-card .icon {
+    font-size: 2.8rem;
     margin-bottom: 12px;
-}
+    display: inline-block;
+    transition: var(--transition, 0.3s ease);
+  }
 
-.export-card .icon.blue { color: var(--blue); }
-.export-card .icon.green { color: #059669; }
-.export-card .icon.orange { color: #F59E0B; }
+  .export-card:hover .icon {
+    transform: scale(1.05);
+  }
 
-.export-card h3 {
+  .export-card .icon.gold {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .export-card .icon.green {
+    color: #059669;
+  }
+
+  .export-card .icon.orange {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .export-card .icon.purple {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .export-card h3 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--navy);
+    color: var(--white, #FFFFFF);
     margin: 0 0 4px;
-}
+  }
 
-.export-card p {
-    color: var(--text-light);
+  .export-card p {
+    color: var(--text-gray, #C8CED8);
     font-size: 0.9rem;
     margin: 0 0 16px;
-}
+  }
 
-.export-card .count {
+  .export-card .count {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--text-muted, #8A94A6);
     margin-bottom: 16px;
-}
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 14px;
+    border-radius: 100px;
+    background: rgba(201, 168, 75, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
 
-.btn-export {
+  .export-card .count i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  /* ============================================
+     EXPORT BUTTONS - Gold Theme
+     ============================================ */
+  .btn-export {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -121,58 +186,266 @@
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
     text-decoration: none;
-}
+    position: relative;
+    overflow: hidden;
+  }
 
-.btn-export.blue {
-    background: var(--blue);
-    color: var(--white);
-}
+  .btn-export::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
 
-.btn-export.blue:hover {
-    background: #1d4ed8;
+  .btn-export:hover::after {
+    transform: translateX(100%);
+  }
+
+  .btn-export.gold {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
+
+  .btn-export.gold:hover {
     transform: translateY(-2px);
-}
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+  }
 
-.btn-export.green {
+  .btn-export.gold:active {
+    transform: scale(0.97);
+  }
+
+  .btn-export.green {
     background: #059669;
-    color: var(--white);
-}
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(5, 150, 105, 0.15);
+  }
 
-.btn-export.green:hover {
-    background: #047857;
+  .btn-export.green:hover {
     transform: translateY(-2px);
-}
+    box-shadow: 0 4px 28px rgba(5, 150, 105, 0.25);
+    color: var(--white, #FFFFFF);
+  }
 
-.btn-export.orange {
-    background: #F59E0B;
-    color: var(--white);
-}
+  .btn-export.green:active {
+    transform: scale(0.97);
+  }
 
-.btn-export.orange:hover {
-    background: #D97706;
+  .btn-export.orange {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+  }
+
+  .btn-export.orange:hover {
     transform: translateY(-2px);
-}
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
+    color: var(--white, #FFFFFF);
+  }
 
-@keyframes fadeUp {
+  .btn-export.orange:active {
+    transform: scale(0.97);
+  }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeUp {
     0% { opacity: 0; transform: translateY(16px); }
     100% { opacity: 1; transform: translateY(0); }
-}
+  }
 
-@media (max-width: 768px) {
+  @keyframes goldPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 75, 0); }
+    50% { box-shadow: 0 0 40px rgba(201, 168, 75, 0.05); }
+  }
+
+  .export-card:nth-child(1) { animation-delay: 0.05s; }
+  .export-card:nth-child(2) { animation-delay: 0.10s; }
+  .export-card:nth-child(3) { animation-delay: 0.15s; }
+  .export-card:nth-child(4) { animation-delay: 0.20s; }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
     .page-header {
-        flex-direction: column;
-        align-items: flex-start;
+      flex-direction: column;
+      align-items: flex-start;
     }
     
     .export-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
+      grid-template-columns: 1fr;
+      gap: 14px;
     }
     
     .export-card {
-        padding: 20px;
+      padding: 20px;
     }
-}
+
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .export-card .icon {
+      font-size: 2.2rem;
+    }
+
+    .export-card h3 {
+      font-size: 1rem;
+    }
+
+    .btn-export {
+      padding: 8px 22px;
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1rem;
+    }
+
+    .page-header .subtitle {
+      font-size: 0.78rem;
+    }
+
+    .export-card {
+      padding: 16px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .export-card .icon {
+      font-size: 1.8rem;
+    }
+
+    .export-card h3 {
+      font-size: 0.95rem;
+    }
+
+    .export-card p {
+      font-size: 0.82rem;
+    }
+
+    .export-card .count {
+      font-size: 0.7rem;
+      padding: 1px 10px;
+    }
+
+    .btn-export {
+      padding: 7px 18px;
+      font-size: 0.75rem;
+    }
+
+    .btn-export i {
+      font-size: 0.75rem;
+    }
+  }
+
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
+  [data-theme="dark"] .export-card {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .export-card:hover {
+    border-color: rgba(201, 168, 75, 0.08);
+  }
+
+  [data-theme="dark"] .export-card::before {
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
+
+  [data-theme="dark"] .export-card h3 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .export-card p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .export-card .count {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .export-card .count i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .btn-export.gold {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .btn-export.gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
+  }
+
+  [data-theme="dark"] .btn-export.orange {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .btn-export.orange:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(201, 168, 75, 0.25);
+  }
+
+  [data-theme="dark"] .btn-export.green {
+    background: #059669;
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .btn-export.green:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 28px rgba(5, 150, 105, 0.25);
+  }
+
+  [data-theme="dark"] .page-header h1 {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .page-header .subtitle {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .page-header-icon {
+    background: rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .export-card .icon.gold {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .export-card .icon.orange {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .export-card .icon.purple {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .btn-export.gold::after,
+  [data-theme="dark"] .btn-export.orange::after {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  }
 </style>
 {% endblock %}
 
@@ -193,11 +466,11 @@
     <div class="export-grid">
         <!-- Students Export -->
         <div class="export-card">
-            <div class="icon blue"><i class="fas fa-users"></i></div>
+            <div class="icon gold"><i class="fas fa-users"></i></div>
             <h3>Students</h3>
             <p>Export all student data including enrollment and status</p>
-            <div class="count">{{ total_students }} students</div>
-            <a href="{{ url_for('export_students') }}" class="btn-export blue">
+            <div class="count"><i class="fas fa-user-graduate"></i> {{ total_students }} students</div>
+            <a href="{{ url_for('export_students') }}" class="btn-export gold">
                 <i class="fas fa-file-csv"></i> Export CSV
             </a>
         </div>
@@ -207,11 +480,72 @@
             <div class="icon green"><i class="fas fa-puzzle-piece"></i></div>
             <h3>Quiz Results</h3>
             <p>Export all quiz attempts with student answers</p>
-            <div class="count">{{ total_quizzes }} quizzes</div>
+            <div class="count"><i class="fas fa-question-circle"></i> {{ total_quizzes }} quizzes</div>
             <a href="{{ url_for('export_quizzes') }}" class="btn-export green">
                 <i class="fas fa-file-csv"></i> Export CSV
             </a>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ============================================
+        // GOLD THEME - ANIMATE ON LOAD
+        // ============================================
+        const container = document.querySelector('.export-page');
+        if (container) {
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        // ============================================
+        // ADD HOVER ANIMATION TO EXPORT CARDS
+        // ============================================
+        document.querySelectorAll('.export-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.icon');
+                if (icon) {
+                    icon.style.transition = 'transform 0.4s ease';
+                }
+            });
+        });
+
+        // ============================================
+        // BUTTON CLICK FEEDBACK
+        // ============================================
+        document.querySelectorAll('.btn-export').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // Add loading state
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+                this.style.opacity = '0.7';
+                this.style.pointerEvents = 'none';
+
+                // Show success message after export (simulated)
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-check"></i> Exported!';
+                    this.style.background = '#059669';
+                    this.style.opacity = '1';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.style.background = '';
+                        this.style.pointerEvents = 'auto';
+                    }, 2000);
+                }, 1500);
+
+                // Prevent actual navigation if we want to simulate
+                // Remove this if you want the actual export to happen
+                // e.preventDefault();
+            });
+        });
+
+        console.log('✨ Export Reports - Gold Theme Loaded!');
+    });
+</script>
 {% endblock %}

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Pending Approval - Awwalu Devs{% endblock %}
+{% block title %}Pending Approval - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
   /* ============================================
-     PENDING APPROVAL PAGE - Premium Theme
+     PENDING APPROVAL - Premium Navy + Gold Theme
      ============================================ */
   .pending-page {
     min-height: calc(100vh - var(--nav-height, 68px) - 120px);
@@ -13,12 +13,12 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     position: relative;
     overflow: hidden;
   }
 
-  /* Background decoration */
+  /* Background decoration - Gold theme */
   .pending-page::before {
     content: '';
     position: absolute;
@@ -26,7 +26,7 @@
     right: -20%;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.04) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -38,18 +38,21 @@
     left: -15%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(245, 158, 11, 0.03) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.03) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
   }
 
+  /* ============================================
+     CONTAINER - Gold Theme
+     ============================================ */
   .pending-container {
     max-width: 520px;
     width: 100%;
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.08));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
     padding: 48px 40px 40px;
     transition: var(--transition, 0.3s ease);
     opacity: 0;
@@ -67,28 +70,44 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
-    opacity: 0.6;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
+  }
+
+  .pending-container::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.015), transparent);
+    border-radius: 50%;
+    pointer-events: none;
   }
 
   .pending-container:hover {
-    box-shadow: var(--shadow-xl, 0 20px 60px rgba(15, 23, 42, 0.12));
+    box-shadow: var(--shadow-xl, 0 20px 60px rgba(10, 21, 39, 0.16));
+    border-color: rgba(201, 168, 75, 0.06);
   }
 
-  /* Icon */
+  /* ============================================
+     ICON - Gold Theme
+     ============================================ */
   .pending-icon-wrapper {
     width: 100px;
     height: 100px;
     margin: 0 auto 20px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3.2rem;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     transition: var(--transition, 0.3s ease);
     position: relative;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .pending-icon-wrapper .pulse-ring {
@@ -98,13 +117,13 @@
     right: -4px;
     bottom: -4px;
     border-radius: 50%;
-    border: 2px solid rgba(245, 158, 11, 0.2);
+    border: 2px solid rgba(201, 168, 75, 0.15);
     animation: pulse-ring 2s ease-in-out infinite;
   }
 
   .pending-icon-wrapper .pulse-ring:nth-child(2) {
     animation-delay: 0.5s;
-    border-color: rgba(245, 158, 11, 0.1);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   @keyframes pulse-ring {
@@ -120,19 +139,23 @@
 
   .pending-container:hover .pending-icon-wrapper {
     transform: scale(1.04) rotate(-2deg);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.08);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
-  /* Content */
+  /* ============================================
+     CONTENT - Gold Theme
+     ============================================ */
   .pending-title {
     font-size: 1.8rem;
     font-weight: 800;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0 0 8px;
   }
 
   .pending-title .highlight {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -140,19 +163,21 @@
 
   .pending-subtitle {
     font-size: 1rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 0 0 20px;
     line-height: 1.7;
   }
 
   .pending-subtitle strong {
-    color: var(--text, #1E293B);
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Status Card */
+  /* ============================================
+     STATUS CARD - Gold Theme
+     ============================================ */
   .status-card {
-    background: rgba(245, 158, 11, 0.04);
-    border: 1px solid rgba(245, 158, 11, 0.12);
+    background: rgba(201, 168, 75, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.08);
     border-radius: var(--radius-sm, 10px);
     padding: 16px 20px;
     margin-bottom: 24px;
@@ -166,7 +191,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #F59E0B;
+    background: var(--primary-gold, #C9A84B);
     flex-shrink: 0;
     animation: pulse-dot 2s ease-in-out infinite;
   }
@@ -178,14 +203,16 @@
 
   .status-card .status-text {
     font-size: 0.9rem;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
   .status-card .status-text strong {
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* Info Grid */
+  /* ============================================
+     INFO GRID - Gold Theme
+     ============================================ */
   .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -194,16 +221,18 @@
   }
 
   .info-item {
-    background: var(--bg, #F8FAFC);
+    background: var(--primary-bg, #0A1527);
     border-radius: var(--radius-sm, 10px);
     padding: 14px 16px;
     text-align: center;
     transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .info-item:hover {
-    background: rgba(37, 99, 235, 0.02);
+    background: rgba(201, 168, 75, 0.02);
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   .info-item .info-icon {
@@ -215,18 +244,20 @@
   .info-item .info-number {
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
   }
 
   .info-item .info-label {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
 
-  /* Steps */
+  /* ============================================
+     STEPS - Gold Theme
+     ============================================ */
   .steps-section {
     margin-bottom: 28px;
     text-align: left;
@@ -235,7 +266,7 @@
   .steps-section .step-title {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     margin-bottom: 12px;
   }
 
@@ -256,29 +287,31 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.04);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.7rem;
     font-weight: 700;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     flex-shrink: 0;
     transition: var(--transition, 0.3s ease);
+    border: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   .step-item.active .step-number {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.2);
   }
 
   .step-item .step-text {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   .step-item.active .step-text {
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
     font-weight: 500;
   }
 
@@ -288,7 +321,9 @@
     font-size: 0.9rem;
   }
 
-  /* Buttons */
+  /* ============================================
+     BUTTONS - Gold Theme
+     ============================================ */
   .pending-actions {
     display: flex;
     gap: 12px;
@@ -315,31 +350,50 @@
 
   .btn-primary-outline {
     background: transparent;
-    color: var(--blue, #2563EB);
-    border: 2px solid rgba(37, 99, 235, 0.15);
+    color: var(--primary-gold, #C9A84B);
+    border: 2px solid rgba(201, 168, 75, 0.08);
   }
 
   .btn-primary-outline:hover {
-    background: rgba(37, 99, 235, 0.04);
-    border-color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.1);
   }
 
   .btn-logout-sm {
     background: rgba(239, 68, 68, 0.06);
     color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.04);
   }
 
   .btn-logout-sm:hover {
     background: rgba(239, 68, 68, 0.12);
     transform: translateY(-2px);
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.1);
   }
 
   .btn-logout-sm i {
     font-size: 0.9rem;
   }
 
-  /* Animations */
+  /* ============================================
+     FOOTER NOTE - Gold Theme
+     ============================================ */
+  .pending-footer-note {
+    font-size: 0.75rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 16px;
+  }
+
+  .pending-footer-note i {
+    color: var(--primary-gold, #C9A84B);
+    margin-right: 4px;
+  }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
   @keyframes fadeUp {
     0% {
       opacity: 0;
@@ -351,7 +405,9 @@
     }
   }
 
-  /* Responsive */
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .pending-container {
       padding: 36px 24px 28px;
@@ -448,16 +504,22 @@
       font-size: 0.82rem;
       padding: 10px 16px;
     }
+
+    .pending-footer-note {
+      font-size: 0.7rem;
+    }
   }
 
-  /* Dark Mode */
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .pending-container {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .pending-container::before {
-    background: linear-gradient(90deg, #F59E0B, #EF4444);
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
 
   [data-theme="dark"] .pending-title {
@@ -465,28 +527,34 @@
   }
 
   [data-theme="dark"] .pending-subtitle {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .pending-subtitle strong {
-    color: var(--white, #FFFFFF);
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .status-card {
-    background: rgba(245, 158, 11, 0.06);
-    border-color: rgba(245, 158, 11, 0.12);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .status-card .status-text {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .status-card .status-text strong {
+    color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .info-item {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .info-item:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .info-item .info-number {
@@ -494,43 +562,83 @@
   }
 
   [data-theme="dark"] .step-item .step-text {
-    color: var(--text-muted, #64748B);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .step-item.active .step-text {
-    color: var(--white, #FFFFFF);
+    color: var(--text-gray, #C8CED8);
   }
 
   [data-theme="dark"] .step-item .step-number {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
+    border-color: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .step-item.active .step-number {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
   }
 
   [data-theme="dark"] .pending-page::before {
-    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.04) 0%, transparent 70%);
   }
 
   [data-theme="dark"] .pending-page::after {
-    background: radial-gradient(circle, rgba(245, 158, 11, 0.04) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.03) 0%, transparent 70%);
   }
 
   [data-theme="dark"] .btn-primary-outline {
-    color: var(--cyan, #22D3EE);
-    border-color: rgba(37, 99, 235, 0.12);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   [data-theme="dark"] .btn-primary-outline:hover {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
   }
 
   [data-theme="dark"] .pending-icon-wrapper {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(239, 68, 68, 0.08));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .pending-container:hover .pending-icon-wrapper {
+    border-color: rgba(201, 168, 75, 0.08);
+  }
+
+  [data-theme="dark"] .pending-footer-note {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .pending-footer-note i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .pending-icon-wrapper .pulse-ring {
+    border-color: rgba(201, 168, 75, 0.12);
+  }
+
+  [data-theme="dark"] .pending-icon-wrapper .pulse-ring:nth-child(2) {
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .steps-section .step-title {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .btn-logout-sm {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+    border-color: rgba(239, 68, 68, 0.04);
+  }
+
+  [data-theme="dark"] .btn-logout-sm:hover {
+    background: rgba(239, 68, 68, 0.16);
+  }
+
+  [data-theme="dark"] .pending-container::after {
+    background: radial-gradient(circle, rgba(201, 168, 75, 0.01), transparent);
   }
 </style>
 {% endblock %}
@@ -609,7 +717,7 @@
       </a>
     </div>
 
-    <p style="font-size: 0.75rem; color: var(--text-muted, #94A3B8); margin-top: 16px;">
+    <p class="pending-footer-note">
       <i class="fas fa-info-circle"></i> You will be notified once your account is approved.
     </p>
   </div>

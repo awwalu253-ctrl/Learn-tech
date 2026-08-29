@@ -1,15 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Leaderboard Management - Awwalu Devs{% endblock %}
+{% block title %}Leaderboard Management - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
+  /* ============================================
+     LEADERBOARD MANAGEMENT - Premium Navy + Gold Theme
+     ============================================ */
   .leaderboard-manage {
     max-width: 1360px;
     margin: 0 auto;
     padding: 0;
   }
 
+  /* ============================================
+     HEADER - Gold Theme
+     ============================================ */
   .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -17,6 +23,8 @@
     justify-content: space-between;
     gap: 16px;
     margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
   .page-header-left {
@@ -29,23 +37,25 @@
     width: 48px;
     height: 48px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #F59E0B;
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
+    letter-spacing: -0.02em;
   }
 
   .page-header h1 span {
-    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -53,7 +63,7 @@
 
   .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
   }
 
@@ -63,54 +73,78 @@
     flex-wrap: wrap;
   }
 
+  /* ============================================
+     STATS ROW - Gold Theme
+     ============================================ */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 14px;
     margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
   }
 
   .stat-card {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 20px 18px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     text-align: center;
     transition: var(--transition, 0.3s ease);
   }
 
   .stat-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
     transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.08);
   }
 
   .stat-card .stat-number {
     font-size: 1.8rem;
     font-weight: 800;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
   }
 
-  .stat-card .stat-number.gold { color: #F59E0B; }
-  .stat-card .stat-number.blue { color: var(--blue, #2563EB); }
-  .stat-card .stat-number.green { color: #10B981; }
+  .stat-card .stat-number.gold {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .stat-card .stat-number.blue {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .stat-card .stat-number.green {
+    color: #059669;
+  }
 
   .stat-card .stat-label {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-top: 2px;
   }
 
+  /* ============================================
+     TABLE - Gold Theme
+     ============================================ */
   .table-wrapper {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .table-wrapper:hover {
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
   }
 
   .table-scroll {
@@ -124,8 +158,8 @@
   }
 
   .leaderboard-table thead {
-    background: var(--bg, #F8FAFC);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .leaderboard-table thead th {
@@ -135,53 +169,88 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     white-space: nowrap;
   }
 
   .leaderboard-table tbody tr {
-    border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
     transition: var(--transition, 0.3s ease);
   }
 
   .leaderboard-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.02);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   .leaderboard-table tbody td {
     padding: 12px 20px;
     vertical-align: middle;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
   }
 
+  /* ============================================
+     RANK CELL - Gold Theme
+     ============================================ */
   .rank-cell {
     font-weight: 700;
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  .rank-cell .gold { color: #F59E0B; }
-  .rank-cell .silver { color: #9CA3AF; }
-  .rank-cell .bronze { color: #D97706; }
+  .rank-cell .gold {
+    color: var(--primary-gold, #C9A84B);
+  }
 
+  .rank-cell .silver {
+    color: #9CA3AF;
+  }
+
+  .rank-cell .bronze {
+    color: #D97706;
+  }
+
+  .rank-cell .rank-icon {
+    font-size: 1rem;
+  }
+
+  /* ============================================
+     STUDENT NAME - Gold Theme
+     ============================================ */
   .student-name {
     font-weight: 600;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
   }
 
   .student-email {
     font-size: 0.8rem;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
   }
 
+  /* ============================================
+     SCORE CELL - Gold Theme
+     ============================================ */
   .score-cell {
     font-weight: 700;
     font-size: 1.1rem;
   }
 
-  .score-cell.excellent { color: #10B981; }
-  .score-cell.good { color: #F59E0B; }
-  .score-cell.poor { color: #EF4444; }
+  .score-cell.excellent {
+    color: #059669;
+  }
 
+  .score-cell.good {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .score-cell.poor {
+    color: #EF4444;
+  }
+
+  /* ============================================
+     ACTION BUTTONS - Gold Theme
+     ============================================ */
   .action-group {
     display: flex;
     gap: 6px;
@@ -201,28 +270,38 @@
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
     text-decoration: none;
+    font-family: 'Inter', sans-serif;
   }
 
   .btn-danger-sm {
     background: rgba(239, 68, 68, 0.08);
     color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.04);
   }
 
   .btn-danger-sm:hover {
     background: #EF4444;
-    color: white;
+    color: var(--white, #FFFFFF);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
   }
 
   .btn-success-sm {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
   .btn-success-sm:hover {
-    background: #059669;
-    color: white;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.2);
   }
 
+  /* ============================================
+     EMPTY STATE - Gold Theme
+     ============================================ */
   .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -230,16 +309,38 @@
 
   .empty-state i {
     font-size: 2.5rem;
-    color: var(--text-muted);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
   }
 
   .empty-state p {
-    color: var(--text-light);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.9rem;
   }
 
+  .empty-state .empty-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted, #8A94A6);
+  }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
   @media (max-width: 768px) {
     .page-header {
       flex-direction: column;
@@ -251,7 +352,7 @@
       flex-direction: column;
     }
 
-    .header-actions .btn {
+    .header-actions .btn-sm {
       width: 100%;
       justify-content: center;
     }
@@ -268,8 +369,19 @@
   }
 
   @media (max-width: 480px) {
+    .page-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .page-header-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
     .stats-row {
       grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
 
     .stat-card .stat-number {
@@ -298,28 +410,52 @@
     .student-name {
       font-size: 0.8rem;
     }
+
+    .rank-cell {
+      font-size: 0.75rem;
+    }
+
+    .rank-cell .rank-icon {
+      font-size: 0.8rem;
+    }
   }
 
+  /* ============================================
+     DARK MODE SUPPORT
+     ============================================ */
   [data-theme="dark"] .stat-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .stat-card .stat-number {
     color: var(--white, #FFFFFF);
   }
 
+  [data-theme="dark"] .stat-card .stat-number.gold {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .stat-card .stat-number.blue {
+    color: var(--primary-gold, #C9A84B);
+  }
+
   [data-theme="dark"] .table-wrapper {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
   [data-theme="dark"] .leaderboard-table thead {
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
+    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .leaderboard-table tbody tr {
+    border-bottom: 1px solid rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .leaderboard-table tbody tr:hover {
-    background: rgba(37, 99, 235, 0.04);
+    background: rgba(201, 168, 75, 0.02);
   }
 
   [data-theme="dark"] .student-name {
@@ -328,6 +464,56 @@
 
   [data-theme="dark"] .page-header h1 {
     color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .page-header .subtitle {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .empty-state p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .empty-state .empty-hint {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .btn-success-sm {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .btn-success-sm:hover {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .btn-danger-sm {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+    border-color: rgba(239, 68, 68, 0.04);
+  }
+
+  [data-theme="dark"] .btn-danger-sm:hover {
+    background: #EF4444;
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .student-email {
+    color: var(--text-muted, #8A94A6);
+  }
+
+  [data-theme="dark"] .score-cell.good {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  [data-theme="dark"] .leaderboard-table tbody td {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .rank-cell .gold {
+    color: var(--primary-gold, #C9A84B);
   }
 </style>
 {% endblock %}
@@ -402,11 +588,11 @@
               <td>
                 <span class="rank-cell">
                   {% if loop.index == 1 %}
-                    <span class="gold"><i class="fas fa-crown"></i> #1</span>
+                    <span class="gold"><i class="fas fa-crown rank-icon"></i> #1</span>
                   {% elif loop.index == 2 %}
-                    <span class="silver"><i class="fas fa-medal"></i> #2</span>
+                    <span class="silver"><i class="fas fa-medal rank-icon"></i> #2</span>
                   {% elif loop.index == 3 %}
-                    <span class="bronze"><i class="fas fa-medal"></i> #3</span>
+                    <span class="bronze"><i class="fas fa-medal rank-icon"></i> #3</span>
                   {% else %}
                     #{{ loop.index }}
                   {% endif %}
@@ -440,7 +626,7 @@
                 <div class="empty-state">
                   <i class="fas fa-trophy"></i>
                   <p>No student data available.</p>
-                  <p style="font-size: 0.8rem; color: var(--text-muted);">Students need to take quizzes to appear on the leaderboard.</p>
+                  <p class="empty-hint">Students need to take quizzes to appear on the leaderboard.</p>
                 </div>
               </td>
             </tr>
@@ -450,4 +636,77 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ============================================
+    // GOLD THEME - ANIMATE ON LOAD
+    // ============================================
+    const container = document.querySelector('.leaderboard-manage');
+    if (container) {
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        container.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    // ============================================
+    // ADD HOVER ANIMATION TO TABLE ROWS
+    // ============================================
+    document.querySelectorAll('.leaderboard-table tbody tr').forEach(row => {
+      row.addEventListener('mouseenter', function() {
+        this.style.transition = 'background 0.3s ease';
+      });
+    });
+
+    // ============================================
+    // CONFIRM RESET ALL
+    // ============================================
+    document.querySelectorAll('.btn-danger-sm').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const confirmMessage = this.getAttribute('onclick');
+        if (confirmMessage) {
+          e.preventDefault();
+          if (confirm('⚠️ Are you sure you want to reset this student\'s quiz scores? This action cannot be undone.')) {
+            // Find the form and submit it
+            const form = this.closest('form');
+            if (form) {
+              form.submit();
+            }
+          }
+        }
+      });
+    });
+
+    // ============================================
+    // UPDATE STATS WITH ANIMATION
+    // ============================================
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+      const text = stat.textContent;
+      const number = parseInt(text);
+      if (!isNaN(number) && text.includes('%')) {
+        let current = 0;
+        const target = number;
+        const increment = Math.ceil(target / 30);
+        const duration = 800;
+        const stepTime = duration / 30;
+
+        const counter = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            stat.textContent = target + '%';
+            clearInterval(counter);
+          } else {
+            stat.textContent = current + '%';
+          }
+        }, stepTime);
+      }
+    });
+
+    console.log('✨ Leaderboard Management - Gold Theme Loaded!');
+  });
+</script>
 {% endblock %}

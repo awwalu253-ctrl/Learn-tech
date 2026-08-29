@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}My Courses - Awwalu Devs{% endblock %}
+{% block title %}My Courses - A-Portal{% endblock %}
 
 {% block extra_css %}
 <style>
 /* ============================================
-   RE-APPLY MODAL STYLES
+   RE-APPLY MODAL - Gold Theme
    ============================================ */
 .modal-overlay {
     position: fixed;
@@ -13,7 +13,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: none;
@@ -38,14 +38,27 @@
 }
 
 .modal-box {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
     padding: 32px 36px;
     max-width: 440px;
     width: 90%;
-    box-shadow: var(--shadow-lg, 0 12px 48px rgba(15, 23, 42, 0.12));
-    border: 1px solid var(--border, rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
+    border: 1px solid rgba(201, 168, 75, 0.04);
     animation: slideUp 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    opacity: 0.8;
 }
 
 .modal-box .modal-icon {
@@ -57,13 +70,13 @@
 .modal-box h3 {
     font-size: 1.2rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     text-align: center;
     margin: 0 0 8px;
 }
 
 .modal-box p {
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.95rem;
     text-align: center;
     margin: 0 0 6px;
@@ -71,13 +84,13 @@
 }
 
 .modal-box .rejection-reason {
-    background: rgba(239, 68, 68, 0.04);
+    background: rgba(201, 168, 75, 0.04);
     border-left: 3px solid #EF4444;
     padding: 10px 14px;
     border-radius: 6px;
     margin: 12px 0 16px;
     font-size: 0.9rem;
-    color: var(--text, #1E293B);
+    color: var(--text-gray, #C8CED8);
 }
 
 .modal-box .rejection-reason strong {
@@ -104,117 +117,30 @@
 }
 
 .btn-reapply {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 16px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
 }
 
 .btn-reapply:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 24px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
 }
 
 .btn-cancel-modal {
-    background: rgba(15, 23, 42, 0.04);
-    color: var(--text, #1E293B);
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
+    border: 1px solid rgba(201, 168, 75, 0.04);
 }
 
 .btn-cancel-modal:hover {
-    background: rgba(15, 23, 42, 0.08);
+    background: rgba(201, 168, 75, 0.08);
     transform: translateY(-2px);
-}
-
-/* Dark Mode */
-[data-theme="dark"] .modal-box {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
-}
-
-[data-theme="dark"] .modal-box h3 {
-    color: var(--white, #FFFFFF);
-}
-
-[data-theme="dark"] .modal-box p {
-    color: var(--text-muted, #94A3B8);
-}
-
-[data-theme="dark"] .modal-box .rejection-reason {
-    background: rgba(239, 68, 68, 0.08);
-}
-
-[data-theme="dark"] .btn-cancel-modal {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--white, #FFFFFF);
-}
-
-[data-theme="dark"] .btn-cancel-modal:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-/* Flash Message Re-apply Button */
-.btn-reapply-flash {
-    background: linear-gradient(135deg, #2563EB, #22D3EE) !important;
-    color: white !important;
-    border: none !important;
-    padding: 4px 14px !important;
-    border-radius: 60px !important;
-    font-weight: 600 !important;
-    font-size: 0.75rem !important;
-    cursor: pointer !important;
-    margin-left: 12px !important;
-    transition: all 0.3s ease !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-}
-
-.btn-reapply-flash:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-/* Flash message adjustments */
-.flash-message .flash-content {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 4px;
-}
-
-/* Course status badges */
-.course-status-badge {
-    display: inline-block;
-    padding: 2px 12px;
-    border-radius: 100px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.course-status-badge.approved {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-}
-
-.course-status-badge.pending {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-}
-
-.course-status-badge.rejected {
-    background: rgba(239, 68, 68, 0.08);
-    color: #EF4444;
-}
-
-.course-status-badge.locked {
-    background: rgba(15, 23, 42, 0.04);
-    color: var(--text-muted, #94A3B8);
 }
 
 /* ============================================
-   STUDENT COURSES - Premium Theme
+   STUDENT COURSES - Premium Navy + Gold Theme
    ============================================ */
 .student-courses {
     max-width: 1360px;
@@ -222,6 +148,9 @@
     padding: 0;
 }
 
+/* ============================================
+   HEADER - Gold Theme
+   ============================================ */
 .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -243,24 +172,25 @@
     width: 48px;
     height: 48px;
     border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(34, 211, 238, 0.06));
+    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     font-size: 1.3rem;
+    border: 1px solid rgba(201, 168, 75, 0.04);
 }
 
 .page-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     letter-spacing: -0.02em;
     margin: 0;
 }
 
 .page-header h1 span {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -268,7 +198,7 @@
 
 .page-header .subtitle {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     margin: 2px 0 0;
 }
 
@@ -278,10 +208,11 @@
     gap: 8px;
     padding: 6px 16px;
     border-radius: 100px;
-    background: rgba(37, 99, 235, 0.06);
-    color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
     font-size: 0.85rem;
     font-weight: 500;
+    border: 1px solid rgba(201, 168, 75, 0.04);
 }
 
 .page-header .greeting i {
@@ -292,7 +223,9 @@
     font-weight: 700;
 }
 
-/* Stats Row */
+/* ============================================
+   STATS ROW - Gold Theme
+   ============================================ */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -303,11 +236,11 @@
 }
 
 .stat-card {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 18px 16px 16px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     text-align: center;
     transition: var(--transition, 0.3s ease);
     position: relative;
@@ -322,7 +255,7 @@
     left: 0;
     width: 100%;
     height: 3px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     opacity: 0;
     transition: var(--transition, 0.3s ease);
 }
@@ -331,21 +264,26 @@
     opacity: 1;
 }
 
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(201, 168, 75, 0.08);
+}
+
 .stat-card .stat-icon {
     font-size: 1.4rem;
     margin-bottom: 4px;
     display: inline-block;
 }
 
-.stat-card:nth-child(1) .stat-icon { color: var(--blue, #2563EB); }
-.stat-card:nth-child(2) .stat-icon { color: #7C3AED; }
-.stat-card:nth-child(3) .stat-icon { color: #059669; }
-.stat-card:nth-child(4) .stat-icon { color: #F59E0B; }
+.stat-card:nth-child(1) .stat-icon { color: var(--primary-gold, #C9A84B); }
+.stat-card:nth-child(2) .stat-icon { color: var(--primary-gold, #C9A84B); }
+.stat-card:nth-child(3) .stat-icon { color: #EF4444; }
+.stat-card:nth-child(4) .stat-icon { color: var(--primary-gold, #C9A84B); }
 
 .stat-number {
     font-size: 1.6rem;
     font-weight: 800;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     line-height: 1.2;
     letter-spacing: -0.02em;
 }
@@ -353,21 +291,23 @@
 .stat-label {
     font-size: 0.72rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-top: 2px;
 }
 
-/* Tab Navigation */
+/* ============================================
+   TAB NAV - Gold Theme
+   ============================================ */
 .tab-nav {
     display: flex;
     gap: 4px;
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     padding: 4px;
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     margin-bottom: 24px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
@@ -380,7 +320,7 @@
     border-radius: var(--radius-sm, 10px);
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     background: transparent;
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
@@ -389,14 +329,14 @@
 }
 
 .tab-btn:hover {
-    color: var(--text, #1E293B);
-    background: rgba(15, 23, 42, 0.02);
+    color: var(--white, #FFFFFF);
+    background: rgba(201, 168, 75, 0.02);
 }
 
 .tab-btn.active {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.15);
 }
 
 .tab-btn .tab-badge {
@@ -414,7 +354,9 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Tab Content */
+/* ============================================
+   TAB CONTENT - Gold Theme
+   ============================================ */
 .tab-content {
     display: none;
     opacity: 0;
@@ -435,20 +377,23 @@
 .tab-content .section-header h2 {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
 }
 
 .tab-content .section-header .section-count {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
-    background: var(--bg, #F8FAFC);
+    color: var(--text-muted, #8A94A6);
+    background: rgba(201, 168, 75, 0.02);
     padding: 2px 12px;
     border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
 }
 
-/* Course Grid */
+/* ============================================
+   COURSE GRID - Gold Theme
+   ============================================ */
 .course-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -456,10 +401,10 @@
 }
 
 .course-card {
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.04));
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     padding: 22px 20px 20px;
     transition: var(--transition, 0.3s ease);
     display: flex;
@@ -468,9 +413,9 @@
 }
 
 .course-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(15, 23, 42, 0.06));
+    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
     transform: translateY(-4px);
-    border-color: rgba(37, 99, 235, 0.06);
+    border-color: rgba(201, 168, 75, 0.08);
 }
 
 .course-card .card-status {
@@ -491,7 +436,7 @@
 .course-card-header h3 {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--navy, #0F172A);
+    color: var(--white, #FFFFFF);
     margin: 0;
     line-height: 1.3;
 }
@@ -499,19 +444,20 @@
 .course-card-header .course-code {
     font-size: 0.65rem;
     font-weight: 600;
-    color: var(--text-muted, #94A3B8);
-    background: rgba(15, 23, 42, 0.04);
+    color: var(--text-muted, #8A94A6);
+    background: rgba(201, 168, 75, 0.04);
     padding: 2px 12px;
     border-radius: 100px;
     font-family: 'Inter', monospace;
     letter-spacing: 0.03em;
     white-space: nowrap;
     flex-shrink: 0;
+    border: 1px solid rgba(201, 168, 75, 0.02);
 }
 
 .course-description {
     font-size: 0.85rem;
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     line-height: 1.6;
     margin: 0 0 14px;
     flex: 1;
@@ -521,7 +467,9 @@
     overflow: hidden;
 }
 
-/* Course Progress */
+/* ============================================
+   COURSE PROGRESS - Gold Theme
+   ============================================ */
 .course-progress {
     display: flex;
     align-items: center;
@@ -532,7 +480,7 @@
 .course-progress .progress-track {
     flex: 1;
     height: 6px;
-    background: rgba(15, 23, 42, 0.06);
+    background: rgba(201, 168, 75, 0.06);
     border-radius: 6px;
     overflow: hidden;
 }
@@ -540,7 +488,7 @@
 .course-progress .progress-track .fill {
     height: 100%;
     border-radius: 6px;
-    background: linear-gradient(90deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     width: 0%;
 }
@@ -548,18 +496,57 @@
 .course-progress .progress-text {
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
     min-width: 40px;
     text-align: right;
 }
 
-/* Course Actions */
+/* ============================================
+   COURSE STATUS BADGES - Gold Theme
+   ============================================ */
+.course-status-badge {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.course-status-badge.approved {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+}
+
+.course-status-badge.pending {
+    background: rgba(245, 158, 11, 0.08);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.04);
+}
+
+.course-status-badge.rejected {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.04);
+}
+
+.course-status-badge.locked {
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
+    border: 1px solid rgba(201, 168, 75, 0.02);
+}
+
+/* ============================================
+   COURSE ACTIONS - Gold Theme
+   ============================================ */
 .course-actions {
     display: flex;
     gap: 8px;
     margin-top: auto;
     padding-top: 12px;
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    border-top: 1px solid rgba(201, 168, 75, 0.04);
 }
 
 .btn-sm {
@@ -574,6 +561,24 @@
     transition: var(--transition, 0.3s ease);
     border: none;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-sm::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: skewX(-20deg);
+    transition: var(--transition, 0.6s ease);
+}
+
+.btn-sm:hover::after {
+    left: 100%;
 }
 
 .btn-sm i {
@@ -581,26 +586,26 @@
 }
 
 .btn-primary-sm {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
 }
 
 .btn-primary-sm:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
     color: var(--white, #FFFFFF);
 }
 
 .btn-success-sm {
-    background: linear-gradient(135deg, #059669, #34D399);
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 12px rgba(5, 150, 105, 0.12);
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
 }
 
 .btn-success-sm:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(5, 150, 105, 0.2);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
     color: var(--white, #FFFFFF);
 }
 
@@ -618,18 +623,19 @@
 
 .btn-outline-sm {
     background: transparent;
-    color: var(--text, #1E293B);
-    border: 1px solid rgba(15, 23, 42, 0.06);
+    color: var(--text-gray, #C8CED8);
+    border: 1px solid rgba(201, 168, 75, 0.04);
 }
 
 .btn-outline-sm:hover {
-    background: rgba(15, 23, 42, 0.02);
-    border-color: var(--blue, #2563EB);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
     transform: translateY(-2px);
 }
 
 .btn-outline-sm i {
-    color: var(--blue, #2563EB);
+    color: var(--primary-gold, #C9A84B);
 }
 
 .btn-disabled-sm {
@@ -650,31 +656,33 @@
     color: var(--white, #FFFFFF);
 }
 
-/* Empty State */
+/* ============================================
+   EMPTY STATE - Gold Theme
+   ============================================ */
 .empty-state {
     text-align: center;
     padding: 48px 20px;
-    background: var(--white, #FFFFFF);
+    background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 14px);
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.04);
     grid-column: 1 / -1;
 }
 
 .empty-state i {
     font-size: 2.5rem;
-    color: var(--text-muted, #94A3B8);
-    opacity: 0.2;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.15;
     margin-bottom: 12px;
 }
 
 .empty-state h3 {
     font-size: 1.1rem;
-    color: var(--text, #1E293B);
+    color: var(--white, #FFFFFF);
     margin-bottom: 4px;
 }
 
 .empty-state p {
-    color: var(--text-light, #64748B);
+    color: var(--text-gray, #C8CED8);
     font-size: 0.95rem;
     margin: 0;
 }
@@ -685,7 +693,7 @@
 }
 
 .empty-state .text-muted {
-    color: var(--text-muted, #94A3B8);
+    color: var(--text-muted, #8A94A6);
 }
 
 .empty-state .empty-cta {
@@ -695,7 +703,7 @@
     border-radius: 60px;
     font-weight: 600;
     font-size: 0.85rem;
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
     text-decoration: none;
     transition: var(--transition, 0.3s ease);
@@ -703,11 +711,13 @@
 
 .empty-state .empty-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
 }
 
-/* Animations */
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 @keyframes fadeUp {
     0% {
         opacity: 0;
@@ -719,7 +729,9 @@
     }
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 1024px) {
     .stats-row {
         grid-template-columns: repeat(2, 1fr);
@@ -900,10 +912,12 @@
     }
 }
 
-/* Dark Mode */
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
 [data-theme="dark"] .stat-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .stat-card .stat-number {
@@ -911,31 +925,31 @@
 }
 
 [data-theme="dark"] .tab-nav {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .tab-btn {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
 }
 
 [data-theme="dark"] .tab-btn:hover {
     color: var(--white, #FFFFFF);
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(201, 168, 75, 0.02);
 }
 
 [data-theme="dark"] .tab-btn.active {
-    background: linear-gradient(135deg, var(--blue, #2563EB), var(--cyan, #22D3EE));
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
 }
 
 [data-theme="dark"] .course-card {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .course-card:hover {
-    border-color: rgba(37, 99, 235, 0.1);
+    border-color: rgba(201, 168, 75, 0.08);
 }
 
 [data-theme="dark"] .course-card-header h3 {
@@ -943,29 +957,30 @@
 }
 
 [data-theme="dark"] .course-card-header .course-code {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
+    border-color: rgba(201, 168, 75, 0.02);
 }
 
 [data-theme="dark"] .course-description {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
 }
 
 [data-theme="dark"] .course-progress .progress-track {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(201, 168, 75, 0.06);
 }
 
 [data-theme="dark"] .course-progress .progress-text {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
 }
 
 [data-theme="dark"] .course-actions {
-    border-top-color: rgba(255, 255, 255, 0.04);
+    border-top-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .empty-state {
-    background: var(--white, #1E293B);
-    border-color: rgba(255, 255, 255, 0.04);
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .empty-state h3 {
@@ -973,7 +988,7 @@
 }
 
 [data-theme="dark"] .empty-state p {
-    color: var(--text-muted, #64748B);
+    color: var(--text-gray, #C8CED8);
 }
 
 [data-theme="dark"] .page-header h1 {
@@ -981,8 +996,9 @@
 }
 
 [data-theme="dark"] .page-header .greeting {
-    background: rgba(37, 99, 235, 0.12);
-    color: var(--cyan, #22D3EE);
+    background: rgba(201, 168, 75, 0.06);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .tab-content .section-header h2 {
@@ -990,48 +1006,89 @@
 }
 
 [data-theme="dark"] .tab-content .section-header .section-count {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.02);
+    color: var(--text-muted, #8A94A6);
+    border-color: rgba(201, 168, 75, 0.02);
 }
 
 [data-theme="dark"] .btn-outline-sm {
-    color: var(--white, #FFFFFF);
-    border-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .btn-outline-sm:hover {
-    border-color: var(--cyan, #22D3EE);
+    border-color: var(--primary-gold, #C9A84B);
+    color: var(--primary-gold, #C9A84B);
 }
 
 [data-theme="dark"] .btn-outline-sm i {
-    color: var(--cyan, #22D3EE);
+    color: var(--primary-gold, #C9A84B);
 }
 
 [data-theme="dark"] .course-status-badge.approved {
-    background: rgba(5, 150, 105, 0.12);
-    color: #34D399;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
 }
 
 [data-theme="dark"] .course-status-badge.pending {
-    background: rgba(245, 158, 11, 0.12);
+    background: rgba(245, 158, 11, 0.08);
     color: #FBBF24;
+    border-color: rgba(245, 158, 11, 0.04);
 }
 
 [data-theme="dark"] .course-status-badge.rejected {
-    background: rgba(239, 68, 68, 0.12);
+    background: rgba(239, 68, 68, 0.08);
     color: #F87171;
+    border-color: rgba(239, 68, 68, 0.04);
 }
 
 [data-theme="dark"] .course-status-badge.locked {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted, #64748B);
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-muted, #8A94A6);
+    border-color: rgba(201, 168, 75, 0.02);
 }
+
+[data-theme="dark"] .modal-box {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+}
+
+[data-theme="dark"] .modal-box h3 {
+    color: var(--white, #FFFFFF);
+}
+
+[data-theme="dark"] .modal-box p {
+    color: var(--text-gray, #C8CED8);
+}
+
+[data-theme="dark"] .modal-box .rejection-reason {
+    background: rgba(201, 168, 75, 0.04);
+}
+
+[data-theme="dark"] .btn-cancel-modal {
+    background: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.04);
+}
+
+[data-theme="dark"] .btn-cancel-modal:hover {
+    background: rgba(201, 168, 75, 0.08);
+}
+
+[data-theme="dark"] .page-header .subtitle {
+    color: var(--text-gray, #C8CED8);
+}
+
+[data-theme="dark"] .stat-card:nth-child(1) .stat-icon { color: var(--primary-gold, #C9A84B); }
+[data-theme="dark"] .stat-card:nth-child(2) .stat-icon { color: var(--primary-gold, #C9A84B); }
+[data-theme="dark"] .stat-card:nth-child(4) .stat-icon { color: var(--primary-gold, #C9A84B); }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- ========================================== -->
-<!-- RE-APPLY MODAL -->
+<!-- RE-APPLY MODAL - Gold Theme -->
 <!-- ========================================== -->
 <div class="modal-overlay" id="reapplyModal">
     <div class="modal-box">
@@ -1041,7 +1098,7 @@
         <div class="rejection-reason" id="rejectionReason">
             <strong>Reason:</strong> <span id="reasonText">Not specified</span>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted, #94A3B8);">
+        <p style="font-size: 0.85rem; color: var(--text-muted, #8A94A6);">
             Would you like to submit a new request for approval?
         </p>
         <div class="modal-actions">
@@ -1203,7 +1260,7 @@
                             </div>
                             <span class="progress-text" style="color: var(--text-muted);">0%</span>
                         </div>
-                        <p style="font-size: 0.75rem; color: var(--text-muted, #94A3B8); text-align: center; margin: -4px 0 8px;">
+                        <p style="font-size: 0.75rem; color: var(--text-muted, #8A94A6); text-align: center; margin: -4px 0 8px;">
                             <i class="fas fa-clock"></i> Waiting for admin approval
                         </p>
                         
@@ -1236,7 +1293,7 @@
             <div class="course-grid">
                 {% for rejection in rejections %}
                     {% set course = rejection.course %}
-                    <div class="course-card" style="border-color: rgba(239, 68, 68, 0.15);">
+                    <div class="course-card" style="border-color: rgba(239, 68, 68, 0.12);">
                         <div class="card-status">
                             <span class="course-status-badge rejected">
                                 <i class="fas fa-times-circle"></i> Rejected
@@ -1304,7 +1361,7 @@
                                 </button>
                             </form>
                         </div>
-                        <p style="font-size: 0.65rem; color: var(--text-muted, #94A3B8); text-align: center; margin-top: 8px;">
+                        <p style="font-size: 0.65rem; color: var(--text-muted, #8A94A6); text-align: center; margin-top: 8px;">
                             <i class="fas fa-info-circle"></i> Admin approval required
                         </p>
                     </div>
@@ -1363,6 +1420,42 @@ document.addEventListener('DOMContentLoaded', function() {
             bar.style.width = target;
         }, 300);
     });
+
+    // ==========================================
+    // STATS COUNTER ANIMATION
+    // ==========================================
+    const statNumbers = document.querySelectorAll('.stat-number');
+    statNumbers.forEach(stat => {
+        const text = stat.textContent;
+        const number = parseInt(text);
+        if (!isNaN(number)) {
+            let current = 0;
+            const increment = Math.ceil(number / 25);
+            const counter = setInterval(() => {
+                current += increment;
+                if (current >= number) {
+                    stat.textContent = text;
+                    clearInterval(counter);
+                } else {
+                    stat.textContent = current;
+                }
+            }, 40);
+        }
+    });
+
+    // ==========================================
+    // CARD ENTRY ANIMATION
+    // ==========================================
+    const cards = document.querySelectorAll('.course-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(15px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100 + index * 60);
+    });
 });
 
 // ==========================================
@@ -1417,5 +1510,7 @@ document.addEventListener('keydown', function(e) {
         closeModal();
     }
 });
+
+console.log('✨ Student Courses - Gold Theme Loaded!');
 </script>
 {% endblock %}
