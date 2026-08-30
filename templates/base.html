@@ -1716,7 +1716,7 @@
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- ==========================================
-        SIDEBAR NAVIGATION - COMPLETE FOR ALL ROLES
+        SIDEBAR NAVIGATION - COMPLETE FOR ALL ROLES - FIXED
         ========================================== -->
         <nav class="sidebar {% if request.endpoint in public_pages %}hidden{% endif %}" id="sidebar">
             <div class="sidebar-nav">
@@ -1727,9 +1727,12 @@
                 <!-- ADMIN SECTION -->
                 <!-- ====================================== -->
                 <div class="nav-section">Dashboard</div>
-                <a href="{{ url_for('admin_leaderboard') }}"
-                    class="{% if request.endpoint == 'admin_leaderboard' %}active{% endif %}">
-                    <i class="fas fa-chart-bar"></i> Leaderboard
+                <a href="{{ url_for('admin_dashboard') }}"
+                    class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> Overview
+                    {% if pending_approvals is defined and pending_approvals > 0 %}
+                    <span class="nav-badge danger">{{ pending_approvals }}</span>
+                    {% endif %}
                 </a>
 
                 <!-- ====================================== -->
@@ -1829,7 +1832,9 @@
                     <i class="fas fa-file-export"></i> Export Reports
                 </a>
 
-                <!-- Student Progress Overview -->
+                <!-- ====================================== -->
+                <!-- LEADERBOARD - REMOVED BADGE -->
+                <!-- ====================================== -->
                 <a href="{{ url_for('admin_leaderboard') }}"
                     class="{% if request.endpoint == 'admin_leaderboard' %}active{% endif %}">
                     <i class="fas fa-chart-bar"></i> Leaderboard
@@ -1845,15 +1850,15 @@
                 </a>
 
                 <!-- ====================================== -->
-                <!-- SUPER ADMIN ONLY -->
+                <!-- SUPER ADMIN ONLY - FIXED -->
                 <!-- ====================================== -->
                 {% if current_user.is_super_admin() %}
                 <div class="nav-section">Super Admin</div>
                 <a href="{{ url_for('manage_admins') }}"
                     class="{% if request.endpoint in ['manage_admins', 'create_admin', 'edit_admin'] %}active{% endif %}">
                     <i class="fas fa-users-cog"></i> Admins
-                    {% set admin_count = User.query.filter_by(role='admin').count() %}
-                    {% if admin_count > 0 %}
+                    {# ✅ FIXED: Use admin_count from backend, NOT User.query #}
+                    {% if admin_count is defined and admin_count > 0 %}
                     <span class="nav-badge">{{ admin_count }}</span>
                     {% endif %}
                 </a>
@@ -2190,8 +2195,7 @@
             applySidebarState();
 
             // ========================================
-            // PROFILE DROPDOWN
-            // ========================================
+            // PROFILE DROPDOWN            // ========================================
             const profileTrigger = document.getElementById('profileTrigger');
             const profileMenu = document.getElementById('profileMenu');
 

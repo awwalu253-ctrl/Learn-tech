@@ -273,9 +273,17 @@
     color: var(--text-muted, #8A94A6);
   }
 
-  .leaderboard-header .rank { text-align: center; }
-  .leaderboard-header .score { text-align: center; }
-  .leaderboard-header .details { text-align: right; }
+  .leaderboard-header .rank {
+    text-align: center;
+  }
+
+  .leaderboard-header .score {
+    text-align: center;
+  }
+
+  .leaderboard-header .details {
+    text-align: right;
+  }
 
   /* ============================================
      LEADERBOARD ROW - Gold Theme
@@ -317,16 +325,45 @@
   }
 
   /* Row animation delays */
-  .leaderboard-row:nth-child(1) { animation-delay: 0.05s; }
-  .leaderboard-row:nth-child(2) { animation-delay: 0.08s; }
-  .leaderboard-row:nth-child(3) { animation-delay: 0.11s; }
-  .leaderboard-row:nth-child(4) { animation-delay: 0.14s; }
-  .leaderboard-row:nth-child(5) { animation-delay: 0.17s; }
-  .leaderboard-row:nth-child(6) { animation-delay: 0.20s; }
-  .leaderboard-row:nth-child(7) { animation-delay: 0.23s; }
-  .leaderboard-row:nth-child(8) { animation-delay: 0.26s; }
-  .leaderboard-row:nth-child(9) { animation-delay: 0.29s; }
-  .leaderboard-row:nth-child(10) { animation-delay: 0.32s; }
+  .leaderboard-row:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .leaderboard-row:nth-child(2) {
+    animation-delay: 0.08s;
+  }
+
+  .leaderboard-row:nth-child(3) {
+    animation-delay: 0.11s;
+  }
+
+  .leaderboard-row:nth-child(4) {
+    animation-delay: 0.14s;
+  }
+
+  .leaderboard-row:nth-child(5) {
+    animation-delay: 0.17s;
+  }
+
+  .leaderboard-row:nth-child(6) {
+    animation-delay: 0.20s;
+  }
+
+  .leaderboard-row:nth-child(7) {
+    animation-delay: 0.23s;
+  }
+
+  .leaderboard-row:nth-child(8) {
+    animation-delay: 0.26s;
+  }
+
+  .leaderboard-row:nth-child(9) {
+    animation-delay: 0.29s;
+  }
+
+  .leaderboard-row:nth-child(10) {
+    animation-delay: 0.32s;
+  }
 
   /* ============================================
      RANK - Gold Theme
@@ -361,8 +398,15 @@
   }
 
   @keyframes crownFloat {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-4px) scale(1.05); }
+
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+
+    50% {
+      transform: translateY(-4px) scale(1.05);
+    }
   }
 
   /* ============================================
@@ -564,6 +608,7 @@
       opacity: 0;
       transform: translateY(16px);
     }
+
     100% {
       opacity: 1;
       transform: translateY(0);
@@ -575,6 +620,7 @@
       opacity: 0;
       transform: translateX(-20px);
     }
+
     100% {
       opacity: 1;
       transform: translateX(0);
@@ -582,8 +628,15 @@
   }
 
   @keyframes medalGlow {
-    0%, 100% { filter: drop-shadow(0 2px 8px rgba(201, 168, 75, 0.2)); }
-    50% { filter: drop-shadow(0 2px 16px rgba(201, 168, 75, 0.4)); }
+
+    0%,
+    100% {
+      filter: drop-shadow(0 2px 8px rgba(201, 168, 75, 0.2));
+    }
+
+    50% {
+      filter: drop-shadow(0 2px 16px rgba(201, 168, 75, 0.4));
+    }
   }
 
   /* ============================================
@@ -919,9 +972,9 @@
         <h1><span>Leaderboard</span></h1>
         <p class="subtitle">
           {% if current_course %}
-            Showing results for <strong>{{ current_course.name }}</strong>
+          Showing results for <strong>{{ current_course.name }}</strong>
           {% else %}
-            See how you rank among your peers
+          See how you rank among your peers
           {% endif %}
         </p>
       </div>
@@ -933,24 +986,26 @@
     <span class="filter-label">
       <i class="fas fa-filter"></i> Filter by Course:
     </span>
-    <form method="GET" action="{{ url_for('leaderboard') }}" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
+    <form method="GET"
+      action="{% if current_course %}{{ url_for('leaderboard_by_course', course_id=current_course.id) }}{% else %}{{ url_for('leaderboard') }}{% endif %}"
+      style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
       <select name="course_id" onchange="this.form.submit()">
         <option value="">All Courses (My Classmates)</option>
         {% for course in courses %}
-          <option value="{{ course.id }}" {% if current_course_id == course.id %}selected{% endif %}>
-            {{ course.name }} ({{ course.code }})
-          </option>
+        <option value="{{ course.id }}" {% if current_course_id==course.id %}selected{% endif %}>
+          {{ course.name }} ({{ course.code }})
+        </option>
         {% endfor %}
       </select>
     </form>
 
     {% if current_course %}
-      <span class="filter-badge">
-        <i class="fas fa-book"></i> {{ current_course.name }}
-      </span>
-      <a href="{{ url_for('leaderboard') }}" class="filter-clear">
-        <i class="fas fa-times"></i> Clear Filter
-      </a>
+    <span class="filter-badge">
+      <i class="fas fa-book"></i> {{ current_course.name }}
+    </span>
+    <a href="{{ url_for('leaderboard') }}" class="filter-clear">
+      <i class="fas fa-times"></i> Clear Filter
+    </a>
     {% endif %}
   </div>
 
@@ -975,9 +1030,9 @@
       <div>
         <div class="stat-number">
           {% if student_scores %}
-            {{ (student_scores|map(attribute='score')|sum / student_scores|length)|round(0) }}%
+          {{ (student_scores|map(attribute='score')|sum / student_scores|length)|round(0) }}%
           {% else %}
-            0%
+          0%
           {% endif %}
         </div>
         <div class="stat-label">Average Score</div>
@@ -995,61 +1050,61 @@
     </div>
 
     {% if student_scores %}
-      {% for data in student_scores %}
-        <div class="leaderboard-row {% if data.student.id == current_user.id %}highlight-row{% endif %}">
-          <div class="rank">
-            {% if loop.index == 1 %}
-              <i class="fas fa-crown gold"></i>
-            {% elif loop.index == 2 %}
-              <i class="fas fa-medal silver"></i>
-            {% elif loop.index == 3 %}
-              <i class="fas fa-medal bronze"></i>
-            {% else %}
-              <span class="rank-number">#{{ loop.index }}</span>
-            {% endif %}
-          </div>
-          <div class="student-info">
-            {% set avatar_class = 'default-bg' %}
-            {% if loop.index == 1 %}{% set avatar_class = 'gold-bg' %}
-            {% elif loop.index == 2 %}{% set avatar_class = 'silver-bg' %}
-            {% elif loop.index == 3 %}{% set avatar_class = 'bronze-bg' %}
-            {% elif data.student.id == current_user.id %}{% set avatar_class = 'highlight-bg' %}
-            {% endif %}
-            <div class="student-avatar {{ avatar_class }}">
-              {{ data.student.username[0]|upper }}
-            </div>
-            <span class="student-name">{{ data.student.username }}</span>
-            {% if data.student.id == current_user.id %}
-              <span class="student-badge you">You</span>
-            {% endif %}
-          </div>
-          <div class="score">
-            <span class="score-value 
+    {% for data in student_scores %}
+    <div class="leaderboard-row {% if data.student.id == current_user.id %}highlight-row{% endif %}">
+      <div class="rank">
+        {% if loop.index == 1 %}
+        <i class="fas fa-crown gold"></i>
+        {% elif loop.index == 2 %}
+        <i class="fas fa-medal silver"></i>
+        {% elif loop.index == 3 %}
+        <i class="fas fa-medal bronze"></i>
+        {% else %}
+        <span class="rank-number">#{{ loop.index }}</span>
+        {% endif %}
+      </div>
+      <div class="student-info">
+        {% set avatar_class = 'default-bg' %}
+        {% if loop.index == 1 %}{% set avatar_class = 'gold-bg' %}
+        {% elif loop.index == 2 %}{% set avatar_class = 'silver-bg' %}
+        {% elif loop.index == 3 %}{% set avatar_class = 'bronze-bg' %}
+        {% elif data.student.id == current_user.id %}{% set avatar_class = 'highlight-bg' %}
+        {% endif %}
+        <div class="student-avatar {{ avatar_class }}">
+          {{ data.student.username[0]|upper }}
+        </div>
+        <span class="student-name">{{ data.student.username }}</span>
+        {% if data.student.id == current_user.id %}
+        <span class="student-badge you">You</span>
+        {% endif %}
+      </div>
+      <div class="score">
+        <span class="score-value 
               {% if data.score >= 70 %}excellent
               {% elif data.score >= 50 %}good
               {% elif data.score >= 30 %}needs-improvement
               {% else %}poor{% endif %}">
-              {{ data.score }}%
-            </span>
-          </div>
-          <div class="details">
-            <span class="detail-item"><i class="fas fa-question-circle"></i> {{ data.total_questions }}</span>
-            <span class="detail-item"><i class="fas fa-book"></i> {{ data.course_count }}</span>
-          </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <div class="empty-state">
-        <i class="fas fa-trophy"></i>
-        <p>No quiz data available yet.</p>
-        <p class="text-muted">Take some quizzes to appear on the leaderboard!</p>
+          {{ data.score }}%
+        </span>
       </div>
+      <div class="details">
+        <span class="detail-item"><i class="fas fa-question-circle"></i> {{ data.total_questions }}</span>
+        <span class="detail-item"><i class="fas fa-book"></i> {{ data.course_count }}</span>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-trophy"></i>
+      <p>No quiz data available yet.</p>
+      <p class="text-muted">Take some quizzes to appear on the leaderboard!</p>
+    </div>
     {% endif %}
   </div>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     // ============================================
     // STATS COUNTER ANIMATION
     // ============================================
