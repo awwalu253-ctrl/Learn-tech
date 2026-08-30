@@ -1501,24 +1501,36 @@ def delete_student(student_id):
             flash('You do not have permission to delete this student.', 'error')
             return redirect(url_for('manage_students'))
     
-    # Delete all related records
+    # Delete all related records in the correct order
     try:
-        # Delete enrollments
+        # 1. Delete student_course entries (many-to-many relationship)
+        db.session.execute(
+            'DELETE FROM student_course WHERE student_id = :student_id',
+            {'student_id': student.id}
+        )
+        
+        # 2. Delete course enrollments
         CourseEnrollment.query.filter_by(student_id=student.id).delete()
         
-        # Delete rejections
+        # 3. Delete rejections
         RejectionMessage.query.filter_by(student_id=student.id).delete()
         
-        # Delete quiz answers
+        # 4. Delete quiz answers
         QuizAnswer.query.filter_by(student_id=student.id).delete()
         
-        # Delete progress
+        # 5. Delete progress records
         StudentProgress.query.filter_by(student_id=student.id).delete()
         
-        # Delete assignment submissions
+        # 6. Delete assignment submissions
         AssignmentSubmission.query.filter_by(student_id=student.id).delete()
         
-        # Delete the user
+        # 7. Delete admin_course assignments (if the student is an admin)
+        db.session.execute(
+            'DELETE FROM admin_course WHERE admin_id = :student_id',
+            {'student_id': student.id}
+        )
+        
+        # 8. Now delete the user
         db.session.delete(student)
         db.session.commit()
         
@@ -1526,6 +1538,7 @@ def delete_student(student_id):
     except Exception as e:
         db.session.rollback()
         flash(f'Error deleting student: {str(e)}', 'error')
+        app.logger.error(f'Delete student error: {e}')
     
     return redirect(url_for('manage_students'))
 
