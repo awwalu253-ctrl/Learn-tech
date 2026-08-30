@@ -786,10 +786,12 @@ def save_setting(key, value, setting_type='string', description='', category='ge
         if setting:
             setting.value = str(value) if value is not None else ''
             setting.setting_type = setting_type
+            setting.description = description
+            setting.category = category
             setting.updated_at = datetime.utcnow()
         else:
             setting = SystemSetting(
-                key=key, 
+                key=key,
                 value=str(value) if value is not None else '',
                 setting_type=setting_type,
                 description=description,
@@ -803,29 +805,48 @@ def save_setting(key, value, setting_type='string', description='', category='ge
         app.logger.error(f'Error saving setting {key}: {e}')
         return False
 
+def get_site_name():
+    """Get the site name from settings"""
+    return get_setting('site_name', 'A-Portal LMS')
+
+
+def get_site_description():
+    """Get the site description from settings"""
+    return get_setting('site_description', 'Learning Management System')
+
+
+def get_default_language():
+    """Get the default language from settings"""
+    return get_setting('default_language', 'en')
+
+
+def get_timezone():
+    """Get the timezone from settings"""
+    return get_setting('timezone', 'UTC')
+
 
 def get_setting(key, default=None):
     """Get a system setting by key"""
     try:
         setting = SystemSetting.query.filter_by(key=key).first()
         if setting:
+            value = setting.value
             # Convert boolean strings back to booleans
-            if setting.value.lower() == 'true':
+            if value.lower() == 'true':
                 return True
-            elif setting.value.lower() == 'false':
+            elif value.lower() == 'false':
                 return False
             # Try to convert to int if possible
             try:
-                if setting.value.isdigit():
-                    return int(setting.value)
+                if value.isdigit():
+                    return int(value)
             except:
                 pass
-            return setting.value
+            return value
         return default
     except Exception as e:
         app.logger.error(f'Error getting setting {key}: {e}')
         return default
-
 
 def get_all_settings():
     """Get all system settings as a dictionary"""
@@ -833,20 +854,21 @@ def get_all_settings():
     try:
         all_settings = SystemSetting.query.all()
         for setting in all_settings:
+            value = setting.value
             # Convert boolean strings back to booleans
-            if setting.value.lower() == 'true':
+            if value.lower() == 'true':
                 settings[setting.key] = True
-            elif setting.value.lower() == 'false':
+            elif value.lower() == 'false':
                 settings[setting.key] = False
             else:
                 # Try to convert to int if possible
                 try:
-                    if setting.value.isdigit():
-                        settings[setting.key] = int(setting.value)
+                    if value.isdigit():
+                        settings[setting.key] = int(value)
                     else:
-                        settings[setting.key] = setting.value
+                        settings[setting.key] = value
                 except:
-                    settings[setting.key] = setting.value
+                    settings[setting.key] = value
         return settings
     except Exception as e:
         app.logger.error(f'Error getting all settings: {e}')
@@ -1073,13 +1095,57 @@ def load_user(user_id):
 # CONTEXT PROCESSORS
 # ============================================================================
 
+# ============================================================================
+# CONTEXT PROCESSOR - COMPLETE WITH DYNAMIC SETTINGS
+# ============================================================================
+
 @app.context_processor
 def inject_user():
+    """Inject variables into all templates"""
+    
+    # Get site settings
+    site_name = get_setting('site_name', 'A-Portal LMS')
+    site_description = get_setting('site_description', 'Learning Management System')
+    site_language = get_setting('default_language', 'en')
+    site_timezone = get_setting('timezone', 'UTC')
+    
+    # Get counts for stats
+    total_students = User.query.filter_by(role='student').count()
+    total_courses = Course.query.count()
+    total_notes = Note.query.count()
+    total_quizzes = QuizGroup.query.count()
+    total_assignments = Assignment.query.count()
+    
     return {
         'current_user': current_user,
         'now': datetime.utcnow(),
         'get_courses': lambda: current_user.get_courses() if current_user.is_authenticated else [],
-        'is_approved': lambda: current_user.is_approved if current_user.is_authenticated else False
+        'is_approved': lambda: current_user.is_approved if current_user.is_authenticated else False,
+        
+        # ============================================
+        # DYNAMIC SYSTEM SETTINGS
+        # ============================================
+        'site_name': site_name,
+        'site_description': site_description,
+        'site_language': site_language,
+        'site_timezone': site_timezone,
+        'get_setting': get_setting,
+        
+        # ============================================
+        # STATISTICS FOR HOME PAGE
+        # ============================================
+        'total_students': total_students,
+        'total_courses': total_courses,
+        'total_notes': total_notes,
+        'total_quizzes': total_quizzes,
+        'total_assignments': total_assignments,
+        
+        # ============================================
+        # ADDITIONAL HELPER FUNCTIONS
+        # ============================================
+        'get_bool_setting': get_bool_setting,
+        'get_int_setting': get_int_setting,
+        'get_str_setting': get_str_setting,
     }
 
 # ============================================================================
@@ -1097,6 +1163,7 @@ def zfill_filter(value, width):
 
 @app.route('/')
 def index():
+    """Home page with dynamic stats"""
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -4545,14 +4612,6 @@ def admin_messages():
 
 
 # ============================================================================
-# ROUTES - SUPER ADMIN (System Settings, Logs, Backup, Email Templates)
-# ============================================================================
-
-# ============================================================================
-# ROUTES - SYSTEM SETTINGS
-# ============================================================================
-
-# ============================================================================
 # ROUTES - SYSTEM SETTINGS
 # ============================================================================
 
@@ -4564,44 +4623,34 @@ def system_settings():
     
     if request.method == 'POST':
         try:
-            # ==========================================
-            # GENERAL SETTINGS
-            # ==========================================
+            # General Settings
             save_setting('site_name', request.form.get('site_name', 'A-Portal LMS'), 'string', 'Site name displayed throughout the platform', 'general')
             save_setting('site_description', request.form.get('site_description', 'Learning Management System'), 'string', 'Meta description for SEO', 'general')
             save_setting('default_language', request.form.get('default_language', 'en'), 'string', 'Default user interface language', 'general')
             save_setting('maintenance_mode', request.form.get('maintenance_mode') == 'on', 'boolean', 'Show maintenance page to all users except admins', 'general')
             save_setting('timezone', request.form.get('timezone', 'UTC'), 'string', 'Default timezone for the system', 'general')
             
-            # ==========================================
-            # STUDENT SETTINGS
-            # ==========================================
+            # Student Settings
             save_setting('auto_approve_students', request.form.get('auto_approve_students') == 'on', 'boolean', 'Automatically approve new student accounts', 'student')
             save_setting('max_courses_per_student', int(request.form.get('max_courses_per_student', 10)), 'integer', 'Maximum courses a student can enroll in', 'student')
             save_setting('allow_reapplications', request.form.get('allow_reapplications') == 'on', 'boolean', 'Allow students to reapply after rejection', 'student')
             save_setting('require_phone_number', request.form.get('require_phone_number') == 'on', 'boolean', 'Require phone number during registration', 'student')
             save_setting('student_registration_enabled', request.form.get('student_registration_enabled') == 'on', 'boolean', 'Enable student self-registration', 'student')
             
-            # ==========================================
-            # SECURITY SETTINGS
-            # ==========================================
+            # Security Settings
             save_setting('session_timeout', int(request.form.get('session_timeout', 60)), 'integer', 'Minutes before auto-logout (0 = never)', 'security')
             save_setting('require_email_verification', request.form.get('require_email_verification') == 'on', 'boolean', 'Verify email before accessing content', 'security')
             save_setting('max_login_attempts', int(request.form.get('max_login_attempts', 5)), 'integer', 'Max login attempts before lockout', 'security')
             save_setting('lockout_duration', int(request.form.get('lockout_duration', 30)), 'integer', 'Minutes user is locked out', 'security')
             save_setting('force_ssl', request.form.get('force_ssl') == 'on', 'boolean', 'Redirect all HTTP to HTTPS', 'security')
             
-            # ==========================================
-            # CONTENT SETTINGS
-            # ==========================================
+            # Content Settings
             save_setting('max_file_upload_size', int(request.form.get('max_file_upload_size', 16)), 'integer', 'Maximum file upload size in MB', 'content')
             save_setting('allowed_file_types', request.form.get('allowed_file_types', 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip'), 'string', 'Comma separated allowed file extensions', 'content')
             save_setting('enable_comments', request.form.get('enable_comments') == 'on', 'boolean', 'Allow comments on notes and assignments', 'content')
             save_setting('enable_ratings', request.form.get('enable_ratings') == 'on', 'boolean', 'Allow students to rate courses', 'content')
             
-            # ==========================================
-            # NOTIFICATION SETTINGS
-            # ==========================================
+            # Notification Settings
             save_setting('email_notifications', request.form.get('email_notifications') == 'on', 'boolean', 'Send email notifications for events', 'notification')
             save_setting('push_notifications', request.form.get('push_notifications') == 'on', 'boolean', 'Send in-app push notifications', 'notification')
             save_setting('assignment_reminders', request.form.get('assignment_reminders') == 'on', 'boolean', 'Send reminders before assignment due dates', 'notification')
@@ -4636,25 +4685,55 @@ def save_setting(key, value):
 
 def get_setting(key, default=None):
     """Get a system setting by key"""
-    setting = SystemSetting.query.filter_by(key=key).first()
-    if setting:
-        return setting.value
-    return default
+    try:
+        setting = SystemSetting.query.filter_by(key=key).first()
+        if setting:
+            value = setting.value
+            # Convert boolean strings back to booleans
+            if value.lower() == 'true':
+                return True
+            elif value.lower() == 'false':
+                return False
+            # Try to convert to int if possible
+            try:
+                if value.isdigit():
+                    return int(value)
+            except:
+                pass
+            return value
+        return default
+    except Exception as e:
+        app.logger.error(f'Error getting setting {key}: {e}')
+        return default
+
 
 
 def get_all_settings():
     """Get all system settings as a dictionary"""
     settings = {}
-    all_settings = SystemSetting.query.all()
-    for setting in all_settings:
-        # Convert boolean strings back to booleans
-        if setting.value == 'True':
-            settings[setting.key] = True
-        elif setting.value == 'False':
-            settings[setting.key] = False
-        else:
-            settings[setting.key] = setting.value
-    return settings
+    try:
+        all_settings = SystemSetting.query.all()
+        for setting in all_settings:
+            value = setting.value
+            # Convert boolean strings back to booleans
+            if value.lower() == 'true':
+                settings[setting.key] = True
+            elif value.lower() == 'false':
+                settings[setting.key] = False
+            else:
+                # Try to convert to int if possible
+                try:
+                    if value.isdigit():
+                        settings[setting.key] = int(value)
+                    else:
+                        settings[setting.key] = value
+                except:
+                    settings[setting.key] = value
+        return settings
+    except Exception as e:
+        app.logger.error(f'Error getting all settings: {e}')
+        return {}
+
 
 
 def get_int_setting(key, default=0):

@@ -1,9 +1,9 @@
 <!-- This is your redesigned home.html template -->
-<!-- Extends base.html (your base template remains unchanged) -->
+<!-- Extends base.html with dynamic settings integration -->
 
 {% extends "base.html" %}
 
-{% block title %}Home - A-Portal{% endblock %}
+{% block title %}{{ site_name or 'A-Portal' }} - Home{% endblock %}
 
 {% block content %}
 <style>
@@ -55,7 +55,6 @@
     align-items: center;
   }
 
-  /* Animated gradient background */
   .hero-section::before {
     content: '';
     position: absolute;
@@ -73,7 +72,6 @@
     50% { opacity: 1; }
   }
 
-  /* Animated gold particles */
   .hero-particles {
     position: absolute;
     inset: 0;
@@ -121,7 +119,6 @@
     }
   }
 
-  /* Floating gold accent blobs */
   .hero-blob {
     position: absolute;
     border-radius: 50%;
@@ -180,7 +177,6 @@
     align-items: center;
   }
 
-  /* Hero Left Content */
   .hero-content {
     opacity: 0;
     animation: fadeSlideUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
@@ -280,7 +276,6 @@
     gap: 14px;
   }
 
-  /* Premium Gold Buttons */
   .btn-premium {
     display: inline-flex;
     align-items: center;
@@ -352,7 +347,6 @@
     transform: scale(0.97);
   }
 
-  /* Hero Right - Stats Card */
   .hero-stats-panel {
     background: var(--secondary-bg);
     backdrop-filter: blur(16px);
@@ -548,7 +542,7 @@
   }
 
   /* ============================================
-     FEATURES SECTION - Dark Navy Cards
+     FEATURES SECTION
      ============================================ */
   .features-section {
     padding: 80px 24px 90px;
@@ -1133,12 +1127,11 @@
 
           <h1 class="hero-title">
             Welcome to <br />
-            <span class="highlight">A-Portal</span>
+            <span class="highlight">{{ site_name or 'A-Portal' }}</span>
           </h1>
 
           <p class="hero-description">
-            Empowering education through technology. Learn, grow, and achieve 
-            your goals with our comprehensive learning platform.
+            {{ site_description or 'Empowering education through technology. Learn, grow, and achieve your goals with our comprehensive learning platform.' }}
           </p>
 
           <div class="hero-actions">
@@ -1161,22 +1154,22 @@
         <div class="hero-stats-panel">
           <div class="stats-grid">
             <div class="stat-item">
-              <div class="stat-number">500+</div>
+              <div class="stat-number">{{ total_students or '500+' }}</div>
               <div class="stat-label">Students</div>
               <div class="stat-divider"></div>
             </div>
             <div class="stat-item">
-              <div class="stat-number">50+</div>
+              <div class="stat-number">{{ total_courses or '50+' }}</div>
               <div class="stat-label">Courses</div>
               <div class="stat-divider"></div>
             </div>
             <div class="stat-item">
-              <div class="stat-number">200+</div>
+              <div class="stat-number">{{ total_quizzes or '200+' }}</div>
               <div class="stat-label">Quizzes</div>
               <div class="stat-divider"></div>
             </div>
             <div class="stat-item">
-              <div class="stat-number">100+</div>
+              <div class="stat-number">{{ total_assignments or '100+' }}</div>
               <div class="stat-label">Assignments</div>
               <div class="stat-divider"></div>
             </div>
@@ -1288,7 +1281,7 @@
         <div class="testimonial-card reveal">
           <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
           <blockquote>
-            "A-Portal has completely transformed how I learn. The interactive courses and expert instructors made complex topics easy to understand."
+            "{{ site_name or 'A-Portal' }} has completely transformed how I learn. The interactive courses and expert instructors made complex topics easy to understand."
           </blockquote>
           <div class="testimonial-author">
             <div class="testimonial-avatar">CA</div>
@@ -1312,7 +1305,7 @@
             "The platform's intuitive design and comprehensive resources helped me excel in my courses. I especially loved the interactive quizzes."
           </blockquote>
           <div class="testimonial-author">
-            <div class="testimonial-avatar">YB</div>
+            <div class="testimonial-avatar">JS</div>
             <div class="testimonial-author-info">
               <h4>Yusuf Basit</h4>
               <span>Engineering Student</span>
@@ -1330,12 +1323,12 @@
         <div class="testimonial-card reveal">
           <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
           <blockquote>
-            "The community aspect of A-Portal is incredible. Collaborating with peers and learning from instructors has been a game-changer."
+            "The community aspect of {{ site_name or 'A-Portal' }} is incredible. Collaborating with peers and learning from instructors has been a game-changer."
           </blockquote>
           <div class="testimonial-author">
             <div class="testimonial-avatar">SS</div>
             <div class="testimonial-author-info">
-              <h4>Sanni Salim </h4>
+              <h4>Sanni Salim</h4>
               <span>Business Student</span>
               <div class="testimonial-rating">
                 <i class="fas fa-star"></i>
@@ -1359,7 +1352,7 @@
       <h2>Ready to <span class="highlight">start learning?</span></h2>
       <p>
         Join thousands of students and take your education to the next level.
-        Start your journey today with our comprehensive learning platform.
+        Start your journey today with {{ site_name or 'A-Portal' }}.
       </p>
       <div class="cta-buttons">
         {% if current_user.is_authenticated %}
@@ -1392,7 +1385,6 @@
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry, index) => {
         if (entry.isIntersecting) {
-          // Add staggered delay
           const delay = index * 100;
           setTimeout(() => {
             entry.target.classList.add('visible');
@@ -1452,8 +1444,7 @@
             if (!isNaN(number)) {
               let current = 0;
               const increment = Math.ceil(number / 60);
-              const duration = 2000;
-              const stepTime = duration / 60;
+              const stepTime = 2000 / 60;
               
               const counter = setInterval(() => {
                 current += increment;
@@ -1540,7 +1531,6 @@
         }
       }
       
-      // Start typing after a delay
       setTimeout(typeText, 600);
       window.typingDone = true;
     }
@@ -1574,26 +1564,7 @@
       }, 200 + index * 100);
     });
 
-    // ========================================
-    // SMOOTH SCROLL FOR ANCHOR LINKS
-    // ========================================
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        if (href !== '#') {
-          e.preventDefault();
-          const target = document.querySelector(href);
-          if (target) {
-            target.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        }
-      });
-    });
-
-    console.log('🚀 A-Portal Premium Animations Loaded!');
+    console.log('🚀 {{ site_name or "A-Portal" }} Premium Homepage Loaded!');
   });
 </script>
 {% endblock %}

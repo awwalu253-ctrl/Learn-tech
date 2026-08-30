@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ 'dark' if current_user.is_authenticated and current_user.dark_mode else 'light' }}">
+<html lang="{{ site_language or 'en' }}"
+    data-theme="{{ 'dark' if current_user.is_authenticated and current_user.dark_mode else 'light' }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}A-Portal LMS{% endblock %}</title>
-
+    <title>{% block title %}{{ site_name or 'A-Portal' }} LMS{% endblock %}</title>
+    <meta name="description" content="{{ site_description or 'Learning Management System' }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1633,7 +1634,7 @@
 
                 <a href="{{ url_for('index') }}" class="brand">
                     <span class="logo-icon"><i class="fas fa-graduation-cap"></i></span>
-                    <span class="logo-text">A-Portal</span>
+                    <span class="logo-text">{{ site_name or 'A-Portal' }}</span>
                 </a>
             </div>
 
@@ -2108,9 +2109,9 @@
         <div class="footer-container">
             <div class="footer-brand">
                 <i class="fas fa-graduation-cap"></i>
-                <span>A-Portal</span>
+                <span>{{ site_name or 'A-Portal' }}</span>
             </div>
-            <p>&copy; {{ now.year if now else 2024 }} A-Portal. All rights reserved.</p>
+            <p>&copy; {{ now.year if now else 2024 }} {{ site_name or 'A-Portal' }}. All rights reserved.</p>
             <div class="footer-links">
                 <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
                 <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>

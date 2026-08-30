@@ -1,15 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}System Settings - A-Portal{% endblock %}
+{% block title %}System Settings - {{ site_name }}{% endblock %}
 
 {% block extra_css %}
 <style>
-    .settings-page {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0;
-    }
-
+    .settings-page { max-width: 900px; margin: 0 auto; padding: 0; }
+    
     .page-header {
         display: flex;
         flex-wrap: wrap;
@@ -20,13 +16,13 @@
         opacity: 0;
         animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-
+    
     .page-header-left {
         display: flex;
         align-items: center;
         gap: 14px;
     }
-
+    
     .page-header-icon {
         width: 48px;
         height: 48px;
@@ -39,7 +35,7 @@
         font-size: 1.3rem;
         border: 1px solid rgba(201, 168, 75, 0.04);
     }
-
+    
     .page-header h1 {
         font-size: 1.5rem;
         font-weight: 700;
@@ -47,14 +43,14 @@
         letter-spacing: -0.02em;
         margin: 0;
     }
-
+    
     .page-header h1 span {
         background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
-
+    
     .page-header .subtitle {
         font-size: 0.85rem;
         color: var(--text-gray, #C8CED8);
@@ -71,11 +67,11 @@
         animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
         transition: var(--transition, 0.3s ease);
     }
-
+    
     .settings-group:hover {
         border-color: rgba(201, 168, 75, 0.08);
     }
-
+    
     .settings-group .group-title {
         font-size: 1rem;
         font-weight: 700;
@@ -87,12 +83,12 @@
         padding-bottom: 10px;
         border-bottom: 1px solid rgba(201, 168, 75, 0.04);
     }
-
+    
     .settings-group .group-title i {
         color: var(--primary-gold, #C9A84B);
         width: 20px;
     }
-
+    
     .settings-group .setting-row {
         display: flex;
         justify-content: space-between;
@@ -100,18 +96,18 @@
         padding: 10px 0;
         border-bottom: 1px solid rgba(201, 168, 75, 0.02);
     }
-
+    
     .settings-group .setting-row:last-child {
         border-bottom: none;
     }
-
+    
     .settings-group .setting-row .setting-label {
         color: var(--text-gray, #C8CED8);
         font-weight: 500;
         flex: 1;
         padding-right: 20px;
     }
-
+    
     .settings-group .setting-row .setting-label .desc {
         font-size: 0.75rem;
         color: var(--text-muted, #8A94A6);
@@ -119,14 +115,14 @@
         display: block;
         margin-top: 2px;
     }
-
+    
     .settings-group .setting-row .setting-control {
         display: flex;
         align-items: center;
         gap: 12px;
         flex-shrink: 0;
     }
-
+    
     .settings-group .setting-row .setting-control input[type="text"],
     .settings-group .setting-row .setting-control input[type="number"] {
         background: var(--primary-bg, #0A1527);
@@ -135,21 +131,21 @@
         border-radius: var(--radius-sm, 8px);
         padding: 8px 14px;
         font-size: 0.85rem;
-        width: 150px;
+        width: 180px;
         transition: var(--transition, 0.3s ease);
         font-family: 'Inter', sans-serif;
     }
-
+    
     .settings-group .setting-row .setting-control input:focus {
         outline: none;
         border-color: var(--primary-gold, #C9A84B);
         box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
     }
-
+    
     .settings-group .setting-row .setting-control input[type="number"] {
         width: 80px;
     }
-
+    
     /* Toggle Switch - Gold Theme */
     .toggle-switch {
         position: relative;
@@ -161,14 +157,14 @@
         align-items: center;
         gap: 10px;
     }
-
+    
     .toggle-switch input {
         opacity: 0;
         width: 0;
         height: 0;
         position: absolute;
     }
-
+    
     .toggle-switch .slider {
         position: relative;
         width: 48px;
@@ -178,7 +174,7 @@
         transition: var(--transition, 0.3s ease);
         flex-shrink: 0;
     }
-
+    
     .toggle-switch .slider::before {
         content: '';
         position: absolute;
@@ -190,26 +186,26 @@
         border-radius: 50%;
         transition: var(--transition, 0.3s ease);
     }
-
-    .toggle-switch input:checked+.slider {
+    
+    .toggle-switch input:checked + .slider {
         background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     }
-
-    .toggle-switch input:checked+.slider::before {
+    
+    .toggle-switch input:checked + .slider::before {
         transform: translateX(22px);
     }
-
+    
     .toggle-switch .status-label {
         font-size: 0.7rem;
         font-weight: 600;
         color: var(--text-muted);
         min-width: 30px;
     }
-
-    .toggle-switch input:checked~.status-label {
+    
+    .toggle-switch input:checked ~ .status-label {
         color: var(--primary-gold);
     }
-
+    
     .settings-group .setting-row .setting-control select {
         background: var(--primary-bg, #0A1527);
         color: var(--text-gray, #C8CED8);
@@ -221,15 +217,48 @@
         cursor: pointer;
         min-width: 150px;
     }
-
+    
     .settings-group .setting-row .setting-control select:focus {
         outline: none;
         border-color: var(--primary-gold, #C9A84B);
     }
-
+    
     .settings-group .setting-row .setting-control select option {
         background: var(--secondary-bg, #253449);
         color: var(--text-gray, #C8CED8);
+    }
+
+    /* Live Preview Box */
+    .live-preview {
+        background: var(--primary-bg, #0A1527);
+        border-radius: var(--radius-sm, 8px);
+        padding: 12px 16px;
+        margin-top: 4px;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .live-preview .preview-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-muted, #8A94A6);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    
+    .live-preview .preview-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--primary-gold, #C9A84B);
+    }
+    
+    .live-preview .preview-value i {
+        color: var(--text-muted);
+        font-weight: 400;
+        margin-right: 4px;
     }
 
     .form-actions {
@@ -239,7 +268,7 @@
         opacity: 0;
         animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
     }
-
+    
     .btn-save {
         padding: 12px 40px;
         border-radius: 60px;
@@ -251,12 +280,12 @@
         cursor: pointer;
         transition: var(--transition, 0.3s ease);
     }
-
+    
     .btn-save:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 20px rgba(201, 168, 75, 0.25);
     }
-
+    
     .btn-reset {
         padding: 12px 32px;
         border-radius: 60px;
@@ -268,7 +297,7 @@
         cursor: pointer;
         transition: var(--transition, 0.3s ease);
     }
-
+    
     .btn-reset:hover {
         border-color: var(--primary-gold, #C9A84B);
         color: var(--primary-gold, #C9A84B);
@@ -276,56 +305,53 @@
     }
 
     @keyframes fadeUp {
-        0% {
-            opacity: 0;
-            transform: translateY(16px);
-        }
+        0% { opacity: 0; transform: translateY(16px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
 
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    /* Live Preview Updates - Real-time preview */
+    .setting-row input:focus {
+        border-color: var(--primary-gold, #C9A84B);
+        box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
     }
 
     @media (max-width: 768px) {
         .settings-group {
             padding: 16px 16px;
         }
-
         .settings-group .setting-row {
             flex-direction: column;
             align-items: flex-start;
             gap: 8px;
         }
-
         .settings-group .setting-row .setting-control {
             width: 100%;
             justify-content: flex-start;
             flex-wrap: wrap;
         }
-
         .settings-group .setting-row .setting-control input[type="text"],
         .settings-group .setting-row .setting-control input[type="number"] {
             width: 100%;
             max-width: 100%;
         }
-
         .settings-group .setting-row .setting-control select {
             width: 100%;
         }
-
         .form-actions {
             flex-direction: column;
         }
-
         .form-actions .btn-save,
         .form-actions .btn-reset {
             width: 100%;
             justify-content: center;
         }
-
         .settings-group .setting-row .setting-label {
             padding-right: 0;
+        }
+        .live-preview {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
         }
     }
 
@@ -341,15 +367,15 @@
         background: var(--secondary-bg, #253449);
         border-color: rgba(201, 168, 75, 0.04);
     }
-
+    
     [data-theme="dark"] .settings-group .group-title {
         color: var(--white, #FFFFFF);
     }
-
+    
     [data-theme="dark"] .settings-group .setting-row .setting-label {
         color: var(--text-gray, #C8CED8);
     }
-
+    
     [data-theme="dark"] .settings-group .setting-row .setting-control input[type="text"],
     [data-theme="dark"] .settings-group .setting-row .setting-control input[type="number"],
     [data-theme="dark"] .settings-group .setting-row .setting-control select {
@@ -357,27 +383,32 @@
         color: var(--text-gray, #C8CED8);
         border-color: rgba(201, 168, 75, 0.06);
     }
-
+    
     [data-theme="dark"] .toggle-switch .slider {
         background: rgba(201, 168, 75, 0.06);
     }
-
-    [data-theme="dark"] .toggle-switch input:checked+.slider {
+    
+    [data-theme="dark"] .toggle-switch input:checked + .slider {
         background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     }
-
+    
     [data-theme="dark"] .btn-reset {
         color: var(--text-gray, #C8CED8);
         border-color: rgba(201, 168, 75, 0.04);
     }
-
+    
     [data-theme="dark"] .btn-reset:hover {
         border-color: var(--primary-gold, #C9A84B);
         color: var(--primary-gold, #C9A84B);
     }
-
+    
     [data-theme="dark"] .toggle-switch .slider::before {
         background: var(--white, #FFFFFF);
+    }
+    
+    [data-theme="dark"] .live-preview {
+        background: var(--primary-bg, #0A1527);
+        border-color: rgba(201, 168, 75, 0.04);
     }
 </style>
 {% endblock %}
@@ -394,8 +425,7 @@
                 <p class="subtitle">Configure system preferences and defaults</p>
             </div>
         </div>
-        <span
-            style="padding: 6px 16px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); font-size: 0.8rem; font-weight: 600;">
+        <span style="padding: 6px 16px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); font-size: 0.8rem; font-weight: 600;">
             <i class="fas fa-database"></i> Settings saved in database
         </span>
     </div>
@@ -406,80 +436,91 @@
         <!-- ========================================== -->
         <div class="settings-group">
             <div class="group-title"><i class="fas fa-globe"></i> General Settings</div>
-
+            
+            <!-- Site Name -->
             <div class="setting-row">
                 <div class="setting-label">
                     Site Name
                     <span class="desc">Displayed throughout the platform</span>
                 </div>
                 <div class="setting-control">
-                    <input type="text" name="site_name" value="{{ settings.get('site_name', 'A-Portal LMS') }}">
+                    <input type="text" name="site_name" id="siteNameInput" value="{{ settings.get('site_name', 'A-Portal LMS') }}" style="width: 220px;">
                 </div>
             </div>
-
+            
+            <!-- Site Description -->
             <div class="setting-row">
                 <div class="setting-label">
                     Site Description
                     <span class="desc">Meta description for SEO</span>
                 </div>
                 <div class="setting-control">
-                    <input type="text" name="site_description"
-                        value="{{ settings.get('site_description', 'Learning Management System') }}"
-                        style="width: 220px;">
+                    <input type="text" name="site_description" id="siteDescriptionInput" value="{{ settings.get('site_description', 'Learning Management System') }}" style="width: 260px;">
                 </div>
             </div>
-
+            
+            <!-- Default Language -->
             <div class="setting-row">
                 <div class="setting-label">
                     Default Language
                     <span class="desc">User interface language</span>
                 </div>
                 <div class="setting-control">
-                    <select name="default_language">
-                        <option value="en" {% if settings.get('default_language')=='en' %}selected{% endif %}>English
-                        </option>
-                        <option value="es" {% if settings.get('default_language')=='es' %}selected{% endif %}>Spanish
-                        </option>
-                        <option value="fr" {% if settings.get('default_language')=='fr' %}selected{% endif %}>French
-                        </option>
-                        <option value="de" {% if settings.get('default_language')=='de' %}selected{% endif %}>German
-                        </option>
-                        <option value="pt" {% if settings.get('default_language')=='pt' %}selected{% endif %}>Portuguese
-                        </option>
+                    <select name="default_language" id="languageSelect">
+                        <option value="en" {% if settings.get('default_language') == 'en' %}selected{% endif %}>English</option>
+                        <option value="es" {% if settings.get('default_language') == 'es' %}selected{% endif %}>Spanish</option>
+                        <option value="fr" {% if settings.get('default_language') == 'fr' %}selected{% endif %}>French</option>
+                        <option value="de" {% if settings.get('default_language') == 'de' %}selected{% endif %}>German</option>
+                        <option value="pt" {% if settings.get('default_language') == 'pt' %}selected{% endif %}>Portuguese</option>
+                        <option value="ar" {% if settings.get('default_language') == 'ar' %}selected{% endif %}>Arabic</option>
+                        <option value="zh" {% if settings.get('default_language') == 'zh' %}selected{% endif %}>Chinese</option>
+                        <option value="ja" {% if settings.get('default_language') == 'ja' %}selected{% endif %}>Japanese</option>
                     </select>
                 </div>
             </div>
-
+            
+            <!-- Timezone -->
             <div class="setting-row">
                 <div class="setting-label">
                     Timezone
                     <span class="desc">Default timezone for the system</span>
                 </div>
                 <div class="setting-control">
-                    <select name="timezone">
-                        <option value="UTC" {% if settings.get('timezone')=='UTC' %}selected{% endif %}>UTC</option>
-                        <option value="America/New_York" {% if settings.get('timezone')=='America/New_York' %}selected{%
-                            endif %}>Eastern Time (US)</option>
-                        <option value="America/Chicago" {% if settings.get('timezone')=='America/Chicago' %}selected{%
-                            endif %}>Central Time (US)</option>
-                        <option value="America/Denver" {% if settings.get('timezone')=='America/Denver' %}selected{%
-                            endif %}>Mountain Time (US)</option>
-                        <option value="America/Los_Angeles" {% if settings.get('timezone')=='America/Los_Angeles'
-                            %}selected{% endif %}>Pacific Time (US)</option>
-                        <option value="Europe/London" {% if settings.get('timezone')=='Europe/London' %}selected{% endif
-                            %}>London</option>
-                        <option value="Europe/Paris" {% if settings.get('timezone')=='Europe/Paris' %}selected{% endif
-                            %}>Paris</option>
-                        <option value="Asia/Dubai" {% if settings.get('timezone')=='Asia/Dubai' %}selected{% endif %}>
-                            Dubai</option>
-                        <option value="Asia/Tokyo" {% if settings.get('timezone')=='Asia/Tokyo' %}selected{% endif %}>
-                            Tokyo</option>
-                        <option value="Australia/Sydney" {% if settings.get('timezone')=='Australia/Sydney' %}selected{%
-                            endif %}>Sydney</option>
+                    <select name="timezone" id="timezoneSelect">
+                        <option value="UTC" {% if settings.get('timezone') == 'UTC' %}selected{% endif %}>UTC</option>
+                        <option value="America/New_York" {% if settings.get('timezone') == 'America/New_York' %}selected{% endif %}>Eastern Time (US)</option>
+                        <option value="America/Chicago" {% if settings.get('timezone') == 'America/Chicago' %}selected{% endif %}>Central Time (US)</option>
+                        <option value="America/Denver" {% if settings.get('timezone') == 'America/Denver' %}selected{% endif %}>Mountain Time (US)</option>
+                        <option value="America/Los_Angeles" {% if settings.get('timezone') == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (US)</option>
+                        <option value="Europe/London" {% if settings.get('timezone') == 'Europe/London' %}selected{% endif %}>London</option>
+                        <option value="Europe/Paris" {% if settings.get('timezone') == 'Europe/Paris' %}selected{% endif %}>Paris</option>
+                        <option value="Asia/Dubai" {% if settings.get('timezone') == 'Asia/Dubai' %}selected{% endif %}>Dubai</option>
+                        <option value="Asia/Tokyo" {% if settings.get('timezone') == 'Asia/Tokyo' %}selected{% endif %}>Tokyo</option>
+                        <option value="Australia/Sydney" {% if settings.get('timezone') == 'Australia/Sydney' %}selected{% endif %}>Sydney</option>
+                        <option value="Africa/Lagos" {% if settings.get('timezone') == 'Africa/Lagos' %}selected{% endif %}>Lagos</option>
+                        <option value="Africa/Johannesburg" {% if settings.get('timezone') == 'Africa/Johannesburg' %}selected{% endif %}>Johannesburg</option>
                     </select>
                 </div>
             </div>
-
+            
+            <!-- Live Preview -->
+            <div class="live-preview">
+                <span class="preview-label"><i class="fas fa-eye"></i> Live Preview</span>
+                <span class="preview-value" id="siteNamePreview">
+                    <i class="fas fa-globe"></i> {{ settings.get('site_name', 'A-Portal LMS') }}
+                </span>
+                <span class="preview-value" id="siteDescriptionPreview" style="font-weight: 400; color: var(--text-gray);">
+                    {{ settings.get('site_description', 'Learning Management System') }}
+                </span>
+                <span class="preview-value" id="languagePreview" style="font-weight: 400; color: var(--text-muted); font-size: 0.8rem;">
+                    <i class="fas fa-language"></i> {{ settings.get('default_language', 'en')|upper }}
+                </span>
+                <span class="preview-value" id="timezonePreview" style="font-weight: 400; color: var(--text-muted); font-size: 0.8rem;">
+                    <i class="fas fa-clock"></i> {{ settings.get('timezone', 'UTC') }}
+                </span>
+            </div>
+            
+            <!-- Maintenance Mode -->
             <div class="setting-row">
                 <div class="setting-label">
                     Maintenance Mode
@@ -487,8 +528,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="maintenance_mode" {% if settings.get('maintenance_mode')==True
-                            %}checked{% endif %}>
+                        <input type="checkbox" name="maintenance_mode" {% if settings.get('maintenance_mode') == True %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('maintenance_mode') == True %}ON{% else %}OFF{% endif %}
@@ -503,7 +543,7 @@
         <!-- ========================================== -->
         <div class="settings-group">
             <div class="group-title"><i class="fas fa-user-graduate"></i> Student Settings</div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Auto-approve Students
@@ -511,8 +551,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="auto_approve_students" {% if
-                            settings.get('auto_approve_students')==True %}checked{% endif %}>
+                        <input type="checkbox" name="auto_approve_students" {% if settings.get('auto_approve_students') == True %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('auto_approve_students') == True %}ON{% else %}OFF{% endif %}
@@ -520,18 +559,17 @@
                     </label>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Max Courses per Student
                     <span class="desc">Maximum courses a student can enroll in</span>
                 </div>
                 <div class="setting-control">
-                    <input type="number" name="max_courses_per_student"
-                        value="{{ settings.get('max_courses_per_student', 10) }}" min="1" max="50">
+                    <input type="number" name="max_courses_per_student" value="{{ settings.get('max_courses_per_student', 10) }}" min="1" max="50">
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Allow Re-applications
@@ -539,8 +577,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="allow_reapplications" {% if settings.get('allow_reapplications')
-                            !=False %}checked{% endif %}>
+                        <input type="checkbox" name="allow_reapplications" {% if settings.get('allow_reapplications') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('allow_reapplications') != False %}ON{% else %}OFF{% endif %}
@@ -548,7 +585,7 @@
                     </label>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Require Phone Number
@@ -556,8 +593,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="require_phone_number" {% if settings.get('require_phone_number')
-                            !=False %}checked{% endif %}>
+                        <input type="checkbox" name="require_phone_number" {% if settings.get('require_phone_number') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('require_phone_number') != False %}ON{% else %}OFF{% endif %}
@@ -565,7 +601,7 @@
                     </label>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Student Registration
@@ -573,8 +609,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="student_registration_enabled" {% if
-                            settings.get('student_registration_enabled') !=False %}checked{% endif %}>
+                        <input type="checkbox" name="student_registration_enabled" {% if settings.get('student_registration_enabled') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('student_registration_enabled') != False %}ON{% else %}OFF{% endif %}
@@ -589,18 +624,17 @@
         <!-- ========================================== -->
         <div class="settings-group">
             <div class="group-title"><i class="fas fa-shield-alt"></i> Security Settings</div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Session Timeout
                     <span class="desc">Minutes before auto-logout (0 = never)</span>
                 </div>
                 <div class="setting-control">
-                    <input type="number" name="session_timeout" value="{{ settings.get('session_timeout', 60) }}"
-                        min="0" max="480">
+                    <input type="number" name="session_timeout" value="{{ settings.get('session_timeout', 60) }}" min="0" max="480">
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Require Email Verification
@@ -608,8 +642,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="require_email_verification" {% if
-                            settings.get('require_email_verification')==True %}checked{% endif %}>
+                        <input type="checkbox" name="require_email_verification" {% if settings.get('require_email_verification') == True %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('require_email_verification') == True %}ON{% else %}OFF{% endif %}
@@ -617,29 +650,27 @@
                     </label>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Max Login Attempts
                     <span class="desc">Before temporary lockout</span>
                 </div>
                 <div class="setting-control">
-                    <input type="number" name="max_login_attempts" value="{{ settings.get('max_login_attempts', 5) }}"
-                        min="1" max="10">
+                    <input type="number" name="max_login_attempts" value="{{ settings.get('max_login_attempts', 5) }}" min="1" max="10">
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Lockout Duration
                     <span class="desc">Minutes user is locked out</span>
                 </div>
                 <div class="setting-control">
-                    <input type="number" name="lockout_duration" value="{{ settings.get('lockout_duration', 30) }}"
-                        min="5" max="1440">
+                    <input type="number" name="lockout_duration" value="{{ settings.get('lockout_duration', 30) }}" min="5" max="1440">
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Force SSL
@@ -647,8 +678,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="force_ssl" {% if settings.get('force_ssl') !=False %}checked{%
-                            endif %}>
+                        <input type="checkbox" name="force_ssl" {% if settings.get('force_ssl') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('force_ssl') != False %}ON{% else %}OFF{% endif %}
@@ -663,31 +693,28 @@
         <!-- ========================================== -->
         <div class="settings-group">
             <div class="group-title"><i class="fas fa-file-alt"></i> Content Settings</div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Max File Upload Size
                     <span class="desc">In megabytes</span>
                 </div>
                 <div class="setting-control">
-                    <input type="number" name="max_file_upload_size"
-                        value="{{ settings.get('max_file_upload_size', 16) }}" min="1" max="100">
+                    <input type="number" name="max_file_upload_size" value="{{ settings.get('max_file_upload_size', 16) }}" min="1" max="100">
                     <span style="color: var(--text-muted); font-size: 0.8rem;">MB</span>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Allowed File Types
                     <span class="desc">Comma separated extensions</span>
                 </div>
                 <div class="setting-control">
-                    <input type="text" name="allowed_file_types"
-                        value="{{ settings.get('allowed_file_types', 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip') }}"
-                        style="width: 250px;">
+                    <input type="text" name="allowed_file_types" value="{{ settings.get('allowed_file_types', 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip') }}" style="width: 250px;">
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Enable Comments
@@ -695,8 +722,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="enable_comments" {% if settings.get('enable_comments')==True
-                            %}checked{% endif %}>
+                        <input type="checkbox" name="enable_comments" {% if settings.get('enable_comments') == True %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('enable_comments') == True %}ON{% else %}OFF{% endif %}
@@ -704,7 +730,7 @@
                     </label>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Enable Ratings
@@ -712,8 +738,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="enable_ratings" {% if settings.get('enable_ratings') !=False
-                            %}checked{% endif %}>
+                        <input type="checkbox" name="enable_ratings" {% if settings.get('enable_ratings') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('enable_ratings') != False %}ON{% else %}OFF{% endif %}
@@ -728,7 +753,7 @@
         <!-- ========================================== -->
         <div class="settings-group">
             <div class="group-title"><i class="fas fa-bell"></i> Notification Settings</div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Email Notifications
@@ -736,8 +761,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="email_notifications" {% if settings.get('email_notifications')
-                            !=False %}checked{% endif %}>
+                        <input type="checkbox" name="email_notifications" {% if settings.get('email_notifications') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('email_notifications') != False %}ON{% else %}OFF{% endif %}
@@ -745,7 +769,7 @@
                     </label>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Push Notifications
@@ -753,8 +777,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="push_notifications" {% if settings.get('push_notifications')
-                            !=False %}checked{% endif %}>
+                        <input type="checkbox" name="push_notifications" {% if settings.get('push_notifications') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('push_notifications') != False %}ON{% else %}OFF{% endif %}
@@ -762,7 +785,7 @@
                     </label>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Assignment Reminders
@@ -770,8 +793,7 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="assignment_reminders" {% if settings.get('assignment_reminders')
-                            !=False %}checked{% endif %}>
+                        <input type="checkbox" name="assignment_reminders" {% if settings.get('assignment_reminders') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
                             {% if settings.get('assignment_reminders') != False %}ON{% else %}OFF{% endif %}
@@ -779,15 +801,14 @@
                     </label>
                 </div>
             </div>
-
+            
             <div class="setting-row">
                 <div class="setting-label">
                     Reminder Days Before
                     <span class="desc">How many days before due date to send reminder</span>
                 </div>
                 <div class="setting-control">
-                    <input type="number" name="reminder_days_before"
-                        value="{{ settings.get('reminder_days_before', 3) }}" min="1" max="14">
+                    <input type="number" name="reminder_days_before" value="{{ settings.get('reminder_days_before', 3) }}" min="1" max="14">
                 </div>
             </div>
         </div>
@@ -807,10 +828,57 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Update status labels when toggles change
-        document.querySelectorAll('.toggle-switch input[type="checkbox"]').forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
+    document.addEventListener('DOMContentLoaded', function() {
+        // ============================================
+        // LIVE PREVIEW UPDATES
+        // ============================================
+        const siteNameInput = document.getElementById('siteNameInput');
+        const siteNamePreview = document.getElementById('siteNamePreview');
+        const siteDescriptionInput = document.getElementById('siteDescriptionInput');
+        const siteDescriptionPreview = document.getElementById('siteDescriptionPreview');
+        const languageSelect = document.getElementById('languageSelect');
+        const languagePreview = document.getElementById('languagePreview');
+        const timezoneSelect = document.getElementById('timezoneSelect');
+        const timezonePreview = document.getElementById('timezonePreview');
+
+        // Site Name live preview
+        if (siteNameInput && siteNamePreview) {
+            siteNameInput.addEventListener('input', function() {
+                const value = this.value || 'A-Portal LMS';
+                siteNamePreview.innerHTML = `<i class="fas fa-globe"></i> ${value}`;
+            });
+        }
+
+        // Site Description live preview
+        if (siteDescriptionInput && siteDescriptionPreview) {
+            siteDescriptionInput.addEventListener('input', function() {
+                const value = this.value || 'Learning Management System';
+                siteDescriptionPreview.textContent = value;
+            });
+        }
+
+        // Language live preview
+        if (languageSelect && languagePreview) {
+            languageSelect.addEventListener('change', function() {
+                const value = this.value || 'en';
+                const label = this.options[this.selectedIndex].text;
+                languagePreview.innerHTML = `<i class="fas fa-language"></i> ${label}`;
+            });
+        }
+
+        // Timezone live preview
+        if (timezoneSelect && timezonePreview) {
+            timezoneSelect.addEventListener('change', function() {
+                const value = this.value || 'UTC';
+                timezonePreview.innerHTML = `<i class="fas fa-clock"></i> ${value}`;
+            });
+        }
+
+        // ============================================
+        // TOGGLE SWITCH STATUS LABELS
+        // ============================================
+        document.querySelectorAll('.toggle-switch input[type="checkbox"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
                 const statusLabel = this.parentElement.querySelector('.status-label');
                 if (this.checked) {
                     statusLabel.textContent = 'ON';
@@ -823,7 +891,7 @@
         });
 
         // Set initial toggle states
-        document.querySelectorAll('.toggle-switch').forEach(function (toggle) {
+        document.querySelectorAll('.toggle-switch').forEach(function(toggle) {
             const checkbox = toggle.querySelector('input[type="checkbox"]');
             const statusLabel = toggle.querySelector('.status-label');
             if (checkbox.checked) {
@@ -846,7 +914,7 @@
     }
 
     // Form submission indicator
-    document.getElementById('settingsForm').addEventListener('submit', function () {
+    document.getElementById('settingsForm').addEventListener('submit', function() {
         const btn = document.querySelector('.btn-save');
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         btn.disabled = true;
