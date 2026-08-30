@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Email Template - A-Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-page { max-width: 800px; margin: 0 auto; padding: 0; }
+    
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    
+    .page-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm, 10px);
+        background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold, #C9A84B);
+        font-size: 1.3rem;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+    
+    .page-header h1 span {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .page-header .subtitle {
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        margin: 2px 0 0;
+    }
+
+    .form-container {
+        background: var(--secondary-bg, #253449);
+        border-radius: var(--radius, 16px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        padding: 32px 36px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        margin-bottom: 6px;
+    }
+    
+    .form-group label .required {
+        color: #EF4444;
+        margin-left: 2px;
+    }
+    
+    .form-group .help-text {
+        font-size: 0.75rem;
+        color: var(--text-muted, #8A94A6);
+        margin-top: 4px;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        background: var(--primary-bg, #0A1527);
+        color: var(--text-gray, #C8CED8);
+        border: 1px solid rgba(201,168,75,0.06);
+        border-radius: var(--radius-sm, 8px);
+        padding: 10px 14px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        transition: var(--transition, 0.3s ease);
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--primary-gold, #C9A84B);
+        box-shadow: 0 0 0 3px rgba(201,168,75,0.06);
+    }
+    
+    .form-group textarea {
+        min-height: 200px;
+        resize: vertical;
+        font-family: 'Inter', monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+    
+    .form-group .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .form-group .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary-gold, #C9A84B);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    
+    .form-group .checkbox-group label {
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(201,168,75,0.04);
+        margin-top: 4px;
+    }
+    
+    .btn-primary {
+        padding: 10px 32px;
+        border-radius: 60px;
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition, 0.3s ease);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(201,168,75,0.2);
+    }
+    
+    .btn-secondary {
+        padding: 10px 32px;
+        border-radius: 60px;
+        background: transparent;
+        color: var(--text-gray, #C8CED8);
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid rgba(201,168,75,0.04);
+        cursor: pointer;
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+    }
+    
+    .btn-secondary:hover {
+        border-color: var(--primary-gold, #C9A84B);
+        color: var(--primary-gold, #C9A84B);
+        transform: translateY(-2px);
+    }
+
+    .template-info {
+        background: rgba(201,168,75,0.02);
+        border-radius: var(--radius-sm, 8px);
+        padding: 10px 16px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(201,168,75,0.02);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    
+    .template-info strong {
+        color: var(--text-gray);
+    }
+
+    @keyframes fadeUp {
+        0% { opacity: 0; transform: translateY(16px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 20px 16px;
+        }
+        .form-actions {
+            flex-direction: column;
+        }
+        .form-actions .btn-primary,
+        .form-actions .btn-secondary {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] .form-container {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201,168,75,0.04);
+    }
+    
+    [data-theme="dark"] .form-group input,
+    [data-theme="dark"] .form-group textarea,
+    [data-theme="dark"] .form-group select {
+        background: var(--primary-bg, #0A1527);
+        color: var(--text-gray, #C8CED8);
+        border-color: rgba(201,168,75,0.06);
+    }
+    
+    [data-theme="dark"] .form-group label {
+        color: var(--text-gray, #C8CED8);
+    }
+    
+    [data-theme="dark"] .template-info {
+        background: rgba(201,168,75,0.02);
+        border-color: rgba(201,168,75,0.02);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon">
+                <i class="fas fa-edit"></i>
+            </div>
+            <div>
+                <h1><span>Edit Email Template</span></h1>
+                <p class="subtitle">Update the email template</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <div class="template-info">
+            <strong>Template:</strong> {{ template.name }} &middot;
+            <strong>Created:</strong> {{ template.created_at.strftime('%Y-%m-%d %H:%M') }} &middot;
+            <strong>Last Updated:</strong> {{ template.updated_at.strftime('%Y-%m-%d %H:%M') if template.updated_at else 'Never' }}
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>Template Name <span class="required">*</span></label>
+                <input type="text" name="name" value="{{ template.name }}" required>
+                <div class="help-text">Unique identifier for this template. Use lowercase and underscores.</div>
+            </div>
+
+            <div class="form-group">
+                <label>Subject <span class="required">*</span></label>
+                <input type="text" name="subject" value="{{ template.subject }}" required>
+                <div class="help-text">The subject line of the email. You can use variables like {{ user.username }}.</div>
+            </div>
+
+            <div class="form-group">
+                <label>Email Body <span class="required">*</span></label>
+                <textarea name="body" required>{{ template.body }}</textarea>
+                <div class="help-text">
+                    <strong>Available variables:</strong> 
+                    {{ user.username }}, {{ user.email }}, {{ course.name }}, {{ assignment.title }}, {{ quiz.title }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" name="description" value="{{ template.description or '' }}">
+                <div class="help-text">Optional description to help identify this template's purpose.</div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" name="is_active" {% if template.is_active %}checked{% endif %}>
+                    <label>Active</label>
+                </div>
+                <div class="help-text">If active, this template can be used for sending emails.</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Update Template
+                </button>
+                <a href="{{ url_for('email_templates') }}" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

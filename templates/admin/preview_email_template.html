@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}Preview Email Template - A-Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-page { max-width: 800px; margin: 0 auto; padding: 0; }
+    
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    
+    .page-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm, 10px);
+        background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold, #C9A84B);
+        font-size: 1.3rem;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+    
+    .page-header h1 span {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .page-header .subtitle {
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        margin: 2px 0 0;
+    }
+    
+    .preview-container {
+        background: var(--secondary-bg, #253449);
+        border-radius: var(--radius, 16px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        overflow: hidden;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+    }
+    
+    .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 20px;
+        background: rgba(201,168,75,0.02);
+        border-bottom: 1px solid rgba(201,168,75,0.04);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    
+    .preview-header .status-badge {
+        font-size: 0.6rem;
+        font-weight: 600;
+        padding: 2px 12px;
+        border-radius: 100px;
+    }
+    
+    .preview-header .status-badge.active {
+        background: rgba(5,150,105,0.08);
+        color: #059669;
+        border: 1px solid rgba(5,150,105,0.04);
+    }
+    
+    .preview-header .status-badge.inactive {
+        background: rgba(239,68,68,0.08);
+        color: #EF4444;
+        border: 1px solid rgba(239,68,68,0.04);
+    }
+    
+    .preview-body {
+        padding: 24px 28px;
+    }
+    
+    .preview-body .email-subject {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(201,168,75,0.04);
+        margin-bottom: 16px;
+    }
+    
+    .preview-body .email-subject strong {
+        color: var(--text-gray);
+    }
+    
+    .preview-body .email-content {
+        font-size: 0.95rem;
+        color: var(--text-gray);
+        line-height: 1.8;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .preview-actions {
+        display: flex;
+        gap: 12px;
+        padding: 16px 28px 24px;
+        border-top: 1px solid rgba(201,168,75,0.04);
+        flex-wrap: wrap;
+    }
+    
+    .btn-primary {
+        padding: 8px 24px;
+        border-radius: 60px;
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(201,168,75,0.2);
+        color: var(--white, #FFFFFF);
+    }
+    
+    .btn-secondary {
+        padding: 8px 24px;
+        border-radius: 60px;
+        background: transparent;
+        color: var(--text-gray, #C8CED8);
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: 1px solid rgba(201,168,75,0.04);
+        cursor: pointer;
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-secondary:hover {
+        border-color: var(--primary-gold, #C9A84B);
+        color: var(--primary-gold, #C9A84B);
+        transform: translateY(-2px);
+    }
+
+    @keyframes fadeUp {
+        0% { opacity: 0; transform: translateY(16px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .preview-body {
+            padding: 16px;
+        }
+        .preview-actions {
+            flex-direction: column;
+        }
+        .preview-actions .btn-primary,
+        .preview-actions .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] .preview-container {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201,168,75,0.04);
+    }
+    
+    [data-theme="dark"] .preview-body .email-content {
+        color: var(--text-gray, #C8CED8);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="preview-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+            <div>
+                <h1><span>Preview Email Template</span></h1>
+                <p class="subtitle">{{ template.name }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="preview-container">
+        <div class="preview-header">
+            <span>Template Preview</span>
+            <span class="status-badge {% if template.is_active %}active{% else %}inactive{% endif %}">
+                {% if template.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+        </div>
+
+        <div class="preview-body">
+            <div class="email-subject">
+                <strong>Subject:</strong> {{ template.subject }}
+            </div>
+            <div class="email-content">{{ template.body }}</div>
+        </div>
+
+        <div class="preview-actions">
+            <a href="{{ url_for('edit_email_template', template_id=template.id) }}" class="btn-primary">
+                <i class="fas fa-edit"></i> Edit Template
+            </a>
+            <a href="{{ url_for('email_templates') }}" class="btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Templates
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -2,124 +2,570 @@
 
 {% block title %}Email Templates - A-Portal{% endblock %}
 
-{% block content %}
+{% block extra_css %}
 <style>
-    .email-templates-page { max-width: 1000px; margin: 0 auto; padding: 0; }
-    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-    .page-header-left { display: flex; align-items: center; gap: 14px; }
-    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
-    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
-    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+    .templates-page { max-width: 1200px; margin: 0 auto; padding: 0; }
+    
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    
+    .page-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm, 10px);
+        background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold, #C9A84B);
+        font-size: 1.3rem;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+    
+    .page-header h1 span {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .page-header .subtitle {
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        margin: 2px 0 0;
+    }
+    
+    .btn-create {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        border-radius: 60px;
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+        box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
+        color: var(--white, #FFFFFF);
+    }
 
-    .template-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); padding: 20px 24px; margin-bottom: 16px; transition: var(--transition, 0.3s ease); opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
-    .template-card:hover { border-color: rgba(201,168,75,0.08); }
-    .template-card .template-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .template-card .template-header h3 { font-size: 1rem; font-weight: 700; color: var(--white, #FFFFFF); margin: 0; }
-    .template-card .template-header .template-badge { font-size: 0.6rem; font-weight: 600; padding: 2px 12px; border-radius: 100px; background: rgba(201,168,75,0.08); color: var(--primary-gold); }
-    .template-card .template-preview { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 8px 0 12px; padding: 12px 16px; background: rgba(201,168,75,0.02); border-radius: var(--radius-sm); border-left: 3px solid var(--primary-gold); }
-    .template-card .template-actions { display: flex; gap: 8px; }
-    .template-card .template-actions .btn-sm { padding: 6px 16px; border-radius: 60px; font-weight: 600; font-size: 0.75rem; border: none; cursor: pointer; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-    .template-card .template-actions .btn-edit { background: rgba(201,168,75,0.06); color: var(--primary-gold); border: 1px solid rgba(201,168,75,0.04); }
-    .template-card .template-actions .btn-edit:hover { background: rgba(201,168,75,0.12); transform: translateY(-2px); }
-    .template-card .template-actions .btn-preview { background: transparent; color: var(--text-gray); border: 1px solid rgba(201,168,75,0.04); }
-    .template-card .template-actions .btn-preview:hover { border-color: var(--primary-gold); color: var(--primary-gold); transform: translateY(-2px); }
+    /* Stats Row */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+    }
+    
+    .stat-card {
+        background: var(--secondary-bg, #253449);
+        padding: 14px 18px;
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition, 0.3s ease);
+    }
+    
+    .stat-card:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+        transform: translateY(-2px);
+        border-color: rgba(201, 168, 75, 0.08);
+    }
+    
+    .stat-card .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm, 8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    
+    .stat-card .icon.gold {
+        background: rgba(201,168,75,0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
+    
+    .stat-card .icon.green {
+        background: rgba(5,150,105,0.08);
+        color: #059669;
+    }
+    
+    .stat-card .icon.red {
+        background: rgba(239,68,68,0.08);
+        color: #EF4444;
+    }
+    
+    .stat-card .number {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        line-height: 1.2;
+    }
+    
+    .stat-card .label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-muted, #8A94A6);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
 
-    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    /* Template Grid */
+    .template-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 20px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    }
+    
+    .template-card {
+        background: var(--secondary-bg, #253449);
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        padding: 20px 20px 18px;
+        transition: var(--transition, 0.3s ease);
+    }
+    
+    .template-card:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+        transform: translateY(-4px);
+        border-color: rgba(201, 168, 75, 0.08);
+    }
+    
+    .template-card .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 6px;
+    }
+    
+    .template-card .card-header h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        margin: 0;
+    }
+    
+    .template-card .card-header .status-badge {
+        font-size: 0.6rem;
+        font-weight: 600;
+        padding: 2px 12px;
+        border-radius: 100px;
+        white-space: nowrap;
+    }
+    
+    .template-card .card-header .status-badge.active {
+        background: rgba(5,150,105,0.08);
+        color: #059669;
+        border: 1px solid rgba(5,150,105,0.04);
+    }
+    
+    .template-card .card-header .status-badge.inactive {
+        background: rgba(239,68,68,0.08);
+        color: #EF4444;
+        border: 1px solid rgba(239,68,68,0.04);
+    }
+    
+    .template-card .template-subject {
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        margin: 4px 0 6px;
+    }
+    
+    .template-card .template-subject strong {
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+    
+    .template-card .template-body {
+        font-size: 0.8rem;
+        color: var(--text-muted, #8A94A6);
+        background: var(--primary-bg, #0A1527);
+        padding: 10px 14px;
+        border-radius: var(--radius-sm, 8px);
+        margin: 8px 0 12px;
+        max-height: 80px;
+        overflow: hidden;
+        border: 1px solid rgba(201,168,75,0.02);
+        line-height: 1.5;
+    }
+    
+    .template-card .template-body .preview-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .template-card .template-meta {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+    }
+    
+    .template-card .template-meta i {
+        color: var(--primary-gold, #C9A84B);
+        width: 14px;
+    }
+    
+    .template-card .template-actions {
+        display: flex;
+        gap: 6px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(201,168,75,0.04);
+        flex-wrap: wrap;
+    }
+    
+    .btn-sm {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 60px;
+        font-weight: 600;
+        font-size: 0.72rem;
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-primary-sm {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+    }
+    
+    .btn-primary-sm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(201,168,75,0.2);
+        color: var(--white, #FFFFFF);
+    }
+    
+    .btn-outline-sm {
+        background: transparent;
+        color: var(--text-gray, #C8CED8);
+        border: 1px solid rgba(201,168,75,0.04);
+    }
+    
+    .btn-outline-sm:hover {
+        border-color: var(--primary-gold, #C9A84B);
+        color: var(--primary-gold, #C9A84B);
+        transform: translateY(-2px);
+    }
+    
+    .btn-success-sm {
+        background: rgba(5,150,105,0.08);
+        color: #059669;
+        border: 1px solid rgba(5,150,105,0.04);
+    }
+    
+    .btn-success-sm:hover {
+        background: rgba(5,150,105,0.15);
+        transform: translateY(-2px);
+    }
+    
+    .btn-danger-sm {
+        background: rgba(239,68,68,0.08);
+        color: #EF4444;
+        border: 1px solid rgba(239,68,68,0.04);
+    }
+    
+    .btn-danger-sm:hover {
+        background: rgba(239,68,68,0.15);
+        transform: translateY(-2px);
+    }
+    
+    .btn-toggle-sm {
+        background: rgba(201,168,75,0.04);
+        color: var(--text-muted);
+        border: 1px solid rgba(201,168,75,0.02);
+    }
+    
+    .btn-toggle-sm:hover {
+        border-color: var(--primary-gold, #C9A84B);
+        color: var(--primary-gold, #C9A84B);
+        transform: translateY(-2px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        grid-column: 1 / -1;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--primary-gold, #C9A84B);
+        opacity: 0.15;
+        margin-bottom: 16px;
+    }
+    
+    .empty-state p {
+        color: var(--text-gray, #C8CED8);
+        font-size: 1rem;
+        margin: 0;
+    }
+    
+    .empty-state .text-muted {
+        color: var(--text-muted, #8A94A6);
+        font-size: 0.9rem;
+        margin-top: 4px;
+    }
+
+    @keyframes fadeUp {
+        0% { opacity: 0; transform: translateY(16px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .template-grid {
+            grid-template-columns: 1fr;
+        }
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .template-card .template-actions {
+            flex-wrap: wrap;
+        }
+        .template-card .template-actions .btn-sm {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 1.2rem;
+        }
+        .page-header-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        .template-card {
+            padding: 14px 14px 16px;
+        }
+        .template-card .card-header h3 {
+            font-size: 0.9rem;
+        }
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .stat-card {
+            padding: 10px 12px;
+        }
+        .stat-card .number {
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] .stat-card {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201,168,75,0.04);
+    }
+    
+    [data-theme="dark"] .stat-card .number {
+        color: var(--white, #FFFFFF);
+    }
+    
+    [data-theme="dark"] .template-card {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201,168,75,0.04);
+    }
+    
+    [data-theme="dark"] .template-card .card-header h3 {
+        color: var(--white, #FFFFFF);
+    }
+    
+    [data-theme="dark"] .template-card .template-body {
+        background: var(--primary-bg, #0A1527);
+        color: var(--text-muted, #8A94A6);
+        border-color: rgba(201,168,75,0.02);
+    }
+    
+    [data-theme="dark"] .template-card .template-subject {
+        color: var(--text-gray, #C8CED8);
+    }
+    
+    [data-theme="dark"] .btn-outline-sm {
+        color: var(--text-gray, #C8CED8);
+        border-color: rgba(201,168,75,0.04);
+    }
+    
+    [data-theme="dark"] .btn-outline-sm:hover {
+        border-color: var(--primary-gold, #C9A84B);
+        color: var(--primary-gold, #C9A84B);
+    }
 </style>
+{% endblock %}
 
-<div class="email-templates-page">
+{% block content %}
+<div class="templates-page">
+    <!-- Header -->
     <div class="page-header">
         <div class="page-header-left">
-            <div class="page-header-icon"><i class="fas fa-envelope-open-text"></i></div>
+            <div class="page-header-icon">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
             <div>
                 <h1><span>Email Templates</span></h1>
-                <p class="subtitle">Customize system email notifications</p>
+                <p class="subtitle">Manage system email templates for notifications</p>
             </div>
         </div>
-        <button style="padding: 10px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); color: var(--white); border: none; cursor: pointer; font-weight: 600; transition: var(--transition);">
+        <a href="{{ url_for('create_email_template') }}" class="btn-create">
             <i class="fas fa-plus"></i> New Template
-        </button>
+        </a>
     </div>
 
-    <div class="template-card">
-        <div class="template-header">
-            <h3>Welcome Email</h3>
-            <span class="template-badge">Active</span>
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="icon gold"><i class="fas fa-envelope"></i></div>
+            <div>
+                <div class="number">{{ templates|length if templates else 0 }}</div>
+                <div class="label">Total Templates</div>
+            </div>
         </div>
-        <div class="template-preview">
-            <strong>Subject:</strong> Welcome to A-Portal! 🎉<br>
-            Hello {{ user.username }},<br><br>
-            Welcome to A-Portal! We're excited to have you on board...
+        <div class="stat-card">
+            <div class="icon green"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="number">{{ templates|selectattr('is_active', 'eq', True)|list|length if templates else 0 }}</div>
+                <div class="label">Active</div>
+            </div>
         </div>
-        <div class="template-actions">
-            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
-        </div>
-    </div>
-
-    <div class="template-card">
-        <div class="template-header">
-            <h3>Account Approval</h3>
-            <span class="template-badge">Active</span>
-        </div>
-        <div class="template-preview">
-            <strong>Subject:</strong> Your Account Has Been Approved ✅<br>
-            Hello {{ user.username }},<br><br>
-            Your account has been approved! You can now access all courses...
-        </div>
-        <div class="template-actions">
-            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
+        <div class="stat-card">
+            <div class="icon red"><i class="fas fa-times-circle"></i></div>
+            <div>
+                <div class="number">{{ templates|selectattr('is_active', 'eq', False)|list|length if templates else 0 }}</div>
+                <div class="label">Inactive</div>
+            </div>
         </div>
     </div>
 
-    <div class="template-card">
-        <div class="template-header">
-            <h3>Course Enrollment</h3>
-            <span class="template-badge">Active</span>
-        </div>
-        <div class="template-preview">
-            <strong>Subject:</strong> You've Been Enrolled in {{ course.name }} 📚<br>
-            Hello {{ user.username }},<br><br>
-            You have been successfully enrolled in {{ course.name }}...
-        </div>
-        <div class="template-actions">
-            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
-        </div>
-    </div>
-
-    <div class="template-card">
-        <div class="template-header">
-            <h3>Assignment Deadline Reminder</h3>
-            <span class="template-badge">Active</span>
-        </div>
-        <div class="template-preview">
-            <strong>Subject:</strong> Reminder: {{ assignment.title }} Due Soon ⏰<br>
-            Hello {{ user.username }},<br><br>
-            This is a reminder that {{ assignment.title }} is due on {{ assignment.due_date }}...
-        </div>
-        <div class="template-actions">
-            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
-        </div>
-    </div>
-
-    <div class="template-card">
-        <div class="template-header">
-            <h3>Grade Notification</h3>
-            <span class="template-badge">Active</span>
-        </div>
-        <div class="template-preview">
-            <strong>Subject:</strong> Your Assignment Has Been Graded 📝<br>
-            Hello {{ user.username }},<br><br>
-            Your submission for {{ assignment.title }} has been graded. You scored {{ score }}%...
-        </div>
-        <div class="template-actions">
-            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
-        </div>
+    <!-- Template Grid -->
+    <div class="template-grid">
+        {% if templates %}
+            {% for template in templates %}
+                <div class="template-card">
+                    <div class="card-header">
+                        <h3>{{ template.name }}</h3>
+                        <span class="status-badge {% if template.is_active %}active{% else %}inactive{% endif %}">
+                            {% if template.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </div>
+                    <div class="template-subject">
+                        <strong>Subject:</strong> {{ template.subject }}
+                    </div>
+                    <div class="template-body">
+                        <div class="preview-text">{{ template.body[:200] }}{% if template.body|length > 200 %}...{% endif %}</div>
+                    </div>
+                    <div class="template-meta">
+                        <span><i class="fas fa-clock"></i> Updated: {{ template.updated_at.strftime('%Y-%m-%d %H:%M') if template.updated_at else 'N/A' }}</span>
+                        {% if template.description %}
+                            <span style="margin-left: 12px;"><i class="fas fa-info-circle"></i> {{ template.description[:50] }}{% if template.description|length > 50 %}...{% endif %}</span>
+                        {% endif %}
+                    </div>
+                    <div class="template-actions">
+                        <a href="{{ url_for('edit_email_template', template_id=template.id) }}" class="btn-sm btn-outline-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{{ url_for('preview_email_template', template_id=template.id) }}" class="btn-sm btn-primary-sm">
+                            <i class="fas fa-eye"></i> Preview
+                        </a>
+                        <form method="POST" action="{{ url_for('toggle_email_template', template_id=template.id) }}" style="display: inline;">
+                            <button type="submit" class="btn-sm btn-toggle-sm">
+                                <i class="fas {% if template.is_active %}fa-pause{% else %}fa-play{% endif %}"></i>
+                                {% if template.is_active %}Deactivate{% else %}Activate{% endif %}
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ url_for('delete_email_template', template_id=template.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this template?');">
+                            <button type="submit" class="btn-sm btn-danger-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-envelope-open-text"></i>
+                <p>No email templates created yet</p>
+                <p class="text-muted">Create your first email template to get started</p>
+                <a href="{{ url_for('create_email_template') }}" style="display: inline-block; margin-top: 12px; padding: 10px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); color: var(--white); text-decoration: none; font-weight: 600;">
+                    <i class="fas fa-plus"></i> Create Template
+                </a>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Stats counter animation
+        const statNumbers = document.querySelectorAll('.stat-card .number');
+        statNumbers.forEach(stat => {
+            const text = stat.textContent;
+            const number = parseInt(text);
+            if (!isNaN(number)) {
+                let current = 0;
+                const increment = Math.ceil(number / 25);
+                const counter = setInterval(() => {
+                    current += increment;
+                    if (current >= number) {
+                        stat.textContent = text;
+                        clearInterval(counter);
+                    } else {
+                        stat.textContent = current;
+                    }
+                }, 40);
+            }
+        });
+    });
+</script>
 {% endblock %}

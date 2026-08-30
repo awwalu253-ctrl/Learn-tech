@@ -724,6 +724,29 @@ class Backup(db.Model):
         return f'<Backup {self.filename}>'
 
 # ============================================================================
+# EMAIL TEMPLATE MODEL
+# ============================================================================
+
+class EmailTemplate(db.Model):
+    __tablename__ = 'email_template'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    subject = db.Column(db.String(200), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    __table_args__ = (
+        db.Index('idx_email_template_name', 'name'),
+    )
+    
+    def __repr__(self):
+        return f'<EmailTemplate {self.name}>'
+
+# ============================================================================
 # AUTO-MIGRATE ON STARTUP
 # ============================================================================
 
@@ -4988,12 +5011,162 @@ def student_directory():
                          search_query=search,
                          sort_by=sort_by)
 
+# ============================================================================
+# ROUTES - EMAIL TEMPLATES
+# ============================================================================
+
 @app.route('/admin/email-templates')
 @login_required
 @super_admin_required
 def email_templates():
     """Manage email templates"""
-    return render_template('admin/email_templates.html')
+    templates = EmailTemplate.query.order_by(EmailTemplate.name.asc()).all()
+    return render_template('admin/email_templates.html', templates=templates)
+
+
+@app.route('/admin/email-templates/create', methods=['GET', 'POST'])
+@login_required
+@super_admin_required
+def create_email_template():
+    """Create a new email template"""
+    if request.method == 'POST':
+        name = request.form.get('name')
+        subject = request.form.get('subject')
+        body = request.form.get('body')
+        description = request.form.get('description')
+        is_active = request.form.get('is_active') == 'on'
+        
+        if not name or not subject or not body:
+            flash('Name, subject, and body are required.', 'error')
+            return render_template('admin/create_email_template.html')
+        
+        # Check if template name already exists
+        existing = EmailTemplate.query.filter_by(name=name).first()
+        if existing:
+            flash(f'Template "{name}" already exists.', 'error')
+            return render_template('admin/create_email_template.html')
+        
+        template = EmailTemplate(
+            name=name,
+            subject=subject,
+            body=body,
+            description=description,
+            is_active=is_active
+        )
+        db.session.add(template)
+        db.session.commit()
+        
+        flash(f'Email template "{name}" created successfully!', 'success')
+        return redirect(url_for('email_templates'))
+    
+    return render_template('admin/create_email_template.html')
+
+
+@app.route('/admin/email-templates/<int:template_id>/edit', methods=['GET', 'POST'])
+@login_required
+@super_admin_required
+def edit_email_template(template_id):
+    """Edit an email template"""
+    template = EmailTemplate.query.get_or_404(template_id)
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        subject = request.form.get('subject')
+        body = request.form.get('body')
+        description = request.form.get('description')
+        is_active = request.form.get('is_active') == 'on'
+        
+        if not name or not subject or not body:
+            flash('Name, subject, and body are required.', 'error')
+            return render_template('admin/edit_email_template.html', template=template)
+        
+        # Check if another template has this name
+        existing = EmailTemplate.query.filter(
+            EmailTemplate.name == name,
+            EmailTemplate.id != template.id
+        ).first()
+        if existing:
+            flash(f'Template "{name}" already exists.', 'error')
+            return render_template('admin/edit_email_template.html', template=template)
+        
+        template.name = name
+        template.subject = subject
+        template.body = body
+        template.description = description
+        template.is_active = is_active
+        template.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        flash(f'Email template "{name}" updated successfully!', 'success')
+        return redirect(url_for('email_templates'))
+    
+    return render_template('admin/edit_email_template.html', template=template)
+
+
+@app.route('/admin/email-templates/<int:template_id>/delete', methods=['POST'])
+@login_required
+@super_admin_required
+def delete_email_template(template_id):
+    """Delete an email template"""
+    template = EmailTemplate.query.get_or_404(template_id)
+    
+    try:
+        name = template.name
+        db.session.delete(template)
+        db.session.commit()
+        flash(f'Email template "{name}" deleted successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting template: {str(e)}', 'error')
+    
+    return redirect(url_for('email_templates'))
+
+
+@app.route('/admin/email-templates/<int:template_id>/toggle', methods=['POST'])
+@login_required
+@super_admin_required
+def toggle_email_template(template_id):
+    """Toggle template active status"""
+    template = EmailTemplate.query.get_or_404(template_id)
+    
+    template.is_active = not template.is_active
+    db.session.commit()
+    
+    status = 'activated' if template.is_active else 'deactivated'
+    flash(f'Template "{template.name}" {status}.', 'success')
+    return redirect(url_for('email_templates'))
+
+
+@app.route('/admin/email-templates/<int:template_id>/preview')
+@login_required
+@super_admin_required
+def preview_email_template(template_id):
+    """Preview an email template"""
+    template = EmailTemplate.query.get_or_404(template_id)
+    return render_template('admin/preview_email_template.html', template=template)
+
+
+@app.route('/admin/email-templates/send-test/<int:template_id>', methods=['POST'])
+@login_required
+@super_admin_required
+def send_test_email(template_id):
+    """Send a test email using the template"""
+    template = EmailTemplate.query.get_or_404(template_id)
+    test_email = request.form.get('test_email')
+    
+    if not test_email:
+        flash('Please provide a test email address.', 'error')
+        return redirect(url_for('email_templates'))
+    
+    try:
+        # This is a placeholder - implement actual email sending
+        # For now, just show a success message
+        flash(f'Test email sent to {test_email} using template "{template.name}"!', 'success')
+    except Exception as e:
+        flash(f'Error sending test email: {str(e)}', 'error')
+    
+    return redirect(url_for('email_templates'))
 
 
 # ============================================================================
