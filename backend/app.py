@@ -751,6 +751,30 @@ class EmailTemplate(db.Model):
         return f'<EmailTemplate {self.name}>'
 
 # ============================================================================
+# SYSTEM SETTINGS MODEL
+# ============================================================================
+
+class SystemSetting(db.Model):
+    __tablename__ = 'system_setting'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(100), unique=True, nullable=False)
+    value = db.Column(db.Text)
+    setting_type = db.Column(db.String(50), default='string')  # string, boolean, integer, json
+    description = db.Column(db.Text)
+    category = db.Column(db.String(50), default='general')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    __table_args__ = (
+        db.Index('idx_setting_key', 'key'),
+        db.Index('idx_setting_category', 'category'),
+    )
+    
+    def __repr__(self):
+        return f'<SystemSetting {self.key}={self.value}>'
+
+# ============================================================================
 # AUTO-MIGRATE ON STARTUP
 # ============================================================================
 
@@ -4368,14 +4392,165 @@ def admin_messages():
 # ROUTES - SUPER ADMIN (System Settings, Logs, Backup, Email Templates)
 # ============================================================================
 
-@app.route('/admin/system-settings')
+# ============================================================================
+# ROUTES - SYSTEM SETTINGS
+# ============================================================================
+
+@app.route('/admin/system-settings', methods=['GET', 'POST'])
 @login_required
 @super_admin_required
 def system_settings():
     """System settings configuration"""
-    return render_template('admin/system_settings.html')
+    
+    if request.method == 'POST':
+        try:
+            # General Settings
+            save_setting('site_name', request.form.get('site_name', 'A-Portal LMS'))
+            save_setting('site_description', request.form.get('site_description', 'Learning Management System'))
+            save_setting('default_language', request.form.get('default_language', 'en'))
+            save_setting('maintenance_mode', request.form.get('maintenance_mode') == 'on')
+            save_setting('timezone', request.form.get('timezone', 'UTC'))
+            
+            # Student Settings
+            save_setting('auto_approve_students', request.form.get('auto_approve_students') == 'on')
+            save_setting('max_courses_per_student', request.form.get('max_courses_per_student', 10))
+            save_setting('allow_reapplications', request.form.get('allow_reapplications') == 'on')
+            save_setting('require_phone_number', request.form.get('require_phone_number') == 'on')
+            save_setting('student_registration_enabled', request.form.get('student_registration_enabled') == 'on')
+            
+            # Security Settings
+            save_setting('session_timeout', request.form.get('session_timeout', 60))
+            save_setting('require_email_verification', request.form.get('require_email_verification') == 'on')
+            save_setting('max_login_attempts', request.form.get('max_login_attempts', 5))
+            save_setting('lockout_duration', request.form.get('lockout_duration', 30))
+            save_setting('force_ssl', request.form.get('force_ssl') == 'on')
+            
+            # Content Settings
+            save_setting('max_file_upload_size', request.form.get('max_file_upload_size', 16))
+            save_setting('allowed_file_types', request.form.get('allowed_file_types', 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip'))
+            save_setting('enable_comments', request.form.get('enable_comments') == 'on')
+            save_setting('enable_ratings', request.form.get('enable_ratings') == 'on')
+            
+            # Notification Settings
+            save_setting('email_notifications', request.form.get('email_notifications') == 'on')
+            save_setting('push_notifications', request.form.get('push_notifications') == 'on')
+            save_setting('assignment_reminders', request.form.get('assignment_reminders') == 'on')
+            save_setting('reminder_days_before', request.form.get('reminder_days_before', 3))
+            
+            db.session.commit()
+            flash('✅ System settings saved successfully!', 'success')
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error saving settings: {str(e)}', 'error')
+            app.logger.error(f'System settings error: {e}')
+        
+        return redirect(url_for('system_settings'))
+    
+    # GET request - load settings
+    settings = get_all_settings()
+    
+    return render_template('admin/system_settings.html', settings=settings)
 
 
+def save_setting(key, value):
+    """Save or update a system setting"""
+    setting = SystemSetting.query.filter_by(key=key).first()
+    if setting:
+        setting.value = str(value) if value is not None else ''
+        setting.updated_at = datetime.utcnow()
+    else:
+        setting = SystemSetting(key=key, value=str(value) if value is not None else '')
+        db.session.add(setting)
+
+
+def get_setting(key, default=None):
+    """Get a system setting by key"""
+    setting = SystemSetting.query.filter_by(key=key).first()
+    if setting:
+        return setting.value
+    return default
+
+
+def get_all_settings():
+    """Get all system settings as a dictionary"""
+    settings = {}
+    all_settings = SystemSetting.query.all()
+    for setting in all_settings:
+        # Convert boolean strings back to booleans
+        if setting.value == 'True':
+            settings[setting.key] = True
+        elif setting.value == 'False':
+            settings[setting.key] = False
+        else:
+            settings[setting.key] = setting.value
+    return settings
+
+
+def get_int_setting(key, default=0):
+    """Get integer setting"""
+    value = get_setting(key, default)
+    try:
+        return int(value)
+    except:
+        return default
+
+
+def get_bool_setting(key, default=False):
+    """Get boolean setting"""
+    value = get_setting(key, default)
+    if isinstance(value, bool):
+        return value
+    return str(value).lower() == 'true'
+
+# ============================================================================
+# INITIALIZE DEFAULT SETTINGS
+# ============================================================================
+
+def init_default_settings():
+    """Initialize default system settings if they don't exist"""
+    defaults = {
+        # General Settings
+        'site_name': 'A-Portal LMS',
+        'site_description': 'Learning Management System',
+        'default_language': 'en',
+        'maintenance_mode': 'False',
+        'timezone': 'UTC',
+        
+        # Student Settings
+        'auto_approve_students': 'False',
+        'max_courses_per_student': '10',
+        'allow_reapplications': 'True',
+        'require_phone_number': 'True',
+        'student_registration_enabled': 'True',
+        
+        # Security Settings
+        'session_timeout': '60',
+        'require_email_verification': 'False',
+        'max_login_attempts': '5',
+        'lockout_duration': '30',
+        'force_ssl': 'True',
+        
+        # Content Settings
+        'max_file_upload_size': '16',
+        'allowed_file_types': 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip',
+        'enable_comments': 'False',
+        'enable_ratings': 'True',
+        
+        # Notification Settings
+        'email_notifications': 'True',
+        'push_notifications': 'True',
+        'assignment_reminders': 'True',
+        'reminder_days_before': '3',
+    }
+    
+    for key, value in defaults.items():
+        existing = SystemSetting.query.filter_by(key=key).first()
+        if not existing:
+            setting = SystemSetting(key=key, value=value)
+            db.session.add(setting)
+    
+    db.session.commit()
 # ============================================================================
 # ROUTES - SYSTEM LOGS
 # ============================================================================
@@ -5538,6 +5713,7 @@ def server_error(error):
 with app.app_context():
     db.create_all()
     ensure_columns()
+    init_default_settings()
     create_initial_admin()
 
 # ============================================================================
