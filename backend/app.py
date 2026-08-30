@@ -600,11 +600,6 @@ class Assignment(db.Model):
     author = db.relationship('User', backref='created_assignments')
     submissions = db.relationship('AssignmentSubmission', backref='assignment', lazy=True, cascade='all, delete-orphan')
     
-    __table_args__ = (
-        db.Index('idx_assignment_course', 'course_id'),
-        db.Index('idx_assignment_due_date', 'due_date'),
-    )
-    
     def is_past_due(self):
         return datetime.utcnow() > self.due_date
     
@@ -613,6 +608,10 @@ class Assignment(db.Model):
             assignment_id=self.id,
             student_id=student_id
         ).first()
+    
+    # ✅ Add this method to get submissions count
+    def get_submissions_count(self):
+        return AssignmentSubmission.query.filter_by(assignment_id=self.id).count()
 
 # 12. AssignmentSubmission model
 class AssignmentSubmission(db.Model):
@@ -4976,7 +4975,7 @@ def student_directory():
                          selected_course=course_id,
                          search_query=search,
                          sort_by=sort_by)
-                           
+
 @app.route('/admin/email-templates')
 @login_required
 @super_admin_required
