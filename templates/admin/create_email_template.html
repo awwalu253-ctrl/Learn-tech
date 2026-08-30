@@ -199,24 +199,6 @@
             text-align: center;
         }
     }
-
-    /* Dark Mode */
-    [data-theme="dark"] .form-container {
-        background: var(--secondary-bg, #253449);
-        border-color: rgba(201,168,75,0.04);
-    }
-    
-    [data-theme="dark"] .form-group input,
-    [data-theme="dark"] .form-group textarea,
-    [data-theme="dark"] .form-group select {
-        background: var(--primary-bg, #0A1527);
-        color: var(--text-gray, #C8CED8);
-        border-color: rgba(201,168,75,0.06);
-    }
-    
-    [data-theme="dark"] .form-group label {
-        color: var(--text-gray, #C8CED8);
-    }
 </style>
 {% endblock %}
 
@@ -245,7 +227,7 @@
             <div class="form-group">
                 <label>Subject <span class="required">*</span></label>
                 <input type="text" name="subject" placeholder="Email subject line" required>
-                <div class="help-text">The subject line of the email. You can use variables like {{ user.username }}.</div>
+                <div class="help-text">The subject line of the email. You can use variables like {{ "{{ user.username }}" }}.</div>
             </div>
 
             <div class="form-group">
@@ -253,7 +235,7 @@
                 <textarea name="body" placeholder="HTML email body with variables..." required></textarea>
                 <div class="help-text">
                     <strong>Available variables:</strong> 
-                    {{ user.username }}, {{ user.email }}, {{ course.name }}, {{ assignment.title }}, {{ quiz.title }}
+                    {{ "{{ user.username }}" }}, {{ "{{ user.email }}" }}, {{ "{{ course.name }}" }}, {{ "{{ assignment.title }}" }}, {{ "{{ quiz.title }}" }}
                 </div>
             </div>
 
