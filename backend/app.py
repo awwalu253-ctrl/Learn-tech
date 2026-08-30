@@ -1579,6 +1579,10 @@ def delete_student(student_id):
             return redirect(url_for('manage_students'))
     
     try:
+        # ✅ FIX: Delete notifications FIRST (they have foreign key to user)
+        # This is critical for Supabase/PostgreSQL
+        Notification.query.filter_by(user_id=student.id).delete()
+        
         # Delete related records using ORM
         CourseEnrollment.query.filter_by(student_id=student.id).delete()
         RejectionMessage.query.filter_by(student_id=student.id).delete()
