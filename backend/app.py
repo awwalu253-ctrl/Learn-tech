@@ -3837,7 +3837,8 @@ def export_leaderboard():
     
     writer.writerow(['Rank', 'Student', 'Email', 'Score', 'Correct', 'Total', 'Courses', 'Joined'])
     
-    rank = 1    for student in students:
+    rank = 1
+    for student in students:
         answers = QuizAnswer.query.filter_by(student_id=student.id).all()
         correct = sum(1 for a in answers if a.is_correct)
         total = len(answers)
@@ -4091,6 +4092,17 @@ def health_check():
 # ERROR HANDLERS
 # ============================================================================
 
+@app.before_request
+def before_request():
+    # Log request count
+    app.logger.info(f"Request: {request.path} from {request.remote_addr}")
+
+@app.after_request
+def after_request(response):
+    # Log response time
+    app.logger.info(f"Response: {request.path} - {response.status_code}")
+    return response
+    
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
