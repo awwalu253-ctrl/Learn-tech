@@ -512,8 +512,12 @@
   <!-- ============================== -->
   <div class="profile-header">
     <div class="profile-avatar-large">
+      {# ✅ FIXED: Profile picture with fallback #}
       {% if current_user.profile_picture %}
-        <img src="{{ url_for('uploaded_file', filename=current_user.profile_picture) }}" alt="{{ current_user.username }}">
+        <img src="{{ url_for('uploaded_file', filename=current_user.profile_picture) }}" 
+             alt="{{ current_user.username }}"
+             onerror="this.style.display='none'; this.parentElement.querySelector('.initials').style.display='flex';">
+        <span class="initials" style="display: none;">{{ current_user.username[0]|upper }}</span>
       {% else %}
         <span class="initials">{{ current_user.username[0]|upper }}</span>
       {% endif %}
