@@ -1,6 +1,6 @@
 # app.py - Awwalu Devs Learning Management System
 # Complete backend with all features in one file
-
+import json
 import os
 import uuid
 from datetime import datetime, timedelta
@@ -700,6 +700,29 @@ class Notification(db.Model):
     
     def __repr__(self):
         return f'<Notification {self.id} - {self.user_id}>'
+
+# ============================================================================
+# BACKUP MODELS
+# ============================================================================
+
+class Backup(db.Model):
+    __tablename__ = 'backup'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(200), nullable=False)
+    file_path = db.Column(db.String(500), nullable=False)
+    backup_date = db.Column(db.DateTime, default=datetime.utcnow)
+    description = db.Column(db.Text)
+    size = db.Column(db.String(50))
+    record_count = db.Column(db.Integer, default=0)
+    created_by = db.Column(db.String(80))
+    
+    __table_args__ = (
+        db.Index('idx_backup_date', 'backup_date'),
+    )
+    
+    def __repr__(self):
+        return f'<Backup {self.filename}>'
 
 # ============================================================================
 # AUTO-MIGRATE ON STARTUP
@@ -4426,10 +4449,426 @@ def system_logs():
 @login_required
 @super_admin_required
 def backup_restore():
-    """Backup and restore management"""
-    return render_template('admin/backup_restore.html')
+    """Backup and restore management page"""
+    # Get all backups
+    backups = Backup.query.order_by(Backup.backup_date.desc()).all()
+    return render_template('admin/backup_restore.html', backups=backups)
 
+@app.route('/admin/backup/create', methods=['POST'])
+@login_required
+@super_admin_required
+def create_backup():
+    """Create a full backup of the database"""
+    try:
+        # Get current timestamp
+        timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        filename = f"backup_{timestamp}.json"
+        
+        # Collect all data
+        backup_data = {
+            'backup_info': {
+                'created_at': datetime.utcnow().isoformat(),
+                'created_by': current_user.username,
+                'version': '1.0'
+            },
+            'data': {
+                'users': [],
+                'courses': [],
+                'notes': [],
+                'quizzes': [],
+                'assignments': [],
+                'enrollments': [],
+                'announcements': []
+            }
+        }
+        
+        # Get all students (exclude admins)
+        students = User.query.filter_by(role='student').all()
+        for student in students:
+            student_data = {
+                'id': student.id,
+                'username': student.username,
+                'email': student.email,
+                'role': student.role,
+                'is_approved': student.is_approved,
+                'is_suspended': student.is_suspended,
+                'phone': student.phone,
+                'dob': student.dob.isoformat() if student.dob else None,
+                'created_at': student.created_at.isoformat() if student.created_at else None,
+                'profile_picture': student.profile_picture,
+                'dark_mode': student.dark_mode
+            }
+            backup_data['data']['users'].append(student_data)
+        
+        # Get all courses
+        courses = Course.query.all()
+        for course in courses:
+            course_data = {
+                'id': course.id,
+                'name': course.name,
+                'description': course.description,
+                'code': course.code,
+                'created_at': course.created_at.isoformat() if course.created_at else None
+            }
+            backup_data['data']['courses'].append(course_data)
+        
+        # Get all notes
+        notes = Note.query.all()
+        for note in notes:
+            note_data = {
+                'id': note.id,
+                'title': note.title,
+                'content': note.content,
+                'course_id': note.course_id,
+                'tag_id': note.tag_id,
+                'author_id': note.author_id,
+                'file_path': note.file_path,
+                'file_name': note.file_name,
+                'created_at': note.created_at.isoformat() if note.created_at else None
+            }
+            backup_data['data']['notes'].append(note_data)
+        
+        # Get all quiz groups
+        quizzes = QuizGroup.query.all()
+        for quiz in quizzes:
+            quiz_data = {
+                'id': quiz.id,
+                'title': quiz.title,
+                'description': quiz.description,
+                'course_id': quiz.course_id,
+                'time_limit': quiz.time_limit,
+                'created_at': quiz.created_at.isoformat() if quiz.created_at else None
+            }
+            backup_data['data']['quizzes'].append(quiz_data)
+        
+        # Get all assignments
+        assignments = Assignment.query.all()
+        for assignment in assignments:
+            assignment_data = {
+                'id': assignment.id,
+                'title': assignment.title,
+                'description': assignment.description,
+                'course_id': assignment.course_id,
+                'due_date': assignment.due_date.isoformat() if assignment.due_date else None,
+                'max_score': assignment.max_score,
+                'created_at': assignment.created_at.isoformat() if assignment.created_at else None
+            }
+            backup_data['data']['assignments'].append(assignment_data)
+        
+        # Get all enrollments
+        enrollments = CourseEnrollment.query.all()
+        for enrollment in enrollments:
+            enrollment_data = {
+                'id': enrollment.id,
+                'student_id': enrollment.student_id,
+                'course_id': enrollment.course_id,
+                'status': enrollment.status,
+                'requested_at': enrollment.requested_at.isoformat() if enrollment.requested_at else None,
+                'approved_at': enrollment.approved_at.isoformat() if enrollment.approved_at else None,
+                'rejected_at': enrollment.rejected_at.isoformat() if enrollment.rejected_at else None,
+                'rejection_reason': enrollment.rejection_reason
+            }
+            backup_data['data']['enrollments'].append(enrollment_data)
+        
+        # Get all announcements
+        announcements = Announcement.query.all()
+        for announcement in announcements:
+            announcement_data = {
+                'id': announcement.id,
+                'title': announcement.title,
+                'content': announcement.content,
+                'course_id': announcement.course_id,
+                'is_pinned': announcement.is_pinned,
+                'created_at': announcement.created_at.isoformat() if announcement.created_at else None,
+                'author_id': announcement.author_id
+            }
+            backup_data['data']['announcements'].append(announcement_data)
+        
+        # Save backup to database
+        backup_file = f"/tmp/{filename}"
+        with open(backup_file, 'w') as f:
+            json.dump(backup_data, f, indent=2)
+        
+        # Save backup record to database
+        total_records = (
+            len(backup_data['data']['users']) +
+            len(backup_data['data']['courses']) +
+            len(backup_data['data']['notes']) +
+            len(backup_data['data']['quizzes']) +
+            len(backup_data['data']['assignments']) +
+            len(backup_data['data']['enrollments']) +
+            len(backup_data['data']['announcements'])
+        )
+        
+        backup = Backup(
+            filename=filename,
+            file_path=backup_file,
+            description=f"Backup created by {current_user.username}",
+            size=f"{os.path.getsize(backup_file) / 1024:.2f} KB",
+            record_count=total_records,
+            created_by=current_user.username
+        )
+        db.session.add(backup)
+        db.session.commit()
+        
+        flash(f'✅ Backup "{filename}" created successfully! ({total_records} records)', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error creating backup: {str(e)}', 'error')
+        app.logger.error(f'Backup error: {e}')
+    
+    return redirect(url_for('backup_restore'))
 
+@app.route('/admin/backup/download/<int:backup_id>')
+@login_required
+@super_admin_required
+def download_backup(backup_id):
+    """Download a backup file"""
+    backup = Backup.query.get_or_404(backup_id)
+    
+    try:
+        if os.path.exists(backup.file_path):
+            return send_from_directory(
+                os.path.dirname(backup.file_path),
+                os.path.basename(backup.file_path),
+                as_attachment=True,
+                download_name=backup.filename
+            )
+        else:
+            flash('Backup file not found.', 'error')
+    except Exception as e:
+        flash(f'Error downloading backup: {str(e)}', 'error')
+    
+    return redirect(url_for('backup_restore'))
+
+@app.route('/admin/backup/restore/<int:backup_id>', methods=['POST'])
+@login_required
+@super_admin_required
+def restore_backup(backup_id):
+    """Restore from a backup file"""
+    backup = Backup.query.get_or_404(backup_id)
+    
+    try:
+        if not os.path.exists(backup.file_path):
+            flash('Backup file not found.', 'error')
+            return redirect(url_for('backup_restore'))
+        
+        with open(backup.file_path, 'r') as f:
+            backup_data = json.load(f)
+        
+        data = backup_data.get('data', {})
+        
+        # Confirm restore (frontend already confirms, but double-check)
+        # We'll do a full restore
+        
+        # Delete existing student data (keep admins)
+        # Delete notifications first (foreign key constraints)
+        Notification.query.delete()
+        
+        # Delete all student-related data
+        AssignmentSubmission.query.delete()
+        QuizAnswer.query.delete()
+        StudentProgress.query.delete()
+        RejectionMessage.query.delete()
+        CourseEnrollment.query.delete()
+        
+        # Delete all non-admin users (students)
+        User.query.filter_by(role='student').delete()
+        
+        # Delete content
+        Announcement.query.delete()
+        Assignment.query.delete()
+        QuizQuestion.query.delete()
+        QuizGroup.query.delete()
+        Note.query.delete()
+        Course.query.delete()
+        
+        # Restore users (students)
+        for user_data in data.get('users', []):
+            # Check if user already exists (skip if admin)
+            existing = User.query.filter_by(username=user_data['username']).first()
+            if not existing:
+                user = User(
+                    username=user_data['username'],
+                    email=user_data['email'],
+                    role=user_data.get('role', 'student'),
+                    is_approved=user_data.get('is_approved', False),
+                    is_suspended=user_data.get('is_suspended', False),
+                    phone=user_data.get('phone'),
+                    profile_picture=user_data.get('profile_picture'),
+                    dark_mode=user_data.get('dark_mode', False)
+                )
+                if user_data.get('dob'):
+                    user.dob = datetime.fromisoformat(user_data['dob'])
+                if user_data.get('created_at'):
+                    user.created_at = datetime.fromisoformat(user_data['created_at'])
+                db.session.add(user)
+        
+        db.session.flush()
+        
+        # Restore courses
+        for course_data in data.get('courses', []):
+            course = Course(
+                name=course_data['name'],
+                description=course_data.get('description'),
+                code=course_data['code']
+            )
+            if course_data.get('created_at'):
+                course.created_at = datetime.fromisoformat(course_data['created_at'])
+            db.session.add(course)
+        
+        db.session.flush()
+        
+        # Restore notes
+        for note_data in data.get('notes', []):
+            note = Note(
+                title=note_data['title'],
+                content=note_data['content'],
+                course_id=note_data.get('course_id'),
+                tag_id=note_data.get('tag_id'),
+                author_id=note_data.get('author_id'),
+                file_path=note_data.get('file_path'),
+                file_name=note_data.get('file_name')
+            )
+            if note_data.get('created_at'):
+                note.created_at = datetime.fromisoformat(note_data['created_at'])
+            db.session.add(note)
+        
+        # Restore quizzes
+        for quiz_data in data.get('quizzes', []):
+            quiz = QuizGroup(
+                title=quiz_data['title'],
+                description=quiz_data.get('description'),
+                course_id=quiz_data.get('course_id'),
+                time_limit=quiz_data.get('time_limit', 0)
+            )
+            if quiz_data.get('created_at'):
+                quiz.created_at = datetime.fromisoformat(quiz_data['created_at'])
+            db.session.add(quiz)
+        
+        # Restore assignments
+        for assignment_data in data.get('assignments', []):
+            assignment = Assignment(
+                title=assignment_data['title'],
+                description=assignment_data['description'],
+                course_id=assignment_data['course_id'],
+                max_score=assignment_data.get('max_score', 100)
+            )
+            if assignment_data.get('due_date'):
+                assignment.due_date = datetime.fromisoformat(assignment_data['due_date'])
+            if assignment_data.get('created_at'):
+                assignment.created_at = datetime.fromisoformat(assignment_data['created_at'])
+            db.session.add(assignment)
+        
+        # Restore enrollments
+        for enrollment_data in data.get('enrollments', []):
+            enrollment = CourseEnrollment(
+                student_id=enrollment_data['student_id'],
+                course_id=enrollment_data['course_id'],
+                status=enrollment_data.get('status', 'pending'),
+                rejection_reason=enrollment_data.get('rejection_reason')
+            )
+            if enrollment_data.get('requested_at'):
+                enrollment.requested_at = datetime.fromisoformat(enrollment_data['requested_at'])
+            if enrollment_data.get('approved_at'):
+                enrollment.approved_at = datetime.fromisoformat(enrollment_data['approved_at'])
+            if enrollment_data.get('rejected_at'):
+                enrollment.rejected_at = datetime.fromisoformat(enrollment_data['rejected_at'])
+            db.session.add(enrollment)
+        
+        # Restore announcements
+        for announcement_data in data.get('announcements', []):
+            announcement = Announcement(
+                title=announcement_data['title'],
+                content=announcement_data['content'],
+                course_id=announcement_data.get('course_id'),
+                is_pinned=announcement_data.get('is_pinned', False),
+                author_id=announcement_data.get('author_id')
+            )
+            if announcement_data.get('created_at'):
+                announcement.created_at = datetime.fromisoformat(announcement_data['created_at'])
+            db.session.add(announcement)
+        
+        db.session.commit()
+        
+        flash(f'✅ Backup "{backup.filename}" restored successfully!', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error restoring backup: {str(e)}', 'error')
+        app.logger.error(f'Restore error: {e}')
+    
+    return redirect(url_for('backup_restore'))
+
+@app.route('/admin/backup/clear-all', methods=['POST'])
+@login_required
+@super_admin_required
+def clear_all_students():
+    """Delete all students and their data (keep admins)"""
+    try:
+        # Count students before deletion
+        student_count = User.query.filter_by(role='student').count()
+        
+        if student_count == 0:
+            flash('No students to delete.', 'info')
+            return redirect(url_for('backup_restore'))
+        
+        # Delete notifications first (foreign key constraints)
+        Notification.query.delete()
+        
+        # Delete all student-related data
+        AssignmentSubmission.query.delete()
+        QuizAnswer.query.delete()
+        StudentProgress.query.delete()
+        RejectionMessage.query.delete()
+        CourseEnrollment.query.delete()
+        
+        # Delete all students
+        User.query.filter_by(role='student').delete()
+        
+        # Delete all student-related content (optional - keep or delete?)
+        # Uncomment if you want to delete all content too:
+        # Announcement.query.delete()
+        # Assignment.query.delete()
+        # QuizQuestion.query.delete()
+        # QuizGroup.query.delete()
+        # Note.query.delete()
+        # Course.query.delete()
+        
+        db.session.commit()
+        
+        flash(f'✅ All {student_count} students and their data have been deleted.', 'success')
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error clearing students: {str(e)}', 'error')
+        app.logger.error(f'Clear all error: {e}')
+    
+    return redirect(url_for('backup_restore'))
+
+@app.route('/admin/backup/delete/<int:backup_id>', methods=['POST'])
+@login_required
+@super_admin_required
+def delete_backup(backup_id):
+    """Delete a backup file"""
+    backup = Backup.query.get_or_404(backup_id)
+    
+    try:
+        # Delete the file if it exists
+        if os.path.exists(backup.file_path):
+            os.remove(backup.file_path)
+        
+        db.session.delete(backup)
+        db.session.commit()
+        
+        flash(f'Backup "{backup.filename}" deleted.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting backup: {str(e)}', 'error')
+    
+    return redirect(url_for('backup_restore'))
+      
 @app.route('/admin/email-templates')
 @login_required
 @super_admin_required
