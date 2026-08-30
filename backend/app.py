@@ -42,7 +42,7 @@ database_url = os.environ.get('DATABASE_URL')
 
 if database_url:
     # Check if it's Supabase
-    if 'supabase.co' in database_url:
+    if 'supabase.co' in database_url or 'pooler.supabase.com' in database_url:
         print("🔗 Connecting to Supabase PostgreSQL...")
         # Ensure SSL is enabled for Supabase
         if 'sslmode' not in database_url:
@@ -1697,15 +1697,20 @@ def unapprove_course(student_id, course_id):
     
     return redirect(url_for('manage_students'))
 
+# ============================================================================
+# UPDATED: STUDENT APPROVAL - Regular admins can only approve if they manage the student's courses
+# ============================================================================
+
 @app.route('/admin/students/<int:student_id>/approve', methods=['POST'])
 @login_required
 @admin_required
 def approve_student(student_id):
+    """Approve a student account. Super Admin: approve anyone. Regular Admin: only if they manage at least one of the student's courses."""
     student = User.query.get_or_404(student_id)
     
-    # ✅ NEW: Regular admin can approve student ONLY if they manage at least one of their courses
+    # Check if admin has permission
     if not current_user.is_super_admin():
-        # Get all enrollments for this student
+        # Get ALL enrollments for this student
         student_enrollments = CourseEnrollment.query.filter_by(student_id=student.id).all()
         admin_course_ids = [c.id for c in current_user.managed_courses]
         
@@ -1716,15 +1721,18 @@ def approve_student(student_id):
             flash('You do not have permission to approve this student. You do not manage any of their courses.', 'error')
             return redirect(url_for('manage_students'))
     
-    # Only approve the student account - NOT the courses
+    # ONLY approve the student account - NOT the courses
     student.is_approved = True
+    
+    # Keep all enrollments as 'pending' - admin must approve each course separately
+    # Do NOT change enrollment statuses here
     
     db.session.commit()
     
     # Notify student
     notify_student_approved(student.id)
     
-    # Get pending courses count
+    # Get pending courses count for the message
     pending_courses = CourseEnrollment.query.filter_by(
         student_id=student.id,
         status='pending'
@@ -1733,15 +1741,19 @@ def approve_student(student_id):
     flash(f'{student.username} has been approved. They can now log in. ({pending_courses} course(s) pending approval)', 'success')
     return redirect(url_for('manage_students'))
 
+# ============================================================================
+# UPDATED: COURSE APPROVAL - Regular admins can only approve courses they manage
+# ============================================================================
+
 @app.route('/admin/students/<int:student_id>/approve-course/<int:course_id>', methods=['POST'])
 @login_required
 @admin_required
 def approve_course(student_id, course_id):
-    """Approve a student for a specific course only"""
+    """Approve a student for a specific course. Super Admin: approve any. Regular Admin: only if they manage the course."""
     student = User.query.get_or_404(student_id)
     course = Course.query.get_or_404(course_id)
     
-    # ✅ This already checks if admin manages this course
+    # Check if admin has permission - only super admin or admin who manages this course
     if not current_user.is_super_admin() and course not in current_user.managed_courses:
         flash('You do not have permission to approve this course.', 'error')
         return redirect(url_for('manage_students'))
@@ -1767,11 +1779,20 @@ def approve_course(student_id, course_id):
     
     return redirect(url_for('manage_students'))
 
+# ============================================================================
+# UPDATED: APPROVE ALL COURSES - Super Admin only
+# ============================================================================
+
 @app.route('/admin/students/<int:student_id>/approve-all-courses', methods=['POST'])
 @login_required
 @admin_required
 def approve_all_courses(student_id):
-    """Approve all pending course enrollments for a student"""
+    """Approve all pending course enrollments for a student. SUPER ADMIN ONLY."""
+    # ONLY super admin can approve all courses
+    if not current_user.is_super_admin():
+        flash('Only Super Admin can approve all courses at once.', 'error')
+        return redirect(url_for('manage_students'))
+    
     student = User.query.get_or_404(student_id)
     
     # Get all pending enrollments
@@ -1779,14 +1800,6 @@ def approve_all_courses(student_id):
         student_id=student.id,
         status='pending'
     ).all()
-    
-    # Check if admin has permission for these courses
-    if not current_user.is_super_admin():
-        admin_course_ids = [c.id for c in current_user.managed_courses]
-        for enrollment in pending_enrollments:
-            if enrollment.course_id not in admin_course_ids:
-                flash('You do not have permission to approve all courses for this student.', 'error')
-                return redirect(url_for('manage_students'))
     
     # Approve all pending enrollments
     for enrollment in pending_enrollments:
@@ -1797,6 +1810,10 @@ def approve_all_courses(student_id):
     
     flash(f'All {len(pending_enrollments)} course(s) approved for {student.username}.', 'success')
     return redirect(url_for('manage_students'))
+
+# ============================================================================
+# REST OF ROUTES - UNCHANGED
+# ============================================================================
 
 @app.route('/admin/students/<int:student_id>/reject', methods=['GET', 'POST'])
 @login_required
@@ -1955,6 +1972,11 @@ def unreject_student(student_id, course_id):
 @login_required
 @admin_required
 def bulk_approve_students():
+    """Bulk approve students - for super admin use only"""
+    if not current_user.is_super_admin():
+        flash('Only Super Admin can bulk approve students.', 'error')
+        return redirect(url_for('manage_students'))
+    
     student_ids = request.form.getlist('student_ids')
     
     if not student_ids:
@@ -1980,6 +2002,10 @@ def bulk_approve_students():
     flash(f'{approved_count} students approved successfully.', 'success')
     return redirect(url_for('manage_students'))
 
+# ============================================================================
+# UPDATED: MANAGE STUDENTS - Filters students based on admin role
+# ============================================================================
+
 @app.route('/admin/students')
 @login_required
 @admin_required
@@ -1994,6 +2020,7 @@ def manage_students():
         pending_student_ids = [p[0] for p in pending_student_ids]
         pending = User.query.filter(User.id.in_(pending_student_ids)).all() if pending_student_ids else []
     else:
+        # Regular admin: only see students enrolled in their courses
         course_ids = [c.id for c in current_user.managed_courses]
         students = User.query.filter(
             User.role == 'student',
@@ -2031,7 +2058,7 @@ def manage_students():
                          courses=courses)
 
 # ============================================================================
-# ROUTES - COURSE MANAGEMENT (Admin & Super Admin)
+# COURSE MANAGEMENT ROUTES (Unchanged - but important for permissions)
 # ============================================================================
 
 @app.route('/admin/courses')
@@ -2081,6 +2108,10 @@ def admin_course_list():
     return render_template('admin/course_list.html', 
                          courses=course_data,
                          is_super_admin=current_user.is_super_admin())
+
+# ============================================================================
+# REMAINING ROUTES (Unchanged - full app.py continues here)
+# ============================================================================
 
 @app.route('/admin/courses/<int:course_id>')
 @login_required
@@ -2239,10 +2270,6 @@ def view_student_in_course(course_id, student_id):
                          quiz_results=quiz_results,
                          assignment_results=assignment_results)
 
-# ============================================================================
-# ROUTES - COURSE MANAGEMENT (Super Admin) - CREATE & DELETE
-# ============================================================================
-
 @app.route('/admin/courses/create', methods=['GET', 'POST'])
 @login_required
 @super_admin_required
@@ -2289,7 +2316,7 @@ def delete_course(course_id):
     return redirect(url_for('admin_course_list'))
 
 # ============================================================================
-# ROUTES - ANNOUNCEMENTS
+# ANNOUNCEMENTS ROUTES
 # ============================================================================
 
 @app.route('/admin/announcements')
@@ -2500,7 +2527,7 @@ def student_announcements():
     return render_template('student/announcements.html', announcements=announcements)
 
 # ============================================================================
-# ROUTES - EXPORT REPORTS
+# EXPORT REPORTS
 # ============================================================================
 
 @app.route('/admin/export')
@@ -2580,7 +2607,7 @@ def export_quizzes():
     return response
 
 # ============================================================================
-# ROUTES - ADMIN MANAGEMENT (Super Admin)
+# ADMIN MANAGEMENT (Super Admin only)
 # ============================================================================
 
 @app.route('/admin/admins')
@@ -2696,7 +2723,7 @@ def delete_admin(admin_id):
     return redirect(url_for('manage_admins'))
 
 # ============================================================================
-# ROUTES - NOTES (Admin)
+# NOTES, QUIZZES, ASSIGNMENTS ROUTES (Unchanged but with permission checks)
 # ============================================================================
 
 @app.route('/admin/notes')
@@ -2889,7 +2916,7 @@ def delete_note(note_id):
     return redirect(url_for('admin_dashboard'))
 
 # ============================================================================
-# ROUTES - TAGS (Admin)
+# TAGS
 # ============================================================================
 
 @app.route('/admin/tags')
@@ -2929,7 +2956,7 @@ def delete_tag(tag_id):
     return redirect(url_for('manage_tags'))
 
 # ============================================================================
-# ROUTES - QUIZZES (Admin)
+# QUIZZES
 # ============================================================================
 
 @app.route('/admin/quizzes')
@@ -3101,7 +3128,7 @@ def delete_quiz_group(quiz_id):
     return redirect(url_for('manage_quizzes'))
 
 # ============================================================================
-# ROUTES - ASSIGNMENTS (Admin)
+# ASSIGNMENTS
 # ============================================================================
 
 @app.route('/admin/assignments')
@@ -3266,7 +3293,7 @@ def grade_submission(submission_id):
     return render_template('admin/grade_submission.html', submission=submission)
 
 # ============================================================================
-# ROUTES - STUDENT COURSE VIEWING (with Approval Check)
+# STUDENT ROUTES - COURSES, NOTES, QUIZZES, ASSIGNMENTS
 # ============================================================================
 
 @app.route('/student/courses')
@@ -3499,10 +3526,6 @@ def toggle_note_read(note_id):
     
     return jsonify({'success': True, 'is_read': progress.is_read})
 
-# ============================================================================
-# ROUTES - STUDENT QUIZZES (with Approval Check)
-# ============================================================================
-
 @app.route('/student/quizzes')
 @login_required
 def student_quizzes():
@@ -3619,10 +3642,6 @@ def quiz_result(quiz_id):
                          correct=correct, 
                          score=score)
 
-# ============================================================================
-# ROUTES - STUDENT ASSIGNMENTS (with Approval Check)
-# ============================================================================
-
 @app.route('/student/assignments')
 @login_required
 def student_assignments():
@@ -3709,7 +3728,7 @@ def submit_assignment(assignment_id):
     return render_template('student_submit_assignment.html', assignment=assignment)
 
 # ============================================================================
-# ROUTES - LEADERBOARD (Student & Admin)
+# LEADERBOARD
 # ============================================================================
 
 @app.route('/leaderboard')
@@ -3818,8 +3837,7 @@ def export_leaderboard():
     
     writer.writerow(['Rank', 'Student', 'Email', 'Score', 'Correct', 'Total', 'Courses', 'Joined'])
     
-    rank = 1
-    for student in students:
+    rank = 1    for student in students:
         answers = QuizAnswer.query.filter_by(student_id=student.id).all()
         correct = sum(1 for a in answers if a.is_correct)
         total = len(answers)
@@ -3843,7 +3861,7 @@ def export_leaderboard():
     return response
 
 # ============================================================================
-# ROUTES - FILE DOWNLOADS
+# FILE DOWNLOADS
 # ============================================================================
 
 @app.route('/uploads/<filename>')
@@ -3852,7 +3870,7 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # ============================================================================
-# ROUTES - PENDING APPROVAL PAGE
+# PENDING APPROVAL PAGE
 # ============================================================================
 
 @app.route('/pending-approval')
@@ -3939,7 +3957,7 @@ def bulk_delete_notes():
     return redirect(url_for('manage_notes'))
 
 # ============================================================================
-# NOTIFICATION API ENDPOINT
+# NOTIFICATION API
 # ============================================================================
 
 @app.route('/api/notifications')
@@ -4058,7 +4076,7 @@ def mark_single_notification_read(notification_id):
     return jsonify({'success': True})
 
 # ============================================================================
-# HEALTH CHECK FOR RENDER
+# HEALTH CHECK
 # ============================================================================
 
 @app.route('/health')
