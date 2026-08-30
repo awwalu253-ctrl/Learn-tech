@@ -1,12 +1,27 @@
 # gunicorn.conf.py
 import os
 
-bind = f"0.0.0.0:{os.environ.get('PORT', '10000')}"
-workers = 4
-threads = 2
-timeout = 120
-worker_class = "sync"
+# Bind to the port Render provides
+port = os.environ.get('PORT', 10000)
+bind = f"0.0.0.0:{port}"
+
+# Worker settings
+workers = 1
+worker_class = 'gthread'
+threads = 4
 worker_connections = 1000
-max_requests = 1000
-max_requests_jitter = 100
+
+# Timeout settings
+timeout = 120
+keepalive = 2
+
+# Logging
+accesslog = '-'
+errorlog = '-'
+loglevel = 'info'
+
+# Preload app for better performance
 preload_app = True
+
+# Graceful timeout
+graceful_timeout = 30

@@ -583,7 +583,6 @@ class RejectionMessage(db.Model):
     course = db.relationship('Course', backref='rejections')
 
 # 14. Announcement model
-# In app.py - Update the Announcement model
 class Announcement(db.Model):
     __tablename__ = 'announcement'
     
@@ -591,13 +590,13 @@ class Announcement(db.Model):
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
     is_pinned = db.Column(db.Boolean, default=False)
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)  # ✅ NEW: Course-specific
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
     author = db.relationship('User', backref='announcements')
-    course = db.relationship('Course', backref='announcements')  # ✅ NEW: Relationship to Course
+    course = db.relationship('Course', backref='announcements')
 
 # 15. Notification model
 class Notification(db.Model):
@@ -618,6 +617,54 @@ class Notification(db.Model):
     
     def __repr__(self):
         return f'<Notification {self.id} - {self.user_id}>'
+
+# ============================================================================
+# AUTO-MIGRATE ON STARTUP (For Render)
+# ============================================================================
+
+def ensure_columns():
+    """Ensure all required columns exist - runs on startup"""
+    try:
+        from sqlalchemy import inspect
+        inspector = inspect(db.engine)
+        
+        if 'user' not in inspector.get_table_names():
+            return
+        
+        columns = [col['name'] for col in inspector.get_columns('user')]
+        added = []
+        
+        if 'is_suspended' not in columns:
+            db.session.execute('ALTER TABLE "user" ADD COLUMN is_suspended BOOLEAN DEFAULT FALSE')
+            added.append('is_suspended')
+        
+        if 'suspension_reason' not in columns:
+            db.session.execute('ALTER TABLE "user" ADD COLUMN suspension_reason TEXT')
+            added.append('suspension_reason')
+        
+        if 'suspended_at' not in columns:
+            db.session.execute('ALTER TABLE "user" ADD COLUMN suspended_at TIMESTAMP')
+            added.append('suspended_at')
+        
+        if 'phone' not in columns:
+            db.session.execute('ALTER TABLE "user" ADD COLUMN phone VARCHAR(20)')
+            added.append('phone')
+        
+        if 'dob' not in columns:
+            db.session.execute('ALTER TABLE "user" ADD COLUMN dob TIMESTAMP')
+            added.append('dob')
+        
+        if 'profile_picture' not in columns:
+            db.session.execute('ALTER TABLE "user" ADD COLUMN profile_picture VARCHAR(200)')
+            added.append('profile_picture')
+        
+        if added:
+            db.session.commit()
+            print(f"✅ Auto-migrated columns: {', '.join(added)}")
+            
+    except Exception as e:
+        db.session.rollback()
+        print(f"⚠️ Auto-migration warning: {e}")
 
 # ============================================================================
 # CREATE ADMIN USER
@@ -923,7 +970,7 @@ def admin_dashboard():
     # Get the actual pending students with their enrollments
     pending = User.query.filter(User.id.in_(pending_student_ids)).all() if pending_student_ids else []
     
-    # ✅ For regular admins, count pending students in their courses
+    # For regular admins, count pending students in their courses
     pending_students_count = 0
     if not current_user.is_super_admin():
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -976,7 +1023,7 @@ def admin_dashboard():
                          total_students=total_students,
                          pending_approvals=pending_approvals,
                          pending=pending,
-                         pending_students_count=pending_students_count,  # ✅ Pass to template
+                         pending_students_count=pending_students_count,
                          pending_course_requests=pending_course_requests_list,
                          pending_course_requests_count=len(pending_course_requests_list),
                          total_courses=total_courses,
@@ -1897,7 +1944,6 @@ def admin_course_list():
                          courses=course_data,
                          is_super_admin=current_user.is_super_admin())
 
-
 @app.route('/admin/courses/<int:course_id>')
 @login_required
 @admin_required
@@ -1953,7 +1999,6 @@ def admin_course_detail(course_id):
                          assignments=assignments,
                          is_super_admin=current_user.is_super_admin())
 
-
 @app.route('/admin/courses/<int:course_id>/assign-admin/<int:admin_id>', methods=['POST'])
 @login_required
 @super_admin_required
@@ -1974,7 +2019,6 @@ def assign_admin_to_course(course_id, admin_id):
         flash(f'{admin.username} has been assigned to {course.name}.', 'success')
     
     return redirect(url_for('admin_course_detail', course_id=course_id))
-
 
 @app.route('/admin/courses/<int:course_id>/remove-admin/<int:admin_id>', methods=['POST'])
 @login_required
@@ -1997,7 +2041,6 @@ def remove_admin_from_course(course_id, admin_id):
         flash(f'{admin.username} is not assigned to this course.', 'warning')
     
     return redirect(url_for('admin_course_detail', course_id=course_id))
-
 
 @app.route('/admin/courses/<int:course_id>/student/<int:student_id>/view')
 @login_required
@@ -2058,7 +2101,6 @@ def view_student_in_course(course_id, student_id):
                          quiz_results=quiz_results,
                          assignment_results=assignment_results)
 
-
 # ============================================================================
 # ROUTES - COURSE MANAGEMENT (Super Admin) - CREATE & DELETE
 # ============================================================================
@@ -2116,7 +2158,7 @@ def delete_course(course_id):
 @login_required
 @admin_required
 def manage_announcements():
-    # ✅ Filter announcements based on admin role
+    # Filter announcements based on admin role
     if current_user.is_super_admin():
         announcements = Announcement.query.order_by(
             Announcement.is_pinned.desc(), 
@@ -2128,7 +2170,7 @@ def manage_announcements():
         announcements = Announcement.query.filter(
             db.or_(
                 Announcement.course_id.in_(admin_course_ids),
-                Announcement.course_id.is_(None)  # ✅ Also show global announcements
+                Announcement.course_id.is_(None)  # Also show global announcements
             )
         ).order_by(
             Announcement.is_pinned.desc(), 
@@ -2141,7 +2183,7 @@ def manage_announcements():
 @login_required
 @admin_required
 def post_announcement():
-    # ✅ Get courses based on admin role
+    # Get courses based on admin role
     if current_user.is_super_admin():
         courses = Course.query.all()
     else:
@@ -2157,7 +2199,7 @@ def post_announcement():
             flash('Title and content are required.', 'error')
             return render_template('admin/post_announcement.html', courses=courses)
         
-        # ✅ Validate course access for regular admins
+        # Validate course access for regular admins
         if course_id:
             course = Course.query.get(course_id)
             if not current_user.is_super_admin() and course not in current_user.managed_courses:
@@ -2176,7 +2218,7 @@ def post_announcement():
         db.session.add(announcement)
         db.session.commit()
         
-        # ✅ Notify students enrolled in the course
+        # Notify students enrolled in the course
         if course_id:
             course = Course.query.get(course_id)
             students = User.query.filter(
@@ -2198,6 +2240,19 @@ def post_announcement():
                     icon='fa-bullhorn',
                     icon_color='purple'
                 )
+        else:
+            # Global announcement - send to all students
+            students = User.query.filter_by(role='student', is_approved=True).all()
+            for student in students:
+                create_notification(
+                    user_id=student.id,
+                    title=f'New Announcement: {title}',
+                    message=f'New global announcement: {content[:100]}...',
+                    type='info',
+                    link=url_for('student_announcements'),
+                    icon='fa-bullhorn',
+                    icon_color='purple'
+                )
         
         course_name = course.name if course_id else 'All Courses'
         flash(f'Announcement posted successfully to {course_name}!', 'success')
@@ -2211,7 +2266,7 @@ def post_announcement():
 def delete_announcement(announcement_id):
     announcement = Announcement.query.get_or_404(announcement_id)
     
-    # ✅ Check if admin has permission to delete
+    # Check if admin has permission to delete
     if not current_user.is_super_admin():
         if announcement.course_id and announcement.course not in current_user.managed_courses:
             flash('You do not have permission to delete this announcement.', 'error')
@@ -2239,13 +2294,13 @@ def toggle_pin_announcement(announcement_id):
 def edit_announcement(announcement_id):
     announcement = Announcement.query.get_or_404(announcement_id)
     
-    # ✅ Check if admin has permission to edit
+    # Check if admin has permission to edit
     if not current_user.is_super_admin():
         if announcement.course_id and announcement.course not in current_user.managed_courses:
             flash('You do not have permission to edit this announcement.', 'error')
             return redirect(url_for('manage_announcements'))
     
-    # ✅ Get courses based on admin role
+    # Get courses based on admin role
     if current_user.is_super_admin():
         courses = Course.query.all()
     else:
@@ -2261,7 +2316,7 @@ def edit_announcement(announcement_id):
             flash('Title and content are required.', 'error')
             return render_template('admin/edit_announcement.html', announcement=announcement, courses=courses)
         
-        # ✅ Validate course access for regular admins
+        # Validate course access for regular admins
         if course_id:
             course = Course.query.get(course_id)
             if not current_user.is_super_admin() and course not in current_user.managed_courses:
@@ -2290,7 +2345,7 @@ def student_announcements():
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # ✅ Get announcements for courses the student is enrolled in
+    # Get announcements for courses the student is enrolled in
     enrolled_course_ids = [c.id for c in current_user.get_enrolled_courses()]
     
     # Get global announcements and course-specific announcements
@@ -2571,7 +2626,7 @@ def post_note():
         db.session.add(note)
         db.session.commit()
         
-        # ✅ Send notification to all students enrolled in this course
+        # Send notification to all students enrolled in this course
         students = User.query.filter(
             User.id.in_(
                 db.session.query(CourseEnrollment.student_id).filter(
@@ -2646,7 +2701,7 @@ def edit_note(note_id):
         
         db.session.commit()
         
-        # ✅ Send notification to all students enrolled in this course about the update
+        # Send notification to all students enrolled in this course about the update
         students = User.query.filter(
             User.id.in_(
                 db.session.query(CourseEnrollment.student_id).filter(
@@ -3834,7 +3889,6 @@ def get_notifications():
     
     return jsonify(notifications)
 
-
 @app.route('/api/notifications/mark-read', methods=['POST'])
 @login_required
 def mark_notifications_read():
@@ -3850,7 +3904,6 @@ def mark_notifications_read():
     db.session.commit()
     
     return jsonify({'success': True, 'count': len(notifications)})
-
 
 @app.route('/api/notifications/<int:notification_id>/mark-read', methods=['POST'])
 @login_required
@@ -3896,6 +3949,7 @@ def server_error(error):
 
 with app.app_context():
     db.create_all()
+    ensure_columns()
     create_initial_admin()
 
 # ============================================================================
