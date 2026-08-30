@@ -1703,31 +1703,28 @@ def unapprove_course(student_id, course_id):
 def approve_student(student_id):
     student = User.query.get_or_404(student_id)
     
-    # Check if admin has permission
+    # ✅ NEW: Regular admin can approve student ONLY if they manage at least one of their courses
     if not current_user.is_super_admin():
-        # Check if student has any pending enrollments in this admin's courses
-        pending_enrollments = CourseEnrollment.query.filter_by(
-            student_id=student.id,
-            status='pending'
-        ).all()
+        # Get all enrollments for this student
+        student_enrollments = CourseEnrollment.query.filter_by(student_id=student.id).all()
         admin_course_ids = [c.id for c in current_user.managed_courses]
-        has_permission = any(e.course_id in admin_course_ids for e in pending_enrollments)
+        
+        # Check if this admin manages at least ONE course this student is enrolled in
+        has_permission = any(e.course_id in admin_course_ids for e in student_enrollments)
+        
         if not has_permission:
-            flash('You do not have permission to approve this student.', 'error')
+            flash('You do not have permission to approve this student. You do not manage any of their courses.', 'error')
             return redirect(url_for('manage_students'))
     
-    # ONLY approve the student account - NOT the courses
+    # Only approve the student account - NOT the courses
     student.is_approved = True
-    
-    # Keep all enrollments as 'pending' - admin must approve each course separately
-    # Do NOT change enrollment statuses here
     
     db.session.commit()
     
     # Notify student
     notify_student_approved(student.id)
     
-    # Get pending courses count for the message
+    # Get pending courses count
     pending_courses = CourseEnrollment.query.filter_by(
         student_id=student.id,
         status='pending'
@@ -1744,7 +1741,7 @@ def approve_course(student_id, course_id):
     student = User.query.get_or_404(student_id)
     course = Course.query.get_or_404(course_id)
     
-    # Check if admin has permission
+    # ✅ This already checks if admin manages this course
     if not current_user.is_super_admin() and course not in current_user.managed_courses:
         flash('You do not have permission to approve this course.', 'error')
         return redirect(url_for('manage_students'))
