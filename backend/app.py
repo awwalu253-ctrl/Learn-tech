@@ -626,6 +626,10 @@ class Notification(db.Model):
 # AUTO-MIGRATE ON STARTUP (For Render)
 # ============================================================================
 
+# ============================================================================
+# AUTO-MIGRATE ON STARTUP (For Render)
+# ============================================================================
+
 def ensure_columns():
     """Ensure all required columns exist - runs on startup"""
     from sqlalchemy import text, inspect
@@ -633,70 +637,88 @@ def ensure_columns():
     
     with app.app_context():
         try:
-            # Check if user table exists
             inspector = inspect(db.engine)
-            if 'user' not in inspector.get_table_names():
-                print("📋 Creating tables...")
-                db.create_all()
-                return
             
-            # Get existing columns
-            columns = [col['name'] for col in inspector.get_columns('user')]
-            print(f"📋 Existing columns: {', '.join(columns)}")
+            # ==========================================
+            # 1. USER TABLE COLUMNS
+            # ==========================================
+            if 'user' in inspector.get_table_names():
+                columns = [col['name'] for col in inspector.get_columns('user')]
+                print(f"📋 Existing user columns: {', '.join(columns)}")
+                
+                added = []
+                
+                if 'is_suspended' not in columns:
+                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE'))
+                    added.append('is_suspended')
+                    print("✅ Added is_suspended to user")
+                
+                if 'suspension_reason' not in columns:
+                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspension_reason TEXT'))
+                    added.append('suspension_reason')
+                    print("✅ Added suspension_reason to user")
+                
+                if 'suspended_at' not in columns:
+                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP'))
+                    added.append('suspended_at')
+                    print("✅ Added suspended_at to user")
+                
+                if 'phone' not in columns:
+                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS phone VARCHAR(20)'))
+                    added.append('phone')
+                    print("✅ Added phone to user")
+                
+                if 'dob' not in columns:
+                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS dob TIMESTAMP'))
+                    added.append('dob')
+                    print("✅ Added dob to user")
+                
+                if 'profile_picture' not in columns:
+                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(200)'))
+                    added.append('profile_picture')
+                    print("✅ Added profile_picture to user")
+                
+                if added:
+                    db.session.commit()
+                    print(f"✅ Added to user: {', '.join(added)}")
             
-            # Add missing columns using text() for proper SQL execution
-            added = []
+            # ==========================================
+            # 2. ANNOUNCEMENT TABLE COLUMNS
+            # ==========================================
+            if 'announcement' in inspector.get_table_names():
+                ann_columns = [col['name'] for col in inspector.get_columns('announcement')]
+                print(f"📋 Existing announcement columns: {', '.join(ann_columns)}")
+                
+                ann_added = []
+                
+                if 'course_id' not in ann_columns:
+                    db.session.execute(text('ALTER TABLE "announcement" ADD COLUMN IF NOT EXISTS course_id INTEGER REFERENCES course(id)'))
+                    ann_added.append('course_id')
+                    print("✅ Added course_id to announcement")
+                
+                if ann_added:
+                    db.session.commit()
+                    print(f"✅ Added to announcement: {', '.join(ann_added)}")
             
-            if 'is_suspended' not in columns:
-                db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE'))
-                added.append('is_suspended')
-                print("✅ Added is_suspended")
-            
-            if 'suspension_reason' not in columns:
-                db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspension_reason TEXT'))
-                added.append('suspension_reason')
-                print("✅ Added suspension_reason")
-            
-            if 'suspended_at' not in columns:
-                db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP'))
-                added.append('suspended_at')
-                print("✅ Added suspended_at")
-            
-            if 'phone' not in columns:
-                db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS phone VARCHAR(20)'))
-                added.append('phone')
-                print("✅ Added phone")
-            
-            if 'dob' not in columns:
-                db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS dob TIMESTAMP'))
-                added.append('dob')
-                print("✅ Added dob")
-            
-            if 'profile_picture' not in columns:
-                db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(200)'))
-                added.append('profile_picture')
-                print("✅ Added profile_picture")
-            
-            db.session.commit()
-            
-            if added:
-                print(f"✅ Auto-migrated columns: {', '.join(added)}")
-            else:
+            if not added and not ann_added:
                 print("✅ All columns already exist!")
                 
         except ProgrammingError as e:
             db.session.rollback()
             print(f"⚠️ Programming error during migration: {e}")
-            # Try again with a fresh connection
+            # Try retry with direct connection
             try:
                 print("🔄 Retrying migration with direct SQL...")
                 with db.engine.connect() as conn:
+                    # User table columns
                     conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE'))
                     conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspension_reason TEXT'))
                     conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP'))
                     conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS phone VARCHAR(20)'))
                     conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS dob TIMESTAMP'))
                     conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(200)'))
+                    # Announcement table columns
+                    conn.execute(text('ALTER TABLE "announcement" ADD COLUMN IF NOT EXISTS course_id INTEGER REFERENCES course(id)'))
                     conn.commit()
                     print("✅ Migration retry succeeded!")
             except Exception as retry_error:
