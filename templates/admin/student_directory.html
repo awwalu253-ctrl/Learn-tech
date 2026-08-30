@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Student Directory - A-Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .directory-page { max-width: 1400px; margin: 0 auto; padding: 0; }
+    
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    /* Stats Row */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 24px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .stat-card { background: var(--secondary-bg, #253449); padding: 14px 18px; border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); display: flex; align-items: center; gap: 14px; }
+    .stat-card .icon { width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .stat-card .icon.gold { background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .stat-card .icon.blue { background: rgba(59,130,246,0.08); color: #3B82F6; }
+    .stat-card .icon.green { background: rgba(5,150,105,0.08); color: #059669; }
+    .stat-card .icon.red { background: rgba(239,68,68,0.08); color: #EF4444; }
+    .stat-card .number { font-size: 1.4rem; font-weight: 700; color: var(--white); line-height: 1.2; }
+    .stat-card .label { font-size: 0.7rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    /* Filters */
+    .filter-section { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); padding: 16px 20px; margin-bottom: 24px; border: 1px solid rgba(201, 168, 75, 0.04); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.06s forwards; }
+    .filter-section .filter-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; }
+    .filter-section .filter-label i { color: var(--primary-gold); }
+    .filter-section select, .filter-section input[type="text"] { background: var(--primary-bg, #0A1527); color: var(--text-gray, #C8CED8); border: 1px solid rgba(201,168,75,0.06); border-radius: var(--radius-sm, 8px); padding: 8px 16px; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; min-width: 160px; }
+    .filter-section select:focus, .filter-section input[type="text"]:focus { outline: none; border-color: var(--primary-gold, #C9A84B); box-shadow: 0 0 0 3px rgba(201,168,75,0.06); }
+    .filter-section select option { background: var(--secondary-bg, #253449); color: var(--text-gray, #C8CED8); }
+    .filter-section .btn-filter { padding: 8px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); color: var(--white); border: none; cursor: pointer; font-weight: 600; transition: var(--transition); }
+    .filter-section .btn-filter:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(201,168,75,0.2); }
+    .filter-section .btn-reset { padding: 8px 20px; border-radius: 60px; background: transparent; color: var(--text-gray); border: 1px solid rgba(201,168,75,0.04); cursor: pointer; font-weight: 600; transition: var(--transition); }
+    .filter-section .btn-reset:hover { border-color: var(--primary-gold); color: var(--primary-gold); }
+
+    /* Student Grid */
+    .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards; }
+    .student-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); overflow: hidden; transition: var(--transition, 0.3s ease); }
+    .student-card:hover { transform: translateY(-4px); border-color: rgba(201, 168, 75, 0.08); }
+    .student-card .card-header { padding: 16px 16px 0; display: flex; align-items: center; gap: 14px; }
+    .student-card .avatar { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; color: var(--white); overflow: hidden; }
+    .student-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .student-card .avatar .initials { font-weight: 700; font-size: 1.3rem; color: var(--white); }
+    .student-card .student-info { flex: 1; min-width: 0; }
+    .student-card .student-info .name { font-weight: 600; color: var(--white); font-size: 0.95rem; }
+    .student-card .student-info .email { font-size: 0.75rem; color: var(--text-muted); }
+    .student-card .student-info .student-id { font-size: 0.65rem; color: var(--text-muted); background: rgba(201,168,75,0.04); padding: 0 8px; border-radius: 4px; display: inline-block; }
+    .student-card .card-body { padding: 12px 16px 16px; }
+    .student-card .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .student-card .badge { font-size: 0.6rem; font-weight: 600; padding: 2px 12px; border-radius: 100px; }
+    .student-card .badge.active { background: rgba(5,150,105,0.08); color: #059669; }
+    .student-card .badge.pending { background: rgba(245,158,11,0.08); color: #F59E0B; }
+    .student-card .badge.suspended { background: rgba(239,68,68,0.08); color: #EF4444; }
+    .student-card .badge.course-badge { background: rgba(201,168,75,0.06); color: var(--primary-gold); border: 1px solid rgba(201,168,75,0.04); }
+    .student-card .course-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .student-card .course-list .course-tag { font-size: 0.6rem; color: var(--text-muted); background: rgba(201,168,75,0.02); padding: 1px 8px; border-radius: 4px; border: 1px solid rgba(201,168,75,0.02); }
+    .student-card .card-footer { padding: 10px 16px; border-top: 1px solid rgba(201,168,75,0.04); display: flex; justify-content: space-between; align-items: center; }
+    .student-card .card-footer .stats { font-size: 0.7rem; color: var(--text-muted); }
+    .student-card .card-footer .stats i { color: var(--primary-gold); }
+    .student-card .card-footer .btn-view { padding: 4px 16px; border-radius: 60px; font-size: 0.7rem; font-weight: 600; color: var(--primary-gold); border: 1px solid rgba(201,168,75,0.04); background: transparent; cursor: pointer; transition: var(--transition); text-decoration: none; }
+    .student-card .card-footer .btn-view:hover { background: rgba(201,168,75,0.06); border-color: var(--primary-gold); }
+
+    /* Empty State */
+    .empty-state { text-align: center; padding: 60px 20px; grid-column: 1 / -1; }
+    .empty-state i { font-size: 3rem; color: var(--primary-gold); opacity: 0.15; margin-bottom: 16px; }
+    .empty-state p { color: var(--text-gray); font-size: 1rem; margin: 0; }
+    .empty-state .text-muted { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { .student-grid { grid-template-columns: 1fr; } .filter-section { flex-direction: column; align-items: stretch; } .filter-section select, .filter-section input[type="text"] { min-width: 100%; } .stats-row { grid-template-columns: repeat(2, 1fr); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="directory-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-users"></i></div>
+            <div>
+                <h1><span>Student Directory</span></h1>
+                <p class="subtitle">View and manage all students in your institution</p>
+            </div>
+        </div>
+        <span style="padding: 6px 16px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); font-size: 0.8rem; font-weight: 600;">
+            <i class="fas fa-users"></i> {{ student_data|length }} students
+        </span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="icon gold"><i class="fas fa-user-graduate"></i></div>
+            <div>
+                <div class="number">{{ student_data|length }}</div>
+                <div class="label">Total Students</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon green"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="number">{{ student_data|selectattr('student.is_approved', 'eq', True)|list|length }}</div>
+                <div class="label">Active</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon blue"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="number">{{ student_data|selectattr('student.is_approved', 'eq', False)|list|length }}</div>
+                <div class="label">Pending</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon red"><i class="fas fa-ban"></i></div>
+            <div>
+                <div class="number">{{ student_data|selectattr('student.is_suspended', 'eq', True)|list|length }}</div>
+                <div class="label">Suspended</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <span class="filter-label"><i class="fas fa-filter"></i> Filter:</span>
+        <form method="GET" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
+            <select name="course_id" onchange="this.form.submit()">
+                <option value="">All Courses</option>
+                {% for course in courses %}
+                    <option value="{{ course.id }}" {% if selected_course == course.id %}selected{% endif %}>
+                        {{ course.name }} ({{ course.code }})
+                    </option>
+                {% endfor %}
+            </select>
+            
+            <input type="text" name="search" placeholder="Search by name or email..." value="{{ search_query or '' }}" onchange="this.form.submit()">
+            
+            <select name="sort_by" onchange="this.form.submit()">
+                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Sort by Name</option>
+                <option value="date" {% if sort_by == 'date' %}selected{% endif %}>Sort by Join Date</option>
+                <option value="courses" {% if sort_by == 'courses' %}selected{% endif %}>Sort by Courses</option>
+            </select>
+            
+            {% if selected_course or search_query or sort_by != 'name' %}
+                <a href="{{ url_for('student_directory') }}" class="btn-reset">
+                    <i class="fas fa-times"></i> Clear Filters
+                </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Student Grid -->
+    <div class="student-grid">
+        {% if student_data %}
+            {% for data in student_data %}
+                {% set student = data.student %}
+                <div class="student-card">
+                    <div class="card-header">
+                        <div class="avatar">
+                            {% if data.has_profile_pic and student.profile_picture %}
+                                <img src="{{ url_for('uploaded_file', filename=student.profile_picture) }}" 
+                                     alt="{{ student.username }}"
+                                     onerror="this.style.display='none'; this.parentElement.querySelector('.initials').style.display='flex';">
+                                <span class="initials" style="display: none;">{{ student.username[0]|upper }}</span>
+                            {% else %}
+                                <span class="initials">{{ student.username[0]|upper }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="student-info">
+                            <div class="name">{{ student.username }}</div>
+                            <div class="email">{{ student.email }}</div>
+                            <div class="student-id">#{{ '%06d'|format(student.id) }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="badges">
+                            {% if student.is_suspended %}
+                                <span class="badge suspended"><i class="fas fa-ban"></i> Suspended</span>
+                            {% elif student.is_approved %}
+                                <span class="badge active"><i class="fas fa-check-circle"></i> Active</span>
+                            {% else %}
+                                <span class="badge pending"><i class="fas fa-clock"></i> Pending</span>
+                            {% endif %}
+                            <span class="badge course-badge">
+                                <i class="fas fa-book"></i> {{ data.total_courses }} courses
+                            </span>
+                        </div>
+                        
+                        <div class="course-list">
+                            {% for course in data.enrolled_courses[:4] %}
+                                <span class="course-tag">{{ course.code }} {% if course.status == 'approved' %}✅{% endif %}</span>
+                            {% endfor %}
+                            {% if data.enrolled_courses|length > 4 %}
+                                <span class="course-tag">+{{ data.enrolled_courses|length - 4 }} more</span>
+                            {% endif %}
+                            {% if data.enrolled_courses|length == 0 %}
+                                <span class="course-tag" style="color: var(--text-muted);">No courses</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="stats">
+                            <span><i class="fas fa-check-circle"></i> {{ data.approved_count }} approved</span>
+                            {% if data.pending_count > 0 %}
+                                <span style="margin-left: 8px;"><i class="fas fa-clock"></i> {{ data.pending_count }} pending</span>
+                            {% endif %}
+                        </div>
+                        <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn-view">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <p>No students found</p>
+                <p class="text-muted">Try adjusting your filters or search criteria</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

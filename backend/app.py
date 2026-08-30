@@ -4868,7 +4868,115 @@ def delete_backup(backup_id):
         flash(f'Error deleting backup: {str(e)}', 'error')
     
     return redirect(url_for('backup_restore'))
-      
+
+# ============================================================================
+# ROUTES - STUDENT DIRECTORY
+# ============================================================================
+
+@app.route('/admin/student-directory')
+@login_required
+@admin_required
+def student_directory():
+    """View all students with profile pictures and course filtering"""
+    
+    # Get filter parameters
+    course_id = request.args.get('course_id', type=int)
+    search = request.args.get('search', '')
+    sort_by = request.args.get('sort_by', 'name')  # name, date, courses
+    
+    # Get students based on admin role
+    if current_user.is_super_admin():
+        # Super admin sees all students
+        students = User.query.filter_by(role='student').all()
+        available_courses = Course.query.all()
+    else:
+        # Regular admin only sees students in their courses
+        course_ids = [c.id for c in current_user.managed_courses]
+        
+        # Get student IDs enrolled in admin's courses
+        student_ids = db.session.query(CourseEnrollment.student_id).filter(
+            CourseEnrollment.course_id.in_(course_ids)
+        ).distinct().all()
+        student_ids = [s[0] for s in student_ids]
+        
+        students = User.query.filter(
+            User.role == 'student',
+            User.id.in_(student_ids)
+        ).all() if student_ids else []
+        
+        available_courses = current_user.managed_courses
+    
+    # Build student data with enrollment info
+    student_data = []
+    for student in students:
+        # Get all enrollments for this student
+        enrollments = CourseEnrollment.query.filter_by(student_id=student.id).all()
+        
+        # Get enrolled course names
+        enrolled_courses = []
+        for enrollment in enrollments:
+            if enrollment.course:
+                enrolled_courses.append({
+                    'id': enrollment.course.id,
+                    'name': enrollment.course.name,
+                    'code': enrollment.course.code,
+                    'status': enrollment.status
+                })
+        
+        # Count approved courses
+        approved_count = sum(1 for e in enrollments if e.status == 'approved')
+        pending_count = sum(1 for e in enrollments if e.status == 'pending')
+        
+        # Check if student has profile picture
+        has_profile_pic = bool(student.profile_picture)
+        
+        student_data.append({
+            'student': student,
+            'enrolled_courses': enrolled_courses,
+            'approved_count': approved_count,
+            'pending_count': pending_count,
+            'total_courses': len(enrolled_courses),
+            'has_profile_pic': has_profile_pic,
+            'status': 'Active' if student.is_approved else 'Pending',
+            'is_suspended': student.is_suspended
+        })
+    
+    # Apply course filter
+    if course_id:
+        filtered_data = []
+        for data in student_data:
+            if any(c['id'] == course_id for c in data['enrolled_courses']):
+                filtered_data.append(data)
+        student_data = filtered_data
+    
+    # Apply search filter
+    if search:
+        search_lower = search.lower()
+        filtered_data = []
+        for data in student_data:
+            student = data['student']
+            if (search_lower in student.username.lower() or 
+                search_lower in student.email.lower()):
+                filtered_data.append(data)
+        student_data = filtered_data
+    
+    # Apply sorting
+    if sort_by == 'name':
+        student_data.sort(key=lambda x: x['student'].username.lower())
+    elif sort_by == 'date':
+        student_data.sort(key=lambda x: x['student'].created_at, reverse=True)
+    elif sort_by == 'courses':
+        student_data.sort(key=lambda x: x['total_courses'], reverse=True)
+    else:  # name default
+        student_data.sort(key=lambda x: x['student'].username.lower())
+    
+    return render_template('admin/student_directory.html',
+                         student_data=student_data,
+                         courses=available_courses,
+                         selected_course=course_id,
+                         search_query=search,
+                         sort_by=sort_by)
+                           
 @app.route('/admin/email-templates')
 @login_required
 @super_admin_required
