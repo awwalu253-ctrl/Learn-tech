@@ -1486,6 +1486,8 @@ def unsuspend_student(student_id):
 @admin_required
 def delete_student(student_id):
     """Permanently delete a student account"""
+    from sqlalchemy import text
+    
     student = User.query.get_or_404(student_id)
     
     # Prevent deleting admins
@@ -1501,36 +1503,25 @@ def delete_student(student_id):
             flash('You do not have permission to delete this student.', 'error')
             return redirect(url_for('manage_students'))
     
-    # Delete all related records in the correct order
     try:
-        # 1. Delete student_course entries (many-to-many relationship)
-        db.session.execute(
-            'DELETE FROM student_course WHERE student_id = :student_id',
-            {'student_id': student.id}
-        )
-        
-        # 2. Delete course enrollments
+        # Delete related records using ORM
         CourseEnrollment.query.filter_by(student_id=student.id).delete()
-        
-        # 3. Delete rejections
         RejectionMessage.query.filter_by(student_id=student.id).delete()
-        
-        # 4. Delete quiz answers
         QuizAnswer.query.filter_by(student_id=student.id).delete()
-        
-        # 5. Delete progress records
         StudentProgress.query.filter_by(student_id=student.id).delete()
-        
-        # 6. Delete assignment submissions
         AssignmentSubmission.query.filter_by(student_id=student.id).delete()
         
-        # 7. Delete admin_course assignments (if the student is an admin)
+        # For many-to-many tables, use text() - these are association tables
         db.session.execute(
-            'DELETE FROM admin_course WHERE admin_id = :student_id',
+            text('DELETE FROM student_course WHERE student_id = :student_id'),
+            {'student_id': student.id}
+        )
+        db.session.execute(
+            text('DELETE FROM admin_course WHERE admin_id = :student_id'),
             {'student_id': student.id}
         )
         
-        # 8. Now delete the user
+        # Delete the user
         db.session.delete(student)
         db.session.commit()
         
