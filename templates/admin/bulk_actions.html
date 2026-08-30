@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Bulk Actions - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .bulk-page { max-width: 1000px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .bulk-form { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08)); padding: 24px; }
+    .bulk-form .action-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(201,168,75,0.04); }
+    .bulk-form select, .bulk-form input[type="text"] { background: var(--primary-bg, #0A1527); color: var(--text-gray, #C8CED8); border: 1px solid rgba(201,168,75,0.06); border-radius: var(--radius-sm, 8px); padding: 8px 16px; font-family: 'Inter', sans-serif; font-size: 0.85rem; min-width: 150px; }
+    .bulk-form select:focus, .bulk-form input[type="text"]:focus { outline: none; border-color: var(--primary-gold, #C9A84B); box-shadow: 0 0 0 3px rgba(201,168,75,0.06); }
+    .bulk-form .btn-bulk { padding: 8px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); color: var(--white, #FFFFFF); font-weight: 600; border: none; cursor: pointer; transition: var(--transition, 0.3s ease); }
+    .bulk-form .btn-bulk:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(201,168,75,0.2); }
+    .bulk-form .btn-bulk.danger { background: linear-gradient(135deg, #EF4444, #DC2626); }
+    .bulk-form .btn-bulk.danger:hover { box-shadow: 0 4px 20px rgba(239,68,68,0.2); }
+    .bulk-form .btn-bulk.warning { background: linear-gradient(135deg, #F59E0B, #D97706); }
+    .bulk-form .btn-bulk.warning:hover { box-shadow: 0 4px 20px rgba(245,158,11,0.2); }
+
+    .student-list { max-height: 500px; overflow-y: auto; }
+    .student-list .student-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid rgba(201,168,75,0.02); transition: var(--transition); }
+    .student-list .student-item:hover { background: rgba(201,168,75,0.02); }
+    .student-list .student-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary-gold); cursor: pointer; }
+    .student-list .student-item .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; }
+    .student-list .student-item .name { font-weight: 600; color: var(--white); }
+    .student-list .student-item .email { font-size: 0.8rem; color: var(--text-muted); }
+    .student-list .student-item .status-badge { font-size: 0.6rem; padding: 2px 10px; border-radius: 100px; }
+    .student-list .student-item .status-badge.active { background: rgba(5,150,105,0.08); color: #059669; }
+    .student-list .student-item .status-badge.pending { background: rgba(245,158,11,0.08); color: #F59E0B; }
+    .student-list .student-item .status-badge.suspended { background: rgba(239,68,68,0.08); color: #EF4444; }
+
+    .selection-controls { display: flex; gap: 12px; padding: 8px 0; margin-bottom: 8px; }
+    .selection-controls button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: var(--transition); }
+    .selection-controls button:hover { color: var(--primary-gold); }
+
+    .empty-state { text-align: center; padding: 48px 20px; background: var(--secondary-bg); border-radius: var(--radius); }
+    .empty-state i { font-size: 2.5rem; color: var(--primary-gold); opacity: 0.15; }
+    .empty-state p { color: var(--text-gray); }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { .bulk-form .action-row { flex-direction: column; align-items: stretch; } .student-list .student-item { flex-wrap: wrap; } }
+</style>
+
+<div class="bulk-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-tasks"></i></div>
+            <div>
+                <h1><span>Bulk Actions</span></h1>
+                <p class="subtitle">Perform actions on multiple students at once</p>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" class="bulk-form" id="bulkForm">
+        <div class="action-row">
+            <label style="font-weight: 600; color: var(--text-gray);">Action:</label>
+            <select name="action" id="actionSelect" required>
+                <option value="">Select Action</option>
+                <option value="approve">Approve Students</option>
+                <option value="suspend">Suspend Students</option>
+                <option value="unsuspend">Unsuspend Students</option>
+                {% if current_user.is_super_admin() %}
+                <option value="delete" style="color: #EF4444;">Delete Students</option>
+                {% endif %}
+            </select>
+            
+            <div id="reasonField" style="display: none;">
+                <label style="font-weight: 600; color: var(--text-gray);">Reason:</label>
+                <input type="text" name="reason" placeholder="Reason for suspension...">
+            </div>
+            
+            <button type="submit" class="btn-bulk" id="submitBtn">Apply to Selected</button>
+        </div>
+
+        <div class="selection-controls">
+            <button type="button" onclick="selectAll()">Select All</button>
+            <button type="button" onclick="deselectAll()">Deselect All</button>
+            <span style="color: var(--text-muted); font-size: 0.8rem;" id="selectedCount">0 selected</span>
+        </div>
+
+        <div class="student-list">
+            {% if students %}
+                {% for student in students %}
+                    <div class="student-item">
+                        <input type="checkbox" name="student_ids" value="{{ student.id }}">
+                        <div class="avatar">{{ student.username[0]|upper }}</div>
+                        <span class="name">{{ student.username }}</span>
+                        <span class="email">{{ student.email }}</span>
+                        {% if student.is_suspended %}
+                            <span class="status-badge suspended">Suspended</span>
+                        {% elif student.is_approved %}
+                            <span class="status-badge active">Active</span>
+                        {% else %}
+                            <span class="status-badge pending">Pending</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <p>No students found</p>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+    // Show/hide reason field based on action
+    document.getElementById('actionSelect').addEventListener('change', function() {
+        const reasonField = document.getElementById('reasonField');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (this.value === 'suspend') {
+            reasonField.style.display = 'block';
+            submitBtn.textContent = 'Suspend Selected';
+            submitBtn.className = 'btn-bulk warning';
+        } else if (this.value === 'delete') {
+            reasonField.style.display = 'none';
+            submitBtn.textContent = 'Delete Selected';
+            submitBtn.className = 'btn-bulk danger';
+        } else if (this.value === 'unsuspend') {
+            reasonField.style.display = 'none';
+            submitBtn.textContent = 'Unsuspend Selected';
+            submitBtn.className = 'btn-bulk';
+        } else if (this.value === 'approve') {
+            reasonField.style.display = 'none';
+            submitBtn.textContent = 'Approve Selected';
+            submitBtn.className = 'btn-bulk';
+        } else {
+            reasonField.style.display = 'none';
+            submitBtn.textContent = 'Apply to Selected';
+            submitBtn.className = 'btn-bulk';
+        }
+    });
+
+    // Select/Deselect all
+    function selectAll() {
+        document.querySelectorAll('input[name="student_ids"]').forEach(cb => cb.checked = true);
+        updateCount();
+    }
+
+    function deselectAll() {
+        document.querySelectorAll('input[name="student_ids"]').forEach(cb => cb.checked = false);
+        updateCount();
+    }
+
+    // Update selected count
+    document.querySelectorAll('input[name="student_ids"]').forEach(cb => {
+        cb.addEventListener('change', updateCount);
+    });
+
+    function updateCount() {
+        const count = document.querySelectorAll('input[name="student_ids"]:checked').length;
+        document.getElementById('selectedCount').textContent = count + ' selected';
+    }
+
+    // Confirm before dangerous actions
+    document.getElementById('bulkForm').addEventListener('submit', function(e) {
+        const action = document.getElementById('actionSelect').value;
+        const count = document.querySelectorAll('input[name="student_ids"]:checked').length;
+        
+        if (count === 0) {
+            e.preventDefault();
+            alert('Please select at least one student.');
+            return;
+        }
+        
+        if (action === 'delete') {
+            if (!confirm(`Are you sure you want to delete ${count} student(s)? This cannot be undone!`)) {
+                e.preventDefault();
+            }
+        } else if (action === 'suspend') {
+            if (!confirm(`Are you sure you want to suspend ${count} student(s)?`)) {
+                e.preventDefault();
+            }
+        }
+    });
+</script>
+{% endblock %}

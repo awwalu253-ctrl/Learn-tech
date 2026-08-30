@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}System Logs - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .logs-page { max-width: 1200px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .logs-container { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); overflow: hidden; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .logs-header { display: grid; grid-template-columns: 180px 150px 1fr; padding: 12px 20px; background: rgba(201,168,75,0.02); border-bottom: 1px solid rgba(201,168,75,0.04); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+    .log-item { display: grid; grid-template-columns: 180px 150px 1fr; padding: 10px 20px; border-bottom: 1px solid rgba(201,168,75,0.02); font-size: 0.85rem; color: var(--text-gray); transition: var(--transition); }
+    .log-item:hover { background: rgba(201,168,75,0.02); }
+    .log-item .timestamp { color: var(--text-muted); font-size: 0.75rem; }
+    .log-item .user { font-weight: 500; color: var(--white); }
+    .log-item .action { color: var(--text-gray); }
+    .log-item .type-badge { font-size: 0.6rem; padding: 1px 10px; border-radius: 100px; }
+    .log-item .type-badge.note { background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .log-item .type-badge.quiz { background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .log-item .type-badge.assignment { background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .log-item .type-badge.student { background: rgba(5,150,105,0.08); color: #059669; }
+    .log-item .type-badge.system { background: rgba(239,68,68,0.08); color: #EF4444; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state i { font-size: 2.5rem; opacity: 0.2; margin-bottom: 12px; }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { .logs-header, .log-item { grid-template-columns: 1fr; gap: 4px; } .logs-header { display: none; } }
+</style>
+
+<div class="logs-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-terminal"></i></div>
+            <div>
+                <h1><span>System Logs</span></h1>
+                <p class="subtitle">Monitor system activity and user actions</p>
+            </div>
+        </div>
+        <button onclick="location.reload()" style="padding: 8px 20px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); border: 1px solid rgba(201,168,75,0.04); cursor: pointer; font-weight: 600;">
+            <i class="fas fa-sync"></i> Refresh
+        </button>
+    </div>
+
+    <div class="logs-container">
+        <div class="logs-header">
+            <div>Timestamp</div>
+            <div>User</div>
+            <div>Action</div>
+        </div>
+
+        {% if logs %}
+            {% for log in logs %}
+                <div class="log-item">
+                    <div class="timestamp">{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    <div class="user">{{ log.user }}</div>
+                    <div class="action">
+                        <span class="type-badge {{ log.type }}">{{ log.type|title }}</span>
+                        {{ log.action }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-terminal"></i>
+                <p>No logs available</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">System activity will appear here</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

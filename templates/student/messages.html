@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .messages-page { max-width: 800px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .message-list { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); overflow: hidden; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .message-item { padding: 16px 20px; border-bottom: 1px solid rgba(201,168,75,0.02); transition: var(--transition); display: flex; align-items: flex-start; gap: 12px; }
+    .message-item:last-child { border-bottom: none; }
+    .message-item:hover { background: rgba(201,168,75,0.02); }
+    .message-item .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+    .message-item .content { flex: 1; }
+    .message-item .content .sender { font-weight: 600; color: var(--white); }
+    .message-item .content .subject { font-weight: 500; color: var(--text-gray); }
+    .message-item .content .preview { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+    .message-item .content .time { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+    .message-item .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 14px; }
+    .message-item .status-dot.unread { background: var(--primary-gold); }
+    .message-item .status-dot.read { background: var(--text-muted); }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state i { font-size: 2.5rem; opacity: 0.2; margin-bottom: 12px; }
+    .empty-state p { color: var(--text-gray); }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="messages-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-inbox"></i></div>
+            <div>
+                <h1><span>Messages</span></h1>
+                <p class="subtitle">Your inbox</p>
+            </div>
+        </div>
+        <span style="padding: 6px 16px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); font-size: 0.8rem; font-weight: 600;">
+            <i class="fas fa-envelope"></i> 0 unread
+        </span>
+    </div>
+
+    <div class="message-list">
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>No messages yet</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Messages from instructors will appear here</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

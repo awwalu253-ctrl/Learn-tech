@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}My Progress - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .progress-page { max-width: 900px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .stat-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); padding: 16px; text-align: center; border: 1px solid rgba(201,168,75,0.04); }
+    .stat-card .number { font-size: 1.8rem; font-weight: 800; color: var(--primary-gold); }
+    .stat-card .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .course-progress-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201,168,75,0.04); padding: 18px 20px; margin-bottom: 14px; transition: var(--transition, 0.3s ease); opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .course-progress-card:hover { border-color: rgba(201,168,75,0.08); }
+    .course-progress-card .course-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .course-progress-card .course-header h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin: 0; }
+    .course-progress-card .course-header .percent { font-weight: 700; color: var(--primary-gold); }
+    .course-progress-card .progress-bar { height: 6px; background: rgba(201,168,75,0.06); border-radius: 6px; overflow: hidden; }
+    .course-progress-card .progress-bar .fill { height: 100%; background: linear-gradient(90deg, var(--primary-gold), var(--dark-gold)); border-radius: 6px; transition: width 1s ease; }
+    .course-progress-card .course-stats { display: flex; gap: 16px; margin-top: 10px; font-size: 0.75rem; color: var(--text-muted); }
+    .course-progress-card .course-stats i { color: var(--primary-gold); }
+
+    .empty-state { text-align: center; padding: 60px 20px; background: var(--secondary-bg); border-radius: var(--radius); }
+    .empty-state i { font-size: 2.5rem; color: var(--primary-gold); opacity: 0.2; margin-bottom: 12px; }
+    .empty-state p { color: var(--text-gray); }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="progress-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-chart-simple"></i></div>
+            <div>
+                <h1><span>My Progress</span></h1>
+                <p class="subtitle">Track your learning journey</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="number">{{ enrolled_courses|length }}</div>
+            <div class="label">Enrolled</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ completed_notes|length }}</div>
+            <div class="label">Notes Read</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ avg_progress }}%</div>
+            <div class="label">Avg Progress</div>
+        </div>
+    </div>
+
+    {% for course in course_progress %}
+        <div class="course-progress-card">
+            <div class="course-header">
+                <h3>{{ course.course.name }}</h3>
+                <span class="percent">{{ course.progress }}%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="fill" style="width: {{ course.progress }}%;"></div>
+            </div>
+            <div class="course-stats">
+                <span><i class="fas fa-file-alt"></i> {{ course.course.notes|length }} notes</span>
+                <span><i class="fas fa-puzzle-piece"></i> {{ course.course.quiz_groups|length }} quizzes</span>
+                <span><i class="fas fa-tasks"></i> {{ course.course.assignments|length }} assignments</span>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-book"></i>
+            <p>You are not enrolled in any courses yet.</p>
+            <a href="{{ url_for('student_courses') }}" style="display: inline-block; margin-top: 12px; padding: 10px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); color: var(--white); text-decoration: none; font-weight: 600;">
+                <i class="fas fa-search"></i> Browse Courses
+            </a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

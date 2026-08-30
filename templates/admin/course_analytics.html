@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Course Analytics - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .analytics-page { max-width: 1200px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .analytics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .analytics-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08)); padding: 20px; transition: var(--transition, 0.3s ease); }
+    .analytics-card:hover { box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12)); transform: translateY(-4px); border-color: rgba(201, 168, 75, 0.08); }
+    .analytics-card .course-title { font-size: 1.1rem; font-weight: 700; color: var(--white, #FFFFFF); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .analytics-card .course-title .code { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); background: rgba(201,168,75,0.04); padding: 2px 12px; border-radius: 100px; }
+    .analytics-card .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+    .analytics-card .stat-item { text-align: center; background: rgba(201,168,75,0.02); padding: 8px; border-radius: var(--radius-sm); }
+    .analytics-card .stat-item .number { font-size: 1.3rem; font-weight: 700; color: var(--primary-gold, #C9A84B); display: block; }
+    .analytics-card .stat-item .label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .analytics-card .progress-section { margin-top: 12px; }
+    .analytics-card .progress-bar { height: 6px; background: rgba(201,168,75,0.06); border-radius: 6px; overflow: hidden; }
+    .analytics-card .progress-bar .fill { height: 100%; background: linear-gradient(90deg, var(--primary-gold), var(--dark-gold)); border-radius: 6px; transition: width 1s ease; }
+    .analytics-card .progress-label { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { .analytics-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="analytics-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-chart-line"></i></div>
+            <div>
+                <h1><span>Course Analytics</span></h1>
+                <p class="subtitle">Track performance across all your courses</p>
+            </div>
+        </div>
+    </div>
+
+    {% if course_data %}
+        <div class="analytics-grid">
+            {% for data in course_data %}
+                <div class="analytics-card">
+                    <div class="course-title">
+                        {{ data.course.name }}
+                        <span class="code">{{ data.course.code }}</span>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="number">{{ data.total_students }}</span>
+                            <span class="label">Students</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">{{ data.notes_count }}</span>
+                            <span class="label">Notes</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">{{ data.quizzes_count }}</span>
+                            <span class="label">Quizzes</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">{{ data.assignments_count }}</span>
+                            <span class="label">Assignments</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">{{ data.submissions_count }}</span>
+                            <span class="label">Submissions</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">{{ data.avg_progress }}%</span>
+                            <span class="label">Avg Progress</span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="fill" style="width: {{ data.avg_progress }}%;"></div>
+                        </div>
+                        <div class="progress-label">
+                            <span>Overall Progress</span>
+                            <span>{{ data.avg_progress }}%</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-chart-line"></i>
+            <p>No course data available</p>
+            <p class="text-muted">Start creating courses to see analytics</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

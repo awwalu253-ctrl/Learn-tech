@@ -4113,7 +4113,456 @@ def bulk_delete_notes():
     db.session.commit()
     flash(f'{deleted_count} notes deleted successfully.', 'success')
     return redirect(url_for('manage_notes'))
+# ============================================================================
+# ROUTES - ADMIN COURSE ANALYTICS
+# ============================================================================
 
+@app.route('/admin/analytics')
+@login_required
+@admin_required
+def admin_course_analytics():
+    """Course analytics dashboard for admins"""
+    # Get all courses (or just the ones the admin manages)
+    if current_user.is_super_admin():
+        courses = Course.query.all()
+    else:
+        courses = current_user.managed_courses
+    
+    # Get analytics data for each course
+    course_data = []
+    for course in courses:
+        # Count students
+        total_students = CourseEnrollment.query.filter_by(
+            course_id=course.id,
+            status='approved'
+        ).count()
+        
+        # Count notes
+        notes_count = Note.query.filter_by(course_id=course.id).count()
+        
+        # Count quizzes
+        quizzes_count = QuizGroup.query.filter_by(course_id=course.id).count()
+        
+        # Count assignments
+        assignments_count = Assignment.query.filter_by(course_id=course.id).count()
+        
+        # Count submissions
+        submissions_count = AssignmentSubmission.query.filter(
+            AssignmentSubmission.assignment_id.in_(
+                db.session.query(Assignment.id).filter_by(course_id=course.id)
+            )
+        ).count()
+        
+        # Calculate average progress
+        enrollments = CourseEnrollment.query.filter_by(
+            course_id=course.id,
+            status='approved'
+        ).all()
+        
+        total_progress = 0
+        if enrollments:
+            for enrollment in enrollments:
+                total_progress += course.get_progress_for_student(enrollment.student_id)
+            avg_progress = total_progress // len(enrollments)
+        else:
+            avg_progress = 0
+        
+        course_data.append({
+            'course': course,
+            'total_students': total_students,
+            'notes_count': notes_count,
+            'quizzes_count': quizzes_count,
+            'assignments_count': assignments_count,
+            'submissions_count': submissions_count,
+            'avg_progress': avg_progress
+        })
+    
+    return render_template('admin/course_analytics.html', course_data=course_data)
+
+
+# ============================================================================
+# ROUTES - ADMIN BULK ACTIONS
+# ============================================================================
+
+@app.route('/admin/bulk-actions', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def bulk_actions():
+    """Bulk actions for students"""
+    if request.method == 'POST':
+        action = request.form.get('action')
+        student_ids = request.form.getlist('student_ids')
+        
+        if not student_ids:
+            flash('No students selected.', 'warning')
+            return redirect(url_for('bulk_actions'))
+        
+        if action == 'approve':
+            approved_count = 0
+            for sid in student_ids:
+                student = User.query.get(sid)
+                if student and student.role == 'student':
+                    student.is_approved = True
+                    approved_count += 1
+            db.session.commit()
+            flash(f'{approved_count} students approved successfully.', 'success')
+            
+        elif action == 'delete':
+            # Only super admin can delete
+            if not current_user.is_super_admin():
+                flash('Only super admin can delete students.', 'error')
+                return redirect(url_for('bulk_actions'))
+            
+            deleted_count = 0
+            for sid in student_ids:
+                student = User.query.get(sid)
+                if student and student.role == 'student':
+                    # Delete related records
+                    CourseEnrollment.query.filter_by(student_id=student.id).delete()
+                    db.session.delete(student)
+                    deleted_count += 1
+            db.session.commit()
+            flash(f'{deleted_count} students deleted successfully.', 'success')
+            
+        elif action == 'suspend':
+            reason = request.form.get('reason', 'No reason provided.')
+            suspended_count = 0
+            for sid in student_ids:
+                student = User.query.get(sid)
+                if student and student.role == 'student':
+                    student.is_suspended = True
+                    student.suspension_reason = reason
+                    student.suspended_at = datetime.utcnow()
+                    student.is_approved = False
+                    suspended_count += 1
+                    notify_student_suspended(student.id, reason)
+            db.session.commit()
+            flash(f'{suspended_count} students suspended successfully.', 'warning')
+            
+        elif action == 'unsuspend':
+            unsuspended_count = 0
+            for sid in student_ids:
+                student = User.query.get(sid)
+                if student and student.role == 'student':
+                    student.is_suspended = False
+                    student.suspension_reason = None
+                    student.suspended_at = None
+                    unsuspended_count += 1
+                    notify_student_unsuspended(student.id)
+            db.session.commit()
+            flash(f'{unsuspended_count} students unsuspended successfully.', 'success')
+            
+        else:
+            flash('Invalid action selected.', 'error')
+        
+        return redirect(url_for('bulk_actions'))
+    
+    # GET request - show bulk actions page
+    students = User.query.filter_by(role='student').all()
+    return render_template('admin/bulk_actions.html', students=students)
+
+
+# ============================================================================
+# ROUTES - ADMIN MESSAGES
+# ============================================================================
+
+@app.route('/admin/messages')
+@login_required
+@admin_required
+def admin_messages():
+    """Admin messages/inbox"""
+    # Get all students (for sending messages)
+    students = User.query.filter_by(role='student').all()
+    return render_template('admin/admin_messages.html', students=students)
+
+
+# ============================================================================
+# ROUTES - SUPER ADMIN (System Settings, Logs, Backup, Email Templates)
+# ============================================================================
+
+@app.route('/admin/system-settings')
+@login_required
+@super_admin_required
+def system_settings():
+    """System settings configuration"""
+    return render_template('admin/system_settings.html')
+
+
+@app.route('/admin/system-logs')
+@login_required
+@super_admin_required
+def system_logs():
+    """View system logs"""
+    # For now, show recent activity from database
+    recent_activity = []
+    
+    # Get recent notes
+    notes = Note.query.order_by(Note.created_at.desc()).limit(10).all()
+    for note in notes:
+        recent_activity.append({
+            'timestamp': note.created_at,
+            'user': note.author.username if note.author else 'Unknown',
+            'action': f'Created note: {note.title}',
+            'type': 'note'
+        })
+    
+    # Get recent quizzes
+    quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(10).all()
+    for quiz in quizzes:
+        recent_activity.append({
+            'timestamp': quiz.created_at,
+            'user': quiz.author.username if quiz.author else 'Unknown',
+            'action': f'Created quiz: {quiz.title}',
+            'type': 'quiz'
+        })
+    
+    # Get recent assignments
+    assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(10).all()
+    for assignment in assignments:
+        recent_activity.append({
+            'timestamp': assignment.created_at,
+            'user': assignment.author.username if assignment.author else 'Unknown',
+            'action': f'Created assignment: {assignment.title}',
+            'type': 'assignment'
+        })
+    
+    # Sort by timestamp
+    recent_activity.sort(key=lambda x: x['timestamp'], reverse=True)
+    
+    return render_template('admin/system_logs.html', logs=recent_activity)
+
+
+@app.route('/admin/backup-restore')
+@login_required
+@super_admin_required
+def backup_restore():
+    """Backup and restore management"""
+    return render_template('admin/backup_restore.html')
+
+
+@app.route('/admin/email-templates')
+@login_required
+@super_admin_required
+def email_templates():
+    """Manage email templates"""
+    return render_template('admin/email_templates.html')
+
+
+# ============================================================================
+# ROUTES - STUDENT PROGRESS
+# ============================================================================
+
+@app.route('/student/progress')
+@login_required
+def my_progress():
+    """Student progress tracking"""
+    if current_user.is_admin():
+        return redirect(url_for('admin_dashboard'))
+    
+    # Get enrolled courses
+    enrolled_courses = current_user.get_enrolled_courses()
+    
+    # Calculate progress for each course
+    course_progress = []
+    total_progress = 0
+    completed_notes = []
+    
+    for course in enrolled_courses:
+        progress = course.get_progress_for_student(current_user.id)
+        course_progress.append({
+            'course': course,
+            'progress': progress
+        })
+        total_progress += progress
+        
+        # Get completed notes for this course
+        notes = Note.query.filter_by(course_id=course.id).all()
+        for note in notes:
+            progress_entry = StudentProgress.query.filter_by(
+                student_id=current_user.id,
+                note_id=note.id,
+                is_read=True
+            ).first()
+            if progress_entry:
+                completed_notes.append(note)
+    
+    avg_progress = (total_progress // len(enrolled_courses)) if enrolled_courses else 0
+    
+    return render_template('student/progress.html', 
+                         enrolled_courses=enrolled_courses,
+                         course_progress=course_progress,
+                         avg_progress=avg_progress,
+                         completed_notes=completed_notes,
+                         total_notes=Note.query.count())
+
+
+# ============================================================================
+# ROUTES - STUDENT NOTIFICATIONS
+# ============================================================================
+
+@app.route('/student/notifications')
+@login_required
+def student_notifications():
+    """View all notifications for student"""
+    if current_user.is_admin():
+        return redirect(url_for('admin_dashboard'))
+    
+    # Get all notifications for the current user
+    notifications = Notification.query.filter_by(
+        user_id=current_user.id
+    ).order_by(Notification.created_at.desc()).all()
+    
+    return render_template('student/notifications.html', notifications=notifications)
+
+
+# ============================================================================
+# ROUTES - STUDENT MESSAGES
+# ============================================================================
+
+@app.route('/student/messages')
+@login_required
+def student_messages():
+    """Student messages/inbox"""
+    if current_user.is_admin():
+        return redirect(url_for('admin_dashboard'))
+    
+    # For now, show a placeholder
+    return render_template('student/messages.html')
+
+
+# ============================================================================
+# ROUTES - STUDENT ACHIEVEMENTS
+# ============================================================================
+
+@app.route('/student/achievements')
+@login_required
+def my_achievements():
+    """Student achievements and badges"""
+    if current_user.is_admin():
+        return redirect(url_for('admin_dashboard'))
+    
+    # Calculate achievements based on activity
+    achievements = []
+    
+    # Achievement 1: First Quiz
+    quiz_count = QuizAnswer.query.filter_by(student_id=current_user.id).count()
+    if quiz_count > 0:
+        achievements.append({
+            'name': 'First Quiz',
+            'icon': 'fa-puzzle-piece',
+            'description': 'Completed your first quiz',
+            'earned': True,
+            'date': QuizAnswer.query.filter_by(student_id=current_user.id).first().answered_at if quiz_count > 0 else None
+        })
+    else:
+        achievements.append({
+            'name': 'First Quiz',
+            'icon': 'fa-puzzle-piece',
+            'description': 'Complete your first quiz',
+            'earned': False,
+            'date': None
+        })
+    
+    # Achievement 2: Perfect Score
+    answers = QuizAnswer.query.filter_by(student_id=current_user.id).all()
+    if answers:
+        correct = sum(1 for a in answers if a.is_correct)
+        total = len(answers)
+        if total > 0 and (correct / total) * 100 >= 100:
+            achievements.append({
+                'name': 'Perfect Score',
+                'icon': 'fa-star',
+                'description': 'Got 100% on a quiz',
+                'earned': True,
+                'date': answers[-1].answered_at
+            })
+        else:
+            achievements.append({
+                'name': 'Perfect Score',
+                'icon': 'fa-star',
+                'description': 'Get 100% on a quiz',
+                'earned': False,
+                'date': None
+            })
+    
+    # Achievement 3: Course Master
+    enrolled_courses = current_user.get_enrolled_courses()
+    completed_courses = 0
+    for course in enrolled_courses:
+        if course.get_progress_for_student(current_user.id) >= 100:
+            completed_courses += 1
+    if completed_courses >= 1:
+        achievements.append({
+            'name': 'Course Master',
+            'icon': 'fa-graduation-cap',
+            'description': 'Completed a course',
+            'earned': True,
+            'date': None  # Would need to track completion date
+        })
+    else:
+        achievements.append({
+            'name': 'Course Master',
+            'icon': 'fa-graduation-cap',
+            'description': 'Complete all modules in a course',
+            'earned': False,
+            'date': None
+        })
+    
+    # Achievement 4: Assignment Submitted
+    submissions = AssignmentSubmission.query.filter_by(student_id=current_user.id).count()
+    if submissions > 0:
+        achievements.append({
+            'name': 'Assignment Submitted',
+            'icon': 'fa-tasks',
+            'description': f'Submitted {submissions} assignment(s)',
+            'earned': True,
+            'date': AssignmentSubmission.query.filter_by(student_id=current_user.id).first().submitted_at
+        })
+    else:
+        achievements.append({
+            'name': 'Assignment Submitted',
+            'icon': 'fa-tasks',
+            'description': 'Submit your first assignment',
+            'earned': False,
+            'date': None
+        })
+    
+    # Count earned achievements
+    earned_count = sum(1 for a in achievements if a['earned'])
+    
+    return render_template('student/achievements.html', 
+                         achievements=achievements,
+                         earned_count=earned_count,
+                         total_achievements=len(achievements))
+
+
+# ============================================================================
+# ROUTES - STUDENT CALENDAR
+# ============================================================================
+
+@app.route('/student/calendar')
+@login_required
+def course_calendar():
+    """Course calendar with upcoming deadlines"""
+    if current_user.is_admin():
+        return redirect(url_for('admin_dashboard'))
+    
+    # Get all assignments for enrolled courses
+    enrolled_courses = current_user.get_enrolled_courses()
+    course_ids = [c.id for c in enrolled_courses]
+    
+    assignments = Assignment.query.filter(
+        Assignment.course_id.in_(course_ids)
+    ).order_by(Assignment.due_date.asc()).all()
+    
+    # Get quiz deadlines (optional)
+    quizzes = QuizGroup.query.filter(
+        QuizGroup.course_id.in_(course_ids)
+    ).all()
+    
+    return render_template('student/calendar.html', 
+                         assignments=assignments,
+                         quizzes=quizzes)
 # ============================================================================
 # NOTIFICATION API ENDPOINT
 # ============================================================================

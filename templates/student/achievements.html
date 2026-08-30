@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Achievements - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .achievements-page { max-width: 900px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .stat-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); padding: 16px; text-align: center; border: 1px solid rgba(201,168,75,0.04); }
+    .stat-card .number { font-size: 1.8rem; font-weight: 800; color: var(--primary-gold); }
+    .stat-card .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards; }
+    .achievement-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201,168,75,0.04); padding: 20px; text-align: center; transition: var(--transition, 0.3s ease); }
+    .achievement-card:hover { transform: translateY(-4px); border-color: rgba(201,168,75,0.08); }
+    .achievement-card .icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .achievement-card .icon.locked { opacity: 0.2; filter: grayscale(1); }
+    .achievement-card .icon.unlocked { color: var(--primary-gold); }
+    .achievement-card .name { font-weight: 700; color: var(--white); font-size: 0.95rem; }
+    .achievement-card .description { font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 8px; }
+    .achievement-card .status { font-size: 0.6rem; font-weight: 600; padding: 2px 12px; border-radius: 100px; }
+    .achievement-card .status.earned { background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .achievement-card .status.locked { background: rgba(201,168,75,0.02); color: var(--text-muted); }
+    .achievement-card .earned-date { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="achievements-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-award"></i></div>
+            <div>
+                <h1><span>Achievements</span></h1>
+                <p class="subtitle">Track your learning milestones</p>
+            </div>
+        </div>
+        <span style="padding: 6px 16px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); font-size: 0.8rem; font-weight: 600;">
+            <i class="fas fa-star"></i> {{ earned_count }}/{{ total_achievements }}
+        </span>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="number">{{ earned_count }}</div>
+            <div class="label">Earned</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ total_achievements - earned_count }}</div>
+            <div class="label">Locked</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ total_achievements }}</div>
+            <div class="label">Total</div>
+        </div>
+    </div>
+
+    <div class="achievement-grid">
+        {% for achievement in achievements %}
+            <div class="achievement-card">
+                <div class="icon {% if achievement.earned %}unlocked{% else %}locked{% endif %}">
+                    <i class="fas {{ achievement.icon }}"></i>
+                </div>
+                <div class="name">{{ achievement.name }}</div>
+                <div class="description">{{ achievement.description }}</div>
+                <span class="status {% if achievement.earned %}earned{% else %}locked{% endif %}">
+                    {% if achievement.earned %}✅ Earned{% else %}🔒 Locked{% endif %}
+                </span>
+                {% if achievement.earned and achievement.date %}
+                    <div class="earned-date">{{ achievement.date.strftime('%b %d, %Y') if achievement.date else '' }}</div>
+                {% endif %}
+            </div>
+        {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+                <i class="fas fa-trophy" style="font-size: 2.5rem; opacity: 0.2; display: block; margin-bottom: 12px;"></i>
+                <p>No achievements available yet</p>
+                <p style="font-size: 0.85rem;">Start learning to earn achievements!</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

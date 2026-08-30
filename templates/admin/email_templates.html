@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Email Templates - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .email-templates-page { max-width: 1000px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .template-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); padding: 20px 24px; margin-bottom: 16px; transition: var(--transition, 0.3s ease); opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .template-card:hover { border-color: rgba(201,168,75,0.08); }
+    .template-card .template-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .template-card .template-header h3 { font-size: 1rem; font-weight: 700; color: var(--white, #FFFFFF); margin: 0; }
+    .template-card .template-header .template-badge { font-size: 0.6rem; font-weight: 600; padding: 2px 12px; border-radius: 100px; background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .template-card .template-preview { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 8px 0 12px; padding: 12px 16px; background: rgba(201,168,75,0.02); border-radius: var(--radius-sm); border-left: 3px solid var(--primary-gold); }
+    .template-card .template-actions { display: flex; gap: 8px; }
+    .template-card .template-actions .btn-sm { padding: 6px 16px; border-radius: 60px; font-weight: 600; font-size: 0.75rem; border: none; cursor: pointer; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .template-card .template-actions .btn-edit { background: rgba(201,168,75,0.06); color: var(--primary-gold); border: 1px solid rgba(201,168,75,0.04); }
+    .template-card .template-actions .btn-edit:hover { background: rgba(201,168,75,0.12); transform: translateY(-2px); }
+    .template-card .template-actions .btn-preview { background: transparent; color: var(--text-gray); border: 1px solid rgba(201,168,75,0.04); }
+    .template-card .template-actions .btn-preview:hover { border-color: var(--primary-gold); color: var(--primary-gold); transform: translateY(-2px); }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="email-templates-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-envelope-open-text"></i></div>
+            <div>
+                <h1><span>Email Templates</span></h1>
+                <p class="subtitle">Customize system email notifications</p>
+            </div>
+        </div>
+        <button style="padding: 10px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); color: var(--white); border: none; cursor: pointer; font-weight: 600; transition: var(--transition);">
+            <i class="fas fa-plus"></i> New Template
+        </button>
+    </div>
+
+    <div class="template-card">
+        <div class="template-header">
+            <h3>Welcome Email</h3>
+            <span class="template-badge">Active</span>
+        </div>
+        <div class="template-preview">
+            <strong>Subject:</strong> Welcome to A-Portal! 🎉<br>
+            Hello {{ user.username }},<br><br>
+            Welcome to A-Portal! We're excited to have you on board...
+        </div>
+        <div class="template-actions">
+            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
+        </div>
+    </div>
+
+    <div class="template-card">
+        <div class="template-header">
+            <h3>Account Approval</h3>
+            <span class="template-badge">Active</span>
+        </div>
+        <div class="template-preview">
+            <strong>Subject:</strong> Your Account Has Been Approved ✅<br>
+            Hello {{ user.username }},<br><br>
+            Your account has been approved! You can now access all courses...
+        </div>
+        <div class="template-actions">
+            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
+        </div>
+    </div>
+
+    <div class="template-card">
+        <div class="template-header">
+            <h3>Course Enrollment</h3>
+            <span class="template-badge">Active</span>
+        </div>
+        <div class="template-preview">
+            <strong>Subject:</strong> You've Been Enrolled in {{ course.name }} 📚<br>
+            Hello {{ user.username }},<br><br>
+            You have been successfully enrolled in {{ course.name }}...
+        </div>
+        <div class="template-actions">
+            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
+        </div>
+    </div>
+
+    <div class="template-card">
+        <div class="template-header">
+            <h3>Assignment Deadline Reminder</h3>
+            <span class="template-badge">Active</span>
+        </div>
+        <div class="template-preview">
+            <strong>Subject:</strong> Reminder: {{ assignment.title }} Due Soon ⏰<br>
+            Hello {{ user.username }},<br><br>
+            This is a reminder that {{ assignment.title }} is due on {{ assignment.due_date }}...
+        </div>
+        <div class="template-actions">
+            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
+        </div>
+    </div>
+
+    <div class="template-card">
+        <div class="template-header">
+            <h3>Grade Notification</h3>
+            <span class="template-badge">Active</span>
+        </div>
+        <div class="template-preview">
+            <strong>Subject:</strong> Your Assignment Has Been Graded 📝<br>
+            Hello {{ user.username }},<br><br>
+            Your submission for {{ assignment.title }} has been graded. You scored {{ score }}%...
+        </div>
+        <div class="template-actions">
+            <button class="btn-sm btn-edit"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-sm btn-preview"><i class="fas fa-eye"></i> Preview</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

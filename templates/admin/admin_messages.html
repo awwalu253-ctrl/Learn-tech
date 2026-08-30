@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .messages-page { max-width: 1000px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .message-container { display: grid; grid-template-columns: 300px 1fr; gap: 20px; background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); overflow: hidden; min-height: 500px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .message-sidebar { border-right: 1px solid rgba(201,168,75,0.04); padding: 16px; }
+    .message-sidebar h3 { color: var(--white); font-size: 0.9rem; margin-bottom: 12px; }
+    .message-sidebar .recipient-list { list-style: none; padding: 0; }
+    .message-sidebar .recipient-list li { padding: 10px 14px; border-radius: var(--radius-sm); color: var(--text-gray); cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(201,168,75,0.02); }
+    .message-sidebar .recipient-list li:hover { background: rgba(201,168,75,0.04); color: var(--primary-gold); }
+    .message-sidebar .recipient-list li .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.7rem; flex-shrink: 0; }
+    .message-sidebar .recipient-list li .name { flex: 1; }
+    .message-sidebar .recipient-list li .badge { font-size: 0.55rem; padding: 1px 8px; border-radius: 100px; background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+
+    .message-content { padding: 20px; }
+    .message-content .compose-area { display: flex; flex-direction: column; gap: 12px; height: 100%; }
+    .message-content .compose-area select, .message-content .compose-area textarea { background: var(--primary-bg, #0A1527); color: var(--text-gray, #C8CED8); border: 1px solid rgba(201,168,75,0.06); border-radius: var(--radius-sm, 8px); padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 0.85rem; width: 100%; }
+    .message-content .compose-area select:focus, .message-content .compose-area textarea:focus { outline: none; border-color: var(--primary-gold, #C9A84B); box-shadow: 0 0 0 3px rgba(201,168,75,0.06); }
+    .message-content .compose-area textarea { min-height: 180px; resize: vertical; }
+    .message-content .compose-area .btn-send { padding: 10px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); color: var(--white, #FFFFFF); font-weight: 600; border: none; cursor: pointer; transition: var(--transition, 0.3s ease); align-self: flex-start; }
+    .message-content .compose-area .btn-send:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(201,168,75,0.2); }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state i { font-size: 2.5rem; opacity: 0.2; margin-bottom: 12px; }
+    .empty-state p { color: var(--text-gray); }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { .message-container { grid-template-columns: 1fr; } .message-sidebar { border-right: none; border-bottom: 1px solid rgba(201,168,75,0.04); } }
+</style>
+
+<div class="messages-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-envelope"></i></div>
+            <div>
+                <h1><span>Messages</span></h1>
+                <p class="subtitle">Send messages to students</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="message-container">
+        <div class="message-sidebar">
+            <h3><i class="fas fa-users"></i> Students</h3>
+            <ul class="recipient-list">
+                {% for student in students %}
+                    <li onclick="selectRecipient('{{ student.id }}', '{{ student.username }}')">
+                        <div class="avatar">{{ student.username[0]|upper }}</div>
+                        <span class="name">{{ student.username }}</span>
+                        {% if student.is_approved %}
+                            <span class="badge">Active</span>
+                        {% else %}
+                            <span class="badge" style="background: rgba(245,158,11,0.08); color: #F59E0B;">Pending</span>
+                        {% endif %}
+                    </li>
+                {% else %}
+                    <li style="color: var(--text-muted); text-align: center; padding: 20px;">No students found</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="message-content">
+            <div class="compose-area">
+                <h3 style="color: var(--white); margin: 0 0 8px;">Send Message</h3>
+                <select id="recipientSelect">
+                    <option value="">Select a student...</option>
+                    {% for student in students %}
+                        <option value="{{ student.id }}">{{ student.username }} ({{ student.email }})</option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="messageSubject" placeholder="Subject..." style="background: var(--primary-bg, #0A1527); color: var(--text-gray, #C8CED8); border: 1px solid rgba(201,168,75,0.06); border-radius: var(--radius-sm, 8px); padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 0.85rem; width: 100%;">
+                <textarea id="messageBody" placeholder="Write your message here..."></textarea>
+                <button class="btn-send" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+                <div id="messageStatus" style="margin-top: 8px; font-size: 0.85rem;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function selectRecipient(id, name) {
+        document.getElementById('recipientSelect').value = id;
+        document.getElementById('messageSubject').focus();
+    }
+
+    function sendMessage() {
+        const recipientId = document.getElementById('recipientSelect').value;
+        const subject = document.getElementById('messageSubject').value;
+        const body = document.getElementById('messageBody').value;
+        const status = document.getElementById('messageStatus');
+
+        if (!recipientId) {
+            status.innerHTML = '<span style="color: #EF4444;">Please select a recipient.</span>';
+            return;
+        }
+        if (!subject || !body) {
+            status.innerHTML = '<span style="color: #EF4444;">Please fill in both subject and message.</span>';
+            return;
+        }
+
+        // In a real implementation, this would send to the backend
+        status.innerHTML = '<span style="color: var(--primary-gold);">Message sent successfully! 🎉</span>';
+        
+        // Clear fields
+        document.getElementById('messageSubject').value = '';
+        document.getElementById('messageBody').value = '';
+        document.getElementById('recipientSelect').value = '';
+
+        setTimeout(() => {
+            status.innerHTML = '';
+        }, 5000);
+    }
+</script>
+{% endblock %}

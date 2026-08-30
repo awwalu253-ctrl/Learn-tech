@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .notifications-page { max-width: 800px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+    .btn-mark-read { padding: 8px 20px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); border: 1px solid rgba(201,168,75,0.04); cursor: pointer; font-weight: 600; transition: var(--transition); }
+    .btn-mark-read:hover { background: rgba(201,168,75,0.12); transform: translateY(-2px); }
+
+    .notification-list { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201,168,75,0.04); overflow: hidden; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .notification-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; border-bottom: 1px solid rgba(201,168,75,0.02); transition: var(--transition); cursor: pointer; }
+    .notification-item:last-child { border-bottom: none; }
+    .notification-item:hover { background: rgba(201,168,75,0.02); }
+    .notification-item .icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(201,168,75,0.04); font-size: 1rem; }
+    .notification-item .content { flex: 1; }
+    .notification-item .content .title { font-weight: 600; color: var(--white); margin-bottom: 2px; }
+    .notification-item .content .message { font-size: 0.85rem; color: var(--text-gray); line-height: 1.5; }
+    .notification-item .content .time { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+    .notification-item .unread-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 16px; background: var(--primary-gold); }
+    .notification-item.read .unread-dot { display: none; }
+    .notification-item.read .icon { opacity: 0.6; }
+    .notification-item.read .content .title { color: var(--text-gray); }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state i { font-size: 2.5rem; opacity: 0.2; margin-bottom: 12px; }
+    .empty-state p { color: var(--text-gray); }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="notifications-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-bell"></i></div>
+            <div>
+                <h1><span>Notifications</span></h1>
+                <p class="subtitle">Stay updated with your latest activity</p>
+            </div>
+        </div>
+        <button class="btn-mark-read" onclick="markAllRead()">
+            <i class="fas fa-check-double"></i> Mark All Read
+        </button>
+    </div>
+
+    <div class="notification-list">
+        {% if notifications %}
+            {% for notif in notifications %}
+                <div class="notification-item {% if not notif.is_read %}unread{% else %}read{% endif %}" data-id="{{ notif.id }}">
+                    <div class="icon" style="color: {{ notif.icon_color or 'var(--primary-gold)' }};">
+                        <i class="fas {{ notif.icon or 'fa-bell' }}"></i>
+                    </div>
+                    <div class="content">
+                        <div class="title">{{ notif.title }}</div>
+                        <div class="message">{{ notif.message }}</div>
+                        <div class="time">{{ notif.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                    </div>
+                    {% if not notif.is_read %}
+                        <span class="unread-dot"></span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-bell-slash"></i>
+                <p>No notifications yet</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">You'll see notifications here when there's activity</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Mark a single notification as read
+    document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const id = this.dataset.id;
+            if (id && this.classList.contains('unread')) {
+                fetch(`/api/notifications/${id}/mark-read`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.classList.remove('unread');
+                        this.classList.add('read');
+                        this.querySelector('.unread-dot')?.remove();
+                    }
+                });
+            }
+        });
+    });
+
+    // Mark all notifications as read
+    function markAllRead() {
+        fetch('/api/notifications/mark-read', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelectorAll('.notification-item.unread').forEach(item => {
+                    item.classList.remove('unread');
+                    item.classList.add('read');
+                    item.querySelector('.unread-dot')?.remove();
+                });
+                // Update badge in header
+                document.querySelector('.badge-dot')?.classList.remove('has-notifications');
+            }
+        });
+    }
+</script>
+{% endblock %}

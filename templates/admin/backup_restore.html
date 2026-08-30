@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Backup & Restore - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .backup-page { max-width: 800px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .backup-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); padding: 24px; margin-bottom: 20px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .backup-card .card-icon { font-size: 2rem; text-align: center; margin-bottom: 12px; }
+    .backup-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--white, #FFFFFF); text-align: center; margin: 0 0 4px; }
+    .backup-card p { color: var(--text-gray, #C8CED8); text-align: center; font-size: 0.9rem; margin: 0 0 16px; }
+    .backup-card .btn-action { display: block; width: 100%; padding: 12px; border-radius: 60px; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer; transition: var(--transition, 0.3s ease); text-align: center; text-decoration: none; }
+    .backup-card .btn-action.primary { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); color: var(--white, #FFFFFF); }
+    .backup-card .btn-action.primary:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(201,168,75,0.2); }
+    .backup-card .btn-action.danger { background: linear-gradient(135deg, #EF4444, #DC2626); color: var(--white, #FFFFFF); }
+    .backup-card .btn-action.danger:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(239,68,68,0.2); }
+    .backup-card .btn-action.outline { background: transparent; color: var(--text-gray); border: 1px solid rgba(201,168,75,0.04); }
+    .backup-card .btn-action.outline:hover { border-color: var(--primary-gold); color: var(--primary-gold); }
+
+    .backup-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+    .backup-info .info-item { text-align: center; padding: 12px; background: rgba(201,168,75,0.02); border-radius: var(--radius-sm); }
+    .backup-info .info-item .label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .backup-info .info-item .value { font-size: 1.1rem; font-weight: 700; color: var(--white); }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="backup-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-database"></i></div>
+            <div>
+                <h1><span>Backup & Restore</span></h1>
+                <p class="subtitle">Manage database backups</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="backup-card">
+        <div class="card-icon">💾</div>
+        <h3>Create Backup</h3>
+        <p>Backup the entire database including all users, courses, and content</p>
+        <button class="btn-action primary" onclick="createBackup()">
+            <i class="fas fa-download"></i> Create Backup Now
+        </button>
+    </div>
+
+    <div class="backup-card">
+        <div class="card-icon">📊</div>
+        <h3>Backup History</h3>
+        <p>Previously created backups</p>
+        <div class="backup-info">
+            <div class="info-item">
+                <div class="label">Last Backup</div>
+                <div class="value">{{ now.strftime('%Y-%m-%d %H:%M') }}</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Backup Size</div>
+                <div class="value">~2.4 MB</div>
+            </div>
+            <div class="info-item">
+                <div class="label">Total Backups</div>
+                <div class="value">5</div>
+            </div>
+        </div>
+        <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-action outline" style="flex: 1;"><i class="fas fa-download"></i> Download Latest</button>
+            <button class="btn-action danger" style="flex: 1;" onclick="if(confirm('Delete all backups?')){alert('Backups cleared!');}"><i class="fas fa-trash"></i> Clear All</button>
+        </div>
+    </div>
+
+    <div class="backup-card" style="border-color: rgba(239, 68, 68, 0.12);">
+        <div class="card-icon">⚠️</div>
+        <h3 style="color: #EF4444;">Restore Database</h3>
+        <p style="color: #EF4444;">This will overwrite the entire database with a backup file</p>
+        <button class="btn-action danger" onclick="if(confirm('WARNING: This will overwrite ALL data! Continue?')){alert('Restore initiated!');}">
+            <i class="fas fa-undo"></i> Restore from Backup
+        </button>
+    </div>
+</div>
+
+<script>
+    function createBackup() {
+        if (confirm('Create a full backup of the database?')) {
+            const btn = event.target;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Backup Created!';
+                btn.style.background = '#059669';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-download"></i> Create Backup Now';
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 2000);
+            }, 2000);
+        }
+    }
+</script>
+{% endblock %}

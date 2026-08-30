@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Calendar - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .calendar-page { max-width: 1000px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
+    .calendar-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201,168,75,0.04); padding: 18px 20px; transition: var(--transition, 0.3s ease); }
+    .calendar-card:hover { transform: translateY(-4px); border-color: rgba(201,168,75,0.08); }
+    .calendar-card .event-date { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+    .calendar-card .event-date .date-box { background: rgba(201,168,75,0.06); padding: 8px 14px; border-radius: var(--radius-sm); text-align: center; min-width: 60px; }
+    .calendar-card .event-date .date-box .day { font-size: 1.5rem; font-weight: 800; color: var(--primary-gold); display: block; line-height: 1.2; }
+    .calendar-card .event-date .date-box .month { font-size: 0.6rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+    .calendar-card .event-date .date-box .year { font-size: 0.55rem; color: var(--text-muted); }
+    .calendar-card .event-date .event-title { font-weight: 700; color: var(--white); font-size: 0.95rem; }
+    .calendar-card .event-details { font-size: 0.85rem; color: var(--text-gray); line-height: 1.6; margin: 4px 0 8px; }
+    .calendar-card .event-details .course { color: var(--primary-gold); font-weight: 600; }
+    .calendar-card .event-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+    .calendar-card .event-meta i { color: var(--primary-gold); width: 14px; }
+    .calendar-card .event-meta .status { font-weight: 600; }
+    .calendar-card .event-meta .status.upcoming { color: #059669; }
+    .calendar-card .event-meta .status.overdue { color: #EF4444; }
+    .calendar-card .event-meta .status.today { color: var(--primary-gold); }
+
+    .empty-state { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state i { font-size: 2.5rem; opacity: 0.2; margin-bottom: 12px; }
+    .empty-state p { color: var(--text-gray); }
+
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="calendar-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-calendar-alt"></i></div>
+            <div>
+                <h1><span>Calendar</span></h1>
+                <p class="subtitle">Upcoming deadlines and events</p>
+            </div>
+        </div>
+        <span style="padding: 6px 16px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); font-size: 0.8rem; font-weight: 600;">
+            <i class="fas fa-clock"></i> {{ assignments|length }} upcoming
+        </span>
+    </div>
+
+    <div class="calendar-grid">
+        {% if assignments %}
+            {% for assignment in assignments %}
+                {% set days_diff = ((assignment.due_date - now).days) %}
+                {% set status_class = 'overdue' if days_diff < 0 else 'today' if days_diff == 0 else 'upcoming' %}
+                {% set status_text = 'Overdue' if days_diff < 0 else 'Due Today' if days_diff == 0 else 'Upcoming' %}
+                
+                <div class="calendar-card">
+                    <div class="event-date">
+                        <div class="date-box">
+                            <span class="day">{{ assignment.due_date.strftime('%d') }}</span>
+                            <span class="month">{{ assignment.due_date.strftime('%b') }}</span>
+                            <span class="year">{{ assignment.due_date.strftime('%Y') }}</span>
+                        </div>
+                        <div>
+                            <div class="event-title">{{ assignment.title }}</div>
+                            <div class="event-details">
+                                <span class="course">{{ assignment.course.name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="event-details">
+                        <span style="font-size: 0.8rem;">{{ assignment.description[:100] }}{% if assignment.description|length > 100 %}...{% endif %}</span>
+                    </div>
+                    <div class="event-meta">
+                        <span><i class="fas fa-star"></i> Max Score: {{ assignment.max_score }}</span>
+                        <span><i class="fas fa-users"></i> {{ assignment.submissions|length }} submissions</span>
+                        <span class="status {{ status_class }}">{{ status_text }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-alt"></i>
+                <p>No upcoming deadlines</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">You're all caught up! 🎉</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
