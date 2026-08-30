@@ -1633,7 +1633,9 @@
                         <div class="profile-avatar">
                             {% if current_user.is_authenticated and current_user.profile_picture %}
                             <img src="{{ url_for('uploaded_file', filename=current_user.profile_picture) }}"
-                                alt="{{ current_user.username }}">
+                                alt="{{ current_user.username }}"
+                                onerror="this.style.display='none'; this.parentElement.querySelector('.initials').style.display='flex';">
+                            <span class="initials" style="display: none;">{{ current_user.username[0]|upper }}</span>
                             {% elif current_user.is_authenticated %}
                             <span class="initials">{{ current_user.username[0]|upper }}</span>
                             {% else %}
@@ -1681,25 +1683,42 @@
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- ==========================================
-        SIDEBAR NAVIGATION - Hidden on public pages
+        SIDEBAR NAVIGATION - COMPLETE FOR ALL ROLES
         ========================================== -->
-        <!-- ==========================================
-SIDEBAR NAVIGATION - Hidden on public pages
-========================================== -->
         <nav class="sidebar {% if request.endpoint in public_pages %}hidden{% endif %}" id="sidebar">
             <div class="sidebar-nav">
                 {% if current_user.is_authenticated %}
+                
                 {% if current_user.is_admin() %}
-                <div class="nav-section">Admin</div>
+                <!-- ====================================== -->
+                <!-- ADMIN SECTION -->
+                <!-- ====================================== -->
+                <div class="nav-section">Dashboard</div>
                 <a href="{{ url_for('admin_dashboard') }}"
                     class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                    <i class="fas fa-tachometer-alt"></i> Overview
+                    {% if pending_approvals is defined and pending_approvals > 0 %}
+                    <span class="nav-badge danger">{{ pending_approvals }}</span>
+                    {% endif %}
                 </a>
-                <!-- ✅ Courses - All admins can access, but only see their courses -->
+                
+                <!-- ====================================== -->
+                <!-- COURSE MANAGEMENT -->
+                <!-- ====================================== -->
+                <div class="nav-section">Course Management</div>
                 <a href="{{ url_for('admin_course_list') }}"
-                    class="{% if request.endpoint in ['admin_course_list', 'admin_course_detail', 'view_student_in_course', 'create_course'] %}active{% endif %}">
-                    <i class="fas fa-book"></i> Courses
+                    class="{% if request.endpoint in ['admin_course_list', 'admin_course_detail', 'view_student_in_course'] %}active{% endif %}">
+                    <i class="fas fa-book"></i> My Courses
+                    {% set managed_course_count = current_user.managed_courses|length %}
+                    {% if managed_course_count > 0 %}
+                    <span class="nav-badge">{{ managed_course_count }}</span>
+                    {% endif %}
                 </a>
+                
+                <!-- ====================================== -->
+                <!-- CONTENT MANAGEMENT -->
+                <!-- ====================================== -->
+                <div class="nav-section">Content</div>
                 <a href="{{ url_for('manage_notes') }}"
                     class="{% if request.endpoint in ['manage_notes', 'post_note', 'edit_note', 'view_note'] %}active{% endif %}">
                     <i class="fas fa-file-alt"></i> Notes
@@ -1710,48 +1729,126 @@ SIDEBAR NAVIGATION - Hidden on public pages
                 <a href="{{ url_for('manage_quizzes') }}"
                     class="{% if request.endpoint in ['manage_quizzes', 'create_quiz_group', 'edit_quiz_group'] %}active{% endif %}">
                     <i class="fas fa-puzzle-piece"></i> Quizzes
+                    {% if total_quizzes is defined and total_quizzes > 0 %}
+                    <span class="nav-badge">{{ total_quizzes }}</span>
+                    {% endif %}
                 </a>
                 <a href="{{ url_for('manage_assignments') }}"
                     class="{% if request.endpoint in ['manage_assignments', 'create_assignment', 'edit_assignment'] %}active{% endif %}">
                     <i class="fas fa-tasks"></i> Assignments
-                </a>
-                <a href="{{ url_for('manage_announcements') }}"
-                    class="{% if request.endpoint in ['manage_announcements', 'post_announcement', 'edit_announcement'] %}active{% endif %}">
-                    <i class="fas fa-bullhorn"></i> Announcements
-                </a>
-                <!-- ✅ Students - Only super admin sees all students, regular admins see their students -->
-                <a href="{{ url_for('manage_students') }}"
-                    class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
-                    <i class="fas fa-users"></i> Students
-                    {% if pending_approvals is defined and pending_approvals > 0 and current_user.is_super_admin() %}
-                    <span class="nav-badge danger">{{ pending_approvals }}</span>
-                    {% elif pending_students_count is defined and pending_students_count > 0 and not
-                    current_user.is_super_admin() %}
-                    <span class="nav-badge danger">{{ pending_students_count }}</span>
+                    {% if total_assignments is defined and total_assignments > 0 %}
+                    <span class="nav-badge">{{ total_assignments }}</span>
                     {% endif %}
                 </a>
                 <a href="{{ url_for('manage_tags') }}"
                     class="{% if request.endpoint == 'manage_tags' %}active{% endif %}">
                     <i class="fas fa-tags"></i> Tags
                 </a>
+
+                <!-- ====================================== -->
+                <!-- STUDENT MANAGEMENT -->
+                <!-- ====================================== -->
+                <div class="nav-section">Students</div>
+                <a href="{{ url_for('manage_students') }}"
+                    class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
+                    <i class="fas fa-users"></i> All Students
+                    {% if current_user.is_super_admin() %}
+                        {% if pending_approvals is defined and pending_approvals > 0 %}
+                        <span class="nav-badge danger">{{ pending_approvals }}</span>
+                        {% endif %}
+                    {% else %}
+                        {% if pending_students_count is defined and pending_students_count > 0 %}
+                        <span class="nav-badge danger">{{ pending_students_count }}</span>
+                        {% endif %}
+                    {% endif %}
+                </a>
+                
+                <!-- ✅ NEW: Pending Approvals - Quick Access -->
+                <a href="{{ url_for('manage_students') }}#pending"
+                    class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
+                    <i class="fas fa-clock"></i> Pending Approvals
+                    {% if current_user.is_super_admin() %}
+                        {% if pending_approvals is defined and pending_approvals > 0 %}
+                        <span class="nav-badge danger">{{ pending_approvals }}</span>
+                        {% endif %}
+                    {% else %}
+                        {% if pending_students_count is defined and pending_students_count > 0 %}
+                        <span class="nav-badge danger">{{ pending_students_count }}</span>
+                        {% endif %}
+                    {% endif %}
+                </a>
+
+                <!-- ====================================== -->
+                <!-- COMMUNICATION -->
+                <!-- ====================================== -->
+                <div class="nav-section">Communication</div>
+                <a href="{{ url_for('manage_announcements') }}"
+                    class="{% if request.endpoint in ['manage_announcements', 'post_announcement', 'edit_announcement'] %}active{% endif %}">
+                    <i class="fas fa-bullhorn"></i> Announcements
+                    {% if announcements_count is defined and announcements_count > 0 %}
+                    <span class="nav-badge">{{ announcements_count }}</span>
+                    {% endif %}
+                </a>
+
+                <!-- ====================================== -->
+                <!-- REPORTS & ANALYTICS -->
+                <!-- ====================================== -->
+                <div class="nav-section">Reports</div>
                 <a href="{{ url_for('export_page') }}"
                     class="{% if request.endpoint == 'export_page' %}active{% endif %}">
                     <i class="fas fa-file-export"></i> Export Reports
                 </a>
+                
+                <!-- ✅ NEW: Student Progress Overview -->
+                <a href="{{ url_for('admin_leaderboard') }}"
+                    class="{% if request.endpoint == 'admin_leaderboard' %}active{% endif %}">
+                    <i class="fas fa-chart-bar"></i> Leaderboard
+                </a>
 
+                <!-- ====================================== -->
+                <!-- RECENT ACTIVITY - NEW -->
+                <!-- ====================================== -->
+                <div class="nav-section">Activity</div>
+                <a href="{{ url_for('recent_activity') }}"
+                    class="{% if request.endpoint == 'recent_activity' %}active{% endif %}">
+                    <i class="fas fa-history"></i> Recent Activity
+                </a>
+
+                <!-- ====================================== -->
+                <!-- SUPER ADMIN ONLY -->
+                <!-- ====================================== -->
                 {% if current_user.is_super_admin() %}
                 <div class="nav-section">Super Admin</div>
                 <a href="{{ url_for('manage_admins') }}"
                     class="{% if request.endpoint in ['manage_admins', 'create_admin', 'edit_admin'] %}active{% endif %}">
                     <i class="fas fa-users-cog"></i> Admins
+                    {% set admin_count = User.query.filter_by(role='admin').count() %}
+                    {% if admin_count > 0 %}
+                    <span class="nav-badge">{{ admin_count }}</span>
+                    {% endif %}
                 </a>
                 <a href="{{ url_for('create_course') }}"
                     class="{% if request.endpoint == 'create_course' %}active{% endif %}">
                     <i class="fas fa-plus-circle"></i> Create Course
                 </a>
                 {% endif %}
+
+                <!-- ====================================== -->
+                <!-- ACCOUNT -->
+                <!-- ====================================== -->
+                <div class="nav-section">Account</div>
+                <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
+                    <i class="fas fa-user"></i> My Profile
+                </a>
+                <a href="{{ url_for('logout') }}" class="">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+
                 {% else %}
-                <div class="nav-section">Student</div>
+                <!-- ====================================== -->
+                <!-- STUDENT SIDEBAR -->
+                <!-- ====================================== -->
+                <div class="nav-section">Student Dashboard</div>
                 <a href="{{ url_for('student_dashboard') }}"
                     class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -1779,16 +1876,20 @@ SIDEBAR NAVIGATION - Hidden on public pages
                     class="{% if request.endpoint == 'leaderboard' %}active{% endif %}">
                     <i class="fas fa-trophy"></i> Leaderboard
                 </a>
-                {% endif %}
-
+                
                 <div class="nav-section">Account</div>
                 <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
-                    <i class="fas fa-user"></i> Profile
+                    <i class="fas fa-user"></i> My Profile
                 </a>
                 <a href="{{ url_for('logout') }}" class="">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
+                {% endif %}
+
                 {% else %}
+                <!-- ====================================== -->
+                <!-- PUBLIC SIDEBAR -->
+                <!-- ====================================== -->
                 <div class="nav-section">Welcome</div>
                 <a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">
                     <i class="fas fa-sign-in-alt"></i> Login
@@ -1799,12 +1900,17 @@ SIDEBAR NAVIGATION - Hidden on public pages
                 {% endif %}
             </div>
 
+            <!-- ====================================== -->
+            <!-- SIDEBAR FOOTER - User Info -->
+            <!-- ====================================== -->
             <div class="sidebar-footer">
                 <div class="user-info">
                     <div class="user-avatar">
                         {% if current_user.is_authenticated and current_user.profile_picture %}
                         <img src="{{ url_for('uploaded_file', filename=current_user.profile_picture) }}"
-                            alt="{{ current_user.username }}">
+                            alt="{{ current_user.username }}"
+                            onerror="this.style.display='none'; this.parentElement.querySelector('.initials').style.display='flex';">
+                        <span class="initials" style="display: none;">{{ current_user.username[0]|upper }}</span>
                         {% elif current_user.is_authenticated %}
                         <span class="initials">{{ current_user.username[0]|upper }}</span>
                         {% else %}
@@ -2256,7 +2362,8 @@ SIDEBAR NAVIGATION - Hidden on public pages
                 }
             });
 
-            // Initial fetch            fetchNotifications();
+            // Initial fetch
+            fetchNotifications();
 
             // Refresh notifications every 30 seconds
             setInterval(fetchNotifications, 30000);

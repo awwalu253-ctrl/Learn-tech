@@ -1105,7 +1105,8 @@
             <button class="btn btn-cancel-modal" onclick="closeModal()">
                 Cancel
             </button>
-            <form method="POST" id="reapplyForm" style="flex: 1;">
+            <!-- ✅ FIXED: Use a proper form with action set by JavaScript -->
+            <form method="POST" id="reapplyForm" action="#" style="flex: 1;">
                 <button type="submit" class="btn btn-reapply" style="width: 100%;">
                     <i class="fas fa-redo"></i> Re-apply
                 </button>
@@ -1223,7 +1224,7 @@
                 <h3>No approved courses</h3>
                 <p>You don't have any approved courses yet.</p>
                 <p class="text-muted">Request access to available courses below.</p>
-                <a href="#available" class="empty-cta" onclick="switchTab('available')">
+                <a href="#" class="empty-cta" onclick="switchTab('available'); return false;">
                     <i class="fas fa-search"></i> Browse Courses
                 </a>
             </div>
@@ -1314,6 +1315,7 @@
                         </div>
                         
                         <div class="course-actions">
+                            <!-- ✅ FIXED: Pass course ID and escaped reason to the function -->
                             <button class="btn-sm btn-success-sm" onclick="openReapplyModal('{{ course.id }}', '{{ rejection.message|escape }}')">
                                 <i class="fas fa-redo"></i> Re-apply
                             </button>
@@ -1459,11 +1461,19 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ==========================================
-// GLOBAL FUNCTIONS
+// ✅ FIXED: GLOBAL FUNCTIONS
 // ==========================================
 function openReapplyModal(courseId, reason) {
-    document.getElementById('reapplyForm').action = `/student/courses/${courseId}/reapply`;
+    // Build the URL for the reapply route
+    const url = `/student/courses/${courseId}/reapply`;
+    
+    // Set the form action
+    document.getElementById('reapplyForm').action = url;
+    
+    // Set the rejection reason text
     document.getElementById('reasonText').textContent = reason || 'Not specified';
+    
+    // Show the modal
     document.getElementById('reapplyModal').classList.add('active');
 }
 
