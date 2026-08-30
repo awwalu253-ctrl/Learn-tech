@@ -4351,97 +4351,105 @@ def system_settings():
     return render_template('admin/system_settings.html')
 
 
+# ============================================================================
+# ROUTES - SYSTEM LOGS
+# ============================================================================
+
 @app.route('/admin/system-logs')
 @login_required
 @super_admin_required
 def system_logs():
     """View system logs with filtering and pagination"""
-    # Get all activities
-    logs = []
-    
-    # Get recent notes
-    notes = Note.query.order_by(Note.created_at.desc()).limit(30).all()
-    for note in notes:
-        logs.append({
-            'timestamp': note.created_at,
-            'user': note.author.username if note.author else 'System',
-            'action': f'Created note: "{note.title}" in {note.course.name if note.course else "Unknown"}',
-            'type': 'note',
-            'details': f'Note ID: {note.id}'
-        })
-    
-    # Get recent quizzes
-    quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(30).all()
-    for quiz in quizzes:
-        logs.append({
-            'timestamp': quiz.created_at,
-            'user': quiz.author.username if quiz.author else 'System',
-            'action': f'Created quiz: "{quiz.title}" with {quiz.questions|length} questions',
-            'type': 'quiz',
-            'details': f'Quiz ID: {quiz.id}'
-        })
-    
-    # Get recent assignments
-    assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(30).all()
-    for assignment in assignments:
-        logs.append({
-            'timestamp': assignment.created_at,
-            'user': assignment.author.username if assignment.author else 'System',
-            'action': f'Created assignment: "{assignment.title}"',
-            'type': 'assignment',
-            'details': f'Assignment ID: {assignment.id}'
-        })
-    
-    # Get recent student registrations
-    students = User.query.filter_by(role='student').order_by(User.created_at.desc()).limit(20).all()
-    for student in students:
-        logs.append({
-            'timestamp': student.created_at,
-            'user': 'System',
-            'action': f'Student registered: "{student.username}" ({student.email})',
-            'type': 'student',
-            'details': f'Student ID: {student.id}'
-        })
-    
-    # Get recent course creations
-    courses = Course.query.order_by(Course.created_at.desc()).limit(20).all()
-    for course in courses:
-        logs.append({
-            'timestamp': course.created_at,
-            'user': 'System',
-            'action': f'Course created: "{course.name}" ({course.code})',
-            'type': 'course',
-            'details': f'Course ID: {course.id}'
-        })
-    
-    # Get recent announcements
-    announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(20).all()
-    for announcement in announcements:
-        logs.append({
-            'timestamp': announcement.created_at,
-            'user': announcement.author.username if announcement.author else 'System',
-            'action': f'Posted announcement: "{announcement.title}"',
-            'type': 'announcement',
-            'details': f'Announcement ID: {announcement.id}'
-        })
-    
-    # Get recent student approvals
-    approved_students = User.query.filter_by(role='student', is_approved=True).order_by(User.updated_at.desc()).limit(10).all()
-    for student in approved_students:
-        # Check if approved recently (within last 7 days)
-        if student.updated_at and (datetime.utcnow() - student.updated_at).days < 7:
+    try:
+        logs = []
+        
+        # Get recent notes
+        notes = Note.query.order_by(Note.created_at.desc()).limit(30).all()
+        for note in notes:
             logs.append({
-                'timestamp': student.updated_at,
+                'timestamp': note.created_at,
+                'user': note.author.username if note.author else 'System',
+                'action': f'Created note: "{note.title}" in {note.course.name if note.course else "Unknown"}',
+                'type': 'note',
+                'details': f'Note ID: {note.id}'
+            })
+        
+        # Get recent quizzes
+        quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(30).all()
+        for quiz in quizzes:
+            logs.append({
+                'timestamp': quiz.created_at,
+                'user': quiz.author.username if quiz.author else 'System',
+                'action': f'Created quiz: "{quiz.title}" with {len(quiz.questions)} questions',
+                'type': 'quiz',
+                'details': f'Quiz ID: {quiz.id}'
+            })
+        
+        # Get recent assignments
+        assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(30).all()
+        for assignment in assignments:
+            logs.append({
+                'timestamp': assignment.created_at,
+                'user': assignment.author.username if assignment.author else 'System',
+                'action': f'Created assignment: "{assignment.title}"',
+                'type': 'assignment',
+                'details': f'Assignment ID: {assignment.id}'
+            })
+        
+        # Get recent student registrations
+        students = User.query.filter_by(role='student').order_by(User.created_at.desc()).limit(20).all()
+        for student in students:
+            logs.append({
+                'timestamp': student.created_at,
                 'user': 'System',
-                'action': f'Student approved: "{student.username}"',
+                'action': f'Student registered: "{student.username}" ({student.email})',
                 'type': 'student',
                 'details': f'Student ID: {student.id}'
             })
-    
-    # Sort by timestamp (newest first)
-    logs.sort(key=lambda x: x['timestamp'], reverse=True)
-    
-    return render_template('admin/system_logs.html', logs=logs[:100])
+        
+        # Get recent course creations
+        courses = Course.query.order_by(Course.created_at.desc()).limit(20).all()
+        for course in courses:
+            logs.append({
+                'timestamp': course.created_at,
+                'user': 'System',
+                'action': f'Course created: "{course.name}" ({course.code})',
+                'type': 'course',
+                'details': f'Course ID: {course.id}'
+            })
+        
+        # Get recent announcements
+        announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(20).all()
+        for announcement in announcements:
+            logs.append({
+                'timestamp': announcement.created_at,
+                'user': announcement.author.username if announcement.author else 'System',
+                'action': f'Posted announcement: "{announcement.title}"',
+                'type': 'announcement',
+                'details': f'Announcement ID: {announcement.id}'
+            })
+        
+        # Get recent student approvals
+        approved_students = User.query.filter_by(role='student', is_approved=True).order_by(User.updated_at.desc()).limit(10).all()
+        for student in approved_students:
+            if student.updated_at and (datetime.utcnow() - student.updated_at).days < 7:
+                logs.append({
+                    'timestamp': student.updated_at,
+                    'user': 'System',
+                    'action': f'Student approved: "{student.username}"',
+                    'type': 'student',
+                    'details': f'Student ID: {student.id}'
+                })
+        
+        # Sort by timestamp (newest first)
+        logs.sort(key=lambda x: x['timestamp'], reverse=True)
+        
+        return render_template('admin/system_logs.html', logs=logs[:100])
+        
+    except Exception as e:
+        app.logger.error(f'System logs error: {e}')
+        flash(f'Error loading system logs: {str(e)}', 'error')
+        return redirect(url_for('admin_dashboard'))
 
 
 @app.route('/admin/backup-restore')
