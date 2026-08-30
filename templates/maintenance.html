@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Under Maintenance - A-Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .maintenance-page {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+    
+    .maintenance-container {
+        text-align: center;
+        max-width: 600px;
+        background: var(--secondary-bg, #253449);
+        border-radius: var(--radius, 16px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        padding: 60px 48px;
+        box-shadow: var(--shadow-lg, 0 12px 48px rgba(10, 21, 39, 0.12));
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    
+    .maintenance-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        opacity: 0.8;
+    }
+    
+    .maintenance-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 24px;
+        border-radius: 50%;
+        background: rgba(201, 168, 75, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--primary-gold, #C9A84B);
+        border: 2px solid rgba(201, 168, 75, 0.06);
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    
+    .maintenance-container h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--white, #FFFFFF);
+        margin: 0 0 8px;
+        letter-spacing: -0.02em;
+    }
+    
+    .maintenance-container h1 span {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .maintenance-container .subtitle {
+        font-size: 1.1rem;
+        color: var(--text-gray, #C8CED8);
+        margin: 0 0 12px;
+    }
+    
+    .maintenance-container .message {
+        font-size: 0.95rem;
+        color: var(--text-muted, #8A94A6);
+        line-height: 1.8;
+        margin: 0 0 28px;
+    }
+    
+    .maintenance-container .status-bar {
+        background: rgba(201, 168, 75, 0.04);
+        border-radius: var(--radius-sm, 8px);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        font-size: 0.85rem;
+        color: var(--text-muted, #8A94A6);
+    }
+    
+    .maintenance-container .status-bar .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #F59E0B;
+        animation: blink 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
+    
+    .maintenance-container .status-bar .status-text {
+        color: #F59E0B;
+        font-weight: 600;
+    }
+    
+    .maintenance-container .btn-contact {
+        display: inline-block;
+        padding: 10px 28px;
+        border-radius: 60px;
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+        margin-top: 4px;
+    }
+    
+    .maintenance-container .btn-contact:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(201, 168, 75, 0.25);
+        color: var(--white, #FFFFFF);
+    }
+    
+    @keyframes fadeUp {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media (max-width: 768px) {
+        .maintenance-container {
+            padding: 40px 24px;
+        }
+        .maintenance-container h1 {
+            font-size: 1.5rem;
+        }
+        .maintenance-icon {
+            width: 80px;
+            height: 80px;
+            font-size: 2.5rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .maintenance-container {
+            padding: 28px 16px;
+        }
+        .maintenance-container h1 {
+            font-size: 1.3rem;
+        }
+        .maintenance-container .subtitle {
+            font-size: 0.95rem;
+        }
+        .maintenance-container .message {
+            font-size: 0.85rem;
+        }
+        .maintenance-icon {
+            width: 64px;
+            height: 64px;
+            font-size: 2rem;
+        }
+        .maintenance-container .status-bar {
+            font-size: 0.75rem;
+            padding: 10px 14px;
+            flex-wrap: wrap;
+        }
+    }
+    
+    /* Dark Mode */
+    [data-theme="dark"] .maintenance-container {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
+    
+    [data-theme="dark"] .maintenance-container h1 {
+        color: var(--white, #FFFFFF);
+    }
+    
+    [data-theme="dark"] .maintenance-container .subtitle {
+        color: var(--text-gray, #C8CED8);
+    }
+    
+    [data-theme="dark"] .maintenance-container .message {
+        color: var(--text-muted, #8A94A6);
+    }
+    
+    [data-theme="dark"] .maintenance-container .status-bar {
+        background: rgba(201, 168, 75, 0.04);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="maintenance-page">
+    <div class="maintenance-container">
+        <div class="maintenance-icon">
+            <i class="fas fa-tools"></i>
+        </div>
+        
+        <h1><span>Under Maintenance</span></h1>
+        <p class="subtitle">We're currently improving your experience</p>
+        <p class="message">
+            Our platform is undergoing scheduled maintenance to serve you better.
+            We apologize for any inconvenience and appreciate your patience.
+        </p>
+        
+        <div class="status-bar">
+            <span class="dot"></span>
+            <span>Status: <span class="status-text">Maintenance in Progress</span></span>
+            <span style="margin-left: 8px;">|</span>
+            <span>Expected downtime: <span id="downtimeDisplay">30 minutes</span></span>
+        </div>
+        
+        <a href="mailto:support@aportal.com" class="btn-contact">
+            <i class="fas fa-envelope"></i> Contact Support
+        </a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update downtime if needed
+        const downtime = document.getElementById('downtimeDisplay');
+        if (downtime) {
+            // You can customize this message
+            downtime.textContent = 'a few minutes';
+        }
+        
+        console.log('🔧 Maintenance Mode - Gold Theme Loaded!');
+    });
+</script>
+{% endblock %}

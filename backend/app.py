@@ -4552,6 +4552,10 @@ def admin_messages():
 # ROUTES - SYSTEM SETTINGS
 # ============================================================================
 
+# ============================================================================
+# ROUTES - SYSTEM SETTINGS
+# ============================================================================
+
 @app.route('/admin/system-settings', methods=['GET', 'POST'])
 @login_required
 @super_admin_required
@@ -4560,34 +4564,44 @@ def system_settings():
     
     if request.method == 'POST':
         try:
-            # General Settings
+            # ==========================================
+            # GENERAL SETTINGS
+            # ==========================================
             save_setting('site_name', request.form.get('site_name', 'A-Portal LMS'), 'string', 'Site name displayed throughout the platform', 'general')
             save_setting('site_description', request.form.get('site_description', 'Learning Management System'), 'string', 'Meta description for SEO', 'general')
             save_setting('default_language', request.form.get('default_language', 'en'), 'string', 'Default user interface language', 'general')
             save_setting('maintenance_mode', request.form.get('maintenance_mode') == 'on', 'boolean', 'Show maintenance page to all users except admins', 'general')
             save_setting('timezone', request.form.get('timezone', 'UTC'), 'string', 'Default timezone for the system', 'general')
             
-            # Student Settings
+            # ==========================================
+            # STUDENT SETTINGS
+            # ==========================================
             save_setting('auto_approve_students', request.form.get('auto_approve_students') == 'on', 'boolean', 'Automatically approve new student accounts', 'student')
             save_setting('max_courses_per_student', int(request.form.get('max_courses_per_student', 10)), 'integer', 'Maximum courses a student can enroll in', 'student')
             save_setting('allow_reapplications', request.form.get('allow_reapplications') == 'on', 'boolean', 'Allow students to reapply after rejection', 'student')
             save_setting('require_phone_number', request.form.get('require_phone_number') == 'on', 'boolean', 'Require phone number during registration', 'student')
             save_setting('student_registration_enabled', request.form.get('student_registration_enabled') == 'on', 'boolean', 'Enable student self-registration', 'student')
             
-            # Security Settings
+            # ==========================================
+            # SECURITY SETTINGS
+            # ==========================================
             save_setting('session_timeout', int(request.form.get('session_timeout', 60)), 'integer', 'Minutes before auto-logout (0 = never)', 'security')
             save_setting('require_email_verification', request.form.get('require_email_verification') == 'on', 'boolean', 'Verify email before accessing content', 'security')
             save_setting('max_login_attempts', int(request.form.get('max_login_attempts', 5)), 'integer', 'Max login attempts before lockout', 'security')
             save_setting('lockout_duration', int(request.form.get('lockout_duration', 30)), 'integer', 'Minutes user is locked out', 'security')
             save_setting('force_ssl', request.form.get('force_ssl') == 'on', 'boolean', 'Redirect all HTTP to HTTPS', 'security')
             
-            # Content Settings
+            # ==========================================
+            # CONTENT SETTINGS
+            # ==========================================
             save_setting('max_file_upload_size', int(request.form.get('max_file_upload_size', 16)), 'integer', 'Maximum file upload size in MB', 'content')
             save_setting('allowed_file_types', request.form.get('allowed_file_types', 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip'), 'string', 'Comma separated allowed file extensions', 'content')
             save_setting('enable_comments', request.form.get('enable_comments') == 'on', 'boolean', 'Allow comments on notes and assignments', 'content')
             save_setting('enable_ratings', request.form.get('enable_ratings') == 'on', 'boolean', 'Allow students to rate courses', 'content')
             
-            # Notification Settings
+            # ==========================================
+            # NOTIFICATION SETTINGS
+            # ==========================================
             save_setting('email_notifications', request.form.get('email_notifications') == 'on', 'boolean', 'Send email notifications for events', 'notification')
             save_setting('push_notifications', request.form.get('push_notifications') == 'on', 'boolean', 'Send in-app push notifications', 'notification')
             save_setting('assignment_reminders', request.form.get('assignment_reminders') == 'on', 'boolean', 'Send reminders before assignment due dates', 'notification')
@@ -4988,6 +5002,53 @@ def create_backup():
         app.logger.error(f'Backup error: {e}')
     
     return redirect(url_for('backup_restore'))
+
+# ============================================================================
+# MAINTENANCE MODE MIDDLEWARE
+# ============================================================================
+
+@app.before_request
+def check_maintenance_mode():
+    """Check if maintenance mode is enabled and redirect if needed"""
+    # Skip maintenance check for these endpoints
+    public_endpoints = ['static', 'login', 'logout', 'health', 'maintenance']
+    
+    # Skip if user is admin or super_admin
+    if current_user and current_user.is_authenticated and current_user.is_admin():
+        return None
+    
+    # Skip if the request is for a public endpoint
+    if request.endpoint in public_endpoints:
+        return None
+    
+    # Check if maintenance mode is enabled
+    maintenance_mode = get_bool_setting('maintenance_mode', False)
+    
+    if maintenance_mode:
+        # If it's an API request, return JSON
+        if request.path.startswith('/api/'):
+            return jsonify({
+                'error': 'Maintenance mode is enabled',
+                'status': 'maintenance',
+                'message': 'The system is currently under maintenance. Please try again later.'
+            }), 503
+        
+        # For regular requests, show maintenance page
+        return render_template('maintenance.html'), 503
+    
+    return None
+
+
+# Helper function to get settings (add this before the middleware)
+def get_bool_setting(key, default=False):
+    """Get boolean setting value"""
+    try:
+        setting = SystemSetting.query.filter_by(key=key).first()
+        if setting:
+            return setting.value.lower() == 'true'
+        return default
+    except:
+        return default
 
 @app.route('/admin/backup/download/<int:backup_id>')
 @login_required
