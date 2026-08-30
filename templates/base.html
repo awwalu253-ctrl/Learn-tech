@@ -340,10 +340,13 @@
         }
 
         @keyframes pulse-dot {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
                 opacity: 1;
             }
+
             50% {
                 transform: scale(1.2);
                 opacity: 0.8;
@@ -409,23 +412,23 @@
                 border-radius: var(--radius-sm, 12px);
                 padding: 6px;
             }
-            
+
             .notification-dropdown .dropdown-header {
                 padding: 6px 10px;
             }
-            
+
             .notification-dropdown .dropdown-header span {
                 font-size: 0.8rem;
             }
-            
+
             .notification-item {
                 padding: 8px 12px;
             }
-            
+
             .notification-item .notif-title {
                 font-size: 0.8rem;
             }
-            
+
             .notification-item .notif-message {
                 font-size: 0.73rem;
             }
@@ -1718,20 +1721,17 @@
         <nav class="sidebar {% if request.endpoint in public_pages %}hidden{% endif %}" id="sidebar">
             <div class="sidebar-nav">
                 {% if current_user.is_authenticated %}
-                
+
                 {% if current_user.is_admin() %}
                 <!-- ====================================== -->
                 <!-- ADMIN SECTION -->
                 <!-- ====================================== -->
                 <div class="nav-section">Dashboard</div>
-                <a href="{{ url_for('admin_dashboard') }}"
-                    class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
-                    <i class="fas fa-tachometer-alt"></i> Overview
-                    {% if pending_approvals is defined and pending_approvals > 0 %}
-                    <span class="nav-badge danger">{{ pending_approvals }}</span>
-                    {% endif %}
+                <a href="{{ url_for('admin_leaderboard') }}"
+                    class="{% if request.endpoint == 'admin_leaderboard' %}active{% endif %}">
+                    <i class="fas fa-chart-bar"></i> Leaderboard
                 </a>
-                
+
                 <!-- ====================================== -->
                 <!-- COURSE MANAGEMENT -->
                 <!-- ====================================== -->
@@ -1744,7 +1744,7 @@
                     <span class="nav-badge">{{ managed_course_count }}</span>
                     {% endif %}
                 </a>
-                
+
                 <!-- ====================================== -->
                 <!-- CONTENT MANAGEMENT -->
                 <!-- ====================================== -->
@@ -1783,28 +1783,28 @@
                     class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
                     <i class="fas fa-users"></i> All Students
                     {% if current_user.is_super_admin() %}
-                        {% if pending_approvals is defined and pending_approvals > 0 %}
-                        <span class="nav-badge danger">{{ pending_approvals }}</span>
-                        {% endif %}
+                    {% if pending_approvals is defined and pending_approvals > 0 %}
+                    <span class="nav-badge danger">{{ pending_approvals }}</span>
+                    {% endif %}
                     {% else %}
-                        {% if pending_students_count is defined and pending_students_count > 0 %}
-                        <span class="nav-badge danger">{{ pending_students_count }}</span>
-                        {% endif %}
+                    {% if pending_students_count is defined and pending_students_count > 0 %}
+                    <span class="nav-badge danger">{{ pending_students_count }}</span>
+                    {% endif %}
                     {% endif %}
                 </a>
-                
+
                 <!-- Pending Approvals - Quick Access -->
                 <a href="{{ url_for('manage_students') }}#pending"
                     class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
                     <i class="fas fa-clock"></i> Pending Approvals
                     {% if current_user.is_super_admin() %}
-                        {% if pending_approvals is defined and pending_approvals > 0 %}
-                        <span class="nav-badge danger">{{ pending_approvals }}</span>
-                        {% endif %}
+                    {% if pending_approvals is defined and pending_approvals > 0 %}
+                    <span class="nav-badge danger">{{ pending_approvals }}</span>
+                    {% endif %}
                     {% else %}
-                        {% if pending_students_count is defined and pending_students_count > 0 %}
-                        <span class="nav-badge danger">{{ pending_students_count }}</span>
-                        {% endif %}
+                    {% if pending_students_count is defined and pending_students_count > 0 %}
+                    <span class="nav-badge danger">{{ pending_students_count }}</span>
+                    {% endif %}
                     {% endif %}
                 </a>
 
@@ -1828,7 +1828,7 @@
                     class="{% if request.endpoint == 'export_page' %}active{% endif %}">
                     <i class="fas fa-file-export"></i> Export Reports
                 </a>
-                
+
                 <!-- Student Progress Overview -->
                 <a href="{{ url_for('admin_leaderboard') }}"
                     class="{% if request.endpoint == 'admin_leaderboard' %}active{% endif %}">
@@ -1906,7 +1906,7 @@
                     class="{% if request.endpoint == 'leaderboard' %}active{% endif %}">
                     <i class="fas fa-trophy"></i> Leaderboard
                 </a>
-                
+
                 <div class="nav-section">Account</div>
                 <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
                     <i class="fas fa-user"></i> My Profile
