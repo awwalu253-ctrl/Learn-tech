@@ -63,7 +63,6 @@
         padding: 32px 36px;
         opacity: 0;
         animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
-        box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     }
     
     .form-group {
@@ -214,29 +213,6 @@
             text-align: center;
         }
     }
-
-    /* Dark Mode */
-    [data-theme="dark"] .form-container {
-        background: var(--secondary-bg, #253449);
-        border-color: rgba(201,168,75,0.04);
-    }
-    
-    [data-theme="dark"] .form-group input,
-    [data-theme="dark"] .form-group textarea,
-    [data-theme="dark"] .form-group select {
-        background: var(--primary-bg, #0A1527);
-        color: var(--text-gray, #C8CED8);
-        border-color: rgba(201,168,75,0.06);
-    }
-    
-    [data-theme="dark"] .form-group label {
-        color: var(--text-gray, #C8CED8);
-    }
-    
-    [data-theme="dark"] .template-info {
-        background: rgba(201,168,75,0.02);
-        border-color: rgba(201,168,75,0.02);
-    }
 </style>
 {% endblock %}
 
@@ -257,7 +233,7 @@
     <div class="form-container">
         <div class="template-info">
             <strong>Template:</strong> {{ template.name }} &middot;
-            <strong>Created:</strong> {{ template.created_at.strftime('%Y-%m-%d %H:%M') }} &middot;
+            <strong>Created:</strong> {{ template.created_at.strftime('%Y-%m-%d %H:%M') if template.created_at else 'N/A' }} &middot;
             <strong>Last Updated:</strong> {{ template.updated_at.strftime('%Y-%m-%d %H:%M') if template.updated_at else 'Never' }}
         </div>
 
@@ -271,15 +247,17 @@
             <div class="form-group">
                 <label>Subject <span class="required">*</span></label>
                 <input type="text" name="subject" value="{{ template.subject }}" required>
-                <div class="help-text">The subject line of the email. You can use variables like {{ user.username }}.</div>
+                <!-- ✅ FIXED: Use quoted variables -->
+                <div class="help-text">The subject line of the email. You can use variables like {{ "{{ user.username }}" }}.</div>
             </div>
 
             <div class="form-group">
                 <label>Email Body <span class="required">*</span></label>
                 <textarea name="body" required>{{ template.body }}</textarea>
+                <!-- ✅ FIXED: Use quoted variables -->
                 <div class="help-text">
                     <strong>Available variables:</strong> 
-                    {{ user.username }}, {{ user.email }}, {{ course.name }}, {{ assignment.title }}, {{ quiz.title }}
+                    {{ "{{ user.username }}" }}, {{ "{{ user.email }}" }}, {{ "{{ course.name }}" }}, {{ "{{ assignment.title }}" }}, {{ "{{ quiz.title }}" }}
                 </div>
             </div>
 
