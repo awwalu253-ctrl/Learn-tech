@@ -4041,45 +4041,82 @@ def pending_approval():
 @login_required
 @admin_required
 def recent_activity():
-    recent_notes = Note.query.order_by(Note.created_at.desc()).limit(20).all()
-    recent_quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(20).all()
-    recent_assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(20).all()
-    
+    """View recent activity across the platform"""
     activities = []
     
-    for note in recent_notes:
+    # Get recent notes
+    notes = Note.query.order_by(Note.created_at.desc()).limit(20).all()
+    for note in notes:
         activities.append({
             'type': 'note',
-            'title': note.title,
-            'course': note.course.name,
+            'action': f'Created note: "{note.title}"',
             'created_at': note.created_at,
-            'url': url_for('edit_note', note_id=note.id),
-            'icon': 'fa-file-alt',
-            'color': 'blue'
+            'author': note.author,
+            'user': note.author.username if note.author else 'Unknown',
+            'url': url_for('edit_note', note_id=note.id) if note.id else None
         })
     
-    for quiz in recent_quizzes:
+    # Get recent quizzes
+    quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(20).all()
+    for quiz in quizzes:
         activities.append({
             'type': 'quiz',
-            'title': quiz.title,
-            'course': quiz.course.name,
+            'action': f'Created quiz: "{quiz.title}"',
             'created_at': quiz.created_at,
-            'url': url_for('edit_quiz_group', quiz_id=quiz.id),
-            'icon': 'fa-puzzle-piece',
-            'color': 'purple'
+            'author': quiz.author,
+            'user': quiz.author.username if quiz.author else 'Unknown',
+            'url': url_for('edit_quiz_group', quiz_id=quiz.id) if quiz.id else None
         })
     
-    for assignment in recent_assignments:
+    # Get recent assignments
+    assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(20).all()
+    for assignment in assignments:
         activities.append({
             'type': 'assignment',
-            'title': assignment.title,
-            'course': assignment.course.name,
+            'action': f'Created assignment: "{assignment.title}"',
             'created_at': assignment.created_at,
-            'url': url_for('edit_assignment', assignment_id=assignment.id),
-            'icon': 'fa-tasks',
-            'color': 'orange'
+            'author': assignment.author,
+            'user': assignment.author.username if assignment.author else 'Unknown',
+            'url': url_for('edit_assignment', assignment_id=assignment.id) if assignment.id else None
         })
     
+    # Get recent course creations
+    courses = Course.query.order_by(Course.created_at.desc()).limit(10).all()
+    for course in courses:
+        activities.append({
+            'type': 'course',
+            'action': f'Created course: "{course.name}" ({course.code})',
+            'created_at': course.created_at,
+            'author': None,
+            'user': 'System',
+            'url': url_for('admin_course_detail', course_id=course.id) if course.id else None
+        })
+    
+    # Get recent announcements
+    announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(10).all()
+    for announcement in announcements:
+        activities.append({
+            'type': 'announcement',
+            'action': f'Posted announcement: "{announcement.title}"',
+            'created_at': announcement.created_at,
+            'author': announcement.author,
+            'user': announcement.author.username if announcement.author else 'Unknown',
+            'url': url_for('edit_announcement', announcement_id=announcement.id) if announcement.id else None
+        })
+    
+    # Get recent student signups
+    students = User.query.filter_by(role='student').order_by(User.created_at.desc()).limit(10).all()
+    for student in students:
+        activities.append({
+            'type': 'student',
+            'action': f'Student registered: "{student.username}"',
+            'created_at': student.created_at,
+            'author': None,
+            'user': student.username,
+            'url': url_for('edit_student', student_id=student.id) if student.id else None
+        })
+    
+    # Sort by timestamp (newest first)
     activities.sort(key=lambda x: x['created_at'], reverse=True)
     
     return render_template('admin/recent_activity.html', activities=activities[:50])
@@ -4292,44 +4329,93 @@ def system_settings():
 @login_required
 @super_admin_required
 def system_logs():
-    """View system logs"""
-    # For now, show recent activity from database
-    recent_activity = []
+    """View system logs with filtering and pagination"""
+    # Get all activities
+    logs = []
     
     # Get recent notes
-    notes = Note.query.order_by(Note.created_at.desc()).limit(10).all()
+    notes = Note.query.order_by(Note.created_at.desc()).limit(30).all()
     for note in notes:
-        recent_activity.append({
+        logs.append({
             'timestamp': note.created_at,
-            'user': note.author.username if note.author else 'Unknown',
-            'action': f'Created note: {note.title}',
-            'type': 'note'
+            'user': note.author.username if note.author else 'System',
+            'action': f'Created note: "{note.title}" in {note.course.name if note.course else "Unknown"}',
+            'type': 'note',
+            'details': f'Note ID: {note.id}'
         })
     
     # Get recent quizzes
-    quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(10).all()
+    quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(30).all()
     for quiz in quizzes:
-        recent_activity.append({
+        logs.append({
             'timestamp': quiz.created_at,
-            'user': quiz.author.username if quiz.author else 'Unknown',
-            'action': f'Created quiz: {quiz.title}',
-            'type': 'quiz'
+            'user': quiz.author.username if quiz.author else 'System',
+            'action': f'Created quiz: "{quiz.title}" with {quiz.questions|length} questions',
+            'type': 'quiz',
+            'details': f'Quiz ID: {quiz.id}'
         })
     
     # Get recent assignments
-    assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(10).all()
+    assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(30).all()
     for assignment in assignments:
-        recent_activity.append({
+        logs.append({
             'timestamp': assignment.created_at,
-            'user': assignment.author.username if assignment.author else 'Unknown',
-            'action': f'Created assignment: {assignment.title}',
-            'type': 'assignment'
+            'user': assignment.author.username if assignment.author else 'System',
+            'action': f'Created assignment: "{assignment.title}"',
+            'type': 'assignment',
+            'details': f'Assignment ID: {assignment.id}'
         })
     
-    # Sort by timestamp
-    recent_activity.sort(key=lambda x: x['timestamp'], reverse=True)
+    # Get recent student registrations
+    students = User.query.filter_by(role='student').order_by(User.created_at.desc()).limit(20).all()
+    for student in students:
+        logs.append({
+            'timestamp': student.created_at,
+            'user': 'System',
+            'action': f'Student registered: "{student.username}" ({student.email})',
+            'type': 'student',
+            'details': f'Student ID: {student.id}'
+        })
     
-    return render_template('admin/system_logs.html', logs=recent_activity)
+    # Get recent course creations
+    courses = Course.query.order_by(Course.created_at.desc()).limit(20).all()
+    for course in courses:
+        logs.append({
+            'timestamp': course.created_at,
+            'user': 'System',
+            'action': f'Course created: "{course.name}" ({course.code})',
+            'type': 'course',
+            'details': f'Course ID: {course.id}'
+        })
+    
+    # Get recent announcements
+    announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(20).all()
+    for announcement in announcements:
+        logs.append({
+            'timestamp': announcement.created_at,
+            'user': announcement.author.username if announcement.author else 'System',
+            'action': f'Posted announcement: "{announcement.title}"',
+            'type': 'announcement',
+            'details': f'Announcement ID: {announcement.id}'
+        })
+    
+    # Get recent student approvals
+    approved_students = User.query.filter_by(role='student', is_approved=True).order_by(User.updated_at.desc()).limit(10).all()
+    for student in approved_students:
+        # Check if approved recently (within last 7 days)
+        if student.updated_at and (datetime.utcnow() - student.updated_at).days < 7:
+            logs.append({
+                'timestamp': student.updated_at,
+                'user': 'System',
+                'action': f'Student approved: "{student.username}"',
+                'type': 'student',
+                'details': f'Student ID: {student.id}'
+            })
+    
+    # Sort by timestamp (newest first)
+    logs.sort(key=lambda x: x['timestamp'], reverse=True)
+    
+    return render_template('admin/system_logs.html', logs=logs[:100])
 
 
 @app.route('/admin/backup-restore')
