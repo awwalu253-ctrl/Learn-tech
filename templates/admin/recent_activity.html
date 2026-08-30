@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Recent Activity - A-Portal{% endblock %}
+
+{% block content %}
+<style>
+    .activity-page { max-width: 1200px; margin: 0 auto; padding: 0; }
+    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+    .page-header-left { display: flex; align-items: center; gap: 14px; }
+    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); margin: 0; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+
+    .activity-container { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); overflow: hidden; }
+    .activity-header { display: grid; grid-template-columns: 180px 140px 1fr; padding: 12px 20px; background: rgba(201,168,75,0.02); border-bottom: 1px solid rgba(201,168,75,0.04); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+    .activity-item { display: grid; grid-template-columns: 180px 140px 1fr; padding: 12px 20px; border-bottom: 1px solid rgba(201,168,75,0.02); font-size: 0.85rem; color: var(--text-gray); transition: var(--transition); align-items: center; }
+    .activity-item:hover { background: rgba(201,168,75,0.02); }
+    .activity-item .timestamp { color: var(--text-muted); font-size: 0.75rem; }
+    .activity-item .user { font-weight: 500; color: var(--white); }
+    .activity-item .action { color: var(--text-gray); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .activity-item .type-badge { font-size: 0.6rem; padding: 2px 12px; border-radius: 100px; font-weight: 600; }
+    .activity-item .type-badge.note { background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .activity-item .type-badge.quiz { background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .activity-item .type-badge.assignment { background: rgba(201,168,75,0.08); color: var(--primary-gold); }
+    .activity-item .type-badge.student { background: rgba(5,150,105,0.08); color: #059669; }
+    .activity-item .type-badge.course { background: rgba(59,130,246,0.08); color: #3B82F6; }
+    .activity-item .type-badge.announcement { background: rgba(139,92,246,0.08); color: #8B5CF6; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state i { font-size: 2.5rem; opacity: 0.2; margin-bottom: 12px; }
+    .empty-state p { color: var(--text-gray); }
+
+    @media (max-width: 768px) { .activity-header, .activity-item { grid-template-columns: 1fr; gap: 4px; } .activity-header { display: none; } }
+</style>
+
+<div class="activity-page">
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-header-icon"><i class="fas fa-history"></i></div>
+            <div>
+                <h1><span>Recent Activity</span></h1>
+                <p class="subtitle">Monitor all recent actions across the platform</p>
+            </div>
+        </div>
+        <button onclick="location.reload()" style="padding: 8px 20px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); border: 1px solid rgba(201,168,75,0.04); cursor: pointer; font-weight: 600;">
+            <i class="fas fa-sync"></i> Refresh
+        </button>
+    </div>
+
+    <div class="activity-container">
+        <div class="activity-header">
+            <div>Timestamp</div>
+            <div>User</div>
+            <div>Action</div>
+        </div>
+
+        {% if activities %}
+            {% for activity in activities %}
+                <div class="activity-item">
+                    <div class="timestamp">{{ activity.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                    <div class="user">{{ activity.user }}</div>
+                    <div class="action">
+                        <span class="type-badge {{ activity.type }}">{{ activity.type|title }}</span>
+                        {{ activity.action }}
+                        {% if activity.url %}
+                            <a href="{{ activity.url }}" style="color: var(--primary-gold); font-size: 0.75rem;">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-history"></i>
+                <p>No activity recorded yet</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">System activity will appear here</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
