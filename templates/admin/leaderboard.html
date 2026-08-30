@@ -1,21 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Leaderboard Management - A-Portal{% endblock %}
+{% block title %}Admin Leaderboard - A-Portal{% endblock %}
 
-{% block extra_css %}
+{% block content %}
 <style>
   /* ============================================
-     LEADERBOARD MANAGEMENT - Premium Navy + Gold Theme
+     ADMIN LEADERBOARD - Premium Navy + Gold Theme
      ============================================ */
-  .leaderboard-manage {
-    max-width: 1360px;
+  .admin-leaderboard {
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0;
   }
 
-  /* ============================================
-     HEADER - Gold Theme
-     ============================================ */
   .page-header {
     display: flex;
     flex-wrap: wrap;
@@ -36,7 +33,7 @@
   .page-header-icon {
     width: 48px;
     height: 48px;
-    border-radius: 10px;
+    border-radius: var(--radius-sm, 10px);
     background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
     display: flex;
     align-items: center;
@@ -50,8 +47,8 @@
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--white, #FFFFFF);
-    margin: 0;
     letter-spacing: -0.02em;
+    margin: 0;
   }
 
   .page-header h1 span {
@@ -67,31 +64,29 @@
     margin: 2px 0 0;
   }
 
-  .header-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+  .page-header .subtitle strong {
+    color: var(--primary-gold, #C9A84B);
   }
 
-  /* ============================================
-     STATS ROW - Gold Theme
-     ============================================ */
+  /* Stats Row */
   .stats-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 14px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     opacity: 0;
     animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
   }
 
   .stat-card {
     background: var(--secondary-bg, #253449);
-    padding: 20px 18px;
+    padding: 16px 20px;
     border-radius: var(--radius, 14px);
     border: 1px solid rgba(201, 168, 75, 0.04);
     box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     transition: var(--transition, 0.3s ease);
   }
 
@@ -101,328 +96,395 @@
     border-color: rgba(201, 168, 75, 0.08);
   }
 
+  .stat-card .stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm, 8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .stat-card .stat-icon.gold {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .stat-card .stat-icon.purple {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .stat-card .stat-icon.blue {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .stat-card .stat-icon.green {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+  }
+
   .stat-card .stat-number {
-    font-size: 1.8rem;
-    font-weight: 800;
+    font-size: 1.4rem;
+    font-weight: 700;
     color: var(--white, #FFFFFF);
     line-height: 1.2;
   }
 
-  .stat-card .stat-number.gold {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  .stat-card .stat-number.blue {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  .stat-card .stat-number.green {
-    color: #059669;
-  }
-
   .stat-card .stat-label {
     font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted, #8A94A6);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ✅ FIXED: Filter Section with Course Dropdown */
+  .filter-section {
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 14px);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.06s forwards;
+  }
+
+  .filter-section .filter-label {
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted, #8A94A6);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  /* ============================================
-     TABLE - Gold Theme
-     ============================================ */
-  .table-wrapper {
+  .filter-section .filter-label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .filter-section select {
+    background: var(--primary-bg, #0A1527);
+    color: var(--text-gray, #C8CED8);
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    border-radius: var(--radius-sm, 8px);
+    padding: 8px 16px;
+    padding-right: 36px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    min-width: 200px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A94A6' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+
+  .filter-section select:hover {
+    border-color: rgba(201, 168, 75, 0.15);
+  }
+
+  .filter-section select:focus {
+    outline: none;
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+  }
+
+  .filter-section select option {
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  .filter-section .filter-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.06);
+    padding: 4px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  .filter-section .filter-badge i {
+    margin-right: 4px;
+  }
+
+  .filter-section .filter-clear {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #8A94A6);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
+  }
+
+  .filter-section .filter-clear:hover {
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  /* Leaderboard Container */
+  .leaderboard-container {
     background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
     border: 1px solid rgba(201, 168, 75, 0.04);
     box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
     overflow: hidden;
     opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-    transition: var(--transition, 0.3s ease);
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
   }
 
-  .table-wrapper:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
-  }
-
-  .table-scroll {
-    overflow-x: auto;
-  }
-
-  .leaderboard-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
-
-  .leaderboard-table thead {
+  .leaderboard-header {
+    display: grid;
+    grid-template-columns: 60px 1fr 80px 1fr;
+    padding: 12px 20px;
     background: rgba(201, 168, 75, 0.02);
     border-bottom: 1px solid rgba(201, 168, 75, 0.04);
-  }
-
-  .leaderboard-table thead th {
-    padding: 14px 20px;
-    text-align: left;
+    font-size: 0.7rem;
     font-weight: 600;
-    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-muted, #8A94A6);
-    white-space: nowrap;
   }
 
-  .leaderboard-table tbody tr {
-    border-bottom: 1px solid rgba(201, 168, 75, 0.03);
+  .leaderboard-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 80px 1fr;
+    padding: 12px 20px;
+    align-items: center;
+    border-bottom: 1px solid rgba(201, 168, 75, 0.02);
     transition: var(--transition, 0.3s ease);
   }
 
-  .leaderboard-table tbody tr:hover {
+  .leaderboard-row:last-child {
+    border-bottom: none;
+  }
+
+  .leaderboard-row:hover {
     background: rgba(201, 168, 75, 0.02);
   }
 
-  .leaderboard-table tbody td {
-    padding: 12px 20px;
-    vertical-align: middle;
+  .leaderboard-row.highlight-row {
+    background: rgba(201, 168, 75, 0.04);
+    border-left: 3px solid var(--primary-gold, #C9A84B);
+  }
+
+  .rank {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85rem;
     color: var(--text-gray, #C8CED8);
   }
 
-  /* ============================================
-     RANK CELL - Gold Theme
-     ============================================ */
-  .rank-cell {
-    font-weight: 700;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .rank-cell .gold {
+  .rank .gold {
     color: var(--primary-gold, #C9A84B);
+    font-size: 1.2rem;
   }
 
-  .rank-cell .silver {
+  .rank .silver {
     color: #9CA3AF;
-  }
-
-  .rank-cell .bronze {
-    color: #D97706;
-  }
-
-  .rank-cell .rank-icon {
-    font-size: 1rem;
-  }
-
-  /* ============================================
-     STUDENT NAME - Gold Theme
-     ============================================ */
-  .student-name {
-    font-weight: 600;
-    color: var(--white, #FFFFFF);
-  }
-
-  .student-email {
-    font-size: 0.8rem;
-    color: var(--text-muted, #8A94A6);
-  }
-
-  /* ============================================
-     SCORE CELL - Gold Theme
-     ============================================ */
-  .score-cell {
-    font-weight: 700;
     font-size: 1.1rem;
   }
 
-  .score-cell.excellent {
-    color: #059669;
+  .rank .bronze {
+    color: #D97706;
+    font-size: 1.1rem;
   }
 
-  .score-cell.good {
-    color: var(--primary-gold, #C9A84B);
+  .rank .rank-number {
+    color: var(--text-muted, #8A94A6);
+    font-size: 0.8rem;
   }
 
-  .score-cell.poor {
-    color: #EF4444;
-  }
-
-  /* ============================================
-     ACTION BUTTONS - Gold Theme
-     ============================================ */
-  .action-group {
+  .student-info {
     display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-
-  .btn-sm {
-    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-weight: 600;
+    gap: 10px;
+  }
+
+  .student-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
     font-size: 0.75rem;
-    border: none;
-    cursor: pointer;
-    transition: var(--transition, 0.3s ease);
-    text-decoration: none;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .btn-danger-sm {
-    background: rgba(239, 68, 68, 0.08);
-    color: #EF4444;
-    border: 1px solid rgba(239, 68, 68, 0.04);
-  }
-
-  .btn-danger-sm:hover {
-    background: #EF4444;
     color: var(--white, #FFFFFF);
-    transform: translateY(-2px);
-    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
+    flex-shrink: 0;
   }
 
-  .btn-success-sm {
+  .student-avatar.gold-bg {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.25);
+  }
+
+  .student-avatar.silver-bg {
+    background: linear-gradient(135deg, #9CA3AF, #6B7280);
+    box-shadow: 0 2px 12px rgba(156, 163, 175, 0.2);
+  }
+
+  .student-avatar.bronze-bg {
+    background: linear-gradient(135deg, #D97706, #F59E0B);
+    box-shadow: 0 2px 12px rgba(217, 119, 6, 0.2);
+  }
+
+  .student-avatar.default-bg {
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
+
+  .student-name {
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    font-size: 0.85rem;
+  }
+
+  .student-badge {
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 10px;
+    border-radius: 100px;
     background: rgba(201, 168, 75, 0.08);
     color: var(--primary-gold, #C9A84B);
     border: 1px solid rgba(201, 168, 75, 0.04);
   }
 
-  .btn-success-sm:hover {
+  .student-badge.you {
     background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     color: var(--white, #FFFFFF);
-    transform: translateY(-2px);
-    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.2);
   }
 
-  /* ============================================
-     EMPTY STATE - Gold Theme
-     ============================================ */
+  .score-value {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .score-value.excellent { color: var(--primary-gold, #C9A84B); }
+  .score-value.good { color: var(--primary-gold, #C9A84B); }
+  .score-value.needs-improvement { color: #F59E0B; }
+  .score-value.poor { color: #EF4444; }
+
+  .details {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .detail-item {
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--primary-bg, #0A1527);
+    padding: 2px 10px;
+    border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
+  }
+
+  .detail-item i {
+    font-size: 0.6rem;
+    color: var(--primary-gold, #C9A84B);
+  }
+
   .empty-state {
     text-align: center;
     padding: 60px 20px;
   }
 
   .empty-state i {
-    font-size: 2.5rem;
+    font-size: 3rem;
     color: var(--primary-gold, #C9A84B);
     opacity: 0.15;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
   .empty-state p {
     color: var(--text-gray, #C8CED8);
-    font-size: 0.9rem;
+    font-size: 1rem;
+    margin: 0;
   }
 
-  .empty-state .empty-hint {
-    font-size: 0.8rem;
+  .empty-state .text-muted {
     color: var(--text-muted, #8A94A6);
+    font-size: 0.9rem;
+    margin-top: 4px;
   }
 
-  /* ============================================
-     ANIMATIONS
-     ============================================ */
   @keyframes fadeUp {
-    0% {
-      opacity: 0;
-      transform: translateY(16px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    0% { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
-  /* ============================================
-     RESPONSIVE
-     ============================================ */
   @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      align-items: flex-start;
+    .leaderboard-header {
+      display: none;
     }
 
-    .header-actions {
-      width: 100%;
-      flex-direction: column;
+    .leaderboard-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 14px 16px;
     }
 
-    .header-actions .btn-sm {
-      width: 100%;
-      justify-content: center;
+    .rank {
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score {
+      text-align: left;
+    }
+
+    .details {
+      justify-content: flex-start;
     }
 
     .stats-row {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    .leaderboard-table thead th,
-    .leaderboard-table tbody td {
-      padding: 8px 12px;
-      font-size: 0.8rem;
+    .filter-section {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .filter-section select {
+      min-width: 100%;
     }
   }
 
-  @media (max-width: 480px) {
-    .page-header h1 {
-      font-size: 1.2rem;
-    }
-
-    .page-header-icon {
-      width: 40px;
-      height: 40px;
-      font-size: 1rem;
-    }
-
-    .stats-row {
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .stat-card .stat-number {
-      font-size: 1.3rem;
-    }
-
-    .leaderboard-table thead th {
-      font-size: 0.6rem;
-      padding: 6px 8px;
-    }
-
-    .leaderboard-table tbody td {
-      padding: 6px 8px;
-      font-size: 0.7rem;
-    }
-
-    .btn-sm {
-      font-size: 0.65rem;
-      padding: 4px 8px;
-    }
-
-    .score-cell {
-      font-size: 0.8rem;
-    }
-
-    .student-name {
-      font-size: 0.8rem;
-    }
-
-    .rank-cell {
-      font-size: 0.75rem;
-    }
-
-    .rank-cell .rank-icon {
-      font-size: 0.8rem;
-    }
+  [data-theme="dark"] .filter-section {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
   }
 
-  /* ============================================
-     DARK MODE SUPPORT
-     ============================================ */
+  [data-theme="dark"] .filter-section select {
+    background: var(--primary-bg, #0A1527);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
   [data-theme="dark"] .stat-card {
     background: var(--secondary-bg, #253449);
     border-color: rgba(201, 168, 75, 0.04);
@@ -432,94 +494,30 @@
     color: var(--white, #FFFFFF);
   }
 
-  [data-theme="dark"] .stat-card .stat-number.gold {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .stat-card .stat-number.blue {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .table-wrapper {
+  [data-theme="dark"] .leaderboard-container {
     background: var(--secondary-bg, #253449);
     border-color: rgba(201, 168, 75, 0.04);
   }
 
-  [data-theme="dark"] .leaderboard-table thead {
-    background: rgba(201, 168, 75, 0.02);
-    border-bottom: 1px solid rgba(201, 168, 75, 0.04);
+  [data-theme="dark"] .leaderboard-row {
+    border-bottom-color: rgba(201, 168, 75, 0.02);
   }
 
-  [data-theme="dark"] .leaderboard-table tbody tr {
-    border-bottom: 1px solid rgba(201, 168, 75, 0.02);
+  [data-theme="dark"] .leaderboard-row:hover {
+    background: rgba(201, 168, 75, 0.02);
   }
 
-  [data-theme="dark"] .leaderboard-table tbody tr:hover {
-    background: rgba(201, 168, 75, 0.02);
+  [data-theme="dark"] .detail-item {
+    background: var(--primary-bg, #0A1527);
+    color: var(--text-muted, #8A94A6);
   }
 
   [data-theme="dark"] .student-name {
     color: var(--white, #FFFFFF);
   }
-
-  [data-theme="dark"] .page-header h1 {
-    color: var(--white, #FFFFFF);
-  }
-
-  [data-theme="dark"] .page-header .subtitle {
-    color: var(--text-gray, #C8CED8);
-  }
-
-  [data-theme="dark"] .empty-state p {
-    color: var(--text-gray, #C8CED8);
-  }
-
-  [data-theme="dark"] .empty-state .empty-hint {
-    color: var(--text-muted, #8A94A6);
-  }
-
-  [data-theme="dark"] .btn-success-sm {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold, #C9A84B);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .btn-success-sm:hover {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    color: var(--white, #FFFFFF);
-  }
-
-  [data-theme="dark"] .btn-danger-sm {
-    background: rgba(239, 68, 68, 0.08);
-    color: #EF4444;
-    border-color: rgba(239, 68, 68, 0.04);
-  }
-
-  [data-theme="dark"] .btn-danger-sm:hover {
-    background: #EF4444;
-    color: var(--white, #FFFFFF);
-  }
-
-  [data-theme="dark"] .student-email {
-    color: var(--text-muted, #8A94A6);
-  }
-
-  [data-theme="dark"] .score-cell.good {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .leaderboard-table tbody td {
-    color: var(--text-gray, #C8CED8);
-  }
-
-  [data-theme="dark"] .rank-cell .gold {
-    color: var(--primary-gold, #C9A84B);
-  }
 </style>
-{% endblock %}
 
-{% block content %}
-<div class="leaderboard-manage">
+<div class="admin-leaderboard">
   <!-- Header -->
   <div class="page-header">
     <div class="page-header-left">
@@ -527,186 +525,164 @@
         <i class="fas fa-trophy"></i>
       </div>
       <div>
-        <h1>Leaderboard <span>Management</span></h1>
-        <p class="subtitle">View and manage student rankings</p>
+        <h1><span>Leaderboard</span></h1>
+        <p class="subtitle">
+          {% if selected_course %}
+            Student performance for <strong>{{ selected_course.name }}</strong>
+          {% else %}
+            Overall student performance across all courses
+          {% endif %}
+        </p>
       </div>
-    </div>
-    <div class="header-actions">
-      <a href="{{ url_for('export_leaderboard') }}" class="btn-sm btn-success-sm">
-        <i class="fas fa-file-export"></i> Export CSV
-      </a>
-      {% if current_user.is_super_admin() %}
-        <form method="POST" action="{{ url_for('reset_all_scores') }}" style="display:inline;">
-          <button type="submit" class="btn-sm btn-danger-sm" onclick="return confirm('⚠️ This will reset ALL student quiz scores. This action cannot be undone!')">
-            <i class="fas fa-redo"></i> Reset All
-          </button>
-        </form>
-      {% endif %}
     </div>
   </div>
 
   <!-- Stats -->
   <div class="stats-row">
     <div class="stat-card">
-      <div class="stat-number blue">{{ total_students }}</div>
-      <div class="stat-label">Total Students</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number gold">{{ avg_score|round|int }}%</div>
-      <div class="stat-label">Average Score</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-number green">
-        {% if top_performer %}
-          {{ top_performer.score }}%
-        {% else %}
-          -
-        {% endif %}
+      <div class="stat-icon gold"><i class="fas fa-users"></i></div>
+      <div>
+        <div class="stat-number">{{ total_students }}</div>
+        <div class="stat-label">Total Students</div>
       </div>
-      <div class="stat-label">Top Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple"><i class="fas fa-star"></i></div>
+      <div>
+        <div class="stat-number">{{ avg_score|round(0) }}%</div>
+        <div class="stat-label">Average Score</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-trophy"></i></div>
+      <div>
+        <div class="stat-number">{{ top_performer.score if top_performer else '0' }}%</div>
+        <div class="stat-label">Top Score</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-crown"></i></div>
+      <div>
+        <div class="stat-number">{{ top_performer.student.username if top_performer else 'N/A' }}</div>
+        <div class="stat-label">Top Performer</div>
+      </div>
     </div>
   </div>
 
-  <!-- Table -->
-  <div class="table-wrapper">
-    <div class="table-scroll">
-      <table class="leaderboard-table">
-        <thead>
-          <tr>
-            <th style="width: 60px;">Rank</th>
-            <th>Student</th>
-            <th>Score</th>
-            <th>Correct / Total</th>
-            <th>Courses</th>
-            <th>Joined</th>
-            <th style="text-align: right;">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for data in student_scores %}
-            <tr>
-              <td>
-                <span class="rank-cell">
-                  {% if loop.index == 1 %}
-                    <span class="gold"><i class="fas fa-crown rank-icon"></i> #1</span>
-                  {% elif loop.index == 2 %}
-                    <span class="silver"><i class="fas fa-medal rank-icon"></i> #2</span>
-                  {% elif loop.index == 3 %}
-                    <span class="bronze"><i class="fas fa-medal rank-icon"></i> #3</span>
-                  {% else %}
-                    #{{ loop.index }}
-                  {% endif %}
-                </span>
-              </td>
-              <td>
-                <div class="student-name">{{ data.student.username }}</div>
-                <div class="student-email">{{ data.student.email }}</div>
-              </td>
-              <td>
-                <span class="score-cell {% if data.score >= 70 %}excellent{% elif data.score >= 40 %}good{% else %}poor{% endif %}">
-                  {{ data.score }}%
-                </span>
-              </td>
-              <td>{{ data.correct }}/{{ data.total }}</td>
-              <td>{{ data.course_count }}</td>
-              <td>{{ data.joined }}</td>
-              <td style="text-align: right;">
-                <div class="action-group">
-                  <form method="POST" action="{{ url_for('reset_student_scores', student_id=data.student.id) }}" style="display:inline;">
-                    <button type="submit" class="btn-sm btn-danger-sm" onclick="return confirm('Reset {{ data.student.username }}\'s quiz scores?')">
-                      <i class="fas fa-redo"></i> Reset
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-          {% else %}
-            <tr>
-              <td colspan="7">
-                <div class="empty-state">
-                  <i class="fas fa-trophy"></i>
-                  <p>No student data available.</p>
-                  <p class="empty-hint">Students need to take quizzes to appear on the leaderboard.</p>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <!-- ✅ FIXED: Filter Section with Course Filter -->
+  <div class="filter-section">
+    <span class="filter-label">
+      <i class="fas fa-filter"></i> Filter:
+    </span>
+    <form method="GET" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
+      <select name="course_id" onchange="this.form.submit()">
+        <option value="">All Courses</option>
+        {% for course in courses %}
+          <option value="{{ course.id }}" {% if current_course_id == course.id %}selected{% endif %}>
+            {{ course.name }} ({{ course.code }})
+          </option>
+        {% endfor %}
+      </select>
+
+      <select name="sort_by" onchange="this.form.submit()">
+        <option value="score" {% if sort_by == 'score' %}selected{% endif %}>Sort by Score</option>
+        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Sort by Name</option>
+        <option value="questions" {% if sort_by == 'questions' %}selected{% endif %}>Sort by Questions</option>
+      </select>
+
+      {% if current_course_id %}
+        <a href="{{ url_for('admin_leaderboard') }}" class="filter-clear">
+          <i class="fas fa-times"></i> Clear Filter
+        </a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="leaderboard-container">
+    <div class="leaderboard-header">
+      <div>Rank</div>
+      <div>Student</div>
+      <div>Score</div>
+      <div>Details</div>
     </div>
+
+    {% if student_scores %}
+      {% for data in student_scores %}
+        <div class="leaderboard-row {% if data.student.id == current_user.id %}highlight-row{% endif %}">
+          <div class="rank">
+            {% if loop.index == 1 %}
+              <i class="fas fa-crown gold"></i>
+            {% elif loop.index == 2 %}
+              <i class="fas fa-medal silver"></i>
+            {% elif loop.index == 3 %}
+              <i class="fas fa-medal bronze"></i>
+            {% else %}
+              <span class="rank-number">#{{ loop.index }}</span>
+            {% endif %}
+          </div>
+          <div class="student-info">
+            {% set avatar_class = 'default-bg' %}
+            {% if loop.index == 1 %}{% set avatar_class = 'gold-bg' %}
+            {% elif loop.index == 2 %}{% set avatar_class = 'silver-bg' %}
+            {% elif loop.index == 3 %}{% set avatar_class = 'bronze-bg' %}
+            {% endif %}
+            <div class="student-avatar {{ avatar_class }}">
+              {{ data.student.username[0]|upper }}
+            </div>
+            <span class="student-name">{{ data.student.username }}</span>
+            {% if data.student.id == current_user.id %}
+              <span class="student-badge you">You</span>
+            {% endif %}
+            <span class="student-badge">{{ data.status }}</span>
+          </div>
+          <div class="score">
+            <span class="score-value 
+              {% if data.score >= 70 %}excellent
+              {% elif data.score >= 50 %}good
+              {% elif data.score >= 30 %}needs-improvement
+              {% else %}poor{% endif %}">
+              {{ data.score }}%
+            </span>
+          </div>
+          <div class="details">
+            <span class="detail-item"><i class="fas fa-question-circle"></i> {{ data.total }}</span>
+            <span class="detail-item"><i class="fas fa-check-circle"></i> {{ data.correct }}</span>
+            <span class="detail-item"><i class="fas fa-book"></i> {{ data.course_count }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fas fa-trophy"></i>
+        <p>No quiz data available.</p>
+        <p class="text-muted">Students need to take quizzes to appear on the leaderboard.</p>
+      </div>
+    {% endif %}
   </div>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // ============================================
-    // GOLD THEME - ANIMATE ON LOAD
-    // ============================================
-    const container = document.querySelector('.leaderboard-manage');
-    if (container) {
-      container.style.opacity = '0';
-      setTimeout(() => {
-        container.style.opacity = '1';
-        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        container.style.transform = 'translateY(0)';
-      }, 100);
-    }
-
-    // ============================================
-    // ADD HOVER ANIMATION TO TABLE ROWS
-    // ============================================
-    document.querySelectorAll('.leaderboard-table tbody tr').forEach(row => {
-      row.addEventListener('mouseenter', function() {
-        this.style.transition = 'background 0.3s ease';
-      });
-    });
-
-    // ============================================
-    // CONFIRM RESET ALL
-    // ============================================
-    document.querySelectorAll('.btn-danger-sm').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        const confirmMessage = this.getAttribute('onclick');
-        if (confirmMessage) {
-          e.preventDefault();
-          if (confirm('⚠️ Are you sure you want to reset this student\'s quiz scores? This action cannot be undone.')) {
-            // Find the form and submit it
-            const form = this.closest('form');
-            if (form) {
-              form.submit();
-            }
-          }
-        }
-      });
-    });
-
-    // ============================================
-    // UPDATE STATS WITH ANIMATION
-    // ============================================
+    // Stats counter animation
     const statNumbers = document.querySelectorAll('.stat-number');
     statNumbers.forEach(stat => {
       const text = stat.textContent;
       const number = parseInt(text);
-      if (!isNaN(number) && text.includes('%')) {
+      if (!isNaN(number)) {
         let current = 0;
-        const target = number;
-        const increment = Math.ceil(target / 30);
-        const duration = 800;
-        const stepTime = duration / 30;
-
+        const increment = Math.ceil(number / 25);
         const counter = setInterval(() => {
           current += increment;
-          if (current >= target) {
-            stat.textContent = target + '%';
+          if (current >= number) {
+            stat.textContent = text;
             clearInterval(counter);
           } else {
-            stat.textContent = current + '%';
+            stat.textContent = current;
           }
-        }, stepTime);
+        }, 40);
       }
     });
-
-    console.log('✨ Leaderboard Management - Gold Theme Loaded!');
   });
 </script>
 {% endblock %}
