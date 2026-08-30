@@ -291,7 +291,7 @@
         }
 
         /* ============================================
-           NOTIFICATION BELL - Enhanced
+           NOTIFICATION BELL - Enhanced with Mobile Fix
            ============================================ */
         .notification-btn {
             position: relative;
@@ -340,25 +340,23 @@
         }
 
         @keyframes pulse-dot {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: scale(1);
                 opacity: 1;
             }
-
             50% {
                 transform: scale(1.2);
                 opacity: 0.8;
             }
         }
 
-        /* Notification Dropdown */
+        /* ✅ FIXED: Notification Dropdown - Responsive */
         .notification-dropdown {
             position: absolute;
             top: calc(100% + 10px);
             right: 0;
             width: 380px;
+            max-width: 90vw;
             max-height: 420px;
             overflow-y: auto;
             background: var(--secondary-bg, #253449);
@@ -386,6 +384,51 @@
             opacity: 1;
             visibility: visible;
             transform: translateY(0) scale(1);
+        }
+
+        /* ✅ FIX: Mobile notification dropdown positioning */
+        @media (max-width: 768px) {
+            .notification-dropdown {
+                position: fixed;
+                top: calc(var(--header-height) + 10px);
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-width: 100%;
+                max-height: 70vh;
+                border-radius: var(--radius, 14px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .notification-dropdown {
+                top: calc(var(--header-height) + 8px);
+                right: 8px;
+                left: 8px;
+                max-height: 65vh;
+                border-radius: var(--radius-sm, 12px);
+                padding: 6px;
+            }
+            
+            .notification-dropdown .dropdown-header {
+                padding: 6px 10px;
+            }
+            
+            .notification-dropdown .dropdown-header span {
+                font-size: 0.8rem;
+            }
+            
+            .notification-item {
+                padding: 8px 12px;
+            }
+            
+            .notification-item .notif-title {
+                font-size: 0.8rem;
+            }
+            
+            .notification-item .notif-message {
+                font-size: 0.73rem;
+            }
         }
 
         .notification-dropdown .dropdown-header {
@@ -1397,11 +1440,6 @@
                 left: 16px;
                 max-width: 100%;
             }
-
-            .notification-dropdown {
-                width: 340px;
-                right: -50px;
-            }
         }
 
         @media (max-width: 768px) {
@@ -1432,10 +1470,7 @@
                 display: none;
             }
 
-            .notification-dropdown {
-                width: 300px;
-                right: -60px;
-            }
+            /* ✅ FIX: Removed the old notification dropdown positioning */
         }
 
         @media (max-width: 480px) {
@@ -1467,11 +1502,6 @@
 
             .datetime-display .seconds {
                 min-width: 20px;
-            }
-
-            .notification-dropdown {
-                width: 280px;
-                right: -70px;
             }
         }
 
@@ -1763,7 +1793,7 @@
                     {% endif %}
                 </a>
                 
-                <!-- ✅ NEW: Pending Approvals - Quick Access -->
+                <!-- Pending Approvals - Quick Access -->
                 <a href="{{ url_for('manage_students') }}#pending"
                     class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
                     <i class="fas fa-clock"></i> Pending Approvals
@@ -1799,14 +1829,14 @@
                     <i class="fas fa-file-export"></i> Export Reports
                 </a>
                 
-                <!-- ✅ NEW: Student Progress Overview -->
+                <!-- Student Progress Overview -->
                 <a href="{{ url_for('admin_leaderboard') }}"
                     class="{% if request.endpoint == 'admin_leaderboard' %}active{% endif %}">
                     <i class="fas fa-chart-bar"></i> Leaderboard
                 </a>
 
                 <!-- ====================================== -->
-                <!-- RECENT ACTIVITY - NEW -->
+                <!-- RECENT ACTIVITY -->
                 <!-- ====================================== -->
                 <div class="nav-section">Activity</div>
                 <a href="{{ url_for('recent_activity') }}"

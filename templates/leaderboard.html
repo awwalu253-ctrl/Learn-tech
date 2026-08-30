@@ -67,6 +67,107 @@
     margin: 2px 0 0;
   }
 
+  .page-header .subtitle strong {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  /* ============================================
+     COURSE FILTER - Gold Theme
+     ============================================ */
+  .filter-section {
+    background: var(--secondary-bg, #253449);
+    border-radius: var(--radius, 14px);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  .filter-section .filter-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted, #8A94A6);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .filter-section .filter-label i {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .filter-section select {
+    background: var(--primary-bg, #0A1527);
+    color: var(--text-gray, #C8CED8);
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    border-radius: var(--radius-sm, 8px);
+    padding: 8px 16px;
+    padding-right: 36px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition, 0.3s ease);
+    min-width: 200px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A94A6' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+
+  .filter-section select:hover {
+    border-color: rgba(201, 168, 75, 0.15);
+  }
+
+  .filter-section select:focus {
+    outline: none;
+    border-color: var(--primary-gold, #C9A84B);
+    box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
+  }
+
+  .filter-section select option {
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  .filter-section .filter-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.06);
+    padding: 4px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  .filter-section .filter-badge i {
+    margin-right: 4px;
+  }
+
+  .filter-section .filter-clear {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted, #8A94A6);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid rgba(201, 168, 75, 0.02);
+  }
+
+  .filter-section .filter-clear:hover {
+    color: var(--primary-gold, #C9A84B);
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
   /* ============================================
      STATS ROW - Gold Theme
      ============================================ */
@@ -186,6 +287,8 @@
     align-items: center;
     border-bottom: 1px solid rgba(201, 168, 75, 0.02);
     transition: var(--transition, 0.3s ease);
+    animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
   }
 
   .leaderboard-row:last-child {
@@ -212,6 +315,18 @@
     background: linear-gradient(180deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
     border-radius: 0 2px 2px 0;
   }
+
+  /* Row animation delays */
+  .leaderboard-row:nth-child(1) { animation-delay: 0.05s; }
+  .leaderboard-row:nth-child(2) { animation-delay: 0.08s; }
+  .leaderboard-row:nth-child(3) { animation-delay: 0.11s; }
+  .leaderboard-row:nth-child(4) { animation-delay: 0.14s; }
+  .leaderboard-row:nth-child(5) { animation-delay: 0.17s; }
+  .leaderboard-row:nth-child(6) { animation-delay: 0.20s; }
+  .leaderboard-row:nth-child(7) { animation-delay: 0.23s; }
+  .leaderboard-row:nth-child(8) { animation-delay: 0.26s; }
+  .leaderboard-row:nth-child(9) { animation-delay: 0.29s; }
+  .leaderboard-row:nth-child(10) { animation-delay: 0.32s; }
 
   /* ============================================
      RANK - Gold Theme
@@ -471,22 +586,6 @@
     50% { filter: drop-shadow(0 2px 16px rgba(201, 168, 75, 0.4)); }
   }
 
-  .leaderboard-row {
-    animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    opacity: 0;
-  }
-
-  .leaderboard-row:nth-child(1) { animation-delay: 0.05s; }
-  .leaderboard-row:nth-child(2) { animation-delay: 0.08s; }
-  .leaderboard-row:nth-child(3) { animation-delay: 0.11s; }
-  .leaderboard-row:nth-child(4) { animation-delay: 0.14s; }
-  .leaderboard-row:nth-child(5) { animation-delay: 0.17s; }
-  .leaderboard-row:nth-child(6) { animation-delay: 0.20s; }
-  .leaderboard-row:nth-child(7) { animation-delay: 0.23s; }
-  .leaderboard-row:nth-child(8) { animation-delay: 0.26s; }
-  .leaderboard-row:nth-child(9) { animation-delay: 0.29s; }
-  .leaderboard-row:nth-child(10) { animation-delay: 0.32s; }
-
   /* ============================================
      RESPONSIVE
      ============================================ */
@@ -570,6 +669,15 @@
 
     .your-rank-banner .rank-position {
       font-size: 1rem;
+    }
+
+    .filter-section {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .filter-section select {
+      min-width: 100%;
     }
   }
 
@@ -772,6 +880,32 @@
     background: rgba(201, 168, 75, 0.08);
     color: var(--primary-gold, #C9A84B);
   }
+
+  [data-theme="dark"] .filter-section {
+    background: var(--secondary-bg, #253449);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .filter-section select {
+    background: var(--primary-bg, #0A1527);
+    color: var(--text-gray, #C8CED8);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+
+  [data-theme="dark"] .filter-section select option {
+    background: var(--secondary-bg, #253449);
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .filter-section .filter-badge {
+    background: rgba(201, 168, 75, 0.06);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .filter-section .filter-clear:hover {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
 </style>
 
 <div class="leaderboard-page">
@@ -783,9 +917,41 @@
       </div>
       <div>
         <h1><span>Leaderboard</span></h1>
-        <p class="subtitle">See how you rank among your peers</p>
+        <p class="subtitle">
+          {% if current_course %}
+            Showing results for <strong>{{ current_course.name }}</strong>
+          {% else %}
+            See how you rank among your peers
+          {% endif %}
+        </p>
       </div>
     </div>
+  </div>
+
+  <!-- Course Filter -->
+  <div class="filter-section">
+    <span class="filter-label">
+      <i class="fas fa-filter"></i> Filter by Course:
+    </span>
+    <form method="GET" action="{{ url_for('leaderboard') }}" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
+      <select name="course_id" onchange="this.form.submit()">
+        <option value="">All Courses (My Classmates)</option>
+        {% for course in courses %}
+          <option value="{{ course.id }}" {% if current_course_id == course.id %}selected{% endif %}>
+            {{ course.name }} ({{ course.code }})
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+
+    {% if current_course %}
+      <span class="filter-badge">
+        <i class="fas fa-book"></i> {{ current_course.name }}
+      </span>
+      <a href="{{ url_for('leaderboard') }}" class="filter-clear">
+        <i class="fas fa-times"></i> Clear Filter
+      </a>
+    {% endif %}
   </div>
 
   <!-- Stats -->
@@ -828,55 +994,57 @@
       <div class="details">Details</div>
     </div>
 
-    {% for data in student_scores %}
-      <div class="leaderboard-row {% if data.student.id == current_user.id %}highlight-row{% endif %}">
-        <div class="rank">
-          {% if loop.index == 1 %}
-            <i class="fas fa-crown gold"></i>
-          {% elif loop.index == 2 %}
-            <i class="fas fa-medal silver"></i>
-          {% elif loop.index == 3 %}
-            <i class="fas fa-medal bronze"></i>
-          {% else %}
-            <span class="rank-number">#{{ loop.index }}</span>
-          {% endif %}
-        </div>
-        <div class="student-info">
-          {% set avatar_class = 'default-bg' %}
-          {% if loop.index == 1 %}{% set avatar_class = 'gold-bg' %}
-          {% elif loop.index == 2 %}{% set avatar_class = 'silver-bg' %}
-          {% elif loop.index == 3 %}{% set avatar_class = 'bronze-bg' %}
-          {% elif data.student.id == current_user.id %}{% set avatar_class = 'highlight-bg' %}
-          {% endif %}
-          <div class="student-avatar {{ avatar_class }}">
-            {{ data.student.username[0]|upper }}
+    {% if student_scores %}
+      {% for data in student_scores %}
+        <div class="leaderboard-row {% if data.student.id == current_user.id %}highlight-row{% endif %}">
+          <div class="rank">
+            {% if loop.index == 1 %}
+              <i class="fas fa-crown gold"></i>
+            {% elif loop.index == 2 %}
+              <i class="fas fa-medal silver"></i>
+            {% elif loop.index == 3 %}
+              <i class="fas fa-medal bronze"></i>
+            {% else %}
+              <span class="rank-number">#{{ loop.index }}</span>
+            {% endif %}
           </div>
-          <span class="student-name">{{ data.student.username }}</span>
-          {% if data.student.id == current_user.id %}
-            <span class="student-badge you">You</span>
-          {% endif %}
+          <div class="student-info">
+            {% set avatar_class = 'default-bg' %}
+            {% if loop.index == 1 %}{% set avatar_class = 'gold-bg' %}
+            {% elif loop.index == 2 %}{% set avatar_class = 'silver-bg' %}
+            {% elif loop.index == 3 %}{% set avatar_class = 'bronze-bg' %}
+            {% elif data.student.id == current_user.id %}{% set avatar_class = 'highlight-bg' %}
+            {% endif %}
+            <div class="student-avatar {{ avatar_class }}">
+              {{ data.student.username[0]|upper }}
+            </div>
+            <span class="student-name">{{ data.student.username }}</span>
+            {% if data.student.id == current_user.id %}
+              <span class="student-badge you">You</span>
+            {% endif %}
+          </div>
+          <div class="score">
+            <span class="score-value 
+              {% if data.score >= 70 %}excellent
+              {% elif data.score >= 50 %}good
+              {% elif data.score >= 30 %}needs-improvement
+              {% else %}poor{% endif %}">
+              {{ data.score }}%
+            </span>
+          </div>
+          <div class="details">
+            <span class="detail-item"><i class="fas fa-question-circle"></i> {{ data.total_questions }}</span>
+            <span class="detail-item"><i class="fas fa-book"></i> {{ data.course_count }}</span>
+          </div>
         </div>
-        <div class="score">
-          <span class="score-value 
-            {% if data.score >= 70 %}excellent
-            {% elif data.score >= 50 %}good
-            {% elif data.score >= 30 %}needs-improvement
-            {% else %}poor{% endif %}">
-            {{ data.score }}%
-          </span>
-        </div>
-        <div class="details">
-          <span class="detail-item"><i class="fas fa-question-circle"></i> {{ data.total_questions }}</span>
-          <span class="detail-item"><i class="fas fa-book"></i> {{ data.course_count }}</span>
-        </div>
-      </div>
+      {% endfor %}
     {% else %}
       <div class="empty-state">
         <i class="fas fa-trophy"></i>
         <p>No quiz data available yet.</p>
         <p class="text-muted">Take some quizzes to appear on the leaderboard!</p>
       </div>
-    {% endfor %}
+    {% endif %}
   </div>
 </div>
 

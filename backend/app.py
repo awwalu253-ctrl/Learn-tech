@@ -3738,9 +3738,76 @@ def leaderboard():
         flash('Leaderboard is for students.', 'info')
         return redirect(url_for('admin_dashboard'))
     
+    # Get the student's enrolled courses (approved ones)
+    enrolled_courses = current_user.get_enrolled_courses()
+    enrolled_course_ids = [c.id for c in enrolled_courses]
+    
+    # Get all students who are approved and have taken quizzes
+    # But only show students who share at least one course with the current user
     students = User.query.filter_by(role='student', is_approved=True).all()
     student_scores = []
     
+    for student in students:
+        # Get the student's enrolled courses
+        student_courses = student.get_enrolled_courses()
+        student_course_ids = [c.id for c in student_courses]
+        
+        # Check if they share any course with the current user
+        shared_courses = set(enrolled_course_ids) & set(student_course_ids)
+        
+        # Skip if no shared courses and not the current user
+        if not shared_courses and student.id != current_user.id:
+            continue
+        
+        answers = QuizAnswer.query.filter_by(student_id=student.id).all()
+        correct = sum(1 for a in answers if a.is_correct)
+        total = len(answers)
+        score = int((correct / total) * 100) if total > 0 else 0
+        
+        student_scores.append({
+            'student': student,
+            'score': score,
+            'total_questions': total,
+            'course_count': len(student_courses),
+            'shared_courses': list(shared_courses)
+        })
+    
+    # Sort by score descending
+    student_scores.sort(key=lambda x: x['score'], reverse=True)
+    
+    # Get course list for filter dropdown (only courses the student is enrolled in)
+    courses = enrolled_courses
+    
+    return render_template('leaderboard.html', 
+                         student_scores=student_scores,
+                         courses=courses,
+                         current_course_id=None)
+
+@app.route('/leaderboard/course/<int:course_id>')
+@login_required
+def leaderboard_by_course(course_id):
+    if current_user.is_admin():
+        flash('Leaderboard is for students.', 'info')
+        return redirect(url_for('admin_dashboard'))
+    
+    # Check if the student is enrolled in this course
+    if not current_user.is_enrolled_in_course(course_id):
+        flash('You are not enrolled in this course.', 'error')
+        return redirect(url_for('leaderboard'))
+    
+    course = Course.query.get_or_404(course_id)
+    
+    # Get all students who are approved and enrolled in this course
+    # Get the course's approved enrollments
+    enrollments = CourseEnrollment.query.filter_by(
+        course_id=course_id,
+        status='approved'
+    ).all()
+    
+    student_ids = [e.student_id for e in enrollments]
+    students = User.query.filter(User.id.in_(student_ids)).all()
+    
+    student_scores = []
     for student in students:
         answers = QuizAnswer.query.filter_by(student_id=student.id).all()
         correct = sum(1 for a in answers if a.is_correct)
@@ -3754,16 +3821,61 @@ def leaderboard():
             'course_count': len(student.get_enrolled_courses())
         })
     
+    # Sort by score descending
     student_scores.sort(key=lambda x: x['score'], reverse=True)
     
-    return render_template('leaderboard.html', student_scores=student_scores)
+    # Get all courses for the filter dropdown
+    courses = current_user.get_enrolled_courses()
+    
+    return render_template('leaderboard.html', 
+                         student_scores=student_scores,
+                         courses=courses,
+                         current_course_id=course_id,
+                         current_course=course)
+
+
 
 @app.route('/admin/leaderboard')
 @login_required
 @admin_required
 def admin_leaderboard():
-    """Admin view of leaderboard with management features"""
-    students = User.query.filter_by(role='student', is_approved=True).all()
+    """Admin view of leaderboard with course filtering"""
+    
+    # Get all courses (or just the ones the admin manages)
+    if current_user.is_super_admin():
+        all_courses = Course.query.all()
+    else:
+        all_courses = current_user.managed_courses
+    
+    # Get filter parameters
+    course_id = request.args.get('course_id', type=int)
+    sort_by = request.args.get('sort_by', 'score')  # score, name, questions
+    
+    # Get students based on filter
+    if course_id:
+        # Filter by specific course
+        course = Course.query.get_or_404(course_id)
+        enrollments = CourseEnrollment.query.filter_by(
+            course_id=course_id,
+            status='approved'
+        ).all()
+        student_ids = [e.student_id for e in enrollments]
+        students = User.query.filter(User.id.in_(student_ids)).all()
+        selected_course = course
+    else:
+        # Show all students (super admin) or students in admin's courses
+        if current_user.is_super_admin():
+            students = User.query.filter_by(role='student', is_approved=True).all()
+        else:
+            # Regular admin: students in their managed courses
+            course_ids = [c.id for c in current_user.managed_courses]
+            student_ids = db.session.query(CourseEnrollment.student_id).filter(
+                CourseEnrollment.course_id.in_(course_ids),
+                CourseEnrollment.status == 'approved'
+            ).distinct().all()
+            student_ids = [s[0] for s in student_ids]
+            students = User.query.filter(User.id.in_(student_ids)).all() if student_ids else []
+        selected_course = None
     
     student_scores = []
     for student in students:
@@ -3772,17 +3884,28 @@ def admin_leaderboard():
         total = len(answers)
         score = int((correct / total) * 100) if total > 0 else 0
         
+        # Get student's courses
+        student_courses = student.get_enrolled_courses()
+        
         student_scores.append({
             'student': student,
             'score': score,
             'correct': correct,
             'total': total,
-            'course_count': len(student.get_enrolled_courses()),
+            'course_count': len(student_courses),
+            'courses': [c.name for c in student_courses[:3]],
             'joined': student.created_at.strftime('%b %d, %Y'),
-            'status': 'Active' if student.is_approved else 'Pending'
+            'status': 'Active' if student.is_approved else 'Pending',
+            'course_names': ', '.join([c.name for c in student_courses[:3]]) + ('...' if len(student_courses) > 3 else '')
         })
     
-    student_scores.sort(key=lambda x: x['score'], reverse=True)
+    # Sort based on parameter
+    if sort_by == 'name':
+        student_scores.sort(key=lambda x: x['student'].username.lower())
+    elif sort_by == 'questions':
+        student_scores.sort(key=lambda x: x['total'], reverse=True)
+    else:  # score (default)
+        student_scores.sort(key=lambda x: x['score'], reverse=True)
     
     total_students = len(student_scores)
     avg_score = sum(s['score'] for s in student_scores) / total_students if total_students > 0 else 0
@@ -3792,7 +3915,12 @@ def admin_leaderboard():
                          student_scores=student_scores,
                          total_students=total_students,
                          avg_score=avg_score,
-                         top_performer=top_performer)
+                         top_performer=top_performer,
+                         courses=all_courses,
+                         selected_course=selected_course,
+                         current_course_id=course_id,
+                         sort_by=sort_by)
+
 
 @app.route('/admin/leaderboard/reset/<int:student_id>', methods=['POST'])
 @login_required
