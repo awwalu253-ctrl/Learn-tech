@@ -34,24 +34,41 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'awwaludevs-secret-key-change-in-production')
 
 # ============================================================================
-# DATABASE CONFIGURATION
+# DATABASE CONFIGURATION - UPDATED FOR SUPABASE
 # ============================================================================
 
-# Check if the app is running on Render
-if os.environ.get('RENDER'):
-    # PostgreSQL on Render
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url and 'sslmode' not in database_url:
-        database_url += '?sslmode=require'
+# Get database URL from environment
+database_url = os.environ.get('DATABASE_URL')
+
+if database_url:
+    # Check if it's Supabase
+    if 'supabase.co' in database_url:
+        print("🔗 Connecting to Supabase PostgreSQL...")
+        # Ensure SSL is enabled for Supabase
+        if 'sslmode' not in database_url:
+            database_url += '?sslmode=require'
+        print("✅ Supabase connection configured")
+    elif os.environ.get('RENDER'):
+        # PostgreSQL on Render
+        if 'sslmode' not in database_url:
+            database_url += '?sslmode=require'
+        print("🔗 Connecting to Render PostgreSQL...")
+    
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    
+    # Connection pool settings for production
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'pool_size': 10,
         'pool_recycle': 300,
         'pool_pre_ping': True,
+        'connect_args': {
+            'connect_timeout': 10  # Prevent timeout issues
+        }
     }
 else:
-    # SQLite locally
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///../database/awwaludevs.db')
+    # Fallback to SQLite for local development
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../database/awwaludevs.db'
+    print("⚠️ Using SQLite (local development)")
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -260,6 +277,8 @@ class CourseEnrollment(db.Model):
     
     __table_args__ = (
         db.UniqueConstraint('student_id', 'course_id', name='unique_student_course_enrollment'),
+        db.Index('idx_enrollment_student_course', 'student_id', 'course_id'),
+        db.Index('idx_enrollment_status', 'status'),
     )
 
 # 3. User model
@@ -290,6 +309,13 @@ class User(UserMixin, db.Model):
     notes_read = db.relationship('StudentProgress', backref='student', lazy=True)
     quiz_answers = db.relationship('QuizAnswer', backref='student', lazy=True)
     submissions = db.relationship('AssignmentSubmission', backref='student', lazy=True)
+    
+    __table_args__ = (
+        db.Index('idx_user_role_status', 'role', 'is_approved'),
+        db.Index('idx_user_created', 'created_at'),
+        db.Index('idx_user_username', 'username'),
+        db.Index('idx_user_email', 'email'),
+    )
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -404,6 +430,11 @@ class Course(db.Model):
     quiz_groups = db.relationship('QuizGroup', backref='course', lazy=True, cascade='all, delete-orphan')
     assignments = db.relationship('Assignment', backref='course', lazy=True, cascade='all, delete-orphan')
     
+    __table_args__ = (
+        db.Index('idx_course_code', 'code'),
+        db.Index('idx_course_name', 'name'),
+    )
+    
     def get_progress_for_student(self, student_id):
         total_notes = Note.query.filter_by(course_id=self.id).count()
         if total_notes == 0:
@@ -424,6 +455,10 @@ class Tag(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     notes = db.relationship('Note', backref='tag', lazy=True)
+    
+    __table_args__ = (
+        db.Index('idx_tag_name', 'name'),
+    )
 
 # 6. Note model
 class Note(db.Model):
@@ -444,6 +479,12 @@ class Note(db.Model):
     author = db.relationship('User', backref='notes')
     progress = db.relationship('StudentProgress', backref='note', lazy=True)
     
+    __table_args__ = (
+        db.Index('idx_note_course', 'course_id'),
+        db.Index('idx_note_tag', 'tag_id'),
+        db.Index('idx_note_created', 'created_at'),
+    )
+    
     def is_new(self):
         return (datetime.utcnow() - self.created_at).days <= 7
 
@@ -460,6 +501,8 @@ class StudentProgress(db.Model):
     
     __table_args__ = (
         db.UniqueConstraint('student_id', 'note_id', name='unique_student_note'),
+        db.Index('idx_progress_student', 'student_id'),
+        db.Index('idx_progress_course', 'course_id'),
     )
 
 # 8. QuizGroup model
@@ -479,6 +522,11 @@ class QuizGroup(db.Model):
     author = db.relationship('User', backref='created_quizzes')
     questions = db.relationship('QuizQuestion', backref='quiz_group', lazy=True, cascade='all, delete-orphan')
     answers = db.relationship('QuizAnswer', backref='quiz_group', lazy=True)
+    
+    __table_args__ = (
+        db.Index('idx_quiz_course', 'course_id'),
+        db.Index('idx_quiz_created', 'created_at'),
+    )
     
     def get_total_questions(self):
         return len(self.questions)
@@ -508,6 +556,11 @@ class QuizQuestion(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     quiz_group_id = db.Column(db.Integer, db.ForeignKey('quiz_group.id'), nullable=False)
+    
+    __table_args__ = (
+        db.Index('idx_question_quiz', 'quiz_group_id'),
+        db.Index('idx_question_order', 'order'),
+    )
 
 # 10. QuizAnswer model
 class QuizAnswer(db.Model):
@@ -525,6 +578,8 @@ class QuizAnswer(db.Model):
     
     __table_args__ = (
         db.UniqueConstraint('student_id', 'question_id', name='unique_student_question'),
+        db.Index('idx_answer_student', 'student_id'),
+        db.Index('idx_answer_quiz', 'quiz_group_id'),
     )
 
 # 11. Assignment model
@@ -544,6 +599,11 @@ class Assignment(db.Model):
     
     author = db.relationship('User', backref='created_assignments')
     submissions = db.relationship('AssignmentSubmission', backref='assignment', lazy=True, cascade='all, delete-orphan')
+    
+    __table_args__ = (
+        db.Index('idx_assignment_course', 'course_id'),
+        db.Index('idx_assignment_due_date', 'due_date'),
+    )
     
     def is_past_due(self):
         return datetime.utcnow() > self.due_date
@@ -568,6 +628,12 @@ class AssignmentSubmission(db.Model):
     is_graded = db.Column(db.Boolean, default=False)
     score = db.Column(db.Float)
     feedback = db.Column(db.Text)
+    
+    __table_args__ = (
+        db.Index('idx_submission_student', 'student_id'),
+        db.Index('idx_submission_assignment', 'assignment_id'),
+        db.Index('idx_submission_graded', 'is_graded'),
+    )
 
 # 13. RejectionMessage model
 class RejectionMessage(db.Model):
@@ -581,6 +647,11 @@ class RejectionMessage(db.Model):
     
     student = db.relationship('User', backref='rejections')
     course = db.relationship('Course', backref='rejections')
+    
+    __table_args__ = (
+        db.Index('idx_rejection_student', 'student_id'),
+        db.Index('idx_rejection_course', 'course_id'),
+    )
 
 # 14. Announcement model
 class Announcement(db.Model):
@@ -597,6 +668,12 @@ class Announcement(db.Model):
     
     author = db.relationship('User', backref='announcements')
     course = db.relationship('Course', backref='announcements')
+    
+    __table_args__ = (
+        db.Index('idx_announcement_course', 'course_id'),
+        db.Index('idx_announcement_pinned', 'is_pinned'),
+        db.Index('idx_announcement_created', 'created_at'),
+    )
 
 # 15. Notification model
 class Notification(db.Model):
@@ -615,19 +692,17 @@ class Notification(db.Model):
     
     user = db.relationship('User', backref='notifications')
     
+    __table_args__ = (
+        db.Index('idx_notification_user', 'user_id'),
+        db.Index('idx_notification_user_read', 'user_id', 'is_read'),
+        db.Index('idx_notification_created', 'created_at'),
+    )
+    
     def __repr__(self):
         return f'<Notification {self.id} - {self.user_id}>'
 
 # ============================================================================
-# AUTO-MIGRATE ON STARTUP (For Render)
-# ============================================================================
-
-# ============================================================================
-# AUTO-MIGRATE ON STARTUP (For Render)
-# ============================================================================
-
-# ============================================================================
-# AUTO-MIGRATE ON STARTUP (For Render)
+# AUTO-MIGRATE ON STARTUP
 # ============================================================================
 
 def ensure_columns():

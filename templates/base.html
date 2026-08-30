@@ -1536,80 +1536,6 @@
         [data-theme="dark"] .notification-empty {
             color: var(--text-muted);
         }
-
-        /* ============================================
-           BUTTON LOADING STATES
-           ============================================ */
-        .btn-loading {
-            position: relative;
-            pointer-events: none;
-            opacity: 0.7;
-        }
-
-        .btn-loading .btn-text {
-            visibility: hidden;
-        }
-
-        .btn-loading .btn-spinner {
-            display: inline-block !important;
-        }
-
-        .btn-spinner {
-            display: none !important;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 0.8s ease-in-out infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -9px;
-            margin-left: -9px;
-        }
-
-        .btn-spinner.gold {
-            border: 2px solid rgba(201, 168, 75, 0.3);
-            border-top-color: var(--primary-gold);
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Quick Action Loading */
-        .quick-action.loading {
-            pointer-events: none;
-            opacity: 0.6;
-            transform: scale(0.96);
-        }
-
-        .quick-action.loading i {
-            animation: spin 0.8s ease-in-out infinite;
-        }
-
-        /* Stat Card Loading */
-        .stat-card.loading {
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
-        /* Form Button Loading */
-        .btn-submit.loading {
-            pointer-events: none;
-            opacity: 0.7;
-        }
-
-        .btn-submit.loading .btn-text {
-            visibility: hidden;
-        }
-
-        .btn-submit.loading .btn-spinner {
-            display: inline-block !important;
-        }
     </style>
 </head>
 
@@ -1757,6 +1683,9 @@
         <!-- ==========================================
         SIDEBAR NAVIGATION - Hidden on public pages
         ========================================== -->
+        <!-- ==========================================
+SIDEBAR NAVIGATION - Hidden on public pages
+========================================== -->
         <nav class="sidebar {% if request.endpoint in public_pages %}hidden{% endif %}" id="sidebar">
             <div class="sidebar-nav">
                 {% if current_user.is_authenticated %}
@@ -1766,6 +1695,7 @@
                     class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
+                <!-- ✅ Courses - All admins can access, but only see their courses -->
                 <a href="{{ url_for('admin_course_list') }}"
                     class="{% if request.endpoint in ['admin_course_list', 'admin_course_detail', 'view_student_in_course', 'create_course'] %}active{% endif %}">
                     <i class="fas fa-book"></i> Courses
@@ -1789,6 +1719,7 @@
                     class="{% if request.endpoint in ['manage_announcements', 'post_announcement', 'edit_announcement'] %}active{% endif %}">
                     <i class="fas fa-bullhorn"></i> Announcements
                 </a>
+                <!-- ✅ Students - Only super admin sees all students, regular admins see their students -->
                 <a href="{{ url_for('manage_students') }}"
                     class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
                     <i class="fas fa-users"></i> Students
@@ -2325,8 +2256,7 @@
                 }
             });
 
-            // Initial fetch
-            fetchNotifications();
+            // Initial fetch            fetchNotifications();
 
             // Refresh notifications every 30 seconds
             setInterval(fetchNotifications, 30000);
@@ -2368,132 +2298,6 @@
                     link.classList.add('active');
                 }
             });
-
-            // ========================================
-            // BUTTON LOADING STATES - Global Handler
-            // ========================================
-            // Handle all form submissions with loading state
-            document.querySelectorAll('form').forEach(function (form) {
-                form.addEventListener('submit', function (e) {
-                    // Find all submit buttons in this form
-                    const buttons = this.querySelectorAll('button[type="submit"], input[type="submit"]');
-                    buttons.forEach(function (btn) {
-                        // Don't add loading if it's a delete confirmation
-                        if (btn.classList.contains('btn-delete') || btn.classList.contains('btn-danger')) {
-                            if (!confirm('Are you sure you want to proceed?')) {
-                                e.preventDefault();
-                                return;
-                            }
-                        }
-
-                        // Add loading state
-                        btn.classList.add('btn-loading');
-                        btn.classList.add('btn-submit');
-
-                        // Create spinner if not exists
-                        if (!btn.querySelector('.btn-spinner')) {
-                            const spinner = document.createElement('span');
-                            spinner.className = 'btn-spinner';
-                            btn.appendChild(spinner);
-                        }
-
-                        // Disable button
-                        btn.disabled = true;
-
-                        // Store original text
-                        if (!btn.dataset.originalText) {
-                            btn.dataset.originalText = btn.innerHTML;
-                        }
-                    });
-                });
-            });
-
-            // Handle all links with data-loading attribute
-            document.querySelectorAll('a[data-loading="true"]').forEach(function (link) {
-                link.addEventListener('click', function (e) {
-                    // Add loading class
-                    this.classList.add('loading');
-
-                    // For quick actions
-                    if (this.classList.contains('quick-action')) {
-                        const icon = this.querySelector('i');
-                        if (icon) {
-                            icon.className = 'fas fa-spinner fa-spin';
-                        }
-                    }
-                });
-            });
-
-            // Handle Quick Actions
-            document.querySelectorAll('.quick-action').forEach(function (action) {
-                action.addEventListener('click', function (e) {
-                    // Don't add loading if it's a link with href
-                    if (this.tagName === 'A' && this.getAttribute('href')) {
-                        this.classList.add('loading');
-                        const icon = this.querySelector('i');
-                        if (icon) {
-                            icon.className = 'fas fa-spinner fa-spin';
-                        }
-                    }
-                });
-            });
-
-            // Handle Stat Cards with click navigation
-            document.querySelectorAll('.stat-card[onclick]').forEach(function (card) {
-                card.addEventListener('click', function () {
-                    this.classList.add('loading');
-                });
-            });
-
-            // Handle all buttons with data-loading attribute
-            document.querySelectorAll('[data-loading="true"]').forEach(function (el) {
-                el.addEventListener('click', function () {
-                    this.classList.add('btn-loading');
-                    this.disabled = true;
-
-                    // Add spinner
-                    if (!this.querySelector('.btn-spinner')) {
-                        const spinner = document.createElement('span');
-                        spinner.className = 'btn-spinner';
-                        this.appendChild(spinner);
-                    }
-
-                    // Store original text
-                    if (!this.dataset.originalText) {
-                        this.dataset.originalText = this.innerHTML;
-                    }
-                });
-            });
-
-            // Remove loading state when page is fully loaded (for link navigations)
-            window.addEventListener('pageshow', function () {
-                document.querySelectorAll('.btn-loading, .loading, .btn-submit').forEach(function (el) {
-                    el.classList.remove('btn-loading', 'loading', 'btn-submit');
-                    el.disabled = false;
-
-                    // Remove spinner
-                    const spinner = el.querySelector('.btn-spinner');
-                    if (spinner) spinner.remove();
-
-                    // Restore original text
-                    if (el.dataset.originalText) {
-                        el.innerHTML = el.dataset.originalText;
-                    }
-
-                    // Restore quick action icons
-                    if (el.classList.contains('quick-action')) {
-                        const icon = el.querySelector('i');
-                        if (icon) {
-                            // Restore original icon class (this is a fallback)
-                            if (el.dataset.originalIcon) {
-                                icon.className = el.dataset.originalIcon;
-                            }
-                        }
-                    }
-                });
-            });
-
-            console.log('✨ A-Portal with Button Loading States Loaded!');
         });
     </script>
 
