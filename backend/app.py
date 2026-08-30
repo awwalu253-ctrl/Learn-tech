@@ -774,6 +774,162 @@ class SystemSetting(db.Model):
     def __repr__(self):
         return f'<SystemSetting {self.key}={self.value}>'
 
+
+# ============================================================================
+# SYSTEM SETTINGS HELPER FUNCTIONS
+# ============================================================================
+
+def save_setting(key, value, setting_type='string', description='', category='general'):
+    """Save or update a system setting"""
+    try:
+        setting = SystemSetting.query.filter_by(key=key).first()
+        if setting:
+            setting.value = str(value) if value is not None else ''
+            setting.setting_type = setting_type
+            setting.updated_at = datetime.utcnow()
+        else:
+            setting = SystemSetting(
+                key=key, 
+                value=str(value) if value is not None else '',
+                setting_type=setting_type,
+                description=description,
+                category=category
+            )
+            db.session.add(setting)
+        db.session.commit()
+        return True
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f'Error saving setting {key}: {e}')
+        return False
+
+
+def get_setting(key, default=None):
+    """Get a system setting by key"""
+    try:
+        setting = SystemSetting.query.filter_by(key=key).first()
+        if setting:
+            # Convert boolean strings back to booleans
+            if setting.value.lower() == 'true':
+                return True
+            elif setting.value.lower() == 'false':
+                return False
+            # Try to convert to int if possible
+            try:
+                if setting.value.isdigit():
+                    return int(setting.value)
+            except:
+                pass
+            return setting.value
+        return default
+    except Exception as e:
+        app.logger.error(f'Error getting setting {key}: {e}')
+        return default
+
+
+def get_all_settings():
+    """Get all system settings as a dictionary"""
+    settings = {}
+    try:
+        all_settings = SystemSetting.query.all()
+        for setting in all_settings:
+            # Convert boolean strings back to booleans
+            if setting.value.lower() == 'true':
+                settings[setting.key] = True
+            elif setting.value.lower() == 'false':
+                settings[setting.key] = False
+            else:
+                # Try to convert to int if possible
+                try:
+                    if setting.value.isdigit():
+                        settings[setting.key] = int(setting.value)
+                    else:
+                        settings[setting.key] = setting.value
+                except:
+                    settings[setting.key] = setting.value
+        return settings
+    except Exception as e:
+        app.logger.error(f'Error getting all settings: {e}')
+        return {}
+
+
+def get_bool_setting(key, default=False):
+    """Get boolean setting"""
+    value = get_setting(key, default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.lower() == 'true'
+    return bool(value)
+
+
+def get_int_setting(key, default=0):
+    """Get integer setting"""
+    value = get_setting(key, default)
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
+
+def get_str_setting(key, default=''):
+    """Get string setting"""
+    value = get_setting(key, default)
+    return str(value) if value is not None else ''
+
+
+def init_default_settings():
+    """Initialize default system settings if they don't exist"""
+    defaults = {
+        # General Settings
+        'site_name': {'value': 'A-Portal LMS', 'type': 'string', 'category': 'general', 'description': 'Site name displayed throughout the platform'},
+        'site_description': {'value': 'Learning Management System', 'type': 'string', 'category': 'general', 'description': 'Meta description for SEO'},
+        'default_language': {'value': 'en', 'type': 'string', 'category': 'general', 'description': 'Default user interface language'},
+        'maintenance_mode': {'value': 'False', 'type': 'boolean', 'category': 'general', 'description': 'Show maintenance page to all users except admins'},
+        'timezone': {'value': 'UTC', 'type': 'string', 'category': 'general', 'description': 'Default timezone for the system'},
+        
+        # Student Settings
+        'auto_approve_students': {'value': 'False', 'type': 'boolean', 'category': 'student', 'description': 'Automatically approve new student accounts'},
+        'max_courses_per_student': {'value': '10', 'type': 'integer', 'category': 'student', 'description': 'Maximum courses a student can enroll in'},
+        'allow_reapplications': {'value': 'True', 'type': 'boolean', 'category': 'student', 'description': 'Allow students to reapply after rejection'},
+        'require_phone_number': {'value': 'True', 'type': 'boolean', 'category': 'student', 'description': 'Require phone number during registration'},
+        'student_registration_enabled': {'value': 'True', 'type': 'boolean', 'category': 'student', 'description': 'Enable student self-registration'},
+        
+        # Security Settings
+        'session_timeout': {'value': '60', 'type': 'integer', 'category': 'security', 'description': 'Minutes before auto-logout (0 = never)'},
+        'require_email_verification': {'value': 'False', 'type': 'boolean', 'category': 'security', 'description': 'Verify email before accessing content'},
+        'max_login_attempts': {'value': '5', 'type': 'integer', 'category': 'security', 'description': 'Max login attempts before lockout'},
+        'lockout_duration': {'value': '30', 'type': 'integer', 'category': 'security', 'description': 'Minutes user is locked out'},
+        'force_ssl': {'value': 'True', 'type': 'boolean', 'category': 'security', 'description': 'Redirect all HTTP to HTTPS'},
+        
+        # Content Settings
+        'max_file_upload_size': {'value': '16', 'type': 'integer', 'category': 'content', 'description': 'Maximum file upload size in MB'},
+        'allowed_file_types': {'value': 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip', 'type': 'string', 'category': 'content', 'description': 'Comma separated allowed file extensions'},
+        'enable_comments': {'value': 'False', 'type': 'boolean', 'category': 'content', 'description': 'Allow comments on notes and assignments'},
+        'enable_ratings': {'value': 'True', 'type': 'boolean', 'category': 'content', 'description': 'Allow students to rate courses'},
+        
+        # Notification Settings
+        'email_notifications': {'value': 'True', 'type': 'boolean', 'category': 'notification', 'description': 'Send email notifications for events'},
+        'push_notifications': {'value': 'True', 'type': 'boolean', 'category': 'notification', 'description': 'Send in-app push notifications'},
+        'assignment_reminders': {'value': 'True', 'type': 'boolean', 'category': 'notification', 'description': 'Send reminders before assignment due dates'},
+        'reminder_days_before': {'value': '3', 'type': 'integer', 'category': 'notification', 'description': 'Days before due date to send reminder'},
+    }
+    
+    for key, data in defaults.items():
+        existing = SystemSetting.query.filter_by(key=key).first()
+        if not existing:
+            setting = SystemSetting(
+                key=key,
+                value=data['value'],
+                setting_type=data['type'],
+                category=data['category'],
+                description=data['description']
+            )
+            db.session.add(setting)
+    
+    db.session.commit()
+    app.logger.info('✅ Default system settings initialized')
+
 # ============================================================================
 # AUTO-MIGRATE ON STARTUP
 # ============================================================================
@@ -4405,37 +4561,37 @@ def system_settings():
     if request.method == 'POST':
         try:
             # General Settings
-            save_setting('site_name', request.form.get('site_name', 'A-Portal LMS'))
-            save_setting('site_description', request.form.get('site_description', 'Learning Management System'))
-            save_setting('default_language', request.form.get('default_language', 'en'))
-            save_setting('maintenance_mode', request.form.get('maintenance_mode') == 'on')
-            save_setting('timezone', request.form.get('timezone', 'UTC'))
+            save_setting('site_name', request.form.get('site_name', 'A-Portal LMS'), 'string', 'Site name displayed throughout the platform', 'general')
+            save_setting('site_description', request.form.get('site_description', 'Learning Management System'), 'string', 'Meta description for SEO', 'general')
+            save_setting('default_language', request.form.get('default_language', 'en'), 'string', 'Default user interface language', 'general')
+            save_setting('maintenance_mode', request.form.get('maintenance_mode') == 'on', 'boolean', 'Show maintenance page to all users except admins', 'general')
+            save_setting('timezone', request.form.get('timezone', 'UTC'), 'string', 'Default timezone for the system', 'general')
             
             # Student Settings
-            save_setting('auto_approve_students', request.form.get('auto_approve_students') == 'on')
-            save_setting('max_courses_per_student', request.form.get('max_courses_per_student', 10))
-            save_setting('allow_reapplications', request.form.get('allow_reapplications') == 'on')
-            save_setting('require_phone_number', request.form.get('require_phone_number') == 'on')
-            save_setting('student_registration_enabled', request.form.get('student_registration_enabled') == 'on')
+            save_setting('auto_approve_students', request.form.get('auto_approve_students') == 'on', 'boolean', 'Automatically approve new student accounts', 'student')
+            save_setting('max_courses_per_student', int(request.form.get('max_courses_per_student', 10)), 'integer', 'Maximum courses a student can enroll in', 'student')
+            save_setting('allow_reapplications', request.form.get('allow_reapplications') == 'on', 'boolean', 'Allow students to reapply after rejection', 'student')
+            save_setting('require_phone_number', request.form.get('require_phone_number') == 'on', 'boolean', 'Require phone number during registration', 'student')
+            save_setting('student_registration_enabled', request.form.get('student_registration_enabled') == 'on', 'boolean', 'Enable student self-registration', 'student')
             
             # Security Settings
-            save_setting('session_timeout', request.form.get('session_timeout', 60))
-            save_setting('require_email_verification', request.form.get('require_email_verification') == 'on')
-            save_setting('max_login_attempts', request.form.get('max_login_attempts', 5))
-            save_setting('lockout_duration', request.form.get('lockout_duration', 30))
-            save_setting('force_ssl', request.form.get('force_ssl') == 'on')
+            save_setting('session_timeout', int(request.form.get('session_timeout', 60)), 'integer', 'Minutes before auto-logout (0 = never)', 'security')
+            save_setting('require_email_verification', request.form.get('require_email_verification') == 'on', 'boolean', 'Verify email before accessing content', 'security')
+            save_setting('max_login_attempts', int(request.form.get('max_login_attempts', 5)), 'integer', 'Max login attempts before lockout', 'security')
+            save_setting('lockout_duration', int(request.form.get('lockout_duration', 30)), 'integer', 'Minutes user is locked out', 'security')
+            save_setting('force_ssl', request.form.get('force_ssl') == 'on', 'boolean', 'Redirect all HTTP to HTTPS', 'security')
             
             # Content Settings
-            save_setting('max_file_upload_size', request.form.get('max_file_upload_size', 16))
-            save_setting('allowed_file_types', request.form.get('allowed_file_types', 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip'))
-            save_setting('enable_comments', request.form.get('enable_comments') == 'on')
-            save_setting('enable_ratings', request.form.get('enable_ratings') == 'on')
+            save_setting('max_file_upload_size', int(request.form.get('max_file_upload_size', 16)), 'integer', 'Maximum file upload size in MB', 'content')
+            save_setting('allowed_file_types', request.form.get('allowed_file_types', 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip'), 'string', 'Comma separated allowed file extensions', 'content')
+            save_setting('enable_comments', request.form.get('enable_comments') == 'on', 'boolean', 'Allow comments on notes and assignments', 'content')
+            save_setting('enable_ratings', request.form.get('enable_ratings') == 'on', 'boolean', 'Allow students to rate courses', 'content')
             
             # Notification Settings
-            save_setting('email_notifications', request.form.get('email_notifications') == 'on')
-            save_setting('push_notifications', request.form.get('push_notifications') == 'on')
-            save_setting('assignment_reminders', request.form.get('assignment_reminders') == 'on')
-            save_setting('reminder_days_before', request.form.get('reminder_days_before', 3))
+            save_setting('email_notifications', request.form.get('email_notifications') == 'on', 'boolean', 'Send email notifications for events', 'notification')
+            save_setting('push_notifications', request.form.get('push_notifications') == 'on', 'boolean', 'Send in-app push notifications', 'notification')
+            save_setting('assignment_reminders', request.form.get('assignment_reminders') == 'on', 'boolean', 'Send reminders before assignment due dates', 'notification')
+            save_setting('reminder_days_before', int(request.form.get('reminder_days_before', 3)), 'integer', 'Days before due date to send reminder', 'notification')
             
             db.session.commit()
             flash('✅ System settings saved successfully!', 'success')
@@ -4447,7 +4603,7 @@ def system_settings():
         
         return redirect(url_for('system_settings'))
     
-    # GET request - load settings
+    # GET request - load all settings
     settings = get_all_settings()
     
     return render_template('admin/system_settings.html', settings=settings)

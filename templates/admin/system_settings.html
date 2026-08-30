@@ -86,6 +86,7 @@
     
     .settings-group .group-title i {
         color: var(--primary-gold, #C9A84B);
+        width: 20px;
     }
     
     .settings-group .setting-row {
@@ -104,6 +105,7 @@
         color: var(--text-gray, #C8CED8);
         font-weight: 500;
         flex: 1;
+        padding-right: 20px;
     }
     
     .settings-group .setting-row .setting-label .desc {
@@ -127,10 +129,11 @@
         color: var(--text-gray, #C8CED8);
         border: 1px solid rgba(201, 168, 75, 0.06);
         border-radius: var(--radius-sm, 8px);
-        padding: 6px 12px;
+        padding: 8px 14px;
         font-size: 0.85rem;
-        width: 120px;
+        width: 150px;
         transition: var(--transition, 0.3s ease);
+        font-family: 'Inter', sans-serif;
     }
     
     .settings-group .setting-row .setting-control input:focus {
@@ -150,20 +153,26 @@
         height: 26px;
         cursor: pointer;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
     
     .toggle-switch input {
         opacity: 0;
         width: 0;
         height: 0;
+        position: absolute;
     }
     
     .toggle-switch .slider {
-        position: absolute;
-        inset: 0;
+        position: relative;
+        width: 48px;
+        height: 26px;
         background: rgba(201, 168, 75, 0.06);
         border-radius: 26px;
         transition: var(--transition, 0.3s ease);
+        flex-shrink: 0;
     }
     
     .toggle-switch .slider::before {
@@ -190,7 +199,6 @@
         font-size: 0.7rem;
         font-weight: 600;
         color: var(--text-muted);
-        margin-left: 8px;
         min-width: 30px;
     }
     
@@ -203,10 +211,11 @@
         color: var(--text-gray, #C8CED8);
         border: 1px solid rgba(201, 168, 75, 0.06);
         border-radius: var(--radius-sm, 8px);
-        padding: 6px 12px;
+        padding: 8px 14px;
         font-size: 0.85rem;
         font-family: 'Inter', sans-serif;
         cursor: pointer;
+        min-width: 150px;
     }
     
     .settings-group .setting-row .setting-control select:focus {
@@ -279,9 +288,14 @@
         .settings-group .setting-row .setting-control {
             width: 100%;
             justify-content: flex-start;
+            flex-wrap: wrap;
         }
         .settings-group .setting-row .setting-control input[type="text"],
         .settings-group .setting-row .setting-control input[type="number"] {
+            width: 100%;
+            max-width: 100%;
+        }
+        .settings-group .setting-row .setting-control select {
             width: 100%;
         }
         .form-actions {
@@ -291,6 +305,16 @@
         .form-actions .btn-reset {
             width: 100%;
             justify-content: center;
+        }
+        .settings-group .setting-row .setting-label {
+            padding-right: 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .settings-group .setting-row .setting-control .toggle-switch {
+            width: 100%;
+            justify-content: space-between;
         }
     }
 
@@ -332,6 +356,10 @@
     [data-theme="dark"] .btn-reset:hover {
         border-color: var(--primary-gold, #C9A84B);
         color: var(--primary-gold, #C9A84B);
+    }
+    
+    [data-theme="dark"] .toggle-switch .slider::before {
+        background: var(--white, #FFFFFF);
     }
 </style>
 {% endblock %}
@@ -376,7 +404,7 @@
                     <span class="desc">Meta description for SEO</span>
                 </div>
                 <div class="setting-control">
-                    <input type="text" name="site_description" value="{{ settings.get('site_description', 'Learning Management System') }}" style="width: 200px;">
+                    <input type="text" name="site_description" value="{{ settings.get('site_description', 'Learning Management System') }}" style="width: 220px;">
                 </div>
             </div>
             
@@ -424,10 +452,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="maintenance_mode" {% if settings.get('maintenance_mode') == 'True' %}checked{% endif %}>
+                        <input type="checkbox" name="maintenance_mode" {% if settings.get('maintenance_mode') == True %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('maintenance_mode') == 'True' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('maintenance_mode') == True %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -447,10 +475,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="auto_approve_students" {% if settings.get('auto_approve_students') == 'True' %}checked{% endif %}>
+                        <input type="checkbox" name="auto_approve_students" {% if settings.get('auto_approve_students') == True %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('auto_approve_students') == 'True' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('auto_approve_students') == True %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -473,10 +501,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="allow_reapplications" {% if settings.get('allow_reapplications') != 'False' %}checked{% endif %}>
+                        <input type="checkbox" name="allow_reapplications" {% if settings.get('allow_reapplications') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('allow_reapplications') != 'False' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('allow_reapplications') != False %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -489,10 +517,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="require_phone_number" {% if settings.get('require_phone_number') != 'False' %}checked{% endif %}>
+                        <input type="checkbox" name="require_phone_number" {% if settings.get('require_phone_number') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('require_phone_number') != 'False' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('require_phone_number') != False %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -505,10 +533,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="student_registration_enabled" {% if settings.get('student_registration_enabled') != 'False' %}checked{% endif %}>
+                        <input type="checkbox" name="student_registration_enabled" {% if settings.get('student_registration_enabled') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('student_registration_enabled') != 'False' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('student_registration_enabled') != False %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -538,10 +566,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="require_email_verification" {% if settings.get('require_email_verification') == 'True' %}checked{% endif %}>
+                        <input type="checkbox" name="require_email_verification" {% if settings.get('require_email_verification') == True %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('require_email_verification') == 'True' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('require_email_verification') == True %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -574,10 +602,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="force_ssl" {% if settings.get('force_ssl') != 'False' %}checked{% endif %}>
+                        <input type="checkbox" name="force_ssl" {% if settings.get('force_ssl') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('force_ssl') != 'False' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('force_ssl') != False %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -618,10 +646,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="enable_comments" {% if settings.get('enable_comments') == 'True' %}checked{% endif %}>
+                        <input type="checkbox" name="enable_comments" {% if settings.get('enable_comments') == True %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('enable_comments') == 'True' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('enable_comments') == True %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -634,10 +662,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="enable_ratings" {% if settings.get('enable_ratings') != 'False' %}checked{% endif %}>
+                        <input type="checkbox" name="enable_ratings" {% if settings.get('enable_ratings') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('enable_ratings') != 'False' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('enable_ratings') != False %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -657,10 +685,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="email_notifications" {% if settings.get('email_notifications') != 'False' %}checked{% endif %}>
+                        <input type="checkbox" name="email_notifications" {% if settings.get('email_notifications') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('email_notifications') != 'False' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('email_notifications') != False %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -673,10 +701,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="push_notifications" {% if settings.get('push_notifications') != 'False' %}checked{% endif %}>
+                        <input type="checkbox" name="push_notifications" {% if settings.get('push_notifications') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('push_notifications') != 'False' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('push_notifications') != False %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -689,10 +717,10 @@
                 </div>
                 <div class="setting-control">
                     <label class="toggle-switch">
-                        <input type="checkbox" name="assignment_reminders" {% if settings.get('assignment_reminders') != 'False' %}checked{% endif %}>
+                        <input type="checkbox" name="assignment_reminders" {% if settings.get('assignment_reminders') != False %}checked{% endif %}>
                         <span class="slider"></span>
                         <span class="status-label">
-                            {% if settings.get('assignment_reminders') != 'False' %}ON{% else %}OFF{% endif %}
+                            {% if settings.get('assignment_reminders') != False %}ON{% else %}OFF{% endif %}
                         </span>
                     </label>
                 </div>
@@ -716,7 +744,7 @@
             <button type="submit" class="btn-save">
                 <i class="fas fa-save"></i> Save Settings
             </button>
-            <button type="reset" class="btn-reset">
+            <button type="button" class="btn-reset" onclick="resetSettings()">
                 <i class="fas fa-undo"></i> Reset Changes
             </button>
         </div>
@@ -739,22 +767,34 @@
             });
         });
 
-        // Reset button confirmation
-        document.querySelector('.btn-reset').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Reset all settings to their current saved values?')) {
-                location.reload();
+        // Set initial toggle states
+        document.querySelectorAll('.toggle-switch').forEach(function(toggle) {
+            const checkbox = toggle.querySelector('input[type="checkbox"]');
+            const statusLabel = toggle.querySelector('.status-label');
+            if (checkbox.checked) {
+                statusLabel.textContent = 'ON';
+                statusLabel.style.color = 'var(--primary-gold)';
+            } else {
+                statusLabel.textContent = 'OFF';
+                statusLabel.style.color = 'var(--text-muted)';
             }
         });
 
-        // Form submission indicator
-        document.getElementById('settingsForm').addEventListener('submit', function() {
-            const btn = document.querySelector('.btn-save');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            btn.disabled = true;
-        });
-
         console.log('✨ System Settings - Gold Theme Loaded!');
+    });
+
+    // Reset settings (reload page)
+    function resetSettings() {
+        if (confirm('Reset all settings to their current saved values?')) {
+            window.location.reload();
+        }
+    }
+
+    // Form submission indicator
+    document.getElementById('settingsForm').addEventListener('submit', function() {
+        const btn = document.querySelector('.btn-save');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        btn.disabled = true;
     });
 </script>
 {% endblock %}
