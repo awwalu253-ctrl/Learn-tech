@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}View Submission - A-Portal{% endblock %}
+
+{% block content %}
+<div class="submission-page">
+    <div class="page-header">
+        <h1><span>Assignment Submission</span></h1>
+        <p class="subtitle">{{ submission.assignment.title }}</p>
+    </div>
+
+    <div class="submission-card">
+        <div class="submission-status">
+            {% if submission.is_graded %}
+                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Graded</span>
+                <span class="score-display">Score: {{ submission.score }}/{{ submission.assignment.max_score }}</span>
+            {% else %}
+                <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending Review</span>
+            {% endif %}
+        </div>
+
+        <div class="submission-details">
+            <div class="detail-row">
+                <span class="label">Submitted:</span>
+                <span class="value">{{ submission.submitted_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Content:</span>
+                <div class="value">{{ submission.content }}</div>
+            </div>
+            {% if submission.file_path %}
+            <div class="detail-row">
+                <span class="label">File:</span>
+                <a href="{{ url_for('uploaded_file', filename=submission.file_path) }}" class="btn-sm btn-primary-sm">
+                    <i class="fas fa-download"></i> Download {{ submission.file_name }}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if submission.is_graded and submission.feedback %}
+        <div class="feedback-section">
+            <h3>Feedback</h3>
+            <div class="feedback-content">{{ submission.feedback }}</div>
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            <a href="{{ url_for('student_assignments') }}" class="btn-sm btn-outline-sm">
+                <i class="fas fa-arrow-left"></i> Back to Assignments
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .submission-page { max-width: 800px; margin: 0 auto; }
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-size: 1.5rem; color: var(--white); }
+    .page-header h1 span { color: var(--primary-gold); }
+    .page-header .subtitle { color: var(--text-muted); }
+    .submission-card { background: var(--secondary-bg); border-radius: var(--radius); padding: 24px; border: 1px solid rgba(201,168,75,0.04); }
+    .submission-status { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(201,168,75,0.04); }
+    .badge { padding: 4px 14px; border-radius: 100px; font-size: 0.8rem; font-weight: 600; }
+    .badge-success { background: rgba(5,150,105,0.1); color: #059669; }
+    .badge-warning { background: rgba(245,158,11,0.1); color: #F59E0B; }
+    .score-display { font-weight: 700; color: var(--primary-gold); }
+    .detail-row { display: flex; padding: 8px 0; border-bottom: 1px solid rgba(201,168,75,0.02); }
+    .detail-row .label { font-weight: 600; color: var(--text-muted); width: 120px; flex-shrink: 0; }
+    .detail-row .value { color: var(--text-gray); }
+    .feedback-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(201,168,75,0.04); }
+    .feedback-section h3 { color: var(--white); font-size: 1rem; margin-bottom: 8px; }
+    .feedback-content { background: rgba(201,168,75,0.04); padding: 12px 16px; border-radius: var(--radius-sm); color: var(--text-gray); border-left: 3px solid var(--primary-gold); }
+    .actions { margin-top: 20px; }
+    .btn-sm { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 60px; font-weight: 600; font-size: 0.8rem; text-decoration: none; transition: var(--transition); }
+    .btn-outline-sm { background: transparent; color: var(--text-gray); border: 1px solid rgba(201,168,75,0.04); }
+    .btn-outline-sm:hover { border-color: var(--primary-gold); color: var(--primary-gold); }
+</style>
+{% endblock %}

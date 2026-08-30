@@ -1811,10 +1811,6 @@ def approve_all_courses(student_id):
     flash(f'All {len(pending_enrollments)} course(s) approved for {student.username}.', 'success')
     return redirect(url_for('manage_students'))
 
-# ============================================================================
-# REST OF ROUTES - UNCHANGED
-# ============================================================================
-
 @app.route('/admin/students/<int:student_id>/reject', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -2058,7 +2054,7 @@ def manage_students():
                          courses=courses)
 
 # ============================================================================
-# COURSE MANAGEMENT ROUTES (Unchanged - but important for permissions)
+# ROUTES - COURSE MANAGEMENT (Admin & Super Admin)
 # ============================================================================
 
 @app.route('/admin/courses')
@@ -2108,10 +2104,6 @@ def admin_course_list():
     return render_template('admin/course_list.html', 
                          courses=course_data,
                          is_super_admin=current_user.is_super_admin())
-
-# ============================================================================
-# REMAINING ROUTES (Unchanged - full app.py continues here)
-# ============================================================================
 
 @app.route('/admin/courses/<int:course_id>')
 @login_required
@@ -2270,6 +2262,10 @@ def view_student_in_course(course_id, student_id):
                          quiz_results=quiz_results,
                          assignment_results=assignment_results)
 
+# ============================================================================
+# ROUTES - COURSE MANAGEMENT (Super Admin) - CREATE & DELETE
+# ============================================================================
+
 @app.route('/admin/courses/create', methods=['GET', 'POST'])
 @login_required
 @super_admin_required
@@ -2316,7 +2312,7 @@ def delete_course(course_id):
     return redirect(url_for('admin_course_list'))
 
 # ============================================================================
-# ANNOUNCEMENTS ROUTES
+# ROUTES - ANNOUNCEMENTS
 # ============================================================================
 
 @app.route('/admin/announcements')
@@ -2527,7 +2523,7 @@ def student_announcements():
     return render_template('student/announcements.html', announcements=announcements)
 
 # ============================================================================
-# EXPORT REPORTS
+# ROUTES - EXPORT REPORTS
 # ============================================================================
 
 @app.route('/admin/export')
@@ -2607,7 +2603,7 @@ def export_quizzes():
     return response
 
 # ============================================================================
-# ADMIN MANAGEMENT (Super Admin only)
+# ROUTES - ADMIN MANAGEMENT (Super Admin)
 # ============================================================================
 
 @app.route('/admin/admins')
@@ -2723,7 +2719,7 @@ def delete_admin(admin_id):
     return redirect(url_for('manage_admins'))
 
 # ============================================================================
-# NOTES, QUIZZES, ASSIGNMENTS ROUTES (Unchanged but with permission checks)
+# ROUTES - NOTES (Admin)
 # ============================================================================
 
 @app.route('/admin/notes')
@@ -2916,7 +2912,7 @@ def delete_note(note_id):
     return redirect(url_for('admin_dashboard'))
 
 # ============================================================================
-# TAGS
+# ROUTES - TAGS (Admin)
 # ============================================================================
 
 @app.route('/admin/tags')
@@ -2956,7 +2952,7 @@ def delete_tag(tag_id):
     return redirect(url_for('manage_tags'))
 
 # ============================================================================
-# QUIZZES
+# ROUTES - QUIZZES (Admin)
 # ============================================================================
 
 @app.route('/admin/quizzes')
@@ -3128,20 +3124,27 @@ def delete_quiz_group(quiz_id):
     return redirect(url_for('manage_quizzes'))
 
 # ============================================================================
-# ASSIGNMENTS
+# ROUTES - ASSIGNMENTS (Admin)
 # ============================================================================
 
 @app.route('/admin/assignments')
 @login_required
 @admin_required
 def manage_assignments():
-    if current_user.is_super_admin():
-        assignments = Assignment.query.all()
-    else:
-        course_ids = [c.id for c in current_user.managed_courses]
-        assignments = Assignment.query.filter(Assignment.course_id.in_(course_ids)).all()
-    
-    return render_template('admin/manage_assignments.html', assignments=assignments)
+    try:
+        if current_user.is_super_admin():
+            assignments = Assignment.query.order_by(Assignment.created_at.desc()).all()
+        else:
+            course_ids = [c.id for c in current_user.managed_courses]
+            assignments = Assignment.query.filter(
+                Assignment.course_id.in_(course_ids)
+            ).order_by(Assignment.created_at.desc()).all()
+        
+        return render_template('admin/manage_assignments.html', assignments=assignments)
+    except Exception as e:
+        app.logger.error(f"Error in manage_assignments: {e}")
+        flash(f'Error loading assignments: {str(e)}', 'error')
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/assignments/create', methods=['GET', 'POST'])
 @login_required
@@ -3185,7 +3188,28 @@ def create_assignment():
         db.session.add(assignment)
         db.session.commit()
         
-        flash(f'Assignment "{title}" created successfully!', 'success')
+        # Send notification to all students enrolled in this course
+        students = User.query.filter(
+            User.id.in_(
+                db.session.query(CourseEnrollment.student_id).filter(
+                    CourseEnrollment.course_id == course_id,
+                    CourseEnrollment.status == 'approved'
+                )
+            )
+        ).all()
+        
+        for student in students:
+            create_notification(
+                user_id=student.id,
+                title=f'📝 New Assignment: {title}',
+                message=f'A new assignment "{title}" has been posted in {course.name}. Due: {due_date_obj.strftime("%b %d, %Y")}',
+                type='info',
+                link=url_for('student_assignments'),
+                icon='fa-tasks',
+                icon_color='blue'
+            )
+        
+        flash(f'Assignment "{title}" created successfully! Notifications sent to {len(students)} students.', 'success')
         return redirect(url_for('manage_assignments'))
     
     return render_template('admin/create_assignment.html', courses=courses)
@@ -3293,7 +3317,7 @@ def grade_submission(submission_id):
     return render_template('admin/grade_submission.html', submission=submission)
 
 # ============================================================================
-# STUDENT ROUTES - COURSES, NOTES, QUIZZES, ASSIGNMENTS
+# ROUTES - STUDENT COURSE VIEWING (with Approval Check)
 # ============================================================================
 
 @app.route('/student/courses')
@@ -3526,6 +3550,10 @@ def toggle_note_read(note_id):
     
     return jsonify({'success': True, 'is_read': progress.is_read})
 
+# ============================================================================
+# ROUTES - STUDENT QUIZZES (with Approval Check)
+# ============================================================================
+
 @app.route('/student/quizzes')
 @login_required
 def student_quizzes():
@@ -3642,6 +3670,10 @@ def quiz_result(quiz_id):
                          correct=correct, 
                          score=score)
 
+# ============================================================================
+# ROUTES - STUDENT ASSIGNMENTS (with Approval Check)
+# ============================================================================
+
 @app.route('/student/assignments')
 @login_required
 def student_assignments():
@@ -3728,7 +3760,7 @@ def submit_assignment(assignment_id):
     return render_template('student_submit_assignment.html', assignment=assignment)
 
 # ============================================================================
-# LEADERBOARD
+# ROUTES - LEADERBOARD (Student & Admin)
 # ============================================================================
 
 @app.route('/leaderboard')
@@ -3833,8 +3865,6 @@ def leaderboard_by_course(course_id):
                          current_course_id=course_id,
                          current_course=course)
 
-
-
 @app.route('/admin/leaderboard')
 @login_required
 @admin_required
@@ -3868,9 +3898,9 @@ def admin_leaderboard():
             students = User.query.filter_by(role='student', is_approved=True).all()
         else:
             # Regular admin: students in their managed courses
-            course_ids = [c.id for c in current_user.managed_courses]
+            admin_course_ids = [c.id for c in current_user.managed_courses]
             student_ids = db.session.query(CourseEnrollment.student_id).filter(
-                CourseEnrollment.course_id.in_(course_ids),
+                CourseEnrollment.course_id.in_(admin_course_ids),
                 CourseEnrollment.status == 'approved'
             ).distinct().all()
             student_ids = [s[0] for s in student_ids]
@@ -3920,7 +3950,6 @@ def admin_leaderboard():
                          selected_course=selected_course,
                          current_course_id=course_id,
                          sort_by=sort_by)
-
 
 @app.route('/admin/leaderboard/reset/<int:student_id>', methods=['POST'])
 @login_required
@@ -3990,7 +4019,7 @@ def export_leaderboard():
     return response
 
 # ============================================================================
-# FILE DOWNLOADS
+# ROUTES - FILE DOWNLOADS
 # ============================================================================
 
 @app.route('/uploads/<filename>')
@@ -3999,7 +4028,7 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # ============================================================================
-# PENDING APPROVAL PAGE
+# ROUTES - PENDING APPROVAL PAGE
 # ============================================================================
 
 @app.route('/pending-approval')
@@ -4086,7 +4115,7 @@ def bulk_delete_notes():
     return redirect(url_for('manage_notes'))
 
 # ============================================================================
-# NOTIFICATION API
+# NOTIFICATION API ENDPOINT
 # ============================================================================
 
 @app.route('/api/notifications')
@@ -4205,7 +4234,7 @@ def mark_single_notification_read(notification_id):
     return jsonify({'success': True})
 
 # ============================================================================
-# HEALTH CHECK
+# HEALTH CHECK FOR RENDER
 # ============================================================================
 
 @app.route('/health')
@@ -4220,17 +4249,6 @@ def health_check():
 # ERROR HANDLERS
 # ============================================================================
 
-@app.before_request
-def before_request():
-    # Log request count
-    app.logger.info(f"Request: {request.path} from {request.remote_addr}")
-
-@app.after_request
-def after_request(response):
-    # Log response time
-    app.logger.info(f"Response: {request.path} - {response.status_code}")
-    return response
-    
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404

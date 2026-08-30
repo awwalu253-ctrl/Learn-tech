@@ -340,13 +340,11 @@
         }
 
         @keyframes pulse-dot {
-
             0%,
             100% {
                 transform: scale(1);
                 opacity: 1;
             }
-
             50% {
                 transform: scale(1.2);
                 opacity: 0.8;
@@ -960,7 +958,6 @@
             0% {
                 transform: rotate(0deg);
             }
-
             100% {
                 transform: rotate(360deg);
             }
@@ -983,13 +980,11 @@
         }
 
         @keyframes centerPulse {
-
             0%,
             100% {
                 transform: scale(1);
                 box-shadow: 0 0 40px rgba(201, 168, 75, 0.2);
             }
-
             50% {
                 transform: scale(1.08);
                 box-shadow: 0 0 60px rgba(201, 168, 75, 0.35);
@@ -1036,13 +1031,11 @@
         }
 
         @keyframes dotFloat {
-
             0%,
             100% {
                 transform: translateY(0) scale(1);
                 opacity: 0.4;
             }
-
             50% {
                 transform: translateY(-12px) scale(1.2);
                 opacity: 1;
@@ -1105,13 +1098,11 @@
         }
 
         @keyframes letterFloat {
-
             0%,
             100% {
                 transform: translateY(0);
                 opacity: 0.4;
             }
-
             50% {
                 transform: translateY(-4px);
                 opacity: 1;
@@ -1149,23 +1140,18 @@
             0% {
                 width: 0%;
             }
-
             20% {
                 width: 18%;
             }
-
             40% {
                 width: 38%;
             }
-
             60% {
                 width: 58%;
             }
-
             80% {
                 width: 82%;
             }
-
             100% {
                 width: 100%;
             }
@@ -1175,7 +1161,6 @@
             0% {
                 background-position: 0% 0%;
             }
-
             100% {
                 background-position: 200% 0%;
             }
@@ -1298,7 +1283,6 @@
                 opacity: 0;
                 transform: translateX(30px) scale(0.97);
             }
-
             100% {
                 opacity: 1;
                 transform: translateX(0) scale(1);
@@ -1472,8 +1456,6 @@
             .datetime-display .date-text {
                 display: none;
             }
-
-            /* ✅ FIX: Removed the old notification dropdown positioning */
         }
 
         @media (max-width: 480px) {
@@ -1716,7 +1698,7 @@
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- ==========================================
-        SIDEBAR NAVIGATION - COMPLETE FOR ALL ROLES - FIXED
+        SIDEBAR NAVIGATION - COMPLETE FOR ALL ROLES
         ========================================== -->
         <nav class="sidebar {% if request.endpoint in public_pages %}hidden{% endif %}" id="sidebar">
             <div class="sidebar-nav">
@@ -1724,7 +1706,7 @@
 
                 {% if current_user.is_admin() %}
                 <!-- ====================================== -->
-                <!-- ADMIN SECTION -->
+                <!-- ADMIN DASHBOARD -->
                 <!-- ====================================== -->
                 <div class="nav-section">Dashboard</div>
                 <a href="{{ url_for('admin_dashboard') }}"
@@ -1733,6 +1715,12 @@
                     {% if pending_approvals is defined and pending_approvals > 0 %}
                     <span class="nav-badge danger">{{ pending_approvals }}</span>
                     {% endif %}
+                </a>
+
+                <!-- ✅ Course Analytics -->
+                <a href="{{ url_for('admin_course_analytics') }}"
+                    class="{% if request.endpoint == 'admin_course_analytics' %}active{% endif %}">
+                    <i class="fas fa-chart-line"></i> Analytics
                 </a>
 
                 <!-- ====================================== -->
@@ -1786,13 +1774,13 @@
                     class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
                     <i class="fas fa-users"></i> All Students
                     {% if current_user.is_super_admin() %}
-                    {% if pending_approvals is defined and pending_approvals > 0 %}
-                    <span class="nav-badge danger">{{ pending_approvals }}</span>
-                    {% endif %}
+                        {% if pending_approvals is defined and pending_approvals > 0 %}
+                        <span class="nav-badge danger">{{ pending_approvals }}</span>
+                        {% endif %}
                     {% else %}
-                    {% if pending_students_count is defined and pending_students_count > 0 %}
-                    <span class="nav-badge danger">{{ pending_students_count }}</span>
-                    {% endif %}
+                        {% if pending_students_count is defined and pending_students_count > 0 %}
+                        <span class="nav-badge danger">{{ pending_students_count }}</span>
+                        {% endif %}
                     {% endif %}
                 </a>
 
@@ -1801,14 +1789,20 @@
                     class="{% if request.endpoint == 'manage_students' %}active{% endif %}">
                     <i class="fas fa-clock"></i> Pending Approvals
                     {% if current_user.is_super_admin() %}
-                    {% if pending_approvals is defined and pending_approvals > 0 %}
-                    <span class="nav-badge danger">{{ pending_approvals }}</span>
-                    {% endif %}
+                        {% if pending_approvals is defined and pending_approvals > 0 %}
+                        <span class="nav-badge danger">{{ pending_approvals }}</span>
+                        {% endif %}
                     {% else %}
-                    {% if pending_students_count is defined and pending_students_count > 0 %}
-                    <span class="nav-badge danger">{{ pending_students_count }}</span>
+                        {% if pending_students_count is defined and pending_students_count > 0 %}
+                        <span class="nav-badge danger">{{ pending_students_count }}</span>
+                        {% endif %}
                     {% endif %}
-                    {% endif %}
+                </a>
+
+                <!-- ✅ Bulk Actions -->
+                <a href="{{ url_for('bulk_actions') }}"
+                    class="{% if request.endpoint == 'bulk_actions' %}active{% endif %}">
+                    <i class="fas fa-tasks"></i> Bulk Actions
                 </a>
 
                 <!-- ====================================== -->
@@ -1823,6 +1817,15 @@
                     {% endif %}
                 </a>
 
+                <!-- ✅ Messages/Inbox -->
+                <a href="{{ url_for('admin_messages') }}"
+                    class="{% if request.endpoint == 'admin_messages' %}active{% endif %}">
+                    <i class="fas fa-envelope"></i> Messages
+                    {% if unread_messages_count is defined and unread_messages_count > 0 %}
+                    <span class="nav-badge danger">{{ unread_messages_count }}</span>
+                    {% endif %}
+                </a>
+
                 <!-- ====================================== -->
                 <!-- REPORTS & ANALYTICS -->
                 <!-- ====================================== -->
@@ -1832,9 +1835,7 @@
                     <i class="fas fa-file-export"></i> Export Reports
                 </a>
 
-                <!-- ====================================== -->
-                <!-- LEADERBOARD - REMOVED BADGE -->
-                <!-- ====================================== -->
+                <!-- Leaderboard -->
                 <a href="{{ url_for('admin_leaderboard') }}"
                     class="{% if request.endpoint == 'admin_leaderboard' %}active{% endif %}">
                     <i class="fas fa-chart-bar"></i> Leaderboard
@@ -1850,14 +1851,13 @@
                 </a>
 
                 <!-- ====================================== -->
-                <!-- SUPER ADMIN ONLY - FIXED -->
+                <!-- SUPER ADMIN ONLY -->
                 <!-- ====================================== -->
                 {% if current_user.is_super_admin() %}
                 <div class="nav-section">Super Admin</div>
                 <a href="{{ url_for('manage_admins') }}"
                     class="{% if request.endpoint in ['manage_admins', 'create_admin', 'edit_admin'] %}active{% endif %}">
                     <i class="fas fa-users-cog"></i> Admins
-                    {# ✅ FIXED: Use admin_count from backend, NOT User.query #}
                     {% if admin_count is defined and admin_count > 0 %}
                     <span class="nav-badge">{{ admin_count }}</span>
                     {% endif %}
@@ -1865,6 +1865,30 @@
                 <a href="{{ url_for('create_course') }}"
                     class="{% if request.endpoint == 'create_course' %}active{% endif %}">
                     <i class="fas fa-plus-circle"></i> Create Course
+                </a>
+
+                <!-- ✅ System Settings -->
+                <a href="{{ url_for('system_settings') }}"
+                    class="{% if request.endpoint == 'system_settings' %}active{% endif %}">
+                    <i class="fas fa-cog"></i> System Settings
+                </a>
+
+                <!-- ✅ System Logs -->
+                <a href="{{ url_for('system_logs') }}"
+                    class="{% if request.endpoint == 'system_logs' %}active{% endif %}">
+                    <i class="fas fa-terminal"></i> System Logs
+                </a>
+
+                <!-- ✅ Backup/Restore -->
+                <a href="{{ url_for('backup_restore') }}"
+                    class="{% if request.endpoint == 'backup_restore' %}active{% endif %}">
+                    <i class="fas fa-database"></i> Backup / Restore
+                </a>
+
+                <!-- ✅ Email Templates -->
+                <a href="{{ url_for('email_templates') }}"
+                    class="{% if request.endpoint == 'email_templates' %}active{% endif %}">
+                    <i class="fas fa-envelope-open-text"></i> Email Templates
                 </a>
                 {% endif %}
 
@@ -1888,6 +1912,17 @@
                     class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
+
+                <!-- ✅ My Progress -->
+                <a href="{{ url_for('my_progress') }}"
+                    class="{% if request.endpoint == 'my_progress' %}active{% endif %}">
+                    <i class="fas fa-chart-simple"></i> My Progress
+                </a>
+
+                <!-- ====================================== -->
+                <!-- LEARNING -->
+                <!-- ====================================== -->
+                <div class="nav-section">Learning</div>
                 <a href="{{ url_for('student_courses') }}"
                     class="{% if request.endpoint == 'student_courses' %}active{% endif %}">
                     <i class="fas fa-book"></i> My Courses
@@ -1903,15 +1938,55 @@
                     class="{% if request.endpoint in ['student_assignments', 'submit_assignment'] %}active{% endif %}">
                     <i class="fas fa-tasks"></i> Assignments
                 </a>
+
+                <!-- ====================================== -->
+                <!-- COMMUNICATION -->
+                <!-- ====================================== -->
+                <div class="nav-section">Communication</div>
                 <a href="{{ url_for('student_announcements') }}"
                     class="{% if request.endpoint == 'student_announcements' %}active{% endif %}">
                     <i class="fas fa-bullhorn"></i> Announcements
                 </a>
+
+                <!-- ✅ Notifications -->
+                <a href="{{ url_for('student_notifications') }}"
+                    class="{% if request.endpoint == 'student_notifications' %}active{% endif %}">
+                    <i class="fas fa-bell"></i> Notifications
+                    {% if unread_notifications_count is defined and unread_notifications_count > 0 %}
+                    <span class="nav-badge danger">{{ unread_notifications_count }}</span>
+                    {% endif %}
+                </a>
+
+                <!-- ✅ Messages -->
+                <a href="{{ url_for('student_messages') }}"
+                    class="{% if request.endpoint == 'student_messages' %}active{% endif %}">
+                    <i class="fas fa-envelope"></i> Messages
+                </a>
+
+                <!-- ====================================== -->
+                <!-- SOCIAL & GAMIFICATION -->
+                <!-- ====================================== -->
+                <div class="nav-section">Community</div>
                 <a href="{{ url_for('leaderboard') }}"
                     class="{% if request.endpoint == 'leaderboard' %}active{% endif %}">
                     <i class="fas fa-trophy"></i> Leaderboard
                 </a>
 
+                <!-- ✅ Achievements/Badges -->
+                <a href="{{ url_for('my_achievements') }}"
+                    class="{% if request.endpoint == 'my_achievements' %}active{% endif %}">
+                    <i class="fas fa-award"></i> Achievements
+                </a>
+
+                <!-- ✅ Course Calendar -->
+                <a href="{{ url_for('course_calendar') }}"
+                    class="{% if request.endpoint == 'course_calendar' %}active{% endif %}">
+                    <i class="fas fa-calendar-alt"></i> Calendar
+                </a>
+
+                <!-- ====================================== -->
+                <!-- ACCOUNT -->
+                <!-- ====================================== -->
                 <div class="nav-section">Account</div>
                 <a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">
                     <i class="fas fa-user"></i> My Profile
@@ -1989,8 +2064,7 @@
                 {% for category, message in messages %}
                 <div class="flash-message flash-{{ category }}">
                     <span class="flash-icon">
-                        <i
-                            class="fas fa-{% if category == 'success' %}check{% elif category == 'error' %}xmark{% elif category == 'warning' %}exclamation{% else %}info{% endif %}"></i>
+                        <i class="fas fa-{% if category == 'success' %}check{% elif category == 'error' %}xmark{% elif category == 'warning' %}exclamation{% else %}info{% endif %}"></i>
                     </span>
                     <span class="flash-content">{{ message }}</span>
                     <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
@@ -2026,13 +2100,13 @@
     SCRIPTS
     ========================================== -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // ========================================
             // LOADING OVERLAY - HIDE ON PAGE LOAD
             // ========================================
             const loadingOverlay = document.getElementById('loadingOverlay');
             if (loadingOverlay) {
-                setTimeout(function () {
+                setTimeout(function() {
                     loadingOverlay.classList.add('hidden');
                 }, 1200);
             }
@@ -2161,14 +2235,14 @@
                 sidebarOverlay.addEventListener('click', closeMobileSidebar);
             }
 
-            document.addEventListener('keydown', function (e) {
+            document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && sidebar.classList.contains('open')) {
                     closeMobileSidebar();
                 }
             });
 
-            sidebar.querySelectorAll('a').forEach(function (link) {
-                link.addEventListener('click', function () {
+            sidebar.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
                     if (window.innerWidth <= 992) {
                         closeMobileSidebar();
                     }
@@ -2179,9 +2253,9 @@
             // HANDLE WINDOW RESIZE
             // ========================================
             let resizeTimer;
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(function () {
+                resizeTimer = setTimeout(function() {
                     if (window.innerWidth > 992) {
                         closeMobileSidebar();
                     }
@@ -2195,23 +2269,24 @@
             applySidebarState();
 
             // ========================================
-            // PROFILE DROPDOWN            // ========================================
+            // PROFILE DROPDOWN
+            // ========================================
             const profileTrigger = document.getElementById('profileTrigger');
             const profileMenu = document.getElementById('profileMenu');
 
             if (profileTrigger && profileMenu) {
-                profileTrigger.addEventListener('click', function (e) {
+                profileTrigger.addEventListener('click', function(e) {
                     e.stopPropagation();
                     profileMenu.classList.toggle('show');
                 });
 
-                document.addEventListener('click', function (e) {
+                document.addEventListener('click', function(e) {
                     if (!profileTrigger.contains(e.target) && !profileMenu.contains(e.target)) {
                         profileMenu.classList.remove('show');
                     }
                 });
 
-                document.addEventListener('keydown', function (e) {
+                document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape') {
                         profileMenu.classList.remove('show');
                     }
@@ -2275,43 +2350,43 @@
 
                 if (notifications.length === 0) {
                     dropdown.innerHTML = `
-                        <div class="notification-empty">
-                            <i class="fas fa-bell-slash"></i>
-                            <p>No notifications</p>
-                        </div>
-                    `;
+                            <div class="notification-empty">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>No notifications</p>
+                            </div>
+                        `;
                 } else {
                     let html = `
-                        <div class="dropdown-header">
-                            <span>Notifications</span>
-                            <button onclick="markAllRead()">Mark all read</button>
-                        </div>
-                    `;
+                            <div class="dropdown-header">
+                                <span>Notifications</span>
+                                <button onclick="markAllRead()">Mark all read</button>
+                            </div>
+                        `;
 
                     notifications.slice(0, 10).forEach(notif => {
                         const timeAgo = getTimeAgo(new Date(notif.created_at));
                         const iconColor = colorMap[notif.icon_color] || 'var(--primary-gold)';
 
                         html += `
-                            <a href="${notif.url || '#'}" class="notification-item ${notif.is_read ? 'read' : 'unread'}" data-id="${notif.id}">
-                                <div class="notif-content">
-                                    <i class="fas ${notif.icon || 'fa-bell'}" style="color: ${iconColor};" class="notif-icon"></i>
-                                    <div class="notif-body">
-                                        <div class="notif-title">${notif.title}</div>
-                                        <div class="notif-message">${notif.message}</div>
-                                        <div class="notif-time">${timeAgo}</div>
+                                <a href="${notif.url || '#'}" class="notification-item ${notif.is_read ? 'read' : 'unread'}" data-id="${notif.id}">
+                                    <div class="notif-content">
+                                        <i class="fas ${notif.icon || 'fa-bell'}" style="color: ${iconColor};" class="notif-icon"></i>
+                                        <div class="notif-body">
+                                            <div class="notif-title">${notif.title}</div>
+                                            <div class="notif-message">${notif.message}</div>
+                                            <div class="notif-time">${timeAgo}</div>
+                                        </div>
+                                        ${!notif.is_read ? `<span class="notif-unread-dot" style="background: ${iconColor};"></span>` : ''}
                                     </div>
-                                    ${!notif.is_read ? `<span class="notif-unread-dot" style="background: ${iconColor};"></span>` : ''}
-                                </div>
-                            </a>
-                        `;
+                                </a>
+                            `;
                     });
 
                     html += `
-                        <div class="dropdown-footer">
-                            <a href="#">View all notifications</a>
-                        </div>
-                    `;
+                            <div class="dropdown-footer">
+                                <a href="#">View all notifications</a>
+                            </div>
+                        `;
 
                     dropdown.innerHTML = html;
                 }
@@ -2320,11 +2395,11 @@
             }
 
             // Mark all notifications as read
-            window.markAllRead = function () {
+            window.markAllRead = function() {
                 fetch('/api/notifications/mark-read', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                })
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -2338,7 +2413,7 @@
 
             // Toggle notification dropdown
             if (notificationBtn) {
-                notificationBtn.addEventListener('click', function (e) {
+                notificationBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
 
                     // Remove existing dropdown
@@ -2365,29 +2440,29 @@
             }
 
             // Close dropdown when clicking outside
-            document.addEventListener('click', function (e) {
+            document.addEventListener('click', function(e) {
                 if (!e.target.closest('.notification-btn') && !e.target.closest('.notification-dropdown')) {
                     document.querySelector('.notification-dropdown')?.remove();
                 }
             });
 
             // Close dropdown with Escape key
-            document.addEventListener('keydown', function (e) {
+            document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     document.querySelector('.notification-dropdown')?.remove();
                 }
             });
 
             // Mark notification as read when clicked
-            document.addEventListener('click', function (e) {
+            document.addEventListener('click', function(e) {
                 const item = e.target.closest('.notification-item');
                 if (item) {
                     const id = item.dataset.id;
                     if (id) {
                         fetch(`/api/notifications/${id}/mark-read`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' }
-                        })
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' }
+                            })
                             .then(() => {
                                 fetchNotifications();
                             })
@@ -2407,7 +2482,7 @@
             // ========================================
             const topHeader = document.getElementById('topHeader');
             if (topHeader) {
-                window.addEventListener('scroll', function () {
+                window.addEventListener('scroll', function() {
                     if (window.scrollY > 10) {
                         topHeader.classList.add('scrolled');
                     } else {
@@ -2419,11 +2494,11 @@
             // ========================================
             // AUTO-DISMISS FLASHES
             // ========================================
-            document.querySelectorAll('.flash-message').forEach(function (flash, i) {
-                setTimeout(function () {
+            document.querySelectorAll('.flash-message').forEach(function(flash, i) {
+                setTimeout(function() {
                     flash.style.opacity = '0';
                     flash.style.transform = 'translateX(20px) scale(0.97)';
-                    setTimeout(function () {
+                    setTimeout(function() {
                         if (flash.parentElement) flash.remove();
                     }, 350);
                 }, 4500 + (i * 150));
@@ -2433,7 +2508,7 @@
             // ACTIVE NAV LINK HIGHLIGHT
             // ========================================
             const currentPath = window.location.pathname;
-            document.querySelectorAll('.sidebar-nav a').forEach(function (link) {
+            document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
                 const href = link.getAttribute('href');
                 if (href && href !== '#' && currentPath === href) {
                     link.classList.add('active');
