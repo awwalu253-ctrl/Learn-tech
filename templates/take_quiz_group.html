@@ -389,7 +389,7 @@
   }
 
   /* ============================================
-     SUBMIT SECTION - Gold Theme
+     SUBMIT SECTION - Gold Theme (NO CANCEL BUTTON)
      ============================================ */
   .quiz-submit-section {
     margin-top: 28px;
@@ -449,33 +449,23 @@
     transform: none;
   }
 
-  .btn-outline-quiz {
-    padding: 14px 28px;
-    border-radius: 60px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    background: transparent;
-    color: var(--text-gray, #C8CED8);
-    border: 1.5px solid rgba(201, 168, 75, 0.04);
-    cursor: pointer;
-    transition: var(--transition, 0.3s ease);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .btn-outline-quiz:hover {
+  /* ⚠️ WARNING BANNER - No Cancellation */
+  .warning-banner {
     background: rgba(201, 168, 75, 0.04);
-    border-color: var(--primary-gold, #C9A84B);
-    color: var(--primary-gold, #C9A84B);
-    transform: translateY(-2px);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+    border-radius: var(--radius-sm, 8px);
+    padding: 10px 16px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-gray, #C8CED8);
+    font-size: 0.8rem;
   }
 
-  .btn-outline-quiz i {
+  .warning-banner i {
     color: var(--primary-gold, #C9A84B);
+    font-size: 1rem;
   }
 
   /* ============================================
@@ -564,8 +554,7 @@
       flex-direction: column;
     }
 
-    .btn-submit-quiz,
-    .btn-outline-quiz {
+    .btn-submit-quiz {
       width: 100%;
     }
   }
@@ -633,13 +622,13 @@
       padding: 12px 20px;
     }
 
-    .btn-outline-quiz {
-      font-size: 0.82rem;
-      padding: 12px 20px;
-    }
-
     .progress-indicator .progress-text {
       font-size: 0.65rem;
+    }
+
+    .warning-banner {
+      font-size: 0.7rem;
+      padding: 8px 12px;
     }
   }
 
@@ -725,21 +714,6 @@
     border-top-color: rgba(201, 168, 75, 0.04);
   }
 
-  [data-theme="dark"] .btn-outline-quiz {
-    color: var(--text-gray, #C8CED8);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .btn-outline-quiz:hover {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: var(--primary-gold, #C9A84B);
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .btn-outline-quiz i {
-    color: var(--primary-gold, #C9A84B);
-  }
-
   [data-theme="dark"] .progress-indicator .dot {
     background: rgba(201, 168, 75, 0.06);
   }
@@ -767,6 +741,12 @@
 
   [data-theme="dark"] .quiz-header {
     border-bottom-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .warning-banner {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.04);
+    color: var(--text-gray, #C8CED8);
   }
 </style>
 
@@ -805,6 +785,12 @@
         {% endfor %}
       </div>
       <span class="progress-text" id="progressText">0 / {{ questions|length }}</span>
+    </div>
+
+    <!-- ⚠️ WARNING: No Cancellation -->
+    <div class="warning-banner">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>⚠️ Once you start this quiz, you cannot cancel. Please ensure you have enough time to complete it.</span>
     </div>
 
     <!-- Form -->
@@ -849,9 +835,6 @@
         <button type="submit" class="btn-submit-quiz" id="submitBtn">
           <i class="fas fa-check"></i> Submit Quiz
         </button>
-        <a href="{{ url_for('student_quizzes') }}" class="btn-outline-quiz">
-          <i class="fas fa-arrow-left"></i> Cancel
-        </a>
       </div>
     </form>
   </div>
@@ -920,11 +903,8 @@
           timerDisplay.textContent = '00:00';
           timerDisplay.classList.add('danger');
           // Auto-submit
-          if (confirm('Time is up! Your quiz will be submitted automatically.')) {
-            document.getElementById('quizForm').submit();
-          } else {
-            document.getElementById('quizForm').submit();
-          }
+          alert('Time is up! Your quiz will be submitted automatically.');
+          document.getElementById('quizForm').submit();
         }
         timeLeft--;
       }
@@ -950,14 +930,7 @@
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
     });
 
-    // Keyboard navigation
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        if (confirm('Are you sure you want to cancel? Your progress will be lost.')) {
-          window.location.href = "{{ url_for('student_quizzes') }}";
-        }
-      }
-    });
+    // ✅ REMOVED: Escape key cancellation - No longer allowed
 
     // ==========================================
     // COOL ENTRY ANIMATION FOR QUESTIONS

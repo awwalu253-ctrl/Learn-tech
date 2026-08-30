@@ -64,10 +64,6 @@
     margin: 2px 0 0;
   }
 
-  .page-header .subtitle strong {
-    color: var(--primary-gold, #C9A84B);
-  }
-
   /* Stats Row */
   .stats-row {
     display: grid;
@@ -142,7 +138,7 @@
     letter-spacing: 0.04em;
   }
 
-  /* ✅ FIXED: Filter Section with Course Dropdown */
+  /* Filter Section */
   .filter-section {
     background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 14px);
@@ -172,30 +168,28 @@
     color: var(--primary-gold, #C9A84B);
   }
 
-  .filter-section select {
+  .filter-section select,
+  .filter-section input[type="text"] {
     background: var(--primary-bg, #0A1527);
     color: var(--text-gray, #C8CED8);
     border: 1px solid rgba(201, 168, 75, 0.06);
     border-radius: var(--radius-sm, 8px);
     padding: 8px 16px;
-    padding-right: 36px;
     font-family: 'Inter', sans-serif;
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition, 0.3s ease);
-    min-width: 200px;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A94A6' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
+    min-width: 180px;
   }
 
-  .filter-section select:hover {
+  .filter-section select:hover,
+  .filter-section input[type="text"]:hover {
     border-color: rgba(201, 168, 75, 0.15);
   }
 
-  .filter-section select:focus {
+  .filter-section select:focus,
+  .filter-section input[type="text"]:focus {
     outline: none;
     border-color: var(--primary-gold, #C9A84B);
     box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
@@ -214,10 +208,6 @@
     padding: 4px 14px;
     border-radius: 100px;
     border: 1px solid rgba(201, 168, 75, 0.04);
-  }
-
-  .filter-section .filter-badge i {
-    margin-right: 4px;
   }
 
   .filter-section .filter-clear {
@@ -310,6 +300,7 @@
     font-size: 0.8rem;
   }
 
+  /* ✅ STUDENT INFO WITH PROFILE PICTURE */
   .student-info {
     display: flex;
     align-items: center;
@@ -327,6 +318,25 @@
     font-size: 0.75rem;
     color: var(--white, #FFFFFF);
     flex-shrink: 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+  }
+
+  .student-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .student-avatar .initials {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--white, #FFFFFF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
   }
 
   .student-avatar.gold-bg {
@@ -528,7 +538,7 @@
         <h1><span>Leaderboard</span></h1>
         <p class="subtitle">
           {% if selected_course %}
-            Student performance for <strong>{{ selected_course.name }}</strong>
+            Student performance for <strong style="color: var(--primary-gold);">{{ selected_course.name }}</strong>
           {% else %}
             Overall student performance across all courses
           {% endif %}
@@ -569,7 +579,7 @@
     </div>
   </div>
 
-  <!-- ✅ FIXED: Filter Section with Course Filter -->
+  <!-- Filter Section -->
   <div class="filter-section">
     <span class="filter-label">
       <i class="fas fa-filter"></i> Filter:
@@ -627,8 +637,17 @@
             {% elif loop.index == 2 %}{% set avatar_class = 'silver-bg' %}
             {% elif loop.index == 3 %}{% set avatar_class = 'bronze-bg' %}
             {% endif %}
+            
+            <!-- ✅ PROFILE PICTURE WITH FALLBACK -->
             <div class="student-avatar {{ avatar_class }}">
-              {{ data.student.username[0]|upper }}
+              {% if data.student.profile_picture %}
+                <img src="{{ url_for('uploaded_file', filename=data.student.profile_picture) }}" 
+                     alt="{{ data.student.username }}"
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\"initials\">{{ data.student.username[0]|upper }}</span>';">
+                <span class="initials" style="display: none;">{{ data.student.username[0]|upper }}</span>
+              {% else %}
+                <span class="initials">{{ data.student.username[0]|upper }}</span>
+              {% endif %}
             </div>
             <span class="student-name">{{ data.student.username }}</span>
             {% if data.student.id == current_user.id %}
