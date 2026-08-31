@@ -831,12 +831,10 @@ def get_setting(key, default=None):
         setting = SystemSetting.query.filter_by(key=key).first()
         if setting:
             value = setting.value
-            # Convert boolean strings back to booleans
             if value.lower() == 'true':
                 return True
             elif value.lower() == 'false':
                 return False
-            # Try to convert to int if possible
             try:
                 if value.isdigit():
                     return int(value)
@@ -855,13 +853,11 @@ def get_all_settings():
         all_settings = SystemSetting.query.all()
         for setting in all_settings:
             value = setting.value
-            # Convert boolean strings back to booleans
             if value.lower() == 'true':
                 settings[setting.key] = True
             elif value.lower() == 'false':
                 settings[setting.key] = False
             else:
-                # Try to convert to int if possible
                 try:
                     if value.isdigit():
                         settings[setting.key] = int(value)
@@ -903,54 +899,40 @@ def get_str_setting(key, default=''):
 def init_default_settings():
     """Initialize default system settings if they don't exist"""
     defaults = {
-        # General Settings
-        'site_name': {'value': 'A-Portal LMS', 'type': 'string', 'category': 'general', 'description': 'Site name displayed throughout the platform'},
-        'site_description': {'value': 'Learning Management System', 'type': 'string', 'category': 'general', 'description': 'Meta description for SEO'},
-        'default_language': {'value': 'en', 'type': 'string', 'category': 'general', 'description': 'Default user interface language'},
-        'maintenance_mode': {'value': 'False', 'type': 'boolean', 'category': 'general', 'description': 'Show maintenance page to all users except admins'},
-        'timezone': {'value': 'UTC', 'type': 'string', 'category': 'general', 'description': 'Default timezone for the system'},
-        
-        # Student Settings
-        'auto_approve_students': {'value': 'False', 'type': 'boolean', 'category': 'student', 'description': 'Automatically approve new student accounts'},
-        'max_courses_per_student': {'value': '10', 'type': 'integer', 'category': 'student', 'description': 'Maximum courses a student can enroll in'},
-        'allow_reapplications': {'value': 'True', 'type': 'boolean', 'category': 'student', 'description': 'Allow students to reapply after rejection'},
-        'require_phone_number': {'value': 'True', 'type': 'boolean', 'category': 'student', 'description': 'Require phone number during registration'},
-        'student_registration_enabled': {'value': 'True', 'type': 'boolean', 'category': 'student', 'description': 'Enable student self-registration'},
-        
-        # Security Settings
-        'session_timeout': {'value': '60', 'type': 'integer', 'category': 'security', 'description': 'Minutes before auto-logout (0 = never)'},
-        'require_email_verification': {'value': 'False', 'type': 'boolean', 'category': 'security', 'description': 'Verify email before accessing content'},
-        'max_login_attempts': {'value': '5', 'type': 'integer', 'category': 'security', 'description': 'Max login attempts before lockout'},
-        'lockout_duration': {'value': '30', 'type': 'integer', 'category': 'security', 'description': 'Minutes user is locked out'},
-        'force_ssl': {'value': 'True', 'type': 'boolean', 'category': 'security', 'description': 'Redirect all HTTP to HTTPS'},
-        
-        # Content Settings
-        'max_file_upload_size': {'value': '16', 'type': 'integer', 'category': 'content', 'description': 'Maximum file upload size in MB'},
-        'allowed_file_types': {'value': 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip', 'type': 'string', 'category': 'content', 'description': 'Comma separated allowed file extensions'},
-        'enable_comments': {'value': 'False', 'type': 'boolean', 'category': 'content', 'description': 'Allow comments on notes and assignments'},
-        'enable_ratings': {'value': 'True', 'type': 'boolean', 'category': 'content', 'description': 'Allow students to rate courses'},
-        
-        # Notification Settings
-        'email_notifications': {'value': 'True', 'type': 'boolean', 'category': 'notification', 'description': 'Send email notifications for events'},
-        'push_notifications': {'value': 'True', 'type': 'boolean', 'category': 'notification', 'description': 'Send in-app push notifications'},
-        'assignment_reminders': {'value': 'True', 'type': 'boolean', 'category': 'notification', 'description': 'Send reminders before assignment due dates'},
-        'reminder_days_before': {'value': '3', 'type': 'integer', 'category': 'notification', 'description': 'Days before due date to send reminder'},
+        'site_name': 'A-Portal LMS',
+        'site_description': 'Learning Management System',
+        'default_language': 'en',
+        'maintenance_mode': 'False',
+        'timezone': 'UTC',
+        'auto_approve_students': 'False',
+        'max_courses_per_student': '10',
+        'allow_reapplications': 'True',
+        'require_phone_number': 'True',
+        'student_registration_enabled': 'True',
+        'session_timeout': '60',
+        'require_email_verification': 'False',
+        'max_login_attempts': '5',
+        'lockout_duration': '30',
+        'force_ssl': 'True',
+        'max_file_upload_size': '16',
+        'allowed_file_types': 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip',
+        'enable_comments': 'False',
+        'enable_ratings': 'True',
+        'email_notifications': 'True',
+        'push_notifications': 'True',
+        'assignment_reminders': 'True',
+        'reminder_days_before': '3',
     }
     
-    for key, data in defaults.items():
+    for key, value in defaults.items():
         existing = SystemSetting.query.filter_by(key=key).first()
         if not existing:
-            setting = SystemSetting(
-                key=key,
-                value=data['value'],
-                setting_type=data['type'],
-                category=data['category'],
-                description=data['description']
-            )
+            setting = SystemSetting(key=key, value=value)
             db.session.add(setting)
     
     db.session.commit()
     app.logger.info('✅ Default system settings initialized')
+
 
 # ============================================================================
 # AUTO-MIGRATE ON STARTUP
@@ -4670,17 +4652,6 @@ def system_settings():
     settings = get_all_settings()
     
     return render_template('admin/system_settings.html', settings=settings)
-
-
-def save_setting(key, value):
-    """Save or update a system setting"""
-    setting = SystemSetting.query.filter_by(key=key).first()
-    if setting:
-        setting.value = str(value) if value is not None else ''
-        setting.updated_at = datetime.utcnow()
-    else:
-        setting = SystemSetting(key=key, value=str(value) if value is not None else '')
-        db.session.add(setting)
 
 
 def get_setting(key, default=None):
