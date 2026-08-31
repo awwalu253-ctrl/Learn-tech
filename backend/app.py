@@ -933,7 +933,43 @@ def init_default_settings():
     db.session.commit()
     app.logger.info('✅ Default system settings initialized')
 
-
+def get_recent_activities(student_id, limit=10):
+    """Get recent activities for a student"""
+    activities = []
+    
+    # Get recent quiz completions
+    quiz_answers = QuizAnswer.query.filter_by(
+        student_id=student_id
+    ).order_by(QuizAnswer.answered_at.desc()).limit(5).all()
+    
+    for answer in quiz_answers:
+        if answer.quiz_group:
+            activities.append({
+                'icon': 'fa-puzzle-piece',
+                'color': 'gold',
+                'text': f'Completed quiz: <strong>{answer.quiz_group.title}</strong>',
+                'time': answer.answered_at.strftime('%b %d, %I:%M %p')
+            })
+    
+    # Get recent assignment submissions
+    submissions = AssignmentSubmission.query.filter_by(
+        student_id=student_id
+    ).order_by(AssignmentSubmission.submitted_at.desc()).limit(5).all()
+    
+    for sub in submissions:
+        if sub.assignment:
+            activities.append({
+                'icon': 'fa-tasks',
+                'color': 'blue',
+                'text': f'Submitted assignment: <strong>{sub.assignment.title}</strong>',
+                'time': sub.submitted_at.strftime('%b %d, %I:%M %p')
+            })
+    
+    # Sort by time (newest first)
+    activities.sort(key=lambda x: x['time'], reverse=True)
+    
+    return activities[:10]
+    
 # ============================================================================
 # AUTO-MIGRATE ON STARTUP
 # ============================================================================

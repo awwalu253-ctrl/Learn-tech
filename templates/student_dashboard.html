@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Student Dashboard - A-Portal{% endblock %}
+{% block title %}Student Dashboard - {{ site_name }}{% endblock %}
 
 {% block content %}
 <style>
@@ -745,21 +745,161 @@
     color: var(--text-muted, #8A94A6);
   }
 
-  .view-all-link {
-    display: inline-flex;
+  /* ============================================
+     UPCOMING DEADLINES - NEW
+     ============================================ */
+  .deadline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .deadline-item {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    margin-top: 10px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--primary-gold, #C9A84B);
-    text-decoration: none;
+    gap: 14px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm, 10px);
+    background: var(--primary-bg, #0A1527);
+    border: 1px solid rgba(201, 168, 75, 0.02);
     transition: var(--transition, 0.3s ease);
   }
 
-  .view-all-link:hover {
-    color: var(--dark-gold, #8F7E48);
+  .deadline-item:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
     transform: translateX(4px);
+  }
+
+  .deadline-item .deadline-date {
+    min-width: 44px;
+    text-align: center;
+    padding: 4px 6px;
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(201, 168, 75, 0.06);
+  }
+
+  .deadline-item .deadline-date .day {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white, #FFFFFF);
+    display: block;
+    line-height: 1.2;
+  }
+
+  .deadline-item .deadline-date .month {
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: var(--text-muted, #8A94A6);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .deadline-item .deadline-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .deadline-item .deadline-info .title {
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    font-size: 0.85rem;
+  }
+
+  .deadline-item .deadline-info .course {
+    font-size: 0.7rem;
+    color: var(--text-muted, #8A94A6);
+  }
+
+  .deadline-item .deadline-status {
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 2px 12px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .deadline-item .deadline-status.upcoming {
+    background: rgba(5, 150, 105, 0.08);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.04);
+  }
+
+  .deadline-item .deadline-status.overdue {
+    background: rgba(239, 68, 68, 0.08);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.04);
+  }
+
+  .deadline-item .deadline-status.today {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  /* ============================================
+     RECENT ACTIVITY - NEW
+     ============================================ */
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm, 10px);
+    background: var(--primary-bg, #0A1527);
+    border: 1px solid rgba(201, 168, 75, 0.02);
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .activity-item:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  .activity-item .activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    margin-top: 2px;
+  }
+
+  .activity-item .activity-icon.gold { background: rgba(201,168,75,0.08); color: var(--primary-gold, #C9A84B); }
+  .activity-item .activity-icon.green { background: rgba(5,150,105,0.08); color: #059669; }
+  .activity-item .activity-icon.blue { background: rgba(59,130,246,0.08); color: #3B82F6; }
+  .activity-item .activity-icon.red { background: rgba(239,68,68,0.08); color: #EF4444; }
+  .activity-item .activity-icon.orange { background: rgba(245,158,11,0.08); color: #F59E0B; }
+  .activity-item .activity-icon.purple { background: rgba(139,92,246,0.08); color: #8B5CF6; }
+
+  .activity-item .activity-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .activity-item .activity-content .text {
+    font-size: 0.85rem;
+    color: var(--text-gray, #C8CED8);
+    line-height: 1.4;
+  }
+
+  .activity-item .activity-content .text strong {
+    color: var(--white, #FFFFFF);
+  }
+
+  .activity-item .activity-content .time {
+    font-size: 0.65rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 2px;
   }
 
   /* ============================================
@@ -804,6 +944,26 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
     color: var(--white, #FFFFFF);
+  }
+
+  /* ============================================
+     VIEW ALL LINK
+     ============================================ */
+  .view-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--primary-gold, #C9A84B);
+    text-decoration: none;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .view-all-link:hover {
+    color: var(--dark-gold, #8F7E48);
+    transform: translateX(4px);
   }
 
   /* ============================================
@@ -862,7 +1022,7 @@
     }
 
     .quick-actions-section {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 10px;
     }
 
@@ -908,6 +1068,15 @@
       flex-direction: column;
       align-items: flex-start;
     }
+
+    .deadline-item {
+      padding: 10px 12px;
+      flex-wrap: wrap;
+    }
+
+    .deadline-item .deadline-status {
+      margin-left: auto;
+    }
   }
 
   @media (max-width: 480px) {
@@ -945,11 +1114,6 @@
 
     .stat-card .stat-icon {
       font-size: 1.1rem;
-    }
-
-    .quick-actions-section {
-      grid-template-columns: 1fr;
-      gap: 8px;
     }
 
     .quick-action-btn {
@@ -1052,6 +1216,37 @@
       width: 100%;
       text-align: center;
     }
+
+    .deadline-item .deadline-date {
+      min-width: 36px;
+    }
+
+    .deadline-item .deadline-date .day {
+      font-size: 0.8rem;
+    }
+
+    .deadline-item .deadline-info .title {
+      font-size: 0.8rem;
+    }
+
+    .deadline-item .deadline-status {
+      font-size: 0.55rem;
+      padding: 1px 10px;
+    }
+
+    .activity-item {
+      padding: 8px 10px;
+    }
+
+    .activity-item .activity-icon {
+      width: 28px;
+      height: 28px;
+      font-size: 0.7rem;
+    }
+
+    .activity-item .activity-content .text {
+      font-size: 0.78rem;
+    }
   }
 
   /* ============================================
@@ -1144,6 +1339,34 @@
   }
 
   [data-theme="dark"] .announcement-preview p {
+    color: var(--text-gray, #C8CED8);
+  }
+
+  [data-theme="dark"] .deadline-item {
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.02);
+  }
+
+  [data-theme="dark"] .deadline-item:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .deadline-item .deadline-info .title {
+    color: var(--white, #FFFFFF);
+  }
+
+  [data-theme="dark"] .activity-item {
+    background: var(--primary-bg, #0A1527);
+    border-color: rgba(201, 168, 75, 0.02);
+  }
+
+  [data-theme="dark"] .activity-item:hover {
+    background: rgba(201, 168, 75, 0.02);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
+
+  [data-theme="dark"] .activity-item .activity-content .text {
     color: var(--text-gray, #C8CED8);
   }
 
@@ -1271,6 +1494,24 @@
   [data-theme="dark"] .stat-card:nth-child(2) .stat-icon { color: var(--primary-gold, #C9A84B); }
   [data-theme="dark"] .stat-card:nth-child(3) .stat-icon { color: var(--primary-gold, #C9A84B); }
   [data-theme="dark"] .stat-card:nth-child(4) .stat-icon { color: var(--primary-gold, #C9A84B); }
+
+  [data-theme="dark"] .deadline-item .deadline-status.upcoming {
+    background: rgba(5, 150, 105, 0.08);
+    color: #34D399;
+    border-color: rgba(5, 150, 105, 0.04);
+  }
+
+  [data-theme="dark"] .deadline-item .deadline-status.overdue {
+    background: rgba(239, 68, 68, 0.08);
+    color: #F87171;
+    border-color: rgba(239, 68, 68, 0.04);
+  }
+
+  [data-theme="dark"] .deadline-item .deadline-status.today {
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
+  }
 </style>
 
 <!-- ========================================== -->
@@ -1408,53 +1649,128 @@
 
   <!-- Dashboard Grid -->
   <div class="dashboard-grid">
-    <!-- Left Column: Your Courses -->
-    <div class="dashboard-section">
-      <div class="section-header">
-        <i class="fas fa-book"></i>
-        <h2>Your Courses</h2>
-        <span class="section-count">{{ progress_data|length }}</span>
-        <a href="{{ url_for('student_courses') }}" class="section-link">View All →</a>
-      </div>
-      <div class="course-grid">
-        {% if progress_data %}
-          {% for data in progress_data %}
-            <div class="course-card">
-              <div class="course-card-header">
-                <h3>{{ data.course.name }}</h3>
-                <span class="course-code">{{ data.course.code }}</span>
-              </div>
-              <div class="course-progress">
-                <div class="progress-track">
-                  <div class="fill" style="width: {{ data.progress }}%;"></div>
+    <!-- Left Column -->
+    <div>
+      <!-- Your Courses -->
+      <div class="dashboard-section" style="margin-bottom: 20px;">
+        <div class="section-header">
+          <i class="fas fa-book"></i>
+          <h2>Your Courses</h2>
+          <span class="section-count">{{ progress_data|length }}</span>
+          <a href="{{ url_for('student_courses') }}" class="section-link">View All →</a>
+        </div>
+        <div class="course-grid">
+          {% if progress_data %}
+            {% for data in progress_data %}
+              <div class="course-card">
+                <div class="course-card-header">
+                  <h3>{{ data.course.name }}</h3>
+                  <span class="course-code">{{ data.course.code }}</span>
                 </div>
-                <span class="progress-text">{{ data.progress }}%</span>
+                <div class="course-progress">
+                  <div class="progress-track">
+                    <div class="fill" style="width: {{ data.progress }}%;"></div>
+                  </div>
+                  <span class="progress-text">{{ data.progress }}%</span>
+                </div>
+                <div class="course-actions">
+                  <a href="{{ url_for('view_course', course_id=data.course.id) }}" class="btn-sm btn-primary-sm">
+                    <i class="fas fa-eye"></i> View Course
+                  </a>
+                </div>
               </div>
-              <div class="course-actions">
-                <a href="{{ url_for('view_course', course_id=data.course.id) }}" class="btn-sm btn-primary-sm">
-                  <i class="fas fa-eye"></i> View Course
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <i class="fas fa-book-open"></i>
+              <p>You don't have any approved courses yet.</p>
+              {% if pending_courses %}
+                <p style="font-size: 0.8rem; color: var(--text-muted, #8A94A6);">You have pending course requests waiting for approval.</p>
+              {% else %}
+                <a href="{{ url_for('student_courses') }}" class="btn">
+                  <i class="fas fa-search"></i> Browse Courses
                 </a>
-              </div>
+              {% endif %}
             </div>
-          {% endfor %}
-        {% else %}
-          <div class="empty-state">
-            <i class="fas fa-book-open"></i>
-            <p>You don't have any approved courses yet.</p>
-            {% if pending_courses %}
-              <p style="font-size: 0.8rem; color: var(--text-muted, #8A94A6);">You have pending course requests waiting for approval.</p>
-            {% else %}
-              <a href="{{ url_for('student_courses') }}" class="btn">
-                <i class="fas fa-search"></i> Browse Courses
-              </a>
-            {% endif %}
-          </div>
-        {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ✅ NEW: Recent Activity -->
+      <div class="dashboard-section">
+        <div class="section-header">
+          <i class="fas fa-history"></i>
+          <h2>Recent Activity</h2>
+          <span class="section-count">{{ recent_activities|length if recent_activities else 0 }}</span>
+          <a href="{{ url_for('student_notifications') }}" class="section-link">View All →</a>
+        </div>
+        <div class="activity-list">
+          {% if recent_activities %}
+            {% for activity in recent_activities[:5] %}
+              <div class="activity-item">
+                <div class="activity-icon {{ activity.color }}">
+                  <i class="fas {{ activity.icon }}"></i>
+                </div>
+                <div class="activity-content">
+                  <div class="text">{{ activity.text|safe }}</div>
+                  <div class="time">{{ activity.time }}</div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <i class="fas fa-history"></i>
+              <p>No recent activity</p>
+              <p style="font-size: 0.8rem; color: var(--text-muted, #8A94A6);">Start learning to see activity here</p>
+            </div>
+          {% endif %}
+        </div>
       </div>
     </div>
 
     <!-- Right Column -->
     <div>
+      <!-- ✅ NEW: Upcoming Deadlines -->
+      <div class="dashboard-section" style="margin-bottom: 20px;">
+        <div class="section-header">
+          <i class="fas fa-calendar-alt"></i>
+          <h2>Upcoming Deadlines</h2>
+          <span class="section-count">{{ upcoming_deadlines|length if upcoming_deadlines else 0 }}</span>
+          <a href="{{ url_for('course_calendar') }}" class="section-link">Calendar →</a>
+        </div>
+        <div class="deadline-list">
+          {% if upcoming_deadlines %}
+            {% for deadline in upcoming_deadlines[:5] %}
+              {% set days = ((deadline.due_date - now).days) %}
+              <div class="deadline-item">
+                <div class="deadline-date">
+                  <span class="day">{{ deadline.due_date.strftime('%d') }}</span>
+                  <span class="month">{{ deadline.due_date.strftime('%b') }}</span>
+                </div>
+                <div class="deadline-info">
+                  <div class="title">{{ deadline.title }}</div>
+                  <div class="course">{{ deadline.course.name }}</div>
+                </div>
+                <span class="deadline-status 
+                  {% if days < 0 %}overdue
+                  {% elif days == 0 %}today
+                  {% else %}upcoming{% endif %}">
+                  {% if days < 0 %}Overdue
+                  {% elif days == 0 %}Today
+                  {% else %}{{ days }}d left{% endif %}
+                </span>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <i class="fas fa-calendar-check"></i>
+              <p>No upcoming deadlines</p>
+              <p style="font-size: 0.8rem; color: var(--text-muted, #8A94A6);">You're all caught up! 🎉</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
       <!-- Recent Quiz Results -->
       <div class="dashboard-section" style="margin-bottom: 20px;">
         <div class="section-header">
@@ -1563,7 +1879,7 @@
     // ==========================================
     // CARD ENTRY ANIMATION
     // ==========================================
-    const cards = document.querySelectorAll('.course-card, .quiz-result-item, .announcement-preview');
+    const cards = document.querySelectorAll('.course-card, .quiz-result-item, .announcement-preview, .deadline-item, .activity-item');
     cards.forEach((card, index) => {
       card.style.opacity = '0';
       card.style.transform = 'translateY(10px)';
