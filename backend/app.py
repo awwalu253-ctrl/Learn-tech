@@ -609,7 +609,6 @@ class Assignment(db.Model):
             student_id=student_id
         ).first()
     
-    # ✅ Add this method to get submissions count
     def get_submissions_count(self):
         return AssignmentSubmission.query.filter_by(assignment_id=self.id).count()
 
@@ -727,10 +726,6 @@ class Backup(db.Model):
 # EMAIL TEMPLATE MODEL
 # ============================================================================
 
-# ============================================================================
-# EMAIL TEMPLATE MODEL
-# ============================================================================
-
 class EmailTemplate(db.Model):
     __tablename__ = 'email_template'
     
@@ -774,7 +769,6 @@ class SystemSetting(db.Model):
     def __repr__(self):
         return f'<SystemSetting {self.key}={self.value}>'
 
-
 # ============================================================================
 # SYSTEM SETTINGS HELPER FUNCTIONS
 # ============================================================================
@@ -804,26 +798,6 @@ def save_setting(key, value, setting_type='string', description='', category='ge
         db.session.rollback()
         app.logger.error(f'Error saving setting {key}: {e}')
         return False
-
-def get_site_name():
-    """Get the site name from settings"""
-    return get_setting('site_name', 'A-Portal LMS')
-
-
-def get_site_description():
-    """Get the site description from settings"""
-    return get_setting('site_description', 'Learning Management System')
-
-
-def get_default_language():
-    """Get the default language from settings"""
-    return get_setting('default_language', 'en')
-
-
-def get_timezone():
-    """Get the timezone from settings"""
-    return get_setting('timezone', 'UTC')
-
 
 def get_setting(key, default=None):
     """Get a system setting by key"""
@@ -870,7 +844,6 @@ def get_all_settings():
         app.logger.error(f'Error getting all settings: {e}')
         return {}
 
-
 def get_bool_setting(key, default=False):
     """Get boolean setting"""
     value = get_setting(key, default)
@@ -880,7 +853,6 @@ def get_bool_setting(key, default=False):
         return value.lower() == 'true'
     return bool(value)
 
-
 def get_int_setting(key, default=0):
     """Get integer setting"""
     value = get_setting(key, default)
@@ -889,12 +861,18 @@ def get_int_setting(key, default=0):
     except (ValueError, TypeError):
         return default
 
-
 def get_str_setting(key, default=''):
     """Get string setting"""
     value = get_setting(key, default)
     return str(value) if value is not None else ''
 
+def get_site_name():
+    """Get the site name from settings"""
+    return get_setting('site_name', 'A-Portal LMS')
+
+def get_site_description():
+    """Get the site description from settings"""
+    return get_setting('site_description', 'Learning Management System')
 
 def init_default_settings():
     """Initialize default system settings if they don't exist"""
@@ -933,43 +911,478 @@ def init_default_settings():
     db.session.commit()
     app.logger.info('✅ Default system settings initialized')
 
-def get_recent_activities(student_id, limit=10):
-    """Get recent activities for a student"""
+# ============================================================================
+# ADMIN DASHBOARD HELPER FUNCTIONS - ENHANCED
+# ============================================================================
+
+def get_admin_upcoming_deadlines(admin_user):
+    """Get upcoming deadlines for all courses the admin manages"""
+    from sqlalchemy import and_
+    
+    # Get course IDs based on admin role
+    if admin_user.is_super_admin():
+        course_ids = [c.id for c in Course.query.all()]
+    else:
+        course_ids = [c.id for c in admin_user.managed_courses]
+    
+    # Get assignments with due dates in the future or recent past
+    now = datetime.utcnow()
+    upcoming = Assignment.query.filter(
+        and_(
+            Assignment.course_id.in_(course_ids),
+            Assignment.due_date >= (now - timedelta(days=7))
+        )
+    ).order_by(Assignment.due_date.asc()).limit(10).all()
+    
+    # Format deadlines with status
+    deadlines = []
+    for assignment in upcoming:
+        days_until = (assignment.due_date - now).days
+        if days_until < 0:
+            status = 'overdue'
+            status_text = f'Overdue by {abs(days_until)}d'
+        elif days_until == 0:
+            status = 'today'
+            status_text = 'Today'
+        elif days_until <= 3:
+            status = 'soon'
+            status_text = f'{days_until}d left'
+        else:
+            status = 'upcoming'
+            status_text = f'{days_until}d left'
+        
+        # Get submission count
+        submissions_count = AssignmentSubmission.query.filter_by(
+            assignment_id=assignment.id
+        ).count()
+        
+        total_students = CourseEnrollment.query.filter_by(
+            course_id=assignment.course_id,
+            status='approved'
+        ).count()
+        
+        deadlines.append({
+            'id': assignment.id,
+            'title': assignment.title,
+            'course_name': assignment.course.name,
+            'due_date': assignment.due_date,
+            'days_until': days_until,
+            'status': status,
+            'status_text': status_text,
+            'submissions_count': submissions_count,
+            'total_students': total_students
+        })
+    
+    return deadlines
+
+def get_admin_quiz_results(admin_user):
+    """Get recent quiz results for all courses the admin manages"""
+    # Get course IDs
+    if admin_user.is_super_admin():
+        course_ids = [c.id for c in Course.query.all()]
+    else:
+        course_ids = [c.id for c in admin_user.managed_courses]
+    
+    # Get all quiz groups in these courses
+    quiz_groups = QuizGroup.query.filter(QuizGroup.course_id.in_(course_ids)).all()
+    
+    results = []
+    for quiz in quiz_groups:
+        # Get all answers for this quiz
+        answers = QuizAnswer.query.filter_by(quiz_group_id=quiz.id).all()
+        
+        if answers:
+            # Group by student
+            student_scores = {}
+            for answer in answers:
+                if answer.student_id not in student_scores:
+                    student_scores[answer.student_id] = {'correct': 0, 'total': 0}
+                student_scores[answer.student_id]['total'] += 1
+                if answer.is_correct:
+                    student_scores[answer.student_id]['correct'] += 1
+            
+            # Calculate average score
+            if student_scores:
+                total_score = 0
+                for s in student_scores.values():
+                    total_score += (s['correct'] / s['total']) * 100 if s['total'] > 0 else 0
+                avg_score = total_score / len(student_scores)
+            else:
+                avg_score = 0
+            
+            # Get latest submission
+            latest = QuizAnswer.query.filter_by(
+                quiz_group_id=quiz.id
+            ).order_by(QuizAnswer.answered_at.desc()).first()
+            
+            results.append({
+                'quiz_id': quiz.id,
+                'title': quiz.title,
+                'course_name': quiz.course.name,
+                'avg_score': round(avg_score, 1),
+                'total_students': len(student_scores),
+                'latest_submission': latest.answered_at if latest else None,
+                'color_class': 'high' if avg_score >= 70 else 'medium' if avg_score >= 50 else 'low'
+            })
+        else:
+            results.append({
+                'quiz_id': quiz.id,
+                'title': quiz.title,
+                'course_name': quiz.course.name,
+                'avg_score': 0,
+                'total_students': 0,
+                'latest_submission': None,
+                'color_class': 'low'
+            })
+    
+    # Sort by latest submission (most recent first)
+    results.sort(key=lambda x: x['latest_submission'] or datetime(1970, 1, 1), reverse=True)
+    return results[:10]
+
+def get_admin_announcements_with_pins(admin_user):
+    """Get announcements with pinned badges for admin"""
+    if admin_user.is_super_admin():
+        announcements = Announcement.query.order_by(
+            Announcement.is_pinned.desc(),
+            Announcement.created_at.desc()
+        ).limit(6).all()
+    else:
+        course_ids = [c.id for c in admin_user.managed_courses]
+        announcements = Announcement.query.filter(
+            db.or_(
+                Announcement.course_id.in_(course_ids),
+                Announcement.course_id.is_(None)
+            )
+        ).order_by(
+            Announcement.is_pinned.desc(),
+            Announcement.created_at.desc()
+        ).limit(6).all()
+    
+    result = []
+    for ann in announcements:
+        result.append({
+            'id': ann.id,
+            'title': ann.title,
+            'content': ann.content,
+            'is_pinned': ann.is_pinned,
+            'course_name': ann.course.name if ann.course else 'Global',
+            'created_at': ann.created_at,
+            'author': ann.author.username if ann.author else 'System'
+        })
+    
+    return result
+
+def get_admin_notices_with_ctas(admin_user):
+    """Get enhanced notices/alerts with CTAs for admin"""
+    notices = []
+    
+    # 1. Pending student approvals
+    pending_students = User.query.filter_by(role='student', is_approved=False).count()
+    if pending_students > 0:
+        notices.append({
+            'type': 'warning',
+            'icon': 'fa-user-clock',
+            'icon_color': 'orange',
+            'title': f'{pending_students} Student(s) Pending Approval',
+            'message': f'{pending_students} students are waiting for account approval.',
+            'cta_text': 'Review Students',
+            'cta_url': url_for('manage_students'),
+            'priority': 'high',
+            'dismissible': False
+        })
+    
+    # 2. Pending course requests
+    pending_enrollments = CourseEnrollment.query.filter_by(status='pending').count()
+    if pending_enrollments > 0:
+        notices.append({
+            'type': 'info',
+            'icon': 'fa-book-open',
+            'icon_color': 'gold',
+            'title': f'{pending_enrollments} Pending Course Request(s)',
+            'message': 'Students are waiting for course approval.',
+            'cta_text': 'Review Requests',
+            'cta_url': url_for('manage_students'),
+            'priority': 'medium',
+            'dismissible': True
+        })
+    
+    # 3. Assignments due soon
+    if admin_user.is_super_admin():
+        all_courses = Course.query.all()
+    else:
+        all_courses = admin_user.managed_courses
+    
+    course_ids = [c.id for c in all_courses]
+    now = datetime.utcnow()
+    due_soon = Assignment.query.filter(
+        Assignment.course_id.in_(course_ids),
+        Assignment.due_date >= now,
+        Assignment.due_date <= (now + timedelta(days=3))
+    ).count()
+    
+    if due_soon > 0:
+        notices.append({
+            'type': 'info',
+            'icon': 'fa-clock',
+            'icon_color': 'gold',
+            'title': f'{due_soon} Assignment(s) Due Soon',
+            'message': 'Assignments are due within the next 3 days.',
+            'cta_text': 'View Assignments',
+            'cta_url': url_for('manage_assignments'),
+            'priority': 'medium',
+            'dismissible': True
+        })
+    
+    # 4. Overdue assignments
+    overdue = Assignment.query.filter(
+        Assignment.course_id.in_(course_ids),
+        Assignment.due_date < now
+    ).count()
+    
+    if overdue > 0:
+        notices.append({
+            'type': 'error',
+            'icon': 'fa-exclamation-triangle',
+            'icon_color': 'red',
+            'title': f'{overdue} Overdue Assignment(s)',
+            'message': 'Some assignments are past their due date.',
+            'cta_text': 'View Overdue',
+            'cta_url': url_for('manage_assignments'),
+            'priority': 'high',
+            'dismissible': False
+        })
+    
+    # 5. New quizzes
+    new_quizzes = QuizGroup.query.filter(
+        QuizGroup.course_id.in_(course_ids),
+        QuizGroup.created_at >= (now - timedelta(days=7))
+    ).count()
+    
+    if new_quizzes > 0:
+        notices.append({
+            'type': 'success',
+            'icon': 'fa-puzzle-piece',
+            'icon_color': 'green',
+            'title': f'{new_quizzes} New Quiz(zes) Available',
+            'message': 'New quizzes have been added recently.',
+            'cta_text': 'View Quizzes',
+            'cta_url': url_for('manage_quizzes'),
+            'priority': 'low',
+            'dismissible': True
+        })
+    
+    # Sort by priority
+    priority_order = {'high': 0, 'medium': 1, 'low': 2}
+    notices.sort(key=lambda x: priority_order.get(x['priority'], 3))
+    
+    return notices
+
+def get_admin_enhanced_activity(admin_user, limit=15):
+    """Get enhanced recent activity feed with icons and colors"""
     activities = []
     
-    # Get recent quiz completions
-    quiz_answers = QuizAnswer.query.filter_by(
-        student_id=student_id
-    ).order_by(QuizAnswer.answered_at.desc()).limit(5).all()
+    # Get course IDs
+    if admin_user.is_super_admin():
+        course_ids = [c.id for c in Course.query.all()]
+    else:
+        course_ids = [c.id for c in admin_user.managed_courses]
+    
+    # 1. New notes (last 30 days)
+    notes = Note.query.filter(
+        Note.course_id.in_(course_ids),
+        Note.created_at >= (datetime.utcnow() - timedelta(days=30))
+    ).order_by(Note.created_at.desc()).limit(10).all()
+    
+    for note in notes:
+        activities.append({
+            'type': 'note',
+            'icon': 'fa-file-alt',
+            'color': 'blue',
+            'title': f'📝 New Note: "{note.title}"',
+            'description': f'Posted in {note.course.name}',
+            'time': note.created_at,
+            'user': note.author.username if note.author else 'System',
+            'url': url_for('edit_note', note_id=note.id) if note.id else None,
+            'badge': 'New' if note.is_new() else None,
+            'badge_color': 'green'
+        })
+    
+    # 2. New quiz results (last 30 days)
+    quiz_answers = QuizAnswer.query.filter(
+        QuizAnswer.answered_at >= (datetime.utcnow() - timedelta(days=30))
+    ).order_by(QuizAnswer.answered_at.desc()).limit(10).all()
     
     for answer in quiz_answers:
-        if answer.quiz_group:
+        if answer.quiz_group and answer.quiz_group.course_id in course_ids:
+            student = User.query.get(answer.student_id)
             activities.append({
+                'type': 'quiz',
                 'icon': 'fa-puzzle-piece',
                 'color': 'gold',
-                'text': f'Completed quiz: <strong>{answer.quiz_group.title}</strong>',
-                'time': answer.answered_at.strftime('%b %d, %I:%M %p')
+                'title': f'🎯 Quiz Completed: "{answer.quiz_group.title}"',
+                'description': f'{student.username if student else "Student"} scored {"✓" if answer.is_correct else "✗"}',
+                'time': answer.answered_at,
+                'user': student.username if student else 'Unknown',
+                'url': url_for('edit_quiz_group', quiz_id=answer.quiz_group.id) if answer.quiz_group.id else None,
+                'badge': 'New' if (datetime.utcnow() - answer.answered_at).days <= 1 else None,
+                'badge_color': 'gold'
             })
     
-    # Get recent assignment submissions
-    submissions = AssignmentSubmission.query.filter_by(
-        student_id=student_id
-    ).order_by(AssignmentSubmission.submitted_at.desc()).limit(5).all()
+    # 3. New assignment submissions (last 30 days)
+    submissions = AssignmentSubmission.query.filter(
+        AssignmentSubmission.submitted_at >= (datetime.utcnow() - timedelta(days=30))
+    ).order_by(AssignmentSubmission.submitted_at.desc()).limit(10).all()
     
     for sub in submissions:
-        if sub.assignment:
+        if sub.assignment and sub.assignment.course_id in course_ids:
+            student = User.query.get(sub.student_id)
             activities.append({
+                'type': 'submission',
                 'icon': 'fa-tasks',
-                'color': 'blue',
-                'text': f'Submitted assignment: <strong>{sub.assignment.title}</strong>',
-                'time': sub.submitted_at.strftime('%b %d, %I:%M %p')
+                'color': 'green',
+                'title': f'📋 Assignment Submitted: "{sub.assignment.title}"',
+                'description': f'{student.username if student else "Student"} submitted work',
+                'time': sub.submitted_at,
+                'user': student.username if student else 'Unknown',
+                'url': url_for('view_submissions', assignment_id=sub.assignment.id) if sub.assignment.id else None,
+                'badge': 'Needs Grading' if not sub.is_graded else None,
+                'badge_color': 'orange'
             })
     
-    # Sort by time (newest first)
+    # 4. New students (last 30 days)
+    new_students = User.query.filter(
+        User.role == 'student',
+        User.created_at >= (datetime.utcnow() - timedelta(days=30))
+    ).order_by(User.created_at.desc()).limit(5).all()
+    
+    for student in new_students:
+        activities.append({
+            'type': 'student',
+            'icon': 'fa-user-plus',
+            'color': 'purple',
+            'title': f'👤 New Student Registered',
+            'description': f'{student.username} ({student.email})',
+            'time': student.created_at,
+            'user': student.username,
+            'url': url_for('edit_student', student_id=student.id) if student.id else None,
+            'badge': 'Pending' if not student.is_approved else 'Approved',
+            'badge_color': 'orange' if not student.is_approved else 'green'
+        })
+    
+    # 5. New announcements (last 30 days)
+    anns = Announcement.query.filter(
+        Announcement.created_at >= (datetime.utcnow() - timedelta(days=30))
+    ).order_by(Announcement.created_at.desc()).limit(5).all()
+    
+    for ann in anns:
+        if admin_user.is_super_admin() or (ann.course_id and ann.course_id in course_ids) or ann.course_id is None:
+            activities.append({
+                'type': 'announcement',
+                'icon': 'fa-bullhorn',
+                'color': 'gold',
+                'title': f'📢 New Announcement: "{ann.title}"',
+                'description': f'By {ann.author.username if ann.author else "System"}',
+                'time': ann.created_at,
+                'user': ann.author.username if ann.author else 'System',
+                'url': url_for('edit_announcement', announcement_id=ann.id) if ann.id else None,
+                'badge': 'Pinned' if ann.is_pinned else None,
+                'badge_color': 'gold'
+            })
+    
+    # Sort by time (newest first) and remove duplicates
     activities.sort(key=lambda x: x['time'], reverse=True)
     
-    return activities[:10]
+    # Remove duplicates based on title and time (keep unique)
+    seen = set()
+    unique_activities = []
+    for act in activities:
+        key = (act['title'], act['time'].strftime('%Y-%m-%d %H:%M'))
+        if key not in seen:
+            seen.add(key)
+            unique_activities.append(act)
     
+    return unique_activities[:limit]
+
+def get_student_progress_visualization(admin_user):
+    """Get student progress data for visualization"""
+    # Get course IDs
+    if admin_user.is_super_admin():
+        courses = Course.query.all()
+    else:
+        courses = admin_user.managed_courses
+    
+    visualization_data = []
+    for course in courses:
+        # Get approved enrollments
+        enrollments = CourseEnrollment.query.filter_by(
+            course_id=course.id,
+            status='approved'
+        ).all()
+        
+        if enrollments:
+            # Calculate progress for each student
+            progress_values = []
+            students = []
+            for enrollment in enrollments:
+                student = User.query.get(enrollment.student_id)
+                if student:
+                    progress = course.get_progress_for_student(student.id)
+                    progress_values.append(progress)
+                    students.append({
+                        'name': student.username,
+                        'progress': progress
+                    })
+            
+            # Calculate statistics
+            if progress_values:
+                avg_progress = sum(progress_values) / len(progress_values)
+                max_progress = max(progress_values)
+                min_progress = min(progress_values)
+                completed_count = sum(1 for p in progress_values if p >= 100)
+            else:
+                avg_progress = max_progress = min_progress = completed_count = 0
+            
+            visualization_data.append({
+                'course_id': course.id,
+                'course_name': course.name,
+                'course_code': course.code,
+                'total_students': len(students),
+                'avg_progress': round(avg_progress, 1),
+                'max_progress': max_progress,
+                'min_progress': min_progress,
+                'completed_count': completed_count,
+                'students': students,
+                'progress_distribution': {
+                    '0-25': sum(1 for p in progress_values if 0 <= p < 25),
+                    '25-50': sum(1 for p in progress_values if 25 <= p < 50),
+                    '50-75': sum(1 for p in progress_values if 50 <= p < 75),
+                    '75-100': sum(1 for p in progress_values if 75 <= p < 100),
+                    '100': sum(1 for p in progress_values if p >= 100)
+                }
+            })
+        else:
+            # No students enrolled
+            visualization_data.append({
+                'course_id': course.id,
+                'course_name': course.name,
+                'course_code': course.code,
+                'total_students': 0,
+                'avg_progress': 0,
+                'max_progress': 0,
+                'min_progress': 0,
+                'completed_count': 0,
+                'students': [],
+                'progress_distribution': {
+                    '0-25': 0,
+                    '25-50': 0,
+                    '50-75': 0,
+                    '75-100': 0,
+                    '100': 0
+                }
+            })
+    
+    return visualization_data
+
 # ============================================================================
 # AUTO-MIGRATE ON STARTUP
 # ============================================================================
@@ -1108,10 +1521,6 @@ def create_initial_admin():
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-# ============================================================================
-# CONTEXT PROCESSORS
-# ============================================================================
 
 # ============================================================================
 # CONTEXT PROCESSOR - COMPLETE WITH DYNAMIC SETTINGS
@@ -1409,6 +1818,8 @@ def student_dashboard():
 @login_required
 @admin_required
 def admin_dashboard():
+    """Enhanced admin dashboard with all features"""
+    # Existing data
     total_students = User.query.filter_by(role='student').count()
     
     # Count students with pending course enrollments
@@ -1467,10 +1878,20 @@ def admin_dashboard():
         admin_count = 0
         tag_count = Tag.query.count()
     
+    # --- NEW DATA FOR ENHANCED FEATURES ---
+    upcoming_deadlines = get_admin_upcoming_deadlines(current_user)
+    quiz_results = get_admin_quiz_results(current_user)
+    announcements_with_pins = get_admin_announcements_with_pins(current_user)
+    notices = get_admin_notices_with_ctas(current_user)
+    enhanced_activity = get_admin_enhanced_activity(current_user)
+    progress_visualization = get_student_progress_visualization(current_user)
+    
+    # Existing recent data for backward compatibility
     recent_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
     recent_quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(5).all()
     
     return render_template('admin/dashboard.html',
+                         # Existing data
                          total_students=total_students,
                          pending_approvals=pending_approvals,
                          pending=pending,
@@ -1486,7 +1907,15 @@ def admin_dashboard():
                          recent_quizzes=recent_quizzes,
                          admin_count=admin_count,
                          tag_count=tag_count,
-                         announcements_count=announcements_count)
+                         announcements_count=announcements_count,
+                         
+                         # NEW DATA
+                         upcoming_deadlines=upcoming_deadlines,
+                         quiz_results=quiz_results,
+                         announcements_with_pins=announcements_with_pins,
+                         notices=notices,
+                         enhanced_activity=enhanced_activity,
+                         progress_visualization=progress_visualization)
 
 # ============================================================================
 # ROUTES - STUDENT PENDING APPROVAL
@@ -1893,8 +2322,7 @@ def delete_student(student_id):
             return redirect(url_for('manage_students'))
     
     try:
-        # ✅ FIX: Delete notifications FIRST (they have foreign key to user)
-        # This is critical for Supabase/PostgreSQL
+        # Delete notifications FIRST (they have foreign key to user)
         Notification.query.filter_by(user_id=student.id).delete()
         
         # Delete related records using ORM
@@ -4356,7 +4784,7 @@ def pending_approval():
     return render_template('pending_approval.html')
 
 # ============================================================================
-# ROUTES - RECENT ACTIVITY (FIXED)
+# ROUTES - RECENT ACTIVITY
 # ============================================================================
 
 @app.route('/admin/recent-activity')
@@ -4466,6 +4894,7 @@ def bulk_delete_notes():
     db.session.commit()
     flash(f'{deleted_count} notes deleted successfully.', 'success')
     return redirect(url_for('manage_notes'))
+
 # ============================================================================
 # ROUTES - ADMIN COURSE ANALYTICS
 # ============================================================================
@@ -4531,7 +4960,6 @@ def admin_course_analytics():
         })
     
     return render_template('admin/course_analytics.html', course_data=course_data)
-
 
 # ============================================================================
 # ROUTES - ADMIN BULK ACTIONS
@@ -4614,7 +5042,6 @@ def bulk_actions():
     students = User.query.filter_by(role='student').all()
     return render_template('admin/bulk_actions.html', students=students)
 
-
 # ============================================================================
 # ROUTES - ADMIN MESSAGES
 # ============================================================================
@@ -4627,7 +5054,6 @@ def admin_messages():
     # Get all students (for sending messages)
     students = User.query.filter_by(role='student').all()
     return render_template('admin/admin_messages.html', students=students)
-
 
 # ============================================================================
 # ROUTES - SYSTEM SETTINGS
@@ -4689,130 +5115,8 @@ def system_settings():
     
     return render_template('admin/system_settings.html', settings=settings)
 
-
-def get_setting(key, default=None):
-    """Get a system setting by key"""
-    try:
-        setting = SystemSetting.query.filter_by(key=key).first()
-        if setting:
-            value = setting.value
-            # Convert boolean strings back to booleans
-            if value.lower() == 'true':
-                return True
-            elif value.lower() == 'false':
-                return False
-            # Try to convert to int if possible
-            try:
-                if value.isdigit():
-                    return int(value)
-            except:
-                pass
-            return value
-        return default
-    except Exception as e:
-        app.logger.error(f'Error getting setting {key}: {e}')
-        return default
-
-
-
-def get_all_settings():
-    """Get all system settings as a dictionary"""
-    settings = {}
-    try:
-        all_settings = SystemSetting.query.all()
-        for setting in all_settings:
-            value = setting.value
-            # Convert boolean strings back to booleans
-            if value.lower() == 'true':
-                settings[setting.key] = True
-            elif value.lower() == 'false':
-                settings[setting.key] = False
-            else:
-                # Try to convert to int if possible
-                try:
-                    if value.isdigit():
-                        settings[setting.key] = int(value)
-                    else:
-                        settings[setting.key] = value
-                except:
-                    settings[setting.key] = value
-        return settings
-    except Exception as e:
-        app.logger.error(f'Error getting all settings: {e}')
-        return {}
-
-
-
-def get_int_setting(key, default=0):
-    """Get integer setting"""
-    value = get_setting(key, default)
-    try:
-        return int(value)
-    except:
-        return default
-
-
-def get_bool_setting(key, default=False):
-    """Get boolean setting"""
-    value = get_setting(key, default)
-    if isinstance(value, bool):
-        return value
-    return str(value).lower() == 'true'
-
-# ============================================================================
-# INITIALIZE DEFAULT SETTINGS
-# ============================================================================
-
-def init_default_settings():
-    """Initialize default system settings if they don't exist"""
-    defaults = {
-        # General Settings
-        'site_name': 'A-Portal LMS',
-        'site_description': 'Learning Management System',
-        'default_language': 'en',
-        'maintenance_mode': 'False',
-        'timezone': 'UTC',
-        
-        # Student Settings
-        'auto_approve_students': 'False',
-        'max_courses_per_student': '10',
-        'allow_reapplications': 'True',
-        'require_phone_number': 'True',
-        'student_registration_enabled': 'True',
-        
-        # Security Settings
-        'session_timeout': '60',
-        'require_email_verification': 'False',
-        'max_login_attempts': '5',
-        'lockout_duration': '30',
-        'force_ssl': 'True',
-        
-        # Content Settings
-        'max_file_upload_size': '16',
-        'allowed_file_types': 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip',
-        'enable_comments': 'False',
-        'enable_ratings': 'True',
-        
-        # Notification Settings
-        'email_notifications': 'True',
-        'push_notifications': 'True',
-        'assignment_reminders': 'True',
-        'reminder_days_before': '3',
-    }
-    
-    for key, value in defaults.items():
-        existing = SystemSetting.query.filter_by(key=key).first()
-        if not existing:
-            setting = SystemSetting(key=key, value=value)
-            db.session.add(setting)
-    
-    db.session.commit()
 # ============================================================================
 # ROUTES - SYSTEM LOGS
-# ============================================================================
-
-# ============================================================================
-# ROUTES - SYSTEM LOGS (FIXED)
 # ============================================================================
 
 @app.route('/admin/system-logs')
@@ -4856,7 +5160,7 @@ def system_logs():
                 'details': f'Assignment ID: {assignment.id}'
             })
         
-        # Get recent student registrations (use created_at, not updated_at)
+        # Get recent student registrations
         students = User.query.filter_by(role='student').order_by(User.created_at.desc()).limit(20).all()
         for student in students:
             logs.append({
@@ -4889,12 +5193,9 @@ def system_logs():
                 'details': f'Announcement ID: {announcement.id}'
             })
         
-        # ✅ FIXED: Get recent student approvals (using created_at instead of updated_at)
-        # Check for students who were approved by looking at is_approved status
-        # We'll use the created_at as a fallback
+        # Get recent student approvals
         approved_students = User.query.filter_by(role='student', is_approved=True).order_by(User.created_at.desc()).limit(10).all()
         for student in approved_students:
-            # Use created_at as the timestamp since we don't have updated_at
             logs.append({
                 'timestamp': student.created_at,
                 'user': 'System',
@@ -4913,6 +5214,9 @@ def system_logs():
         flash(f'Error loading system logs: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
 
+# ============================================================================
+# ROUTES - BACKUP AND RESTORE
+# ============================================================================
 
 @app.route('/admin/backup-restore')
 @login_required
@@ -5089,53 +5393,6 @@ def create_backup():
     
     return redirect(url_for('backup_restore'))
 
-# ============================================================================
-# MAINTENANCE MODE MIDDLEWARE
-# ============================================================================
-
-@app.before_request
-def check_maintenance_mode():
-    """Check if maintenance mode is enabled and redirect if needed"""
-    # Skip maintenance check for these endpoints
-    public_endpoints = ['static', 'login', 'logout', 'health', 'maintenance']
-    
-    # Skip if user is admin or super_admin
-    if current_user and current_user.is_authenticated and current_user.is_admin():
-        return None
-    
-    # Skip if the request is for a public endpoint
-    if request.endpoint in public_endpoints:
-        return None
-    
-    # Check if maintenance mode is enabled
-    maintenance_mode = get_bool_setting('maintenance_mode', False)
-    
-    if maintenance_mode:
-        # If it's an API request, return JSON
-        if request.path.startswith('/api/'):
-            return jsonify({
-                'error': 'Maintenance mode is enabled',
-                'status': 'maintenance',
-                'message': 'The system is currently under maintenance. Please try again later.'
-            }), 503
-        
-        # For regular requests, show maintenance page
-        return render_template('maintenance.html'), 503
-    
-    return None
-
-
-# Helper function to get settings (add this before the middleware)
-def get_bool_setting(key, default=False):
-    """Get boolean setting value"""
-    try:
-        setting = SystemSetting.query.filter_by(key=key).first()
-        if setting:
-            return setting.value.lower() == 'true'
-        return default
-    except:
-        return default
-
 @app.route('/admin/backup/download/<int:backup_id>')
 @login_required
 @super_admin_required
@@ -5174,9 +5431,6 @@ def restore_backup(backup_id):
             backup_data = json.load(f)
         
         data = backup_data.get('data', {})
-        
-        # Confirm restore (frontend already confirms, but double-check)
-        # We'll do a full restore
         
         # Delete existing student data (keep admins)
         # Delete notifications first (foreign key constraints)
@@ -5314,52 +5568,6 @@ def restore_backup(backup_id):
         db.session.rollback()
         flash(f'Error restoring backup: {str(e)}', 'error')
         app.logger.error(f'Restore error: {e}')
-    
-    return redirect(url_for('backup_restore'))
-
-@app.route('/admin/backup/clear-all', methods=['POST'])
-@login_required
-@super_admin_required
-def clear_all_students():
-    """Delete all students and their data (keep admins)"""
-    try:
-        # Count students before deletion
-        student_count = User.query.filter_by(role='student').count()
-        
-        if student_count == 0:
-            flash('No students to delete.', 'info')
-            return redirect(url_for('backup_restore'))
-        
-        # Delete notifications first (foreign key constraints)
-        Notification.query.delete()
-        
-        # Delete all student-related data
-        AssignmentSubmission.query.delete()
-        QuizAnswer.query.delete()
-        StudentProgress.query.delete()
-        RejectionMessage.query.delete()
-        CourseEnrollment.query.delete()
-        
-        # Delete all students
-        User.query.filter_by(role='student').delete()
-        
-        # Delete all student-related content (optional - keep or delete?)
-        # Uncomment if you want to delete all content too:
-        # Announcement.query.delete()
-        # Assignment.query.delete()
-        # QuizQuestion.query.delete()
-        # QuizGroup.query.delete()
-        # Note.query.delete()
-        # Course.query.delete()
-        
-        db.session.commit()
-        
-        flash(f'✅ All {student_count} students and their data have been deleted.', 'success')
-        
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error clearing students: {str(e)}', 'error')
-        app.logger.error(f'Clear all error: {e}')
     
     return redirect(url_for('backup_restore'))
 
@@ -5505,7 +5713,6 @@ def email_templates():
     templates = EmailTemplate.query.order_by(EmailTemplate.name.asc()).all()
     return render_template('admin/email_templates.html', templates=templates)
 
-
 @app.route('/admin/email-templates/create', methods=['GET', 'POST'])
 @login_required
 @super_admin_required
@@ -5542,7 +5749,6 @@ def create_email_template():
         return redirect(url_for('email_templates'))
     
     return render_template('admin/create_email_template.html')
-
 
 @app.route('/admin/email-templates/<int:template_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -5585,7 +5791,6 @@ def edit_email_template(template_id):
     
     return render_template('admin/edit_email_template.html', template=template)
 
-
 @app.route('/admin/email-templates/<int:template_id>/delete', methods=['POST'])
 @login_required
 @super_admin_required
@@ -5604,7 +5809,6 @@ def delete_email_template(template_id):
     
     return redirect(url_for('email_templates'))
 
-
 @app.route('/admin/email-templates/<int:template_id>/toggle', methods=['POST'])
 @login_required
 @super_admin_required
@@ -5619,7 +5823,6 @@ def toggle_email_template(template_id):
     flash(f'Template "{template.name}" {status}.', 'success')
     return redirect(url_for('email_templates'))
 
-
 @app.route('/admin/email-templates/<int:template_id>/preview')
 @login_required
 @super_admin_required
@@ -5627,29 +5830,6 @@ def preview_email_template(template_id):
     """Preview an email template"""
     template = EmailTemplate.query.get_or_404(template_id)
     return render_template('admin/preview_email_template.html', template=template)
-
-
-@app.route('/admin/email-templates/send-test/<int:template_id>', methods=['POST'])
-@login_required
-@super_admin_required
-def send_test_email(template_id):
-    """Send a test email using the template"""
-    template = EmailTemplate.query.get_or_404(template_id)
-    test_email = request.form.get('test_email')
-    
-    if not test_email:
-        flash('Please provide a test email address.', 'error')
-        return redirect(url_for('email_templates'))
-    
-    try:
-        # This is a placeholder - implement actual email sending
-        # For now, just show a success message
-        flash(f'Test email sent to {test_email} using template "{template.name}"!', 'success')
-    except Exception as e:
-        flash(f'Error sending test email: {str(e)}', 'error')
-    
-    return redirect(url_for('email_templates'))
-
 
 # ============================================================================
 # ROUTES - STUDENT PROGRESS
@@ -5698,7 +5878,6 @@ def my_progress():
                          completed_notes=completed_notes,
                          total_notes=Note.query.count())
 
-
 # ============================================================================
 # ROUTES - STUDENT NOTIFICATIONS
 # ============================================================================
@@ -5717,7 +5896,6 @@ def student_notifications():
     
     return render_template('student/notifications.html', notifications=notifications)
 
-
 # ============================================================================
 # ROUTES - STUDENT MESSAGES
 # ============================================================================
@@ -5729,9 +5907,7 @@ def student_messages():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # For now, show a placeholder
     return render_template('student/messages.html')
-
 
 # ============================================================================
 # ROUTES - STUDENT ACHIEVEMENTS
@@ -5800,7 +5976,7 @@ def my_achievements():
             'icon': 'fa-graduation-cap',
             'description': 'Completed a course',
             'earned': True,
-            'date': None  # Would need to track completion date
+            'date': None
         })
     else:
         achievements.append({
@@ -5838,7 +6014,6 @@ def my_achievements():
                          earned_count=earned_count,
                          total_achievements=len(achievements))
 
-
 # ============================================================================
 # ROUTES - STUDENT CALENDAR
 # ============================================================================
@@ -5866,6 +6041,7 @@ def course_calendar():
     return render_template('student/calendar.html', 
                          assignments=assignments,
                          quizzes=quizzes)
+
 # ============================================================================
 # NOTIFICATION API ENDPOINT
 # ============================================================================
@@ -5986,6 +6162,37 @@ def mark_single_notification_read(notification_id):
     return jsonify({'success': True})
 
 # ============================================================================
+# ADMIN DASHBOARD API ENDPOINT
+# ============================================================================
+
+@app.route('/admin/api/dashboard-data')
+@login_required
+@admin_required
+def admin_dashboard_api():
+    """API endpoint for admin dashboard data"""
+    try:
+        # Get all data
+        data = {
+            'upcoming_deadlines': get_admin_upcoming_deadlines(current_user),
+            'quiz_results': get_admin_quiz_results(current_user),
+            'announcements': get_admin_announcements_with_pins(current_user),
+            'notices': get_admin_notices_with_ctas(current_user),
+            'activity': get_admin_enhanced_activity(current_user),
+            'progress_visualization': get_student_progress_visualization(current_user)
+        }
+        
+        return jsonify({
+            'success': True,
+            'data': data
+        })
+    except Exception as e:
+        app.logger.error(f'Dashboard API error: {e}')
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# ============================================================================
 # HEALTH CHECK FOR RENDER
 # ============================================================================
 
@@ -5996,6 +6203,41 @@ def health_check():
         'timestamp': datetime.utcnow().isoformat(),
         'database': 'connected'
     })
+
+# ============================================================================
+# MAINTENANCE MODE MIDDLEWARE
+# ============================================================================
+
+@app.before_request
+def check_maintenance_mode():
+    """Check if maintenance mode is enabled and redirect if needed"""
+    # Skip maintenance check for these endpoints
+    public_endpoints = ['static', 'login', 'logout', 'health', 'maintenance']
+    
+    # Skip if user is admin or super_admin
+    if current_user and current_user.is_authenticated and current_user.is_admin():
+        return None
+    
+    # Skip if the request is for a public endpoint
+    if request.endpoint in public_endpoints:
+        return None
+    
+    # Check if maintenance mode is enabled
+    maintenance_mode = get_bool_setting('maintenance_mode', False)
+    
+    if maintenance_mode:
+        # If it's an API request, return JSON
+        if request.path.startswith('/api/'):
+            return jsonify({
+                'error': 'Maintenance mode is enabled',
+                'status': 'maintenance',
+                'message': 'The system is currently under maintenance. Please try again later.'
+            }), 503
+        
+        # For regular requests, show maintenance page
+        return render_template('maintenance.html'), 503
+    
+    return None
 
 # ============================================================================
 # ERROR HANDLERS
