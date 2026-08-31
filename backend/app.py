@@ -1393,6 +1393,12 @@ def ensure_columns():
     from sqlalchemy.exc import ProgrammingError
     
     with app.app_context():
+        # First, rollback any pending transactions
+        try:
+            db.session.rollback()
+        except:
+            pass
+            
         try:
             inspector = inspect(db.engine)
             
@@ -1406,34 +1412,52 @@ def ensure_columns():
                 added = []
                 
                 if 'is_suspended' not in columns:
-                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE'))
-                    added.append('is_suspended')
-                    print("✅ Added is_suspended to user")
+                    try:
+                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE'))
+                        added.append('is_suspended')
+                        print("✅ Added is_suspended to user")
+                    except Exception as e:
+                        print(f"⚠️ Could not add is_suspended: {e}")
                 
                 if 'suspension_reason' not in columns:
-                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspension_reason TEXT'))
-                    added.append('suspension_reason')
-                    print("✅ Added suspension_reason to user")
+                    try:
+                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspension_reason TEXT'))
+                        added.append('suspension_reason')
+                        print("✅ Added suspension_reason to user")
+                    except Exception as e:
+                        print(f"⚠️ Could not add suspension_reason: {e}")
                 
                 if 'suspended_at' not in columns:
-                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP'))
-                    added.append('suspended_at')
-                    print("✅ Added suspended_at to user")
+                    try:
+                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP'))
+                        added.append('suspended_at')
+                        print("✅ Added suspended_at to user")
+                    except Exception as e:
+                        print(f"⚠️ Could not add suspended_at: {e}")
                 
                 if 'phone' not in columns:
-                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS phone VARCHAR(20)'))
-                    added.append('phone')
-                    print("✅ Added phone to user")
+                    try:
+                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS phone VARCHAR(20)'))
+                        added.append('phone')
+                        print("✅ Added phone to user")
+                    except Exception as e:
+                        print(f"⚠️ Could not add phone: {e}")
                 
                 if 'dob' not in columns:
-                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS dob TIMESTAMP'))
-                    added.append('dob')
-                    print("✅ Added dob to user")
+                    try:
+                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS dob TIMESTAMP'))
+                        added.append('dob')
+                        print("✅ Added dob to user")
+                    except Exception as e:
+                        print(f"⚠️ Could not add dob: {e}")
                 
                 if 'profile_picture' not in columns:
-                    db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(200)'))
-                    added.append('profile_picture')
-                    print("✅ Added profile_picture to user")
+                    try:
+                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(200)'))
+                        added.append('profile_picture')
+                        print("✅ Added profile_picture to user")
+                    except Exception as e:
+                        print(f"⚠️ Could not add profile_picture: {e}")
                 
                 if added:
                     db.session.commit()
@@ -1449,9 +1473,12 @@ def ensure_columns():
                 ann_added = []
                 
                 if 'course_id' not in ann_columns:
-                    db.session.execute(text('ALTER TABLE "announcement" ADD COLUMN IF NOT EXISTS course_id INTEGER REFERENCES course(id)'))
-                    ann_added.append('course_id')
-                    print("✅ Added course_id to announcement")
+                    try:
+                        db.session.execute(text('ALTER TABLE "announcement" ADD COLUMN IF NOT EXISTS course_id INTEGER REFERENCES course(id)'))
+                        ann_added.append('course_id')
+                        print("✅ Added course_id to announcement")
+                    except Exception as e:
+                        print(f"⚠️ Could not add course_id: {e}")
                 
                 if ann_added:
                     db.session.commit()
@@ -1463,24 +1490,6 @@ def ensure_columns():
         except ProgrammingError as e:
             db.session.rollback()
             print(f"⚠️ Programming error during migration: {e}")
-            # Try retry with direct connection
-            try:
-                print("🔄 Retrying migration with direct SQL...")
-                with db.engine.connect() as conn:
-                    # User table columns
-                    conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE'))
-                    conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspension_reason TEXT'))
-                    conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP'))
-                    conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS phone VARCHAR(20)'))
-                    conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS dob TIMESTAMP'))
-                    conn.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(200)'))
-                    # Announcement table columns
-                    conn.execute(text('ALTER TABLE "announcement" ADD COLUMN IF NOT EXISTS course_id INTEGER REFERENCES course(id)'))
-                    conn.commit()
-                    print("✅ Migration retry succeeded!")
-            except Exception as retry_error:
-                print(f"⚠️ Retry also failed: {retry_error}")
-                
         except Exception as e:
             db.session.rollback()
             print(f"⚠️ Auto-migration warning: {e}")
@@ -1489,30 +1498,73 @@ def ensure_columns():
 # CREATE ADMIN USER
 # ============================================================================
 
+# ============================================================================
+# CREATE ADMIN USER - FIXED VERSION
+# ============================================================================
+
 def create_initial_admin():
+    """Create initial admin user safely - handles existing data"""
+    from sqlalchemy import text
+    
     try:
+        # First, check if admin already exists
         admin = User.query.filter_by(username='admin').first()
-        if not admin:
-            admin = User(
-                username='admin',
-                email='admin@awwaludevs.com',
-                role='super_admin',
-                is_approved=True
-            )
-            admin.set_password('admin123')
-            db.session.add(admin)
-            db.session.commit()
-            print("✅ Default admin created: admin / admin123")
-        else:
+        
+        if admin:
             print("✅ Admin user already exists")
-            # Force reset password
+            # Ensure password is correct
             admin.set_password('admin123')
             admin.is_approved = True
             admin.role = 'super_admin'
             db.session.commit()
-            print("✅ Password reset to: admin123")
+            print("✅ Admin password reset to: admin123")
+            return
+        
+        # Check if any user exists at all
+        any_user = User.query.first()
+        
+        # Get the next available ID
+        result = db.session.execute(text("SELECT nextval(pg_get_serial_sequence('user', 'id'))"))
+        next_id = result.scalar()
+        
+        # Create admin with explicit ID
+        admin = User(
+            id=next_id,
+            username='admin',
+            email='admin@awwaludevs.com',
+            role='super_admin',
+            is_approved=True
+        )
+        admin.set_password('admin123')
+        db.session.add(admin)
+        db.session.commit()
+        print("✅ Default admin created: admin / admin123")
+        
     except Exception as e:
-        print(f"⚠️ Error: {e}")
+        db.session.rollback()
+        print(f"⚠️ Error creating admin: {e}")
+        # Try fallback method
+        try:
+            print("🔄 Trying fallback admin creation...")
+            # Check if admin exists by username
+            admin = User.query.filter_by(username='admin').first()
+            if not admin:
+                # Try to create without specifying ID
+                admin = User(
+                    username='admin',
+                    email='admin@awwaludevs.com',
+                    role='super_admin',
+                    is_approved=True
+                )
+                admin.set_password('admin123')
+                db.session.add(admin)
+                db.session.commit()
+                print("✅ Fallback admin created: admin / admin123")
+            else:
+                print("✅ Admin found during fallback")
+        except Exception as fallback_error:
+            db.session.rollback()
+            print(f"❌ Fallback also failed: {fallback_error}")
 
 # ============================================================================
 # USER LOADER
@@ -1526,22 +1578,51 @@ def load_user(user_id):
 # CONTEXT PROCESSOR - COMPLETE WITH DYNAMIC SETTINGS
 # ============================================================================
 
+# ============================================================================
+# CONTEXT PROCESSOR - FIXED WITH ERROR HANDLING
+# ============================================================================
+
 @app.context_processor
 def inject_user():
-    """Inject variables into all templates"""
+    """Inject variables into all templates - with error handling"""
     
-    # Get site settings
-    site_name = get_setting('site_name', 'A-Portal LMS')
-    site_description = get_setting('site_description', 'Learning Management System')
-    site_language = get_setting('default_language', 'en')
-    site_timezone = get_setting('timezone', 'UTC')
+    # Initialize defaults
+    total_students = 0
+    total_courses = 0
+    total_notes = 0
+    total_quizzes = 0
+    total_assignments = 0
     
-    # Get counts for stats
-    total_students = User.query.filter_by(role='student').count()
-    total_courses = Course.query.count()
-    total_notes = Note.query.count()
-    total_quizzes = QuizGroup.query.count()
-    total_assignments = Assignment.query.count()
+    try:
+        # Get site settings with error handling
+        site_name = get_setting('site_name', 'A-Portal LMS')
+        site_description = get_setting('site_description', 'Learning Management System')
+        site_language = get_setting('default_language', 'en')
+        site_timezone = get_setting('timezone', 'UTC')
+    except Exception as e:
+        app.logger.error(f'Error getting settings in context: {e}')
+        site_name = 'A-Portal LMS'
+        site_description = 'Learning Management System'
+        site_language = 'en'
+        site_timezone = 'UTC'
+    
+    # Get counts with error handling - ROLLBACK FIRST if needed
+    try:
+        # Rollback any pending transactions first
+        db.session.rollback()
+        
+        total_students = User.query.filter_by(role='student').count()
+        total_courses = Course.query.count()
+        total_notes = Note.query.count()
+        total_quizzes = QuizGroup.query.count()
+        total_assignments = Assignment.query.count()
+    except Exception as e:
+        app.logger.error(f'Error getting counts in context: {e}')
+        # Rollback to clear any error state
+        try:
+            db.session.rollback()
+        except:
+            pass
     
     return {
         'current_user': current_user,
@@ -1549,27 +1630,21 @@ def inject_user():
         'get_courses': lambda: current_user.get_courses() if current_user.is_authenticated else [],
         'is_approved': lambda: current_user.is_approved if current_user.is_authenticated else False,
         
-        # ============================================
-        # DYNAMIC SYSTEM SETTINGS
-        # ============================================
+        # Dynamic system settings
         'site_name': site_name,
         'site_description': site_description,
         'site_language': site_language,
         'site_timezone': site_timezone,
         'get_setting': get_setting,
         
-        # ============================================
-        # STATISTICS FOR HOME PAGE
-        # ============================================
+        # Statistics for home page
         'total_students': total_students,
         'total_courses': total_courses,
         'total_notes': total_notes,
         'total_quizzes': total_quizzes,
         'total_assignments': total_assignments,
         
-        # ============================================
-        # ADDITIONAL HELPER FUNCTIONS
-        # ============================================
+        # Additional helper functions
         'get_bool_setting': get_bool_setting,
         'get_int_setting': get_int_setting,
         'get_str_setting': get_str_setting,
@@ -6255,11 +6330,49 @@ def server_error(error):
 # INITIALIZE DATABASE AND CREATE ADMIN
 # ============================================================================
 
+# ============================================================================
+# INITIALIZE DATABASE AND CREATE ADMIN - FIXED
+# ============================================================================
+
 with app.app_context():
-    db.create_all()
-    ensure_columns()
-    init_default_settings()
-    create_initial_admin()
+    try:
+        # Rollback any pending transactions first
+        db.session.rollback()
+        print("🔄 Database session reset")
+    except:
+        pass
+    
+    try:
+        print("📊 Creating database tables...")
+        db.create_all()
+        print("✅ Database tables created")
+    except Exception as e:
+        print(f"⚠️ Database creation warning: {e}")
+        db.session.rollback()
+    
+    try:
+        print("🔧 Running column migration...")
+        ensure_columns()
+        print("✅ Column migration complete")
+    except Exception as e:
+        print(f"⚠️ Column migration warning: {e}")
+        db.session.rollback()
+    
+    try:
+        print("⚙️ Initializing settings...")
+        init_default_settings()
+        print("✅ Settings initialized")
+    except Exception as e:
+        print(f"⚠️ Settings initialization warning: {e}")
+        db.session.rollback()
+    
+    try:
+        print("👤 Creating admin user...")
+        create_initial_admin()
+        print("✅ Admin user handled")
+    except Exception as e:
+        print(f"⚠️ Admin creation warning: {e}")
+        db.session.rollback()
 
 # ============================================================================
 # RUN THE APPLICATION
