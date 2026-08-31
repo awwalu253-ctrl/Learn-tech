@@ -205,61 +205,6 @@
     .toggle-switch input:checked ~ .status-label {
         color: var(--primary-gold);
     }
-    
-    .settings-group .setting-row .setting-control select {
-        background: var(--primary-bg, #0A1527);
-        color: var(--text-gray, #C8CED8);
-        border: 1px solid rgba(201, 168, 75, 0.06);
-        border-radius: var(--radius-sm, 8px);
-        padding: 8px 14px;
-        font-size: 0.85rem;
-        font-family: 'Inter', sans-serif;
-        cursor: pointer;
-        min-width: 150px;
-    }
-    
-    .settings-group .setting-row .setting-control select:focus {
-        outline: none;
-        border-color: var(--primary-gold, #C9A84B);
-    }
-    
-    .settings-group .setting-row .setting-control select option {
-        background: var(--secondary-bg, #253449);
-        color: var(--text-gray, #C8CED8);
-    }
-
-    /* Live Preview Box */
-    .live-preview {
-        background: var(--primary-bg, #0A1527);
-        border-radius: var(--radius-sm, 8px);
-        padding: 12px 16px;
-        margin-top: 4px;
-        border: 1px solid rgba(201, 168, 75, 0.04);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-    
-    .live-preview .preview-label {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: var(--text-muted, #8A94A6);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-    }
-    
-    .live-preview .preview-value {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--primary-gold, #C9A84B);
-    }
-    
-    .live-preview .preview-value i {
-        color: var(--text-muted);
-        font-weight: 400;
-        margin-right: 4px;
-    }
 
     .form-actions {
         display: flex;
@@ -309,12 +254,6 @@
         100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* Live Preview Updates - Real-time preview */
-    .setting-row input:focus {
-        border-color: var(--primary-gold, #C9A84B);
-        box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
-    }
-
     @media (max-width: 768px) {
         .settings-group {
             padding: 16px 16px;
@@ -334,9 +273,6 @@
             width: 100%;
             max-width: 100%;
         }
-        .settings-group .setting-row .setting-control select {
-            width: 100%;
-        }
         .form-actions {
             flex-direction: column;
         }
@@ -347,18 +283,6 @@
         }
         .settings-group .setting-row .setting-label {
             padding-right: 0;
-        }
-        .live-preview {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .settings-group .setting-row .setting-control .toggle-switch {
-            width: 100%;
-            justify-content: space-between;
         }
     }
 
@@ -377,8 +301,7 @@
     }
     
     [data-theme="dark"] .settings-group .setting-row .setting-control input[type="text"],
-    [data-theme="dark"] .settings-group .setting-row .setting-control input[type="number"],
-    [data-theme="dark"] .settings-group .setting-row .setting-control select {
+    [data-theme="dark"] .settings-group .setting-row .setting-control input[type="number"] {
         background: var(--primary-bg, #0A1527);
         color: var(--text-gray, #C8CED8);
         border-color: rgba(201, 168, 75, 0.06);
@@ -405,11 +328,6 @@
     [data-theme="dark"] .toggle-switch .slider::before {
         background: var(--white, #FFFFFF);
     }
-    
-    [data-theme="dark"] .live-preview {
-        background: var(--primary-bg, #0A1527);
-        border-color: rgba(201, 168, 75, 0.04);
-    }
 </style>
 {% endblock %}
 
@@ -425,9 +343,6 @@
                 <p class="subtitle">Configure system preferences and defaults</p>
             </div>
         </div>
-        <span style="padding: 6px 16px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); font-size: 0.8rem; font-weight: 600;">
-            <i class="fas fa-database"></i> Settings saved in database
-        </span>
     </div>
 
     <form method="POST" id="settingsForm">
@@ -437,90 +352,26 @@
         <div class="settings-group">
             <div class="group-title"><i class="fas fa-globe"></i> General Settings</div>
             
-            <!-- Site Name -->
             <div class="setting-row">
                 <div class="setting-label">
                     Site Name
                     <span class="desc">Displayed throughout the platform</span>
                 </div>
                 <div class="setting-control">
-                    <input type="text" name="site_name" id="siteNameInput" value="{{ settings.get('site_name', 'A-Portal LMS') }}" style="width: 220px;">
+                    <input type="text" name="site_name" value="{{ settings.get('site_name', 'A-Portal LMS') }}" style="width: 220px;">
                 </div>
             </div>
             
-            <!-- Site Description -->
             <div class="setting-row">
                 <div class="setting-label">
                     Site Description
                     <span class="desc">Meta description for SEO</span>
                 </div>
                 <div class="setting-control">
-                    <input type="text" name="site_description" id="siteDescriptionInput" value="{{ settings.get('site_description', 'Learning Management System') }}" style="width: 260px;">
+                    <input type="text" name="site_description" value="{{ settings.get('site_description', 'Learning Management System') }}" style="width: 260px;">
                 </div>
             </div>
             
-            <!-- Default Language -->
-            <div class="setting-row">
-                <div class="setting-label">
-                    Default Language
-                    <span class="desc">User interface language</span>
-                </div>
-                <div class="setting-control">
-                    <select name="default_language" id="languageSelect">
-                        <option value="en" {% if settings.get('default_language') == 'en' %}selected{% endif %}>English</option>
-                        <option value="es" {% if settings.get('default_language') == 'es' %}selected{% endif %}>Spanish</option>
-                        <option value="fr" {% if settings.get('default_language') == 'fr' %}selected{% endif %}>French</option>
-                        <option value="de" {% if settings.get('default_language') == 'de' %}selected{% endif %}>German</option>
-                        <option value="pt" {% if settings.get('default_language') == 'pt' %}selected{% endif %}>Portuguese</option>
-                        <option value="ar" {% if settings.get('default_language') == 'ar' %}selected{% endif %}>Arabic</option>
-                        <option value="zh" {% if settings.get('default_language') == 'zh' %}selected{% endif %}>Chinese</option>
-                        <option value="ja" {% if settings.get('default_language') == 'ja' %}selected{% endif %}>Japanese</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Timezone -->
-            <div class="setting-row">
-                <div class="setting-label">
-                    Timezone
-                    <span class="desc">Default timezone for the system</span>
-                </div>
-                <div class="setting-control">
-                    <select name="timezone" id="timezoneSelect">
-                        <option value="UTC" {% if settings.get('timezone') == 'UTC' %}selected{% endif %}>UTC</option>
-                        <option value="America/New_York" {% if settings.get('timezone') == 'America/New_York' %}selected{% endif %}>Eastern Time (US)</option>
-                        <option value="America/Chicago" {% if settings.get('timezone') == 'America/Chicago' %}selected{% endif %}>Central Time (US)</option>
-                        <option value="America/Denver" {% if settings.get('timezone') == 'America/Denver' %}selected{% endif %}>Mountain Time (US)</option>
-                        <option value="America/Los_Angeles" {% if settings.get('timezone') == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (US)</option>
-                        <option value="Europe/London" {% if settings.get('timezone') == 'Europe/London' %}selected{% endif %}>London</option>
-                        <option value="Europe/Paris" {% if settings.get('timezone') == 'Europe/Paris' %}selected{% endif %}>Paris</option>
-                        <option value="Asia/Dubai" {% if settings.get('timezone') == 'Asia/Dubai' %}selected{% endif %}>Dubai</option>
-                        <option value="Asia/Tokyo" {% if settings.get('timezone') == 'Asia/Tokyo' %}selected{% endif %}>Tokyo</option>
-                        <option value="Australia/Sydney" {% if settings.get('timezone') == 'Australia/Sydney' %}selected{% endif %}>Sydney</option>
-                        <option value="Africa/Lagos" {% if settings.get('timezone') == 'Africa/Lagos' %}selected{% endif %}>Lagos</option>
-                        <option value="Africa/Johannesburg" {% if settings.get('timezone') == 'Africa/Johannesburg' %}selected{% endif %}>Johannesburg</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Live Preview -->
-            <div class="live-preview">
-                <span class="preview-label"><i class="fas fa-eye"></i> Live Preview</span>
-                <span class="preview-value" id="siteNamePreview">
-                    <i class="fas fa-globe"></i> {{ settings.get('site_name', 'A-Portal LMS') }}
-                </span>
-                <span class="preview-value" id="siteDescriptionPreview" style="font-weight: 400; color: var(--text-gray);">
-                    {{ settings.get('site_description', 'Learning Management System') }}
-                </span>
-                <span class="preview-value" id="languagePreview" style="font-weight: 400; color: var(--text-muted); font-size: 0.8rem;">
-                    <i class="fas fa-language"></i> {{ settings.get('default_language', 'en')|upper }}
-                </span>
-                <span class="preview-value" id="timezonePreview" style="font-weight: 400; color: var(--text-muted); font-size: 0.8rem;">
-                    <i class="fas fa-clock"></i> {{ settings.get('timezone', 'UTC') }}
-                </span>
-            </div>
-            
-            <!-- Maintenance Mode -->
             <div class="setting-row">
                 <div class="setting-label">
                     Maintenance Mode
@@ -829,51 +680,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ============================================
-        // LIVE PREVIEW UPDATES
-        // ============================================
-        const siteNameInput = document.getElementById('siteNameInput');
-        const siteNamePreview = document.getElementById('siteNamePreview');
-        const siteDescriptionInput = document.getElementById('siteDescriptionInput');
-        const siteDescriptionPreview = document.getElementById('siteDescriptionPreview');
-        const languageSelect = document.getElementById('languageSelect');
-        const languagePreview = document.getElementById('languagePreview');
-        const timezoneSelect = document.getElementById('timezoneSelect');
-        const timezonePreview = document.getElementById('timezonePreview');
-
-        // Site Name live preview
-        if (siteNameInput && siteNamePreview) {
-            siteNameInput.addEventListener('input', function() {
-                const value = this.value || 'A-Portal LMS';
-                siteNamePreview.innerHTML = `<i class="fas fa-globe"></i> ${value}`;
-            });
-        }
-
-        // Site Description live preview
-        if (siteDescriptionInput && siteDescriptionPreview) {
-            siteDescriptionInput.addEventListener('input', function() {
-                const value = this.value || 'Learning Management System';
-                siteDescriptionPreview.textContent = value;
-            });
-        }
-
-        // Language live preview
-        if (languageSelect && languagePreview) {
-            languageSelect.addEventListener('change', function() {
-                const value = this.value || 'en';
-                const label = this.options[this.selectedIndex].text;
-                languagePreview.innerHTML = `<i class="fas fa-language"></i> ${label}`;
-            });
-        }
-
-        // Timezone live preview
-        if (timezoneSelect && timezonePreview) {
-            timezoneSelect.addEventListener('change', function() {
-                const value = this.value || 'UTC';
-                timezonePreview.innerHTML = `<i class="fas fa-clock"></i> ${value}`;
-            });
-        }
-
         // ============================================
         // TOGGLE SWITCH STATUS LABELS
         // ============================================
