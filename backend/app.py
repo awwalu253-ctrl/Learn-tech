@@ -179,12 +179,16 @@ def format_relative_time(dt):
     Example: "Just now", "5 minutes ago", "2 hours ago", "Yesterday"
     """
     if dt is None:
-        return ''
+        return 'Just now'
     
     # Ensure datetime is timezone-aware
-    dt = make_aware(dt)
+    if hasattr(dt, 'tzinfo') and dt.tzinfo is None:
+        dt = pytz.UTC.localize(dt)
+    elif not hasattr(dt, 'tzinfo'):
+        # If it's not a datetime at all, return as string
+        return str(dt)
     
-    now = datetime.now(timezone.utc)
+    now = datetime.now(pytz.UTC)
     diff = now - dt
     seconds = diff.total_seconds()
     
@@ -224,18 +228,21 @@ def format_local_time(dt, format_str='%b %d, %Y at %I:%M %p'):
 @app.template_filter('time_ago')
 def time_ago_filter(dt):
     """Jinja2 filter: {{ created_at | time_ago }}"""
-    # If it's None, return empty
     if dt is None:
-        return ''
+        return 'Just now'
     
     # If it's a string, try to parse it
     if isinstance(dt, str):
         try:
-            # Try common formats
+            # Try ISO format first
             from dateutil import parser
             dt = parser.parse(dt)
         except:
-            return dt  # Return the string if we can't parse it
+            # If it's a timestamp string like "2024-01-01 12:00:00"
+            try:
+                dt = datetime.fromisoformat(dt.replace(' ', 'T'))
+            except:
+                return dt  # Return the string if we can't parse it
     
     # If it's still not a datetime, return as is
     if not hasattr(dt, 'tzinfo'):
@@ -262,6 +269,23 @@ def local_time_filter(dt, format_str='%b %d, %Y at %I:%M %p'):
 @app.template_filter('local_date')
 def local_date_filter(dt):
     """Jinja2 filter: {{ created_at | local_date }}"""
+    if dt is None:
+        return ''
+    
+    # If it's a string, try to parse it
+    if isinstance(dt, str):
+        try:
+            from dateutil import parser
+            dt = parser.parse(dt)
+        except:
+            try:
+                dt = datetime.fromisoformat(dt.replace(' ', 'T'))
+            except:
+                return dt
+    
+    if not hasattr(dt, 'tzinfo'):
+        return str(dt)
+    
     return format_local_time(dt, '%b %d, %Y')
 
 @app.template_filter('local_time_short')
@@ -6304,8 +6328,10 @@ def course_calendar():
 @app.route('/api/notifications')
 @login_required
 def get_notifications():
+    """Get notifications for the current user with proper timezone handling"""
     notifications = []
     
+    # Get user-specific notifications from database
     user_notifications = Notification.query.filter_by(
         user_id=current_user.id,
         is_read=False
@@ -6320,10 +6346,11 @@ def get_notifications():
             'url': notif.link or '#',
             'icon': notif.icon,
             'icon_color': notif.icon_color,
-            'created_at': notif.created_at.isoformat(),
+            'created_at': notif.created_at.isoformat() if notif.created_at else None,
             'is_read': notif.is_read
         })
     
+    # If user has no notifications, add system notifications based on status
     if not notifications:
         if current_user.is_admin():
             pending_count = User.query.filter_by(role='student', is_approved=False).count()
@@ -6340,6 +6367,7 @@ def get_notifications():
                     'is_read': False
                 })
             
+            # Check for pending course requests
             pending_enrollments = CourseEnrollment.query.filter_by(status='pending').count()
             if pending_enrollments > 0:
                 notifications.append({
@@ -6354,6 +6382,7 @@ def get_notifications():
                     'is_read': False
                 })
         else:
+            # Student notifications
             if not current_user.is_approved and not current_user.is_suspended:
                 notifications.append({
                     'id': 'pending_approval',

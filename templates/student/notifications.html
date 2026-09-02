@@ -4,90 +4,393 @@
 
 {% block content %}
 <style>
-    .notifications-page { max-width: 800px; margin: 0 auto; padding: 0; }
-    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-    .page-header-left { display: flex; align-items: center; gap: 14px; }
-    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
-    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
-    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
-    .btn-mark-read { padding: 8px 20px; border-radius: 60px; background: rgba(201,168,75,0.06); color: var(--primary-gold); border: 1px solid rgba(201,168,75,0.04); cursor: pointer; font-weight: 600; transition: var(--transition); font-family: 'Inter', sans-serif; }
-    .btn-mark-read:hover { background: rgba(201,168,75,0.12); transform: translateY(-2px); }
-
-    .notification-list { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201,168,75,0.04); overflow: hidden; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
-    .notification-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; border-bottom: 1px solid rgba(201,168,75,0.02); transition: var(--transition); cursor: pointer; text-decoration: none; color: inherit; }
-    .notification-item:last-child { border-bottom: none; }
-    .notification-item:hover { background: rgba(201,168,75,0.02); }
-    .notification-item .icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(201,168,75,0.04); font-size: 1rem; }
-    .notification-item .content { flex: 1; min-width: 0; }
-    .notification-item .content .title { font-weight: 600; color: var(--white); margin-bottom: 2px; }
-    .notification-item .content .message { font-size: 0.85rem; color: var(--text-gray); line-height: 1.5; }
-    .notification-item .content .time { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
-    .notification-item .unread-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 16px; background: var(--primary-gold); animation: pulse-dot 2s ease-in-out infinite; }
-    
-    @keyframes pulse-dot {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(0.8); }
+    .notifications-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0;
     }
-    
-    .notification-item.read .unread-dot { display: none; }
-    .notification-item.read .icon { opacity: 0.6; }
-    .notification-item.read .content .title { color: var(--text-gray); }
 
-    .empty-state { text-align: center; padding: 60px 20px; }
-    .empty-state i { font-size: 2.5rem; color: var(--primary-gold); opacity: 0.15; margin-bottom: 12px; display: block; }
-    .empty-state p { color: var(--text-gray); }
-    .empty-state .empty-sub { font-size: 0.85rem; color: var(--text-muted); }
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .page-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm, 10px);
+        background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold, #C9A84B);
+        font-size: 1.3rem;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    .page-header h1 span {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header .subtitle {
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        margin: 2px 0 0;
+    }
+
+    .btn-mark-read {
+        padding: 8px 20px;
+        border-radius: 60px;
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .btn-mark-read:hover {
+        background: rgba(201, 168, 75, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .notification-list {
+        background: var(--secondary-bg, #253449);
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        overflow: hidden;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+    }
+
+    .notification-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(201, 168, 75, 0.02);
+        transition: var(--transition);
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-item:hover {
+        background: rgba(201, 168, 75, 0.02);
+    }
+
+    .notification-item .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: rgba(201, 168, 75, 0.04);
+        font-size: 1rem;
+    }
+
+    .notification-item .content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notification-item .content .title {
+        font-weight: 600;
+        color: var(--white);
+        margin-bottom: 2px;
+    }
+
+    .notification-item .content .message {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        line-height: 1.5;
+    }
+
+    .notification-item .content .time {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+    }
+
+    .notification-item .unread-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 16px;
+        background: var(--primary-gold);
+        animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.5;
+            transform: scale(0.8);
+        }
+    }
+
+    .notification-item.read .unread-dot {
+        display: none;
+    }
+
+    .notification-item.read .icon {
+        opacity: 0.6;
+    }
+
+    .notification-item.read .content .title {
+        color: var(--text-gray);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        color: var(--primary-gold);
+        opacity: 0.15;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+    .empty-state p {
+        color: var(--text-gray);
+    }
+
+    .empty-state .empty-sub {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
 
     /* Notification type colors */
-    .notification-item .icon.success { background: rgba(5, 150, 105, 0.08); color: #059669; }
-    .notification-item .icon.error { background: rgba(239, 68, 68, 0.08); color: #EF4444; }
-    .notification-item .icon.warning { background: rgba(245, 158, 11, 0.08); color: #F59E0B; }
-    .notification-item .icon.info { background: rgba(59, 130, 246, 0.08); color: #3B82F6; }
-    .notification-item .icon.gold { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); }
-    .notification-item .icon.purple { background: rgba(139, 92, 246, 0.08); color: #8B5CF6; }
-    .notification-item .icon.green { background: rgba(5, 150, 105, 0.08); color: #059669; }
-    .notification-item .icon.red { background: rgba(239, 68, 68, 0.08); color: #EF4444; }
-    .notification-item .icon.orange { background: rgba(245, 158, 11, 0.08); color: #F59E0B; }
-    .notification-item .icon.blue { background: rgba(59, 130, 246, 0.08); color: #3B82F6; }
+    .notification-item .icon.success {
+        background: rgba(5, 150, 105, 0.08);
+        color: #059669;
+    }
 
-    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
+    .notification-item .icon.error {
+        background: rgba(239, 68, 68, 0.08);
+        color: #EF4444;
+    }
+
+    .notification-item .icon.warning {
+        background: rgba(245, 158, 11, 0.08);
+        color: #F59E0B;
+    }
+
+    .notification-item .icon.info {
+        background: rgba(59, 130, 246, 0.08);
+        color: #3B82F6;
+    }
+
+    .notification-item .icon.gold {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold);
+    }
+
+    .notification-item .icon.purple {
+        background: rgba(139, 92, 246, 0.08);
+        color: #8B5CF6;
+    }
+
+    .notification-item .icon.green {
+        background: rgba(5, 150, 105, 0.08);
+        color: #059669;
+    }
+
+    .notification-item .icon.red {
+        background: rgba(239, 68, 68, 0.08);
+        color: #EF4444;
+    }
+
+    .notification-item .icon.orange {
+        background: rgba(245, 158, 11, 0.08);
+        color: #F59E0B;
+    }
+
+    .notification-item .icon.blue {
+        background: rgba(59, 130, 246, 0.08);
+        color: #3B82F6;
+    }
+
+    @keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
     /* Responsive */
     @media (max-width: 768px) {
-        .page-header { flex-direction: column; align-items: flex-start; }
-        .page-header-left { width: 100%; }
-        .btn-mark-read { width: 100%; text-align: center; justify-content: center; }
-        .notification-item { padding: 14px 16px; }
-        .notification-item .icon { width: 36px; height: 36px; font-size: 0.85rem; }
-        .notification-item .content .title { font-size: 0.9rem; }
-        .notification-item .content .message { font-size: 0.82rem; }
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .page-header-left {
+            width: 100%;
+        }
+
+        .btn-mark-read {
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .notification-item {
+            padding: 14px 16px;
+        }
+
+        .notification-item .icon {
+            width: 36px;
+            height: 36px;
+            font-size: 0.85rem;
+        }
+
+        .notification-item .content .title {
+            font-size: 0.9rem;
+        }
+
+        .notification-item .content .message {
+            font-size: 0.82rem;
+        }
     }
 
     @media (max-width: 480px) {
-        .page-header h1 { font-size: 1.2rem; }
-        .page-header-icon { width: 40px; height: 40px; font-size: 1rem; }
-        .notification-item { padding: 12px 14px; gap: 10px; }
-        .notification-item .icon { width: 32px; height: 32px; font-size: 0.75rem; }
-        .notification-item .content .title { font-size: 0.85rem; }
-        .notification-item .content .message { font-size: 0.78rem; }
-        .notification-item .content .time { font-size: 0.65rem; }
-        .notification-item .unread-dot { width: 6px; height: 6px; margin-top: 12px; }
+        .page-header h1 {
+            font-size: 1.2rem;
+        }
+
+        .page-header-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .notification-item {
+            padding: 12px 14px;
+            gap: 10px;
+        }
+
+        .notification-item .icon {
+            width: 32px;
+            height: 32px;
+            font-size: 0.75rem;
+        }
+
+        .notification-item .content .title {
+            font-size: 0.85rem;
+        }
+
+        .notification-item .content .message {
+            font-size: 0.78rem;
+        }
+
+        .notification-item .content .time {
+            font-size: 0.65rem;
+        }
+
+        .notification-item .unread-dot {
+            width: 6px;
+            height: 6px;
+            margin-top: 12px;
+        }
     }
 
     /* Dark mode overrides */
-    [data-theme="dark"] .notification-list { background: var(--secondary-bg, #253449); border-color: rgba(201,168,75,0.04); }
-    [data-theme="dark"] .notification-item { border-bottom-color: rgba(201,168,75,0.02); }
-    [data-theme="dark"] .notification-item:hover { background: rgba(201,168,75,0.02); }
-    [data-theme="dark"] .notification-item .content .title { color: var(--white); }
-    [data-theme="dark"] .notification-item .content .message { color: var(--text-gray); }
-    [data-theme="dark"] .notification-item .content .time { color: var(--text-muted); }
-    [data-theme="dark"] .notification-item.read .content .title { color: var(--text-gray); }
-    [data-theme="dark"] .empty-state i { color: var(--primary-gold); }
-    [data-theme="dark"] .empty-state p { color: var(--text-gray); }
-    [data-theme="dark"] .empty-state .empty-sub { color: var(--text-muted); }
-    [data-theme="dark"] .btn-mark-read { background: rgba(201,168,75,0.06); border-color: rgba(201,168,75,0.04); color: var(--primary-gold); }
-    [data-theme="dark"] .btn-mark-read:hover { background: rgba(201,168,75,0.12); }
+    [data-theme="dark"] .notification-list {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
+
+    [data-theme="dark"] .notification-item {
+        border-bottom-color: rgba(201, 168, 75, 0.02);
+    }
+
+    [data-theme="dark"] .notification-item:hover {
+        background: rgba(201, 168, 75, 0.02);
+    }
+
+    [data-theme="dark"] .notification-item .content .title {
+        color: var(--white);
+    }
+
+    [data-theme="dark"] .notification-item .content .message {
+        color: var(--text-gray);
+    }
+
+    [data-theme="dark"] .notification-item .content .time {
+        color: var(--text-muted);
+    }
+
+    [data-theme="dark"] .notification-item.read .content .title {
+        color: var(--text-gray);
+    }
+
+    [data-theme="dark"] .empty-state i {
+        color: var(--primary-gold);
+    }
+
+    [data-theme="dark"] .empty-state p {
+        color: var(--text-gray);
+    }
+
+    [data-theme="dark"] .empty-state .empty-sub {
+        color: var(--text-muted);
+    }
+
+    [data-theme="dark"] .btn-mark-read {
+        background: rgba(201, 168, 75, 0.06);
+        border-color: rgba(201, 168, 75, 0.04);
+        color: var(--primary-gold);
+    }
+
+    [data-theme="dark"] .btn-mark-read:hover {
+        background: rgba(201, 168, 75, 0.12);
+    }
 </style>
 
 <div class="notifications-page">
@@ -106,47 +409,46 @@
 
     <div class="notification-list">
         {% if notifications %}
-            {% for notif in notifications %}
-                <div class="notification-item {% if not notif.is_read %}unread{% else %}read{% endif %}" 
-                     data-id="{{ notif.id }}"
-                     {% if notif.link %}onclick="window.location.href='{{ notif.link }}'"{% endif %}>
-                    <div class="icon {{ notif.icon_color or 'gold' }}">
-                        <i class="fas {{ notif.icon or 'fa-bell' }}"></i>
-                    </div>
-                    <div class="content">
-                        <div class="title">{{ notif.title }}</div>
-                        <div class="message">{{ notif.message }}</div>
-                        <div class="time">
-                            <i class="fas fa-clock" style="font-size: 0.6rem; margin-right: 4px;"></i>
-                            <!-- ✅ FIX: Use time_ago filter for relative time -->
-                            {{ notif.created_at | time_ago }}
-                        </div>
-                    </div>
-                    {% if not notif.is_read %}
-                        <span class="unread-dot"></span>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-bell-slash"></i>
-                <p>No notifications yet</p>
-                <p class="empty-sub">You'll see notifications here when there's activity</p>
+        {% for notif in notifications %}
+        <div class="notification-item {% if not notif.is_read %}unread{% else %}read{% endif %}"
+            data-id="{{ notif.id }}" {% if notif.link %}onclick="window.location.href='{{ notif.link }}'" {% endif %}>
+            <div class="icon {{ notif.icon_color or 'gold' }}">
+                <i class="fas {{ notif.icon or 'fa-bell' }}"></i>
             </div>
+            <div class="content">
+                <div class="title">{{ notif.title }}</div>
+                <div class="message">{{ notif.message }}</div>
+                <div class="time">
+                    <i class="fas fa-clock" style="font-size: 0.6rem; margin-right: 4px;"></i>
+                    <!-- ✅ FIX: Add fallback -->
+                    {{ notif.created_at | time_ago if notif.created_at else 'Just now' }}
+                </div>
+            </div>
+            {% if not notif.is_read %}
+            <span class="unread-dot"></span>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-bell-slash"></i>
+            <p>No notifications yet</p>
+            <p class="empty-sub">You'll see notifications here when there's activity</p>
+        </div>
         {% endif %}
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // ==========================================
         // MARK SINGLE NOTIFICATION AS READ
         // ==========================================
         document.querySelectorAll('.notification-item.unread').forEach(item => {
-            item.addEventListener('click', function(e) {
+            item.addEventListener('click', function (e) {
                 // Don't trigger if clicking on a link inside
                 if (e.target.closest('a')) return;
-                
+
                 const id = this.dataset.id;
                 if (id) {
                     // Mark as read immediately (optimistic UI)
@@ -154,19 +456,30 @@
                     this.classList.add('read');
                     const dot = this.querySelector('.unread-dot');
                     if (dot) dot.remove();
-                    
+
                     // Update badge count
                     updateBadgeCount();
-                    
+
                     // Send request to server
                     fetch(`/api/notifications/${id}/mark-read`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' }
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.success) {
-                            // Revert if failed
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                // Revert if failed
+                                this.classList.remove('read');
+                                this.classList.add('unread');
+                                if (!this.querySelector('.unread-dot')) {
+                                    const newDot = document.createElement('span');
+                                    newDot.className = 'unread-dot';
+                                    this.appendChild(newDot);
+                                }
+                            }
+                        })
+                        .catch(() => {
+                            // Revert on error
                             this.classList.remove('read');
                             this.classList.add('unread');
                             if (!this.querySelector('.unread-dot')) {
@@ -174,18 +487,7 @@
                                 newDot.className = 'unread-dot';
                                 this.appendChild(newDot);
                             }
-                        }
-                    })
-                    .catch(() => {
-                        // Revert on error
-                        this.classList.remove('read');
-                        this.classList.add('unread');
-                        if (!this.querySelector('.unread-dot')) {
-                            const newDot = document.createElement('span');
-                            newDot.className = 'unread-dot';
-                            this.appendChild(newDot);
-                        }
-                    });
+                        });
                 }
             });
         });
@@ -198,18 +500,18 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelectorAll('.notification-item.unread').forEach(item => {
-                        item.classList.remove('unread');
-                        item.classList.add('read');
-                        const dot = item.querySelector('.unread-dot');
-                        if (dot) dot.remove();
-                    });
-                    updateBadgeCount();
-                }
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelectorAll('.notification-item.unread').forEach(item => {
+                            item.classList.remove('unread');
+                            item.classList.add('read');
+                            const dot = item.querySelector('.unread-dot');
+                            if (dot) dot.remove();
+                        });
+                        updateBadgeCount();
+                    }
+                });
         }
 
         // Make function global
@@ -250,7 +552,7 @@
         // ==========================================
         // Check for new notifications every 30 seconds
         let lastCheck = new Date();
-        
+
         setInterval(() => {
             fetch('/api/notifications')
                 .then(response => response.json())
@@ -266,7 +568,7 @@
                         }
                     }
                 })
-                .catch(() => {});
+                .catch(() => { });
         }, 30000);
 
         console.log('✨ Notifications - Gold Theme with Timezone Fix Loaded!');

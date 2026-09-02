@@ -199,15 +199,36 @@
      ANIMATIONS
      ============================================ */
   @keyframes fadeUp {
-    0% { opacity: 0; transform: translateY(16px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  .announcement-item:nth-child(1) { animation-delay: 0.05s; }
-  .announcement-item:nth-child(2) { animation-delay: 0.10s; }
-  .announcement-item:nth-child(3) { animation-delay: 0.15s; }
-  .announcement-item:nth-child(4) { animation-delay: 0.20s; }
-  .announcement-item:nth-child(5) { animation-delay: 0.25s; }
+  .announcement-item:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .announcement-item:nth-child(2) {
+    animation-delay: 0.10s;
+  }
+
+  .announcement-item:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+
+  .announcement-item:nth-child(4) {
+    animation-delay: 0.20s;
+  }
+
+  .announcement-item:nth-child(5) {
+    animation-delay: 0.25s;
+  }
 
   /* ============================================
      RESPONSIVE
@@ -216,19 +237,19 @@
     .announcements-page {
       padding: 0 4px;
     }
-    
+
     .announcement-item {
       padding: 18px 16px;
     }
-    
+
     .announcement-item .header {
       flex-direction: column;
     }
-    
+
     .announcement-item .header h2 {
       font-size: 1rem;
     }
-    
+
     .announcement-item .meta {
       font-size: 0.7rem;
     }
@@ -242,11 +263,11 @@
     .announcement-item {
       padding: 14px 12px;
     }
-    
+
     .announcement-item .header h2 {
       font-size: 0.9rem;
     }
-    
+
     .announcement-item .content {
       font-size: 0.85rem;
     }
@@ -357,67 +378,67 @@
 
 {% block content %}
 <div class="announcements-page">
-    <div class="page-header">
-        <h1>
-            <i class="fas fa-bullhorn"></i> Announcements
-        </h1>
-        <p>Stay updated with the latest news and updates</p>
-    </div>
+  <div class="page-header">
+    <h1>
+      <i class="fas fa-bullhorn"></i> Announcements
+    </h1>
+    <p>Stay updated with the latest news and updates</p>
+  </div>
 
-    {% if announcements %}
-        {% for announcement in announcements %}
-            <div class="announcement-item {% if announcement.is_pinned %}pinned{% endif %}">
-                <div class="header">
-                    <h2>
-                        {{ announcement.title }}
-                        {% if announcement.is_pinned %}
-                            <span class="pin-label"><i class="fas fa-thumbtack"></i> Pinned</span>
-                        {% endif %}
-                    </h2>
-                    <div class="meta">
-                        <!-- ✅ FIX: Use time_ago filter for relative time -->
-                        <span><i class="fas fa-clock"></i> {{ announcement.created_at | time_ago }}</span>
-                    </div>
-                </div>
-                <div class="content">
-                    {{ announcement.content|safe }}
-                </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="empty-state">
-            <i class="fas fa-bullhorn"></i>
-            <h3>No announcements yet</h3>
-            <p>Check back later for updates from your instructors.</p>
-        </div>
-    {% endif %}
+  {% if announcements %}
+  {% for announcement in announcements %}
+  <div class="announcement-item {% if announcement.is_pinned %}pinned{% endif %}">
+    <div class="header">
+      <h2>
+        {{ announcement.title }}
+        {% if announcement.is_pinned %}
+        <span class="pin-label"><i class="fas fa-thumbtack"></i> Pinned</span>
+        {% endif %}
+      </h2>
+      <div class="meta">
+        <span><i class="fas fa-clock"></i> {{ announcement.created_at | time_ago if announcement.created_at else 'Just
+          now' }}</span>
+      </div>
+    </div>
+    <div class="content">
+      {{ announcement.content|safe }}
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-bullhorn"></i>
+    <h3>No announcements yet</h3>
+    <p>Check back later for updates from your instructors.</p>
+  </div>
+  {% endif %}
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // ============================================
-        // GOLD THEME - ANIMATE ON LOAD
-        // ============================================
-        const container = document.querySelector('.announcements-page');
-        if (container) {
-            container.style.opacity = '0';
-            setTimeout(() => {
-                container.style.opacity = '1';
-                container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                container.style.transform = 'translateY(0)';
-            }, 100);
-        }
+  document.addEventListener('DOMContentLoaded', function () {
+    // ============================================
+    // GOLD THEME - ANIMATE ON LOAD
+    // ============================================
+    const container = document.querySelector('.announcements-page');
+    if (container) {
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        container.style.transform = 'translateY(0)';
+      }, 100);
+    }
 
-        // ============================================
-        // ADD HOVER ANIMATION TO ANNOUNCEMENT ITEMS
-        // ============================================
-        document.querySelectorAll('.announcement-item').forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                this.style.transition = 'all 0.3s ease';
-            });
-        });
-
-        console.log('✨ Announcements - Gold Theme with Timezone Fix Loaded!');
+    // ============================================
+    // ADD HOVER ANIMATION TO ANNOUNCEMENT ITEMS
+    // ============================================
+    document.querySelectorAll('.announcement-item').forEach(item => {
+      item.addEventListener('mouseenter', function () {
+        this.style.transition = 'all 0.3s ease';
+      });
     });
+
+    console.log('✨ Announcements - Gold Theme with Timezone Fix Loaded!');
+  });
 </script>
 {% endblock %}
