@@ -4,62 +4,374 @@
 
 {% block content %}
 <style>
-    .assignments-page { max-width: 1200px; margin: 0 auto; padding: 0; }
-    .page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-    .page-header-left { display: flex; align-items: center; gap: 14px; }
-    .page-header-icon { width: 48px; height: 48px; border-radius: var(--radius-sm, 10px); background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06)); display: flex; align-items: center; justify-content: center; color: var(--primary-gold, #C9A84B); font-size: 1.3rem; border: 1px solid rgba(201, 168, 75, 0.04); }
-    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--white, #FFFFFF); letter-spacing: -0.02em; margin: 0; }
-    .page-header h1 span { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .page-header .subtitle { font-size: 0.85rem; color: var(--text-gray, #C8CED8); margin: 2px 0 0; }
+    .assignments-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0;
+    }
 
-    .btn-create { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); color: var(--white, #FFFFFF); font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: var(--transition, 0.3s ease); box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15); }
-    .btn-create:hover { transform: translateY(-2px); box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25); color: var(--white, #FFFFFF); }
+    .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
 
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards; }
-    .stat-mini { background: var(--secondary-bg, #253449); padding: 16px 18px; border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08)); display: flex; align-items: center; gap: 14px; transition: var(--transition, 0.3s ease); }
-    .stat-mini:hover { box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12)); transform: translateY(-2px); border-color: rgba(201, 168, 75, 0.08); }
-    .stat-mini .stat-icon { width: 40px; height: 40px; border-radius: var(--radius-sm, 8px); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-    .stat-mini .stat-icon.gold { background: rgba(201,168,75,0.08); color: var(--primary-gold, #C9A84B); }
-    .stat-mini .stat-icon.purple { background: rgba(201,168,75,0.08); color: var(--primary-gold, #C9A84B); }
-    .stat-mini .stat-icon.blue { background: rgba(201,168,75,0.08); color: var(--primary-gold, #C9A84B); }
-    .stat-mini .stat-number { font-size: 1.3rem; font-weight: 700; color: var(--white, #FFFFFF); line-height: 1.2; }
-    .stat-mini .stat-label { font-size: 0.7rem; font-weight: 500; color: var(--text-muted, #8A94A6); text-transform: uppercase; letter-spacing: 0.04em; }
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
 
-    .assignments-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; opacity: 0; animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards; }
-    .assignment-card { background: var(--secondary-bg, #253449); border-radius: var(--radius, 14px); border: 1px solid rgba(201, 168, 75, 0.04); box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08)); padding: 20px 20px 18px; transition: var(--transition, 0.3s ease); }
-    .assignment-card:hover { box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12)); transform: translateY(-4px); border-color: rgba(201, 168, 75, 0.08); }
-    .assignment-card .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
-    .assignment-card .card-header h3 { font-size: 1rem; font-weight: 700; color: var(--white, #FFFFFF); margin: 0; }
-    .assignment-card .course-badge { font-size: 0.6rem; font-weight: 600; color: var(--primary-gold, #C9A84B); background: rgba(201,168,75,0.06); padding: 2px 12px; border-radius: 100px; white-space: nowrap; border: 1px solid rgba(201,168,75,0.04); }
-    .assignment-card .description { font-size: 0.85rem; color: var(--text-gray, #C8CED8); line-height: 1.6; margin: 8px 0 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .assignment-card .meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.75rem; color: var(--text-muted, #8A94A6); margin-bottom: 14px; }
-    .assignment-card .meta i { color: var(--primary-gold, #C9A84B); width: 14px; }
-    .assignment-card .meta .due-date { color: #EF4444; font-weight: 600; }
-    .assignment-card .meta .due-date i { color: #EF4444; }
-    .assignment-card .actions { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(201,168,75,0.04); }
+    .page-header-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm, 10px);
+        background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold, #C9A84B);
+        font-size: 1.3rem;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
 
-    .btn-sm { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 60px; font-weight: 600; font-size: 0.75rem; text-decoration: none; transition: var(--transition, 0.3s ease); border: none; cursor: pointer; }
-    .btn-primary-sm { background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48)); color: var(--white, #FFFFFF); }
-    .btn-primary-sm:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(201,168,75,0.2); color: var(--white, #FFFFFF); }
-    .btn-outline-sm { background: transparent; color: var(--text-gray, #C8CED8); border: 1px solid rgba(201,168,75,0.04); }
-    .btn-outline-sm:hover { border-color: var(--primary-gold, #C9A84B); color: var(--primary-gold, #C9A84B); transform: translateY(-2px); }
-    .btn-danger-sm { background: rgba(239,68,68,0.08); color: #EF4444; border: 1px solid rgba(239,68,68,0.04); }
-    .btn-danger-sm:hover { background: rgba(239,68,68,0.15); transform: translateY(-2px); }
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
 
-    .empty-state { text-align: center; padding: 60px 20px; grid-column: 1 / -1; }
-    .empty-state i { font-size: 3rem; color: var(--primary-gold, #C9A84B); opacity: 0.15; margin-bottom: 16px; }
-    .empty-state p { color: var(--text-gray, #C8CED8); font-size: 1rem; margin: 0; }
-    .empty-state .text-muted { color: var(--text-muted, #8A94A6); font-size: 0.9rem; margin-top: 4px; }
+    .page-header h1 span {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
 
-    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 768px) { .page-header { flex-direction: column; align-items: flex-start; gap: 12px; } .assignments-grid { grid-template-columns: 1fr; } .stats-row { grid-template-columns: repeat(2, 1fr); } }
-    [data-theme="dark"] .stat-mini { background: var(--secondary-bg, #253449); border-color: rgba(201,168,75,0.04); }
-    [data-theme="dark"] .stat-mini .stat-number { color: var(--white, #FFFFFF); }
-    [data-theme="dark"] .assignment-card { background: var(--secondary-bg, #253449); border-color: rgba(201,168,75,0.04); }
-    [data-theme="dark"] .assignment-card .card-header h3 { color: var(--white, #FFFFFF); }
-    [data-theme="dark"] .assignment-card .description { color: var(--text-gray, #C8CED8); }
-    [data-theme="dark"] .btn-outline-sm { color: var(--text-gray, #C8CED8); border-color: rgba(201,168,75,0.04); }
-    [data-theme="dark"] .btn-outline-sm:hover { border-color: var(--primary-gold, #C9A84B); color: var(--primary-gold, #C9A84B); }
+    .page-header .subtitle {
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        margin: 2px 0 0;
+    }
+
+    .btn-create {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        border-radius: 60px;
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+        box-shadow: 0 2px 16px rgba(201, 168, 75, 0.15);
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 24px rgba(201, 168, 75, 0.25);
+        color: var(--white, #FFFFFF);
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+    }
+
+    .stat-mini {
+        background: var(--secondary-bg, #253449);
+        padding: 16px 18px;
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition, 0.3s ease);
+    }
+
+    .stat-mini:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+        transform: translateY(-2px);
+        border-color: rgba(201, 168, 75, 0.08);
+    }
+
+    .stat-mini .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm, 8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .stat-mini .stat-icon.gold {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    .stat-mini .stat-icon.purple {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    .stat-mini .stat-icon.blue {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    .stat-mini .stat-number {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        line-height: 1.2;
+    }
+
+    .stat-mini .stat-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-muted, #8A94A6);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .assignments-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    }
+
+    .assignment-card {
+        background: var(--secondary-bg, #253449);
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+        padding: 20px 20px 18px;
+        transition: var(--transition, 0.3s ease);
+    }
+
+    .assignment-card:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+        transform: translateY(-4px);
+        border-color: rgba(201, 168, 75, 0.08);
+    }
+
+    .assignment-card .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 6px;
+    }
+
+    .assignment-card .card-header h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        margin: 0;
+    }
+
+    .assignment-card .course-badge {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: var(--primary-gold, #C9A84B);
+        background: rgba(201, 168, 75, 0.06);
+        padding: 2px 12px;
+        border-radius: 100px;
+        white-space: nowrap;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+
+    .assignment-card .description {
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        line-height: 1.6;
+        margin: 8px 0 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .assignment-card .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.75rem;
+        color: var(--text-muted, #8A94A6);
+        margin-bottom: 14px;
+    }
+
+    .assignment-card .meta i {
+        color: var(--primary-gold, #C9A84B);
+        width: 14px;
+    }
+
+    .assignment-card .meta .due-date {
+        color: #EF4444;
+        font-weight: 600;
+    }
+
+    .assignment-card .meta .due-date i {
+        color: #EF4444;
+    }
+
+    .assignment-card .actions {
+        display: flex;
+        gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(201, 168, 75, 0.04);
+    }
+
+    .btn-sm {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 16px;
+        border-radius: 60px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-decoration: none;
+        transition: var(--transition, 0.3s ease);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary-sm {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+    }
+
+    .btn-primary-sm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(201, 168, 75, 0.2);
+        color: var(--white, #FFFFFF);
+    }
+
+    .btn-outline-sm {
+        background: transparent;
+        color: var(--text-gray, #C8CED8);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+
+    .btn-outline-sm:hover {
+        border-color: var(--primary-gold, #C9A84B);
+        color: var(--primary-gold, #C9A84B);
+        transform: translateY(-2px);
+    }
+
+    .btn-danger-sm {
+        background: rgba(239, 68, 68, 0.08);
+        color: #EF4444;
+        border: 1px solid rgba(239, 68, 68, 0.04);
+    }
+
+    .btn-danger-sm:hover {
+        background: rgba(239, 68, 68, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--primary-gold, #C9A84B);
+        opacity: 0.15;
+        margin-bottom: 16px;
+    }
+
+    .empty-state p {
+        color: var(--text-gray, #C8CED8);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .empty-state .text-muted {
+        color: var(--text-muted, #8A94A6);
+        font-size: 0.9rem;
+        margin-top: 4px;
+    }
+
+    @keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .assignments-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    [data-theme="dark"] .stat-mini {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
+
+    [data-theme="dark"] .stat-mini .stat-number {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .assignment-card {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
+
+    [data-theme="dark"] .assignment-card .card-header h3 {
+        color: var(--white, #FFFFFF);
+    }
+
+    [data-theme="dark"] .assignment-card .description {
+        color: var(--text-gray, #C8CED8);
+    }
+
+    [data-theme="dark"] .btn-outline-sm {
+        color: var(--text-gray, #C8CED8);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
+
+    [data-theme="dark"] .btn-outline-sm:hover {
+        border-color: var(--primary-gold, #C9A84B);
+        color: var(--primary-gold, #C9A84B);
+    }
 </style>
 
 <div class="assignments-page">
@@ -91,9 +403,9 @@
             <div>
                 <div class="stat-number">
                     {% if assignments %}
-                        {{ assignments|selectattr('is_past_due', 'eq', False)|list|length }}
+                    {{ assignments|selectattr('is_past_due', 'eq', False)|list|length }}
                     {% else %}
-                        0
+                    0
                     {% endif %}
                 </div>
                 <div class="stat-label">Active</div>
@@ -104,9 +416,9 @@
             <div>
                 <div class="stat-number">
                     {% if assignments %}
-                        {{ assignments|selectattr('is_past_due', 'eq', True)|list|length }}
+                    {{ assignments|selectattr('is_past_due', 'eq', True)|list|length }}
                     {% else %}
-                        0
+                    0
                     {% endif %}
                 </div>
                 <div class="stat-label">Past Due</div>
@@ -117,48 +429,57 @@
     <!-- Assignments Grid -->
     <div class="assignments-grid">
         {% if assignments %}
-            {% for assignment in assignments %}
-                <div class="assignment-card">
-                    <div class="card-header">
-                        <h3>{{ assignment.title }}</h3>
-                        <span class="course-badge">{{ assignment.course.code }}</span>
-                    </div>
-                    <p class="description">{{ assignment.description[:150] }}{% if assignment.description|length > 150 %}...{% endif %}</p>
-                    <div class="meta">
-                        <span><i class="fas fa-calendar-alt"></i> Due: <span class="due-date">{{ assignment.due_date.strftime('%b %d, %Y') }}</span></span>
-                        <span><i class="fas fa-star"></i> Max Score: {{ assignment.max_score }}</span>
-                        <span><i class="fas fa-users"></i> {{ assignment.get_submissions_count() if assignment.get_submissions_count is defined else 0 }} submissions</span>
-                    </div>
-                    <div class="actions">
-                        <a href="{{ url_for('edit_assignment', assignment_id=assignment.id) }}" class="btn-sm btn-outline-sm">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <a href="{{ url_for('view_submissions', assignment_id=assignment.id) }}" class="btn-sm btn-primary-sm">
-                            <i class="fas fa-eye"></i> Submissions
-                        </a>
-                        <form method="POST" action="{{ url_for('delete_assignment', assignment_id=assignment.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this assignment?');">
-                            <button type="submit" class="btn-sm btn-danger-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-tasks"></i>
-                <p>No assignments created yet</p>
-                <p class="text-muted">Create your first assignment to get started</p>
-                <a href="{{ url_for('create_assignment') }}" style="display: inline-block; margin-top: 12px; padding: 10px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); color: var(--white); text-decoration: none; font-weight: 600;">
-                    <i class="fas fa-plus"></i> Create Assignment
-                </a>
+        {% for assignment in assignments %}
+        <div class="assignment-card">
+            <div class="card-header">
+                <h3>{{ assignment.title }}</h3>
+                <span class="course-badge">{{ assignment.course.code }}</span>
             </div>
+            <p class="description">{{ assignment.description[:150] }}{% if assignment.description|length > 150 %}...{%
+                endif %}</p>
+            <div class="meta">
+                <span><i class="fas fa-calendar-alt"></i> Due: <span class="due-date">{{
+                        assignment.due_date.strftime('%b %d, %Y') }}</span></span>
+                <span><i class="fas fa-star"></i> Max Score: {{ assignment.max_score }}</span>
+                <span><i class="fas fa-users"></i> {{ assignment.get_submissions_count() if
+                    assignment.get_submissions_count is defined else 0 }} submissions</span>
+                {% if assignment.file_path %}
+                <span><i class="fas fa-paperclip" style="color: var(--primary-gold, #C9A84B);"></i> File attached</span>
+                {% endif %}
+            </div>
+            <div class="actions">
+                <a href="{{ url_for('edit_assignment', assignment_id=assignment.id) }}" class="btn-sm btn-outline-sm">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{{ url_for('view_submissions', assignment_id=assignment.id) }}" class="btn-sm btn-primary-sm">
+                    <i class="fas fa-eye"></i> Submissions
+                </a>
+                <form method="POST" action="{{ url_for('delete_assignment', assignment_id=assignment.id) }}"
+                    style="display: inline;"
+                    onsubmit="return confirm('Are you sure you want to delete this assignment?');">
+                    <button type="submit" class="btn-sm btn-danger-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-tasks"></i>
+            <p>No assignments created yet</p>
+            <p class="text-muted">Create your first assignment to get started</p>
+            <a href="{{ url_for('create_assignment') }}"
+                style="display: inline-block; margin-top: 12px; padding: 10px 24px; border-radius: 60px; background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); color: var(--white); text-decoration: none; font-weight: 600;">
+                <i class="fas fa-plus"></i> Create Assignment
+            </a>
+        </div>
         {% endif %}
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const statNumbers = document.querySelectorAll('.stat-number');
         statNumbers.forEach(stat => {
             const text = stat.textContent;

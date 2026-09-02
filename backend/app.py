@@ -593,6 +593,10 @@ class Assignment(db.Model):
     max_score = db.Column(db.Float, default=100)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    file_path = db.Column(db.String(200), nullable=True)
+    file_name = db.Column(db.String(100), nullable=True)
+    file_size = db.Column(db.String(20), nullable=True)
     
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -3967,6 +3971,36 @@ def manage_assignments():
         flash(f'Error loading assignments: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
 
+# ============================================================================
+# ASSIGNMENT FILE UPLOAD - ADD TO app.py
+# ============================================================================
+
+# Update the Assignment model to include file fields
+# Add these columns to the Assignment model (if not already present):
+# file_path = db.Column(db.String(200), nullable=True)
+# file_name = db.Column(db.String(100), nullable=True)
+# file_size = db.Column(db.String(20), nullable=True)
+
+# Helper function to validate file
+def validate_assignment_file(file):
+    """Validate uploaded assignment file"""
+    if not file or file.filename == '':
+        return None, "No file selected"
+    
+    if not allowed_file(file.filename):
+        return None, f"File type not allowed. Allowed: {', '.join(app.config['ALLOWED_EXTENSIONS'])}"
+    
+    # Check file size (max 16MB)
+    file.seek(0, 2)  # Seek to end
+    size = file.tell()
+    file.seek(0)  # Reset to beginning
+    
+    if size > app.config['MAX_CONTENT_LENGTH']:
+        return None, f"File too large. Maximum size: {app.config['MAX_CONTENT_LENGTH'] // (1024*1024)}MB"
+    
+    return True, None
+
+# Update the create_assignment route
 @app.route('/admin/assignments/create', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -3998,18 +4032,44 @@ def create_assignment():
             flash('Invalid date format.', 'error')
             return render_template('admin/create_assignment.html', courses=courses)
         
+        # Handle file upload
+        file_path = None
+        file_name = None
+        file_size = None
+        
+        if 'assignment_file' in request.files:
+            file = request.files['assignment_file']
+            if file and file.filename:
+                is_valid, error = validate_assignment_file(file)
+                if not is_valid:
+                    flash(error, 'error')
+                    return render_template('admin/create_assignment.html', courses=courses)
+                
+                # Save file
+                filename = secure_filename(file.filename)
+                unique_filename = get_upload_path(filename)
+                full_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                file.save(full_path)
+                
+                file_path = unique_filename
+                file_name = filename
+                file_size = f"{os.path.getsize(full_path) / 1024:.1f} KB"
+        
         assignment = Assignment(
             title=title,
             description=description,
             course_id=course_id,
             author_id=current_user.id,
             due_date=due_date_obj,
-            max_score=float(max_score) if max_score else 100
+            max_score=float(max_score) if max_score else 100,
+            file_path=file_path,
+            file_name=file_name,
+            file_size=file_size
         )
         db.session.add(assignment)
         db.session.commit()
         
-        # Send notification to all students enrolled in this course
+        # Send notifications
         students = User.query.filter(
             User.id.in_(
                 db.session.query(CourseEnrollment.student_id).filter(
@@ -4035,6 +4095,7 @@ def create_assignment():
     
     return render_template('admin/create_assignment.html', courses=courses)
 
+# Update the edit_assignment route
 @app.route('/admin/assignments/<int:assignment_id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -4056,6 +4117,7 @@ def edit_assignment(assignment_id):
         course_id = request.form.get('course_id')
         due_date = request.form.get('due_date')
         max_score = request.form.get('max_score', 100)
+        remove_file = request.form.get('remove_file') == 'on'
         
         if not title or not description or not course_id or not due_date:
             flash('All fields are required.', 'error')
@@ -4074,11 +4136,67 @@ def edit_assignment(assignment_id):
         assignment.max_score = float(max_score) if max_score else 100
         assignment.updated_at = datetime.utcnow()
         
+        # Handle file upload
+        if 'assignment_file' in request.files:
+            file = request.files['assignment_file']
+            if file and file.filename:
+                # Delete old file if exists
+                if assignment.file_path:
+                    old_path = os.path.join(app.config['UPLOAD_FOLDER'], assignment.file_path)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                
+                is_valid, error = validate_assignment_file(file)
+                if not is_valid:
+                    flash(error, 'error')
+                    return render_template('admin/edit_assignment.html', assignment=assignment, courses=courses)
+                
+                filename = secure_filename(file.filename)
+                unique_filename = get_upload_path(filename)
+                full_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                file.save(full_path)
+                
+                assignment.file_path = unique_filename
+                assignment.file_name = filename
+                assignment.file_size = f"{os.path.getsize(full_path) / 1024:.1f} KB"
+        
+        # Handle file removal
+        if remove_file and assignment.file_path:
+            old_path = os.path.join(app.config['UPLOAD_FOLDER'], assignment.file_path)
+            if os.path.exists(old_path):
+                os.remove(old_path)
+            assignment.file_path = None
+            assignment.file_name = None
+            assignment.file_size = None
+        
         db.session.commit()
         flash(f'Assignment "{title}" updated successfully!', 'success')
         return redirect(url_for('manage_assignments'))
     
     return render_template('admin/edit_assignment.html', assignment=assignment, courses=courses)
+
+# Add route to download assignment file
+@app.route('/admin/assignments/<int:assignment_id>/download')
+@login_required
+@admin_required
+def download_assignment_file(assignment_id):
+    assignment = Assignment.query.get_or_404(assignment_id)
+    
+    if not assignment.file_path:
+        flash('No file attached to this assignment.', 'warning')
+        return redirect(url_for('edit_assignment', assignment_id=assignment.id))
+    
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], assignment.file_path)
+    if not os.path.exists(file_path):
+        flash('File not found.', 'error')
+        return redirect(url_for('edit_assignment', assignment_id=assignment.id))
+    
+    return send_from_directory(
+        app.config['UPLOAD_FOLDER'],
+        assignment.file_path,
+        as_attachment=True,
+        download_name=assignment.file_name or 'assignment_file'
+    )
 
 @app.route('/admin/assignments/<int:assignment_id>/delete', methods=['POST'])
 @login_required
@@ -6266,6 +6384,80 @@ def admin_dashboard_api():
             'success': False,
             'error': str(e)
         }), 500
+
+# ============================================================================
+# ROUTE - QUIZ REVIEW
+# ============================================================================
+
+@app.route('/student/quizzes/<int:quiz_id>/review')
+@login_required
+def quiz_review(quiz_id):
+    """Review a quiz with correct/incorrect answers"""
+    if current_user.is_admin():
+        flash('Admins cannot review quizzes.', 'warning')
+        return redirect(url_for('admin_dashboard'))
+    
+    quiz = QuizGroup.query.get_or_404(quiz_id)
+    
+    # Check if student is enrolled in the course
+    if not current_user.is_enrolled_in_course(quiz.course_id):
+        flash('You are not enrolled in this course.', 'error')
+        return redirect(url_for('student_quizzes'))
+    
+    # Get all answers for this student for this quiz
+    answers = QuizAnswer.query.filter_by(
+        student_id=current_user.id,
+        quiz_group_id=quiz.id
+    ).all()
+    
+    if not answers:
+        flash('You have not taken this quiz yet.', 'info')
+        return redirect(url_for('student_quizzes'))
+    
+    # Get all questions
+    questions = QuizQuestion.query.filter_by(quiz_group_id=quiz.id).order_by(QuizQuestion.order.asc()).all()
+    
+    # Build review data
+    question_reviews = []
+    correct_count = 0
+    incorrect_count = 0
+    
+    for question in questions:
+        # Find the student's answer for this question
+        answer = next((a for a in answers if a.question_id == question.id), None)
+        
+        if answer:
+            is_correct = answer.is_correct
+            if is_correct:
+                correct_count += 1
+            else:
+                incorrect_count += 1
+        else:
+            is_correct = False
+            incorrect_count += 1
+        
+        question_reviews.append({
+            'question_id': question.id,
+            'question_text': question.question_text,
+            'option_a': question.option_a,
+            'option_b': question.option_b,
+            'option_c': question.option_c,
+            'option_d': question.option_d,
+            'correct': question.correct_option,
+            'selected': answer.selected_option if answer else None,
+            'is_correct': is_correct
+        })
+    
+    total_questions = len(questions)
+    score = int((correct_count / total_questions) * 100) if total_questions > 0 else 0
+    
+    return render_template('quiz_review.html',
+                         quiz=quiz,
+                         question_reviews=question_reviews,
+                         correct_count=correct_count,
+                         incorrect_count=incorrect_count,
+                         total_questions=total_questions,
+                         score=score)
 
 # ============================================================================
 # HEALTH CHECK FOR RENDER

@@ -8,14 +8,11 @@
      CREATE ASSIGNMENT - Premium Navy + Gold Theme
      ============================================ */
   .create-assignment-page {
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto;
     padding: 0;
   }
 
-  /* ============================================
-     CONTAINER - Gold Theme
-     ============================================ */
   .assignment-container {
     background: var(--secondary-bg, #253449);
     border-radius: var(--radius, 16px);
@@ -57,9 +54,6 @@
     border-color: rgba(201, 168, 75, 0.08);
   }
 
-  /* ============================================
-     HEADER - Gold Theme
-     ============================================ */
   .assignment-header {
     text-align: center;
     margin-bottom: 32px;
@@ -107,9 +101,6 @@
     margin: 0;
   }
 
-  /* ============================================
-     FORM - Gold Theme
-     ============================================ */
   .assignment-form {
     display: flex;
     flex-direction: column;
@@ -194,11 +185,6 @@
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
   }
 
-  .form-control.error:focus {
-    border-color: #EF4444;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
-  }
-
   textarea.form-control {
     resize: vertical;
     min-height: 100px;
@@ -236,7 +222,118 @@
   }
 
   /* ============================================
-     CHARACTER COUNTER - Gold Theme
+     FILE UPLOAD - NEW
+     ============================================ */
+  .file-upload-wrapper {
+    position: relative;
+    border: 2px dashed rgba(201, 168, 75, 0.08);
+    border-radius: var(--radius-sm, 10px);
+    padding: 24px 20px;
+    text-align: center;
+    transition: var(--transition, 0.3s ease);
+    cursor: pointer;
+    background: rgba(201, 168, 75, 0.02);
+  }
+
+  .file-upload-wrapper:hover {
+    border-color: rgba(201, 168, 75, 0.15);
+    background: rgba(201, 168, 75, 0.04);
+  }
+
+  .file-upload-wrapper .upload-icon {
+    font-size: 2.5rem;
+    color: var(--primary-gold, #C9A84B);
+    opacity: 0.4;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .file-upload-wrapper .upload-text {
+    font-size: 0.9rem;
+    color: var(--text-gray, #C8CED8);
+  }
+
+  .file-upload-wrapper .upload-text strong {
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .file-upload-wrapper .upload-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted, #8A94A6);
+    margin-top: 4px;
+  }
+
+  .file-upload-wrapper input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  /* File preview */
+  .file-preview {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm, 8px);
+    background: rgba(201, 168, 75, 0.04);
+    border: 1px solid rgba(201, 168, 75, 0.06);
+    margin-top: 12px;
+  }
+
+  .file-preview.show {
+    display: flex;
+  }
+
+  .file-preview .file-icon {
+    font-size: 1.6rem;
+    color: var(--primary-gold, #C9A84B);
+  }
+
+  .file-preview .file-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .file-preview .file-info .file-name {
+    font-weight: 600;
+    color: var(--white, #FFFFFF);
+    font-size: 0.9rem;
+    word-break: break-all;
+  }
+
+  .file-preview .file-info .file-size {
+    font-size: 0.75rem;
+    color: var(--text-muted, #8A94A6);
+  }
+
+  .file-preview .file-remove {
+    background: transparent;
+    border: none;
+    color: var(--text-muted, #8A94A6);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px 8px;
+    transition: var(--transition, 0.3s ease);
+  }
+
+  .file-preview .file-remove:hover {
+    color: #EF4444;
+  }
+
+  .file-preview .file-badge {
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 100px;
+    background: rgba(201, 168, 75, 0.08);
+    color: var(--primary-gold, #C9A84B);
+    border: 1px solid rgba(201, 168, 75, 0.04);
+  }
+
+  /* ============================================
+     CHARACTER COUNTER
      ============================================ */
   .char-counter {
     display: flex;
@@ -258,9 +355,6 @@
     color: #EF4444;
   }
 
-  /* ============================================
-     ERROR MESSAGE - Gold Theme
-     ============================================ */
   .error-message {
     font-size: 0.78rem;
     color: #EF4444;
@@ -305,10 +399,6 @@
     color: var(--white, #FFFFFF);
   }
 
-  .btn-primary:active {
-    transform: translateY(0);
-  }
-
   .btn-primary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -333,98 +423,37 @@
     color: var(--primary-gold, #C9A84B);
   }
 
-  .btn-block {
-    width: 100%;
-  }
-
   /* ============================================
      ANIMATIONS
      ============================================ */
   @keyframes fadeUp {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
   /* ============================================
      RESPONSIVE
      ============================================ */
   @media (max-width: 768px) {
-    .assignment-container {
-      padding: 28px 20px 24px;
-    }
-
-    .assignment-header .icon-wrapper {
-      width: 56px;
-      height: 56px;
-      font-size: 1.5rem;
-    }
-
-    .assignment-header h2 {
-      font-size: 1.3rem;
-    }
-
-    .form-control {
-      padding: 10px 14px;
-      font-size: 0.85rem;
-    }
-
-    textarea.form-control {
-      min-height: 80px;
-    }
-
-    .btn {
-      padding: 11px 20px;
-      font-size: 0.85rem;
-    }
+    .assignment-container { padding: 28px 20px 24px; }
+    .assignment-header .icon-wrapper { width: 56px; height: 56px; font-size: 1.5rem; }
+    .assignment-header h2 { font-size: 1.3rem; }
+    .form-control { padding: 10px 14px; font-size: 0.85rem; }
+    textarea.form-control { min-height: 80px; }
+    .btn { padding: 11px 20px; font-size: 0.85rem; }
   }
 
   @media (max-width: 480px) {
-    .assignment-container {
-      padding: 20px 14px 18px;
-      border-radius: var(--radius-sm, 10px);
-    }
-
-    .assignment-header .icon-wrapper {
-      width: 48px;
-      height: 48px;
-      font-size: 1.3rem;
-    }
-
-    .assignment-header h2 {
-      font-size: 1.1rem;
-    }
-
-    .assignment-header p {
-      font-size: 0.82rem;
-    }
-
-    .form-group label {
-      font-size: 0.78rem;
-    }
-
-    .form-control {
-      padding: 9px 12px;
-      font-size: 0.82rem;
-    }
-
-    textarea.form-control {
-      min-height: 70px;
-    }
-
-    .btn {
-      padding: 10px 16px;
-      font-size: 0.82rem;
-    }
-
-    .form-group .helper-text {
-      font-size: 0.7rem;
-    }
+    .assignment-container { padding: 20px 14px 18px; border-radius: var(--radius-sm, 10px); }
+    .assignment-header .icon-wrapper { width: 48px; height: 48px; font-size: 1.3rem; }
+    .assignment-header h2 { font-size: 1.1rem; }
+    .assignment-header p { font-size: 0.82rem; }
+    .form-group label { font-size: 0.78rem; }
+    .form-control { padding: 9px 12px; font-size: 0.82rem; }
+    textarea.form-control { min-height: 70px; }
+    .btn { padding: 10px 16px; font-size: 0.82rem; }
+    .file-upload-wrapper { padding: 16px 14px; }
+    .file-upload-wrapper .upload-icon { font-size: 2rem; }
   }
 
   /* ============================================
@@ -434,91 +463,62 @@
     background: var(--secondary-bg, #253449);
     border-color: rgba(201, 168, 75, 0.04);
   }
-
   [data-theme="dark"] .assignment-container::before {
     background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
   }
-
-  [data-theme="dark"] .assignment-header h2 {
-    color: var(--white, #FFFFFF);
-  }
-
+  [data-theme="dark"] .assignment-header h2 { color: var(--white, #FFFFFF); }
   [data-theme="dark"] .assignment-header .icon-wrapper {
     background: rgba(201, 168, 75, 0.08);
     border-color: rgba(201, 168, 75, 0.04);
   }
-
-  [data-theme="dark"] .assignment-container:hover .icon-wrapper {
-    border-color: rgba(201, 168, 75, 0.08);
-  }
-
-  [data-theme="dark"] .form-group label {
-    color: var(--text-gray, #C8CED8);
-  }
-
+  [data-theme="dark"] .form-group label { color: var(--text-gray, #C8CED8); }
   [data-theme="dark"] .form-control {
     background: var(--primary-bg, #0A1527);
     border-color: rgba(201, 168, 75, 0.04);
     color: var(--text-gray, #C8CED8);
   }
-
   [data-theme="dark"] .form-control:focus {
     border-color: var(--primary-gold, #C9A84B);
     box-shadow: 0 0 0 3px rgba(201, 168, 75, 0.06);
-    background: var(--primary-bg, #0A1527);
   }
-
-  [data-theme="dark"] .form-control::placeholder {
-    color: var(--text-muted, #8A94A6);
-  }
-
   [data-theme="dark"] select.form-control {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8CED8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   }
-
   [data-theme="dark"] select.form-control option {
     background: var(--secondary-bg, #253449);
     color: var(--text-gray, #C8CED8);
   }
-
-  [data-theme="dark"] input[type="datetime-local"].form-control {
-    color-scheme: dark;
-  }
-
+  [data-theme="dark"] input[type="datetime-local"].form-control { color-scheme: dark; }
   [data-theme="dark"] .btn-outline {
     color: var(--text-gray, #C8CED8);
     border-color: rgba(201, 168, 75, 0.06);
   }
-
   [data-theme="dark"] .btn-outline:hover {
     background: rgba(201, 168, 75, 0.04);
     border-color: var(--primary-gold, #C9A84B);
     color: var(--primary-gold, #C9A84B);
   }
-
-  [data-theme="dark"] .btn-outline i {
+  [data-theme="dark"] .file-upload-wrapper {
+    border-color: rgba(201, 168, 75, 0.06);
+    background: rgba(201, 168, 75, 0.02);
+  }
+  [data-theme="dark"] .file-upload-wrapper:hover {
+    border-color: rgba(201, 168, 75, 0.12);
+    background: rgba(201, 168, 75, 0.04);
+  }
+  [data-theme="dark"] .file-preview {
+    background: rgba(201, 168, 75, 0.04);
+    border-color: rgba(201, 168, 75, 0.06);
+  }
+  [data-theme="dark"] .file-preview .file-info .file-name {
+    color: var(--white, #FFFFFF);
+  }
+  [data-theme="dark"] .file-preview .file-badge {
+    background: rgba(201, 168, 75, 0.08);
     color: var(--primary-gold, #C9A84B);
+    border-color: rgba(201, 168, 75, 0.04);
   }
-
-  [data-theme="dark"] .form-group .helper-text {
-    color: var(--text-muted, #8A94A6);
-  }
-
-  [data-theme="dark"] .form-group .helper-text i {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .char-counter {
-    color: var(--text-muted, #8A94A6);
-  }
-
-  [data-theme="dark"] .char-counter .count.warning {
-    color: var(--primary-gold, #C9A84B);
-  }
-
-  [data-theme="dark"] .assignment-header p {
-    color: var(--text-gray, #C8CED8);
-  }
+  [data-theme="dark"] .assignment-header p { color: var(--text-gray, #C8CED8); }
 </style>
 
 <div class="create-assignment-page">
@@ -529,11 +529,11 @@
         <i class="fas fa-pencil-alt"></i>
       </div>
       <h2>Create <span>Assignment</span></h2>
-      <p>Add a new assignment for students</p>
+      <p>Add a new assignment with optional file attachment</p>
     </div>
 
     <!-- Form -->
-    <form method="POST" class="assignment-form" id="assignmentForm" novalidate>
+    <form method="POST" class="assignment-form" id="assignmentForm" enctype="multipart/form-data" novalidate>
       <!-- Title -->
       <div class="form-group">
         <label for="title">
@@ -635,6 +635,45 @@
         </span>
       </div>
 
+      <!-- ========================================== -->
+      <!-- FILE UPLOAD - NEW -->
+      <!-- ========================================== -->
+      <div class="form-group">
+        <label for="assignment_file">
+          <i class="fas fa-paperclip"></i> Attach File
+          <span class="optional">(Optional)</span>
+        </label>
+        
+        <div class="file-upload-wrapper" id="fileDropZone">
+          <span class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></span>
+          <div class="upload-text">
+            <strong>Click to upload</strong> or drag and drop
+          </div>
+          <div class="upload-sub">
+            PDF, DOC, DOCX, TXT, ZIP · Max 16MB
+          </div>
+          <input 
+            type="file" 
+            id="assignment_file" 
+            name="assignment_file" 
+            accept=".pdf,.doc,.docx,.txt,.zip,.png,.jpg,.jpeg,.gif"
+          >
+        </div>
+
+        <!-- File Preview -->
+        <div class="file-preview" id="filePreview">
+          <span class="file-icon"><i class="fas fa-file-pdf"></i></span>
+          <div class="file-info">
+            <div class="file-name" id="fileName">document.pdf</div>
+            <div class="file-size" id="fileSize">2.4 MB</div>
+          </div>
+          <span class="file-badge" id="fileBadge">Ready</span>
+          <button type="button" class="file-remove" id="fileRemove" title="Remove file">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
       <!-- Submit -->
       <button type="submit" class="btn btn-primary" id="submitBtn">
         <i class="fas fa-save"></i> Create Assignment
@@ -661,7 +700,137 @@
     const dateError = document.getElementById('dateError');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Character counters
+    // ============================================
+    // FILE UPLOAD HANDLING - NEW
+    // ============================================
+    const fileInput = document.getElementById('assignment_file');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileBadge = document.getElementById('fileBadge');
+    const fileRemove = document.getElementById('fileRemove');
+    const dropZone = document.getElementById('fileDropZone');
+
+    // Allowed file types
+    const allowedExtensions = ['pdf', 'doc', 'docx', 'txt', 'zip', 'png', 'jpg', 'jpeg', 'gif'];
+    const maxFileSize = 16 * 1024 * 1024; // 16MB
+
+    function getFileIcon(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      const icons = {
+        'pdf': 'fa-file-pdf',
+        'doc': 'fa-file-word',
+        'docx': 'fa-file-word',
+        'txt': 'fa-file-alt',
+        'zip': 'fa-file-archive',
+        'png': 'fa-file-image',
+        'jpg': 'fa-file-image',
+        'jpeg': 'fa-file-image',
+        'gif': 'fa-file-image'
+      };
+      return icons[ext] || 'fa-file';
+    }
+
+    function getFileBadge(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      const badges = {
+        'pdf': 'PDF',
+        'doc': 'DOC',
+        'docx': 'DOCX',
+        'txt': 'TXT',
+        'zip': 'ZIP',
+        'png': 'Image',
+        'jpg': 'Image',
+        'jpeg': 'Image',
+        'gif': 'Image'
+      };
+      return badges[ext] || 'File';
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function validateFile(file) {
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (!allowedExtensions.includes(ext)) {
+        alert('File type not allowed. Allowed: ' + allowedExtensions.join(', '));
+        return false;
+      }
+      if (file.size > maxFileSize) {
+        alert('File too large. Maximum size is 16MB.');
+        return false;
+      }
+      return true;
+    }
+
+    function updateFilePreview(file) {
+      if (file) {
+        const icon = getFileIcon(file.name);
+        document.querySelector('.file-preview .file-icon i').className = 'fas ' + icon;
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        fileBadge.textContent = getFileBadge(file.name);
+        filePreview.classList.add('show');
+      } else {
+        filePreview.classList.remove('show');
+        fileInput.value = '';
+      }
+    }
+
+    // File input change
+    fileInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        if (validateFile(file)) {
+          updateFilePreview(file);
+        } else {
+          this.value = '';
+        }
+      } else {
+        updateFilePreview(null);
+      }
+    });
+
+    // Remove file
+    fileRemove.addEventListener('click', function() {
+      fileInput.value = '';
+      updateFilePreview(null);
+    });
+
+    // Drag and drop
+    dropZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.style.borderColor = 'var(--primary-gold, #C9A84B)';
+      this.style.background = 'rgba(201, 168, 75, 0.06)';
+    });
+
+    dropZone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.style.borderColor = '';
+      this.style.background = '';
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.style.borderColor = '';
+      this.style.background = '';
+      
+      const files = e.dataTransfer.files;
+      if (files && files[0]) {
+        const file = files[0];
+        if (validateFile(file)) {
+          fileInput.files = files;
+          updateFilePreview(file);
+        }
+      }
+    });
+
+    // ============================================
+    // CHARACTER COUNTERS
+    // ============================================
     if (title && titleCount) {
       title.addEventListener('input', function() {
         const len = this.value.length;
@@ -678,7 +847,9 @@
       });
     }
 
-    // Set default due date (1 week from now)
+    // ============================================
+    // SET DEFAULT DUE DATE (1 week from now)
+    // ============================================
     if (dueDate) {
       const now = new Date();
       const oneWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -690,7 +861,9 @@
       dueDate.value = `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 
-    // Remove error on change
+    // ============================================
+    // REMOVE ERROR ON CHANGE
+    // ============================================
     courseSelect.addEventListener('change', function() {
       this.classList.remove('error');
       courseError.style.display = 'none';
@@ -701,11 +874,12 @@
       dateError.style.display = 'none';
     });
 
-    // Form validation
+    // ============================================
+    // FORM VALIDATION
+    // ============================================
     form.addEventListener('submit', function(e) {
       let isValid = true;
 
-      // Validate title
       if (!title.value.trim()) {
         title.classList.add('error');
         isValid = false;
@@ -713,7 +887,6 @@
         title.classList.remove('error');
       }
 
-      // Validate description
       if (!description.value.trim()) {
         description.classList.add('error');
         isValid = false;
@@ -721,7 +894,6 @@
         description.classList.remove('error');
       }
 
-      // Validate course
       if (!courseSelect.value) {
         courseSelect.classList.add('error');
         courseError.style.display = 'flex';
@@ -731,7 +903,6 @@
         courseError.style.display = 'none';
       }
 
-      // Validate due date
       if (!dueDate.value) {
         dueDate.classList.add('error');
         dateError.style.display = 'flex';
@@ -741,7 +912,6 @@
         dateError.style.display = 'none';
       }
 
-      // Validate max score
       if (maxScore.value && parseFloat(maxScore.value) < 0) {
         maxScore.classList.add('error');
         isValid = false;
@@ -751,19 +921,13 @@
 
       if (!isValid) {
         e.preventDefault();
-        if (title.classList.contains('error')) {
-          title.focus();
-        } else if (description.classList.contains('error')) {
-          description.focus();
-        } else if (courseSelect.classList.contains('error')) {
-          courseSelect.focus();
-        } else if (dueDate.classList.contains('error')) {
-          dueDate.focus();
-        }
+        if (title.classList.contains('error')) title.focus();
+        else if (description.classList.contains('error')) description.focus();
+        else if (courseSelect.classList.contains('error')) courseSelect.focus();
+        else if (dueDate.classList.contains('error')) dueDate.focus();
         return;
       }
 
-      // Confirm creation
       const courseName = courseSelect.options[courseSelect.selectedIndex]?.text || '';
       if (!confirm(`Create assignment "${title.value.trim()}" for ${courseName}?`)) {
         e.preventDefault();
@@ -774,18 +938,7 @@
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
     });
 
-    // Add gold theme animation to container on load
-    const container = document.querySelector('.assignment-container');
-    if (container) {
-      container.style.opacity = '0';
-      setTimeout(() => {
-        container.style.opacity = '1';
-        container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        container.style.transform = 'translateY(0)';
-      }, 100);
-    }
-
-    console.log('✨ Create Assignment - Gold Theme Loaded!');
+    console.log('✨ Create Assignment - Gold Theme with File Upload Loaded!');
   });
 </script>
 {% endblock %}

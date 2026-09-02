@@ -4,673 +4,674 @@
 
 {% block extra_css %}
 <style>
-/* ============================================
+    /* ============================================
    STUDENT QUIZZES - Premium Navy + Gold Theme
    ============================================ */
-.student-quizzes {
-    max-width: 1360px;
-    margin: 0 auto;
-    padding: 0;
-}
+    .student-quizzes {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 0;
+    }
 
-/* ============================================
+    /* ============================================
    HEADER - Gold Theme
    ============================================ */
-.page-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.page-header-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.page-header-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-sm, 10px);
-    background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-gold, #C9A84B);
-    font-size: 1.3rem;
-    border: 1px solid rgba(201, 168, 75, 0.04);
-}
-
-.page-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--white, #FFFFFF);
-    letter-spacing: -0.02em;
-    margin: 0;
-}
-
-.page-header h1 span {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.page-header .subtitle {
-    font-size: 0.85rem;
-    color: var(--text-gray, #C8CED8);
-    margin: 2px 0 0;
-}
-
-/* ============================================
-   STATS ROW - Gold Theme
-   ============================================ */
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 14px;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
-}
-
-.stat-mini {
-    background: var(--secondary-bg, #253449);
-    padding: 16px 18px;
-    border-radius: var(--radius, 14px);
-    border: 1px solid rgba(201, 168, 75, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    transition: var(--transition);
-}
-
-.stat-mini:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
-    transform: translateY(-2px);
-    border-color: rgba(201, 168, 75, 0.08);
-}
-
-.stat-mini .stat-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-sm, 8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-}
-
-.stat-mini .stat-icon.gold {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold, #C9A84B);
-}
-
-.stat-mini .stat-icon.green {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-}
-
-.stat-mini .stat-icon.orange {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold, #C9A84B);
-}
-
-.stat-mini .stat-number {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--white, #FFFFFF);
-    line-height: 1.2;
-}
-
-.stat-mini .stat-label {
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--text-muted, #8A94A6);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-/* ============================================
-   QUIZ GRID - Gold Theme
-   ============================================ */
-.quiz-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    opacity: 0;
-    animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
-}
-
-/* ============================================
-   QUIZ CARD - Gold Theme
-   ============================================ */
-.quiz-card {
-    background: var(--secondary-bg, #253449);
-    border-radius: var(--radius);
-    border: 1px solid rgba(201, 168, 75, 0.04);
-    box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
-    padding: 22px 20px 20px;
-    transition: var(--transition);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-}
-
-.quiz-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    opacity: 0;
-    transition: var(--transition, 0.3s ease);
-}
-
-.quiz-card:hover {
-    box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
-    transform: translateY(-4px);
-    border-color: rgba(201, 168, 75, 0.08);
-}
-
-.quiz-card:hover::before {
-    opacity: 1;
-}
-
-.quiz-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 6px;
-}
-
-.quiz-card-header h3 {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--white, #FFFFFF);
-    margin: 0;
-    line-height: 1.3;
-}
-
-.quiz-course-badge {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--text-muted, #8A94A6);
-    background: rgba(201, 168, 75, 0.04);
-    padding: 2px 12px;
-    border-radius: 100px;
-    white-space: nowrap;
-    border: 1px solid rgba(201, 168, 75, 0.02);
-}
-
-.quiz-description {
-    font-size: 0.85rem;
-    color: var(--text-gray, #C8CED8);
-    line-height: 1.6;
-    margin: 0 0 14px;
-    flex: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.quiz-meta {
-    display: flex;
-    gap: 16px;
-    font-size: 0.8rem;
-    color: var(--text-muted, #8A94A6);
-    margin-bottom: 14px;
-    flex-wrap: wrap;
-    padding: 8px 12px;
-    background: var(--primary-bg, #0A1527);
-    border-radius: var(--radius-sm);
-    border: 1px solid rgba(201, 168, 75, 0.02);
-}
-
-.quiz-meta span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.quiz-meta i {
-    font-size: 0.8rem;
-    color: var(--primary-gold, #C9A84B);
-}
-
-/* ============================================
-   QUIZ RESULT - Gold Theme
-   ============================================ */
-.quiz-result {
-    background: rgba(201, 168, 75, 0.04);
-    border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-    border: 1px solid rgba(201, 168, 75, 0.04);
-}
-
-.quiz-result .score-label {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text-gray, #C8CED8);
-}
-
-.quiz-result .score-value {
-    font-size: 1.2rem;
-    font-weight: 700;
-}
-
-.quiz-result .score-value.excellent {
-    color: var(--primary-gold, #C9A84B);
-}
-
-.quiz-result .score-value.good {
-    color: var(--primary-gold, #C9A84B);
-}
-
-.quiz-result .score-value.needs-improvement {
-    color: #EF4444;
-}
-
-.quiz-result .score-detail {
-    font-size: 0.75rem;
-    color: var(--text-muted, #8A94A6);
-}
-
-/* ============================================
-   STATUS BADGE - Gold Theme
-   ============================================ */
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 12px;
-    border-radius: 100px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-.status-badge.completed {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold, #C9A84B);
-    border: 1px solid rgba(201, 168, 75, 0.04);
-}
-
-.status-badge.pending {
-    background: rgba(201, 168, 75, 0.06);
-    color: var(--primary-gold, #C9A84B);
-    border: 1px solid rgba(201, 168, 75, 0.04);
-}
-
-.status-badge.locked {
-    background: rgba(239, 68, 68, 0.08);
-    color: #EF4444;
-    border: 1px solid rgba(239, 68, 68, 0.04);
-}
-
-/* ============================================
-   BUTTONS - Gold Theme
-   ============================================ */
-.btn-block {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-decoration: none;
-    transition: var(--transition);
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-block::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 200%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    transform: skewX(-20deg);
-    transition: var(--transition, 0.6s ease);
-}
-
-.btn-block:hover::after {
-    left: 100%;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
-    color: var(--white, #FFFFFF);
-}
-
-.btn-outline {
-    background: transparent;
-    color: var(--primary-gold, #C9A84B);
-    border: 2px solid rgba(201, 168, 75, 0.08);
-}
-
-.btn-outline:hover {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: var(--primary-gold, #C9A84B);
-    transform: translateY(-2px);
-    color: var(--primary-gold, #C9A84B);
-}
-
-.btn-success {
-    background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
-    color: var(--white, #FFFFFF);
-    box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
-}
-
-.btn-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
-    color: var(--white, #FFFFFF);
-}
-
-.btn-disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.btn-disabled:hover {
-    transform: none !important;
-}
-
-/* ============================================
-   EMPTY STATE - Gold Theme
-   ============================================ */
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    background: var(--secondary-bg, #253449);
-    border-radius: var(--radius);
-    border: 1px solid rgba(201, 168, 75, 0.04);
-    grid-column: 1 / -1;
-}
-
-.empty-state i {
-    font-size: 3rem;
-    color: var(--primary-gold, #C9A84B);
-    opacity: 0.15;
-    margin-bottom: 12px;
-}
-
-.empty-state h3 {
-    font-size: 1.1rem;
-    color: var(--white, #FFFFFF);
-    margin-bottom: 4px;
-}
-
-.empty-state p {
-    color: var(--text-gray, #C8CED8);
-    font-size: 0.9rem;
-}
-
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-@keyframes fadeUp {
-    0% {
-        opacity: 0;
-        transform: translateY(16px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-@media (max-width: 768px) {
     .page-header {
-        flex-direction: column;
-        align-items: flex-start;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
-    .stats-row {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .stat-mini {
-        padding: 12px 14px;
-    }
-
-    .stat-mini .stat-number {
-        font-size: 1.1rem;
-    }
-
-    .quiz-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .quiz-card {
-        padding: 18px 16px 16px;
-    }
-
-    .quiz-card-header h3 {
-        font-size: 0.95rem;
-    }
-
-    .btn-block {
-        font-size: 0.8rem;
-        padding: 8px 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .page-header h1 {
-        font-size: 1.2rem;
+    .page-header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
     }
 
     .page-header-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-sm, 10px);
+        background: linear-gradient(135deg, rgba(201, 168, 75, 0.08), rgba(143, 126, 72, 0.06));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold, #C9A84B);
+        font-size: 1.3rem;
+        border: 1px solid rgba(201, 168, 75, 0.04);
     }
 
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        letter-spacing: -0.02em;
+        margin: 0;
+    }
+
+    .page-header h1 span {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header .subtitle {
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        margin: 2px 0 0;
+    }
+
+    /* ============================================
+   STATS ROW - Gold Theme
+   ============================================ */
     .stats-row {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
     }
 
     .stat-mini {
-        padding: 10px 12px;
+        background: var(--secondary-bg, #253449);
+        padding: 16px 18px;
+        border-radius: var(--radius, 14px);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: var(--transition);
+    }
+
+    .stat-mini:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+        transform: translateY(-2px);
+        border-color: rgba(201, 168, 75, 0.08);
     }
 
     .stat-mini .stat-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-sm, 8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .stat-mini .stat-icon.gold {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    .stat-mini .stat-icon.green {
+        background: rgba(5, 150, 105, 0.08);
+        color: #059669;
+    }
+
+    .stat-mini .stat-icon.orange {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
     }
 
     .stat-mini .stat-number {
-        font-size: 1rem;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        line-height: 1.2;
     }
 
     .stat-mini .stat-label {
-        font-size: 0.6rem;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--text-muted, #8A94A6);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
 
+    /* ============================================
+   QUIZ GRID - Gold Theme
+   ============================================ */
+    .quiz-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        opacity: 0;
+        animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    }
+
+    /* ============================================
+   QUIZ CARD - Gold Theme
+   ============================================ */
     .quiz-card {
-        padding: 14px 12px 14px;
+        background: var(--secondary-bg, #253449);
+        border-radius: var(--radius);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        box-shadow: var(--shadow-sm, 0 1px 3px rgba(10, 21, 39, 0.08));
+        padding: 22px 20px 20px;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .quiz-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        opacity: 0;
+        transition: var(--transition, 0.3s ease);
+    }
+
+    .quiz-card:hover {
+        box-shadow: var(--shadow-md, 0 4px 20px rgba(10, 21, 39, 0.12));
+        transform: translateY(-4px);
+        border-color: rgba(201, 168, 75, 0.08);
+    }
+
+    .quiz-card:hover::before {
+        opacity: 1;
+    }
+
+    .quiz-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
     }
 
     .quiz-card-header h3 {
-        font-size: 0.85rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--white, #FFFFFF);
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .quiz-course-badge {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--text-muted, #8A94A6);
+        background: rgba(201, 168, 75, 0.04);
+        padding: 2px 12px;
+        border-radius: 100px;
+        white-space: nowrap;
+        border: 1px solid rgba(201, 168, 75, 0.02);
     }
 
     .quiz-description {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+        color: var(--text-gray, #C8CED8);
+        line-height: 1.6;
+        margin: 0 0 14px;
+        flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .quiz-meta {
-        font-size: 0.7rem;
-        gap: 10px;
-        padding: 6px 10px;
+        display: flex;
+        gap: 16px;
+        font-size: 0.8rem;
+        color: var(--text-muted, #8A94A6);
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+        padding: 8px 12px;
+        background: var(--primary-bg, #0A1527);
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(201, 168, 75, 0.02);
+    }
+
+    .quiz-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .quiz-meta i {
+        font-size: 0.8rem;
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    /* ============================================
+   QUIZ RESULT - Gold Theme
+   ============================================ */
+    .quiz-result {
+        background: rgba(201, 168, 75, 0.04);
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+
+    .quiz-result .score-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-gray, #C8CED8);
     }
 
     .quiz-result .score-value {
-        font-size: 1rem;
+        font-size: 1.2rem;
+        font-weight: 700;
     }
 
-    .btn-block {
+    .quiz-result .score-value.excellent {
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    .quiz-result .score-value.good {
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    .quiz-result .score-value.needs-improvement {
+        color: #EF4444;
+    }
+
+    .quiz-result .score-detail {
         font-size: 0.75rem;
-        padding: 7px 14px;
+        color: var(--text-muted, #8A94A6);
     }
-}
 
-/* ============================================
+    /* ============================================
+   STATUS BADGE - Gold Theme
+   ============================================ */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .status-badge.completed {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+
+    .status-badge.pending {
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold, #C9A84B);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+    }
+
+    .status-badge.locked {
+        background: rgba(239, 68, 68, 0.08);
+        color: #EF4444;
+        border: 1px solid rgba(239, 68, 68, 0.04);
+    }
+
+    /* ============================================
+   BUTTONS - Gold Theme
+   ============================================ */
+    .btn-block {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-block::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 200%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: skewX(-20deg);
+        transition: var(--transition, 0.6s ease);
+    }
+
+    .btn-block:hover::after {
+        left: 100%;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+        box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
+        color: var(--white, #FFFFFF);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--primary-gold, #C9A84B);
+        border: 2px solid rgba(201, 168, 75, 0.08);
+    }
+
+    .btn-outline:hover {
+        background: rgba(201, 168, 75, 0.04);
+        border-color: var(--primary-gold, #C9A84B);
+        transform: translateY(-2px);
+        color: var(--primary-gold, #C9A84B);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--primary-gold, #C9A84B), var(--dark-gold, #8F7E48));
+        color: var(--white, #FFFFFF);
+        box-shadow: 0 2px 12px rgba(201, 168, 75, 0.12);
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(201, 168, 75, 0.2);
+        color: var(--white, #FFFFFF);
+    }
+
+    .btn-disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-disabled:hover {
+        transform: none !important;
+    }
+
+    /* ============================================
+   EMPTY STATE - Gold Theme
+   ============================================ */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--secondary-bg, #253449);
+        border-radius: var(--radius);
+        border: 1px solid rgba(201, 168, 75, 0.04);
+        grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--primary-gold, #C9A84B);
+        opacity: 0.15;
+        margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+        font-size: 1.1rem;
+        color: var(--white, #FFFFFF);
+        margin-bottom: 4px;
+    }
+
+    .empty-state p {
+        color: var(--text-gray, #C8CED8);
+        font-size: 0.9rem;
+    }
+
+    /* ============================================
+   ANIMATIONS
+   ============================================ */
+    @keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ============================================
+   RESPONSIVE
+   ============================================ */
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-mini {
+            padding: 12px 14px;
+        }
+
+        .stat-mini .stat-number {
+            font-size: 1.1rem;
+        }
+
+        .quiz-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quiz-card {
+            padding: 18px 16px 16px;
+        }
+
+        .quiz-card-header h3 {
+            font-size: 0.95rem;
+        }
+
+        .btn-block {
+            font-size: 0.8rem;
+            padding: 8px 16px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 1.2rem;
+        }
+
+        .page-header-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .stat-mini {
+            padding: 10px 12px;
+        }
+
+        .stat-mini .stat-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+
+        .stat-mini .stat-number {
+            font-size: 1rem;
+        }
+
+        .stat-mini .stat-label {
+            font-size: 0.6rem;
+        }
+
+        .quiz-card {
+            padding: 14px 12px 14px;
+        }
+
+        .quiz-card-header h3 {
+            font-size: 0.85rem;
+        }
+
+        .quiz-description {
+            font-size: 0.8rem;
+        }
+
+        .quiz-meta {
+            font-size: 0.7rem;
+            gap: 10px;
+            padding: 6px 10px;
+        }
+
+        .quiz-result .score-value {
+            font-size: 1rem;
+        }
+
+        .btn-block {
+            font-size: 0.75rem;
+            padding: 7px 14px;
+        }
+    }
+
+    /* ============================================
    DARK MODE SUPPORT
    ============================================ */
-[data-theme="dark"] .stat-mini {
-    background: var(--secondary-bg, #253449);
-    border-color: rgba(201, 168, 75, 0.04);
-}
+    [data-theme="dark"] .stat-mini {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
 
-[data-theme="dark"] .stat-mini .stat-number {
-    color: var(--white, #FFFFFF);
-}
+    [data-theme="dark"] .stat-mini .stat-number {
+        color: var(--white, #FFFFFF);
+    }
 
-[data-theme="dark"] .quiz-card {
-    background: var(--secondary-bg, #253449);
-    border-color: rgba(201, 168, 75, 0.04);
-}
+    [data-theme="dark"] .quiz-card {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
 
-[data-theme="dark"] .quiz-card:hover {
-    border-color: rgba(201, 168, 75, 0.08);
-}
+    [data-theme="dark"] .quiz-card:hover {
+        border-color: rgba(201, 168, 75, 0.08);
+    }
 
-[data-theme="dark"] .quiz-card-header h3 {
-    color: var(--white, #FFFFFF);
-}
+    [data-theme="dark"] .quiz-card-header h3 {
+        color: var(--white, #FFFFFF);
+    }
 
-[data-theme="dark"] .quiz-description {
-    color: var(--text-gray, #C8CED8);
-}
+    [data-theme="dark"] .quiz-description {
+        color: var(--text-gray, #C8CED8);
+    }
 
-[data-theme="dark"] .quiz-result {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: rgba(201, 168, 75, 0.04);
-}
+    [data-theme="dark"] .quiz-result {
+        background: rgba(201, 168, 75, 0.04);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
 
-[data-theme="dark"] .quiz-result .score-label {
-    color: var(--text-gray, #C8CED8);
-}
+    [data-theme="dark"] .quiz-result .score-label {
+        color: var(--text-gray, #C8CED8);
+    }
 
-[data-theme="dark"] .quiz-result .score-value.excellent {
-    color: var(--primary-gold, #C8CED8);
-}
+    [data-theme="dark"] .quiz-result .score-value.excellent {
+        color: var(--primary-gold, #C8CED8);
+    }
 
-[data-theme="dark"] .quiz-result .score-value.good {
-    color: var(--primary-gold, #C8CED8);
-}
+    [data-theme="dark"] .quiz-result .score-value.good {
+        color: var(--primary-gold, #C8CED8);
+    }
 
-[data-theme="dark"] .empty-state {
-    background: var(--secondary-bg, #253449);
-    border-color: rgba(201, 168, 75, 0.04);
-}
+    [data-theme="dark"] .empty-state {
+        background: var(--secondary-bg, #253449);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
 
-[data-theme="dark"] .empty-state h3 {
-    color: var(--white, #FFFFFF);
-}
+    [data-theme="dark"] .empty-state h3 {
+        color: var(--white, #FFFFFF);
+    }
 
-[data-theme="dark"] .empty-state p {
-    color: var(--text-gray, #C8CED8);
-}
+    [data-theme="dark"] .empty-state p {
+        color: var(--text-gray, #C8CED8);
+    }
 
-[data-theme="dark"] .page-header h1 {
-    color: var(--white, #FFFFFF);
-}
+    [data-theme="dark"] .page-header h1 {
+        color: var(--white, #FFFFFF);
+    }
 
-[data-theme="dark"] .quiz-meta {
-    background: var(--primary-bg, #0A1527);
-    border-color: rgba(201, 168, 75, 0.02);
-}
+    [data-theme="dark"] .quiz-meta {
+        background: var(--primary-bg, #0A1527);
+        border-color: rgba(201, 168, 75, 0.02);
+    }
 
-[data-theme="dark"] .quiz-meta i {
-    color: var(--primary-gold, #C9A84B);
-}
+    [data-theme="dark"] .quiz-meta i {
+        color: var(--primary-gold, #C9A84B);
+    }
 
-[data-theme="dark"] .stat-mini .stat-icon.gold {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold, #C9A84B);
-}
+    [data-theme="dark"] .stat-mini .stat-icon.gold {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
 
-[data-theme="dark"] .stat-mini .stat-icon.orange {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold, #C9A84B);
-}
+    [data-theme="dark"] .stat-mini .stat-icon.orange {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+    }
 
-[data-theme="dark"] .quiz-course-badge {
-    background: rgba(201, 168, 75, 0.04);
-    color: var(--text-muted, #8A94A6);
-    border-color: rgba(201, 168, 75, 0.02);
-}
+    [data-theme="dark"] .quiz-course-badge {
+        background: rgba(201, 168, 75, 0.04);
+        color: var(--text-muted, #8A94A6);
+        border-color: rgba(201, 168, 75, 0.02);
+    }
 
-[data-theme="dark"] .status-badge.completed {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold, #C9A84B);
-    border-color: rgba(201, 168, 75, 0.04);
-}
+    [data-theme="dark"] .status-badge.completed {
+        background: rgba(201, 168, 75, 0.08);
+        color: var(--primary-gold, #C9A84B);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
 
-[data-theme="dark"] .status-badge.pending {
-    background: rgba(201, 168, 75, 0.06);
-    color: var(--primary-gold, #C9A84B);
-    border-color: rgba(201, 168, 75, 0.04);
-}
+    [data-theme="dark"] .status-badge.pending {
+        background: rgba(201, 168, 75, 0.06);
+        color: var(--primary-gold, #C9A84B);
+        border-color: rgba(201, 168, 75, 0.04);
+    }
 
-[data-theme="dark"] .btn-outline {
-    color: var(--primary-gold, #C9A84B);
-    border-color: rgba(201, 168, 75, 0.08);
-}
+    [data-theme="dark"] .btn-outline {
+        color: var(--primary-gold, #C9A84B);
+        border-color: rgba(201, 168, 75, 0.08);
+    }
 
-[data-theme="dark"] .btn-outline:hover {
-    background: rgba(201, 168, 75, 0.04);
-    border-color: var(--primary-gold, #C9A84B);
-}
+    [data-theme="dark"] .btn-outline:hover {
+        background: rgba(201, 168, 75, 0.04);
+        border-color: var(--primary-gold, #C9A84B);
+    }
 
-[data-theme="dark"] .page-header .subtitle {
-    color: var(--text-gray, #C8CED8);
-}
+    [data-theme="dark"] .page-header .subtitle {
+        color: var(--text-gray, #C8CED8);
+    }
 
-[data-theme="dark"] .quiz-result .score-detail {
-    color: var(--text-muted, #8A94A6);
-}
+    [data-theme="dark"] .quiz-result .score-detail {
+        color: var(--text-muted, #8A94A6);
+    }
 </style>
 {% endblock %}
 
@@ -704,9 +705,9 @@
             <div>
                 {% set completed = 0 %}
                 {% for data in quiz_data %}
-                    {% if data.has_attempted %}
-                        {% set completed = completed + 1 %}
-                    {% endif %}
+                {% if data.has_attempted %}
+                {% set completed = completed + 1 %}
+                {% endif %}
                 {% endfor %}
                 <div class="stat-number">{{ completed }}</div>
                 <div class="stat-label">Completed</div>
@@ -717,9 +718,9 @@
             <div>
                 {% set pending = 0 %}
                 {% for data in quiz_data %}
-                    {% if not data.has_attempted %}
-                        {% set pending = pending + 1 %}
-                    {% endif %}
+                {% if not data.has_attempted %}
+                {% set pending = pending + 1 %}
+                {% endif %}
                 {% endfor %}
                 <div class="stat-number">{{ pending }}</div>
                 <div class="stat-label">Pending</div>
@@ -730,65 +731,73 @@
     <!-- Quiz Grid -->
     <div class="quiz-grid">
         {% for data in quiz_data %}
-            <div class="quiz-card">
-                <div class="quiz-card-header">
-                    <h3>{{ data.quiz.title }}</h3>
-                    <span class="quiz-course-badge">{{ data.quiz.course.name }}</span>
-                </div>
-                
-                <p class="quiz-description">{{ data.quiz.description or 'No description available.' }}</p>
-                
-                <div class="quiz-meta">
-                    <span><i class="fas fa-question-circle"></i> {{ data.quiz.questions|length }} Questions</span>
-                    {% if data.quiz.time_limit > 0 %}
-                        <span><i class="fas fa-clock"></i> {{ data.quiz.time_limit }} min</span>
-                    {% endif %}
-                </div>
+        <div class="quiz-card">
+            <div class="quiz-card-header">
+                <h3>{{ data.quiz.title }}</h3>
+                <span class="quiz-course-badge">{{ data.quiz.course.name }}</span>
+            </div>
 
-                {% if data.has_attempted %}
-                    <!-- Quiz Result -->
-                    <div class="quiz-result">
-                        <div>
-                            <span class="score-label">Your Score:</span>
-                            {% if data.score and data.score.score is defined %}
-                                <span class="score-value 
-                                    {% if data.score.score >= 70 %}excellent
-                                    {% elif data.score.score >= 40 %}good
-                                    {% else %}needs-improvement{% endif %}">
-                                    {{ data.score.score }}%
-                                </span>
-                                <span class="score-detail">({{ data.score.correct }}/{{ data.score.total }})</span>
-                            {% else %}
-                                <span class="score-value">-</span>
-                            {% endif %}
-                        </div>
-                        <span class="status-badge completed">
-                            <i class="fas fa-check-circle"></i> Completed
-                        </span>
-                    </div>
-                    
-                    <a href="{{ url_for('quiz_result', quiz_id=data.quiz.id) }}" class="btn-block btn-outline">
-                        <i class="fas fa-chart-bar"></i> View Results
-                    </a>
-                {% else %}
-                    <!-- Take Quiz Button -->
-                    <a href="{{ url_for('take_quiz', quiz_id=data.quiz.id) }}" class="btn-block btn-primary">
-                        <i class="fas fa-play"></i> Start Quiz
-                    </a>
+            <p class="quiz-description">{{ data.quiz.description or 'No description available.' }}</p>
+
+            <div class="quiz-meta">
+                <span><i class="fas fa-question-circle"></i> {{ data.quiz.questions|length }} Questions</span>
+                {% if data.quiz.time_limit > 0 %}
+                <span><i class="fas fa-clock"></i> {{ data.quiz.time_limit }} min</span>
                 {% endif %}
             </div>
-        {% else %}
-            <div class="empty-state">
-                <i class="fas fa-puzzle-piece"></i>
-                <h3>No quizzes available</h3>
-                <p>Quizzes will appear here when your instructors add them to your courses.</p>
+
+            {% if data.has_attempted %}
+            <!-- Quiz Result -->
+            <div class="quiz-result">
+                <div>
+                    <span class="score-label">Your Score:</span>
+                    {% if data.score and data.score.score is defined %}
+                    <span class="score-value 
+                    {% if data.score.score >= 70 %}excellent
+                    {% elif data.score.score >= 40 %}good
+                    {% else %}needs-improvement{% endif %}">
+                        {{ data.score.score }}%
+                    </span>
+                    <span class="score-detail">({{ data.score.correct }}/{{ data.score.total }})</span>
+                    {% else %}
+                    <span class="score-value">-</span>
+                    {% endif %}
+                </div>
+                <span class="status-badge completed">
+                    <i class="fas fa-check-circle"></i> Completed
+                </span>
             </div>
+
+            <!-- ✅ UPDATED: Two buttons for completed quizzes -->
+            <div style="display: flex; gap: 8px; width: 100%;">
+                <a href="{{ url_for('quiz_result', quiz_id=data.quiz.id) }}" class="btn-block btn-outline"
+                    style="flex: 1;">
+                    <i class="fas fa-chart-bar"></i> Results
+                </a>
+                <a href="{{ url_for('quiz_review', quiz_id=data.quiz.id) }}" class="btn-block btn-primary"
+                    style="flex: 1;">
+                    <i class="fas fa-eye"></i> Review
+                </a>
+            </div>
+            {% else %}
+            <!-- Take Quiz Button -->
+            <a href="{{ url_for('take_quiz', quiz_id=data.quiz.id) }}" class="btn-block btn-primary">
+                <i class="fas fa-play"></i> Start Quiz
+            </a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-puzzle-piece"></i>
+            <h3>No quizzes available</h3>
+            <p>Quizzes will appear here when your instructors add them to your courses.</p>
+        </div>
         {% endfor %}
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // ==========================================
         // STATS COUNTER ANIMATION
         // ==========================================
