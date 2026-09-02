@@ -62,7 +62,7 @@ if database_url:
         'pool_recycle': 300,
         'pool_pre_ping': True,
         'connect_args': {
-            'connect_timeout': 10  # Prevent timeout issues
+            'connect_timeout': 10
         }
     }
 else:
@@ -136,6 +136,23 @@ def super_admin_required(f):
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
+
+def validate_assignment_file(file):
+    """Validate uploaded assignment file"""
+    if not file or file.filename == '':
+        return None, "No file selected"
+    
+    if not allowed_file(file.filename):
+        return None, f"File type not allowed. Allowed: {', '.join(app.config['ALLOWED_EXTENSIONS'])}"
+    
+    file.seek(0, 2)
+    size = file.tell()
+    file.seek(0)
+    
+    if size > app.config['MAX_CONTENT_LENGTH']:
+        return None, f"File too large. Maximum size: {app.config['MAX_CONTENT_LENGTH'] // (1024*1024)}MB"
+    
+    return True, None
 
 # ============================================================================
 # NOTIFICATION HELPER FUNCTIONS
@@ -265,13 +282,12 @@ class CourseEnrollment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    status = db.Column(db.String(20), default='pending')
     requested_at = db.Column(db.DateTime, default=datetime.utcnow)
     approved_at = db.Column(db.DateTime)
     rejected_at = db.Column(db.DateTime)
     rejection_reason = db.Column(db.Text)
     
-    # Relationships - will be resolved after User and Course are defined
     student = db.relationship('User', backref='enrollments', foreign_keys=[student_id])
     course = db.relationship('Course', backref='enrollments')
     
@@ -300,12 +316,7 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     dark_mode = db.Column(db.Boolean, default=False)
     
-    # Admin can manage multiple courses
     managed_courses = db.relationship('Course', secondary=admin_course, backref='admins')
-    
-    # Student enrollments - CourseEnrollment is now defined
-    # enrollments relationship is defined via CourseEnrollment.student
-    
     notes_read = db.relationship('StudentProgress', backref='student', lazy=True)
     quiz_answers = db.relationship('QuizAnswer', backref='student', lazy=True)
     submissions = db.relationship('AssignmentSubmission', backref='student', lazy=True)
@@ -324,7 +335,6 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     
     def get_courses(self):
-        """Get all courses the user has access to"""
         if self.role == 'super_admin':
             return Course.query.all()
         elif self.role == 'admin':
@@ -339,25 +349,17 @@ class User(UserMixin, db.Model):
         return self.role == 'super_admin'
     
     def is_active(self):
-        """Check if user account is active (not suspended)"""
         return not self.is_suspended
     
     def get_unread_notifications_count(self):
-        """Get count of unread notifications"""
         return Notification.query.filter_by(user_id=self.id, is_read=False).count()
     
     def get_recent_notifications(self, limit=10):
-        """Get recent notifications"""
         return Notification.query.filter_by(user_id=self.id).order_by(
             Notification.created_at.desc()
         ).limit(limit).all()
     
-    # ==========================================
-    # COURSE ENROLLMENT METHODS
-    # ==========================================
-    
     def is_enrolled_in_course(self, course_id):
-        """Check if student is approved for a specific course"""
         from sqlalchemy import and_
         enrollment = CourseEnrollment.query.filter(
             and_(
@@ -369,7 +371,6 @@ class User(UserMixin, db.Model):
         return enrollment is not None
     
     def has_pending_request_for_course(self, course_id):
-        """Check if student has a pending request for a course"""
         from sqlalchemy import and_
         enrollment = CourseEnrollment.query.filter(
             and_(
@@ -381,7 +382,6 @@ class User(UserMixin, db.Model):
         return enrollment is not None
     
     def get_course_status(self, course_id):
-        """Get the status of a specific course enrollment"""
         enrollment = CourseEnrollment.query.filter_by(
             student_id=self.id,
             course_id=course_id
@@ -389,7 +389,6 @@ class User(UserMixin, db.Model):
         return enrollment.status if enrollment else None
     
     def get_enrolled_courses(self):
-        """Get all courses where student is approved"""
         enrollments = CourseEnrollment.query.filter_by(
             student_id=self.id,
             status='approved'
@@ -397,7 +396,6 @@ class User(UserMixin, db.Model):
         return [e.course for e in enrollments]
     
     def get_pending_courses(self):
-        """Get all courses where student has pending requests"""
         enrollments = CourseEnrollment.query.filter_by(
             student_id=self.id,
             status='pending'
@@ -405,7 +403,6 @@ class User(UserMixin, db.Model):
         return [e.course for e in enrollments]
     
     def get_rejected_courses(self):
-        """Get all courses where student was rejected"""
         enrollments = CourseEnrollment.query.filter_by(
             student_id=self.id,
             status='rejected'
@@ -582,7 +579,7 @@ class QuizAnswer(db.Model):
         db.Index('idx_answer_quiz', 'quiz_group_id'),
     )
 
-# 11. Assignment model
+# 11. Assignment model - UPDATED with file fields
 class Assignment(db.Model):
     __tablename__ = 'assignment'
     
@@ -593,7 +590,8 @@ class Assignment(db.Model):
     max_score = db.Column(db.Float, default=100)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
+    
+    # File upload fields
     file_path = db.Column(db.String(200), nullable=True)
     file_name = db.Column(db.String(100), nullable=True)
     file_size = db.Column(db.String(20), nullable=True)
@@ -603,6 +601,12 @@ class Assignment(db.Model):
     
     author = db.relationship('User', backref='created_assignments')
     submissions = db.relationship('AssignmentSubmission', backref='assignment', lazy=True, cascade='all, delete-orphan')
+    
+    __table_args__ = (
+        db.Index('idx_assignment_course', 'course_id'),
+        db.Index('idx_assignment_due_date', 'due_date'),
+        db.Index('idx_assignment_created', 'created_at'),
+    )
     
     def is_past_due(self):
         return datetime.utcnow() > self.due_date
@@ -685,7 +689,7 @@ class Notification(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    type = db.Column(db.String(50), default='info')  # info, success, warning, error, approval, rejection
+    type = db.Column(db.String(50), default='info')
     link = db.Column(db.String(500), nullable=True)
     icon = db.Column(db.String(50), default='fa-bell')
     icon_color = db.Column(db.String(20), default='gold')
@@ -759,7 +763,7 @@ class SystemSetting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(100), unique=True, nullable=False)
     value = db.Column(db.Text)
-    setting_type = db.Column(db.String(50), default='string')  # string, boolean, integer, json
+    setting_type = db.Column(db.String(50), default='string')
     description = db.Column(db.Text)
     category = db.Column(db.String(50), default='general')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -778,7 +782,6 @@ class SystemSetting(db.Model):
 # ============================================================================
 
 def save_setting(key, value, setting_type='string', description='', category='general'):
-    """Save or update a system setting"""
     try:
         setting = SystemSetting.query.filter_by(key=key).first()
         if setting:
@@ -804,7 +807,6 @@ def save_setting(key, value, setting_type='string', description='', category='ge
         return False
 
 def get_setting(key, default=None):
-    """Get a system setting by key"""
     try:
         setting = SystemSetting.query.filter_by(key=key).first()
         if setting:
@@ -825,7 +827,6 @@ def get_setting(key, default=None):
         return default
 
 def get_all_settings():
-    """Get all system settings as a dictionary"""
     settings = {}
     try:
         all_settings = SystemSetting.query.all()
@@ -849,7 +850,6 @@ def get_all_settings():
         return {}
 
 def get_bool_setting(key, default=False):
-    """Get boolean setting"""
     value = get_setting(key, default)
     if isinstance(value, bool):
         return value
@@ -858,7 +858,6 @@ def get_bool_setting(key, default=False):
     return bool(value)
 
 def get_int_setting(key, default=0):
-    """Get integer setting"""
     value = get_setting(key, default)
     try:
         return int(value)
@@ -866,20 +865,16 @@ def get_int_setting(key, default=0):
         return default
 
 def get_str_setting(key, default=''):
-    """Get string setting"""
     value = get_setting(key, default)
     return str(value) if value is not None else ''
 
 def get_site_name():
-    """Get the site name from settings"""
     return get_setting('site_name', 'A-Portal LMS')
 
 def get_site_description():
-    """Get the site description from settings"""
     return get_setting('site_description', 'Learning Management System')
 
 def init_default_settings():
-    """Initialize default system settings if they don't exist"""
     defaults = {
         'site_name': 'A-Portal LMS',
         'site_description': 'Learning Management System',
@@ -916,20 +911,17 @@ def init_default_settings():
     app.logger.info('✅ Default system settings initialized')
 
 # ============================================================================
-# ADMIN DASHBOARD HELPER FUNCTIONS - ENHANCED
+# ADMIN DASHBOARD HELPER FUNCTIONS
 # ============================================================================
 
 def get_admin_upcoming_deadlines(admin_user):
-    """Get upcoming deadlines for all courses the admin manages"""
     from sqlalchemy import and_
     
-    # Get course IDs based on admin role
     if admin_user.is_super_admin():
         course_ids = [c.id for c in Course.query.all()]
     else:
         course_ids = [c.id for c in admin_user.managed_courses]
     
-    # Get assignments with due dates in the future or recent past
     now = datetime.utcnow()
     upcoming = Assignment.query.filter(
         and_(
@@ -938,7 +930,6 @@ def get_admin_upcoming_deadlines(admin_user):
         )
     ).order_by(Assignment.due_date.asc()).limit(10).all()
     
-    # Format deadlines with status
     deadlines = []
     for assignment in upcoming:
         days_until = (assignment.due_date - now).days
@@ -955,7 +946,6 @@ def get_admin_upcoming_deadlines(admin_user):
             status = 'upcoming'
             status_text = f'{days_until}d left'
         
-        # Get submission count
         submissions_count = AssignmentSubmission.query.filter_by(
             assignment_id=assignment.id
         ).count()
@@ -980,23 +970,18 @@ def get_admin_upcoming_deadlines(admin_user):
     return deadlines
 
 def get_admin_quiz_results(admin_user):
-    """Get recent quiz results for all courses the admin manages"""
-    # Get course IDs
     if admin_user.is_super_admin():
         course_ids = [c.id for c in Course.query.all()]
     else:
         course_ids = [c.id for c in admin_user.managed_courses]
     
-    # Get all quiz groups in these courses
     quiz_groups = QuizGroup.query.filter(QuizGroup.course_id.in_(course_ids)).all()
     
     results = []
     for quiz in quiz_groups:
-        # Get all answers for this quiz
         answers = QuizAnswer.query.filter_by(quiz_group_id=quiz.id).all()
         
         if answers:
-            # Group by student
             student_scores = {}
             for answer in answers:
                 if answer.student_id not in student_scores:
@@ -1005,7 +990,6 @@ def get_admin_quiz_results(admin_user):
                 if answer.is_correct:
                     student_scores[answer.student_id]['correct'] += 1
             
-            # Calculate average score
             if student_scores:
                 total_score = 0
                 for s in student_scores.values():
@@ -1014,7 +998,6 @@ def get_admin_quiz_results(admin_user):
             else:
                 avg_score = 0
             
-            # Get latest submission
             latest = QuizAnswer.query.filter_by(
                 quiz_group_id=quiz.id
             ).order_by(QuizAnswer.answered_at.desc()).first()
@@ -1039,12 +1022,10 @@ def get_admin_quiz_results(admin_user):
                 'color_class': 'low'
             })
     
-    # Sort by latest submission (most recent first)
     results.sort(key=lambda x: x['latest_submission'] or datetime(1970, 1, 1), reverse=True)
     return results[:10]
 
 def get_admin_announcements_with_pins(admin_user):
-    """Get announcements with pinned badges for admin"""
     if admin_user.is_super_admin():
         announcements = Announcement.query.order_by(
             Announcement.is_pinned.desc(),
@@ -1077,10 +1058,8 @@ def get_admin_announcements_with_pins(admin_user):
     return result
 
 def get_admin_notices_with_ctas(admin_user):
-    """Get enhanced notices/alerts with CTAs for admin"""
     notices = []
     
-    # 1. Pending student approvals
     pending_students = User.query.filter_by(role='student', is_approved=False).count()
     if pending_students > 0:
         notices.append({
@@ -1095,7 +1074,6 @@ def get_admin_notices_with_ctas(admin_user):
             'dismissible': False
         })
     
-    # 2. Pending course requests
     pending_enrollments = CourseEnrollment.query.filter_by(status='pending').count()
     if pending_enrollments > 0:
         notices.append({
@@ -1110,7 +1088,6 @@ def get_admin_notices_with_ctas(admin_user):
             'dismissible': True
         })
     
-    # 3. Assignments due soon
     if admin_user.is_super_admin():
         all_courses = Course.query.all()
     else:
@@ -1137,7 +1114,6 @@ def get_admin_notices_with_ctas(admin_user):
             'dismissible': True
         })
     
-    # 4. Overdue assignments
     overdue = Assignment.query.filter(
         Assignment.course_id.in_(course_ids),
         Assignment.due_date < now
@@ -1156,7 +1132,6 @@ def get_admin_notices_with_ctas(admin_user):
             'dismissible': False
         })
     
-    # 5. New quizzes
     new_quizzes = QuizGroup.query.filter(
         QuizGroup.course_id.in_(course_ids),
         QuizGroup.created_at >= (now - timedelta(days=7))
@@ -1175,23 +1150,19 @@ def get_admin_notices_with_ctas(admin_user):
             'dismissible': True
         })
     
-    # Sort by priority
     priority_order = {'high': 0, 'medium': 1, 'low': 2}
     notices.sort(key=lambda x: priority_order.get(x['priority'], 3))
     
     return notices
 
 def get_admin_enhanced_activity(admin_user, limit=15):
-    """Get enhanced recent activity feed with icons and colors"""
     activities = []
     
-    # Get course IDs
     if admin_user.is_super_admin():
         course_ids = [c.id for c in Course.query.all()]
     else:
         course_ids = [c.id for c in admin_user.managed_courses]
     
-    # 1. New notes (last 30 days)
     notes = Note.query.filter(
         Note.course_id.in_(course_ids),
         Note.created_at >= (datetime.utcnow() - timedelta(days=30))
@@ -1211,7 +1182,6 @@ def get_admin_enhanced_activity(admin_user, limit=15):
             'badge_color': 'green'
         })
     
-    # 2. New quiz results (last 30 days)
     quiz_answers = QuizAnswer.query.filter(
         QuizAnswer.answered_at >= (datetime.utcnow() - timedelta(days=30))
     ).order_by(QuizAnswer.answered_at.desc()).limit(10).all()
@@ -1232,7 +1202,6 @@ def get_admin_enhanced_activity(admin_user, limit=15):
                 'badge_color': 'gold'
             })
     
-    # 3. New assignment submissions (last 30 days)
     submissions = AssignmentSubmission.query.filter(
         AssignmentSubmission.submitted_at >= (datetime.utcnow() - timedelta(days=30))
     ).order_by(AssignmentSubmission.submitted_at.desc()).limit(10).all()
@@ -1253,7 +1222,6 @@ def get_admin_enhanced_activity(admin_user, limit=15):
                 'badge_color': 'orange'
             })
     
-    # 4. New students (last 30 days)
     new_students = User.query.filter(
         User.role == 'student',
         User.created_at >= (datetime.utcnow() - timedelta(days=30))
@@ -1273,7 +1241,6 @@ def get_admin_enhanced_activity(admin_user, limit=15):
             'badge_color': 'orange' if not student.is_approved else 'green'
         })
     
-    # 5. New announcements (last 30 days)
     anns = Announcement.query.filter(
         Announcement.created_at >= (datetime.utcnow() - timedelta(days=30))
     ).order_by(Announcement.created_at.desc()).limit(5).all()
@@ -1293,10 +1260,8 @@ def get_admin_enhanced_activity(admin_user, limit=15):
                 'badge_color': 'gold'
             })
     
-    # Sort by time (newest first) and remove duplicates
     activities.sort(key=lambda x: x['time'], reverse=True)
     
-    # Remove duplicates based on title and time (keep unique)
     seen = set()
     unique_activities = []
     for act in activities:
@@ -1308,8 +1273,6 @@ def get_admin_enhanced_activity(admin_user, limit=15):
     return unique_activities[:limit]
 
 def get_student_progress_visualization(admin_user):
-    """Get student progress data for visualization"""
-    # Get course IDs
     if admin_user.is_super_admin():
         courses = Course.query.all()
     else:
@@ -1317,14 +1280,12 @@ def get_student_progress_visualization(admin_user):
     
     visualization_data = []
     for course in courses:
-        # Get approved enrollments
         enrollments = CourseEnrollment.query.filter_by(
             course_id=course.id,
             status='approved'
         ).all()
         
         if enrollments:
-            # Calculate progress for each student
             progress_values = []
             students = []
             for enrollment in enrollments:
@@ -1337,7 +1298,6 @@ def get_student_progress_visualization(admin_user):
                         'progress': progress
                     })
             
-            # Calculate statistics
             if progress_values:
                 avg_progress = sum(progress_values) / len(progress_values)
                 max_progress = max(progress_values)
@@ -1365,7 +1325,6 @@ def get_student_progress_visualization(admin_user):
                 }
             })
         else:
-            # No students enrolled
             visualization_data.append({
                 'course_id': course.id,
                 'course_name': course.name,
@@ -1397,7 +1356,6 @@ def ensure_columns():
     from sqlalchemy.exc import ProgrammingError
     
     with app.app_context():
-        # First, rollback any pending transactions
         try:
             db.session.rollback()
         except:
@@ -1413,59 +1371,21 @@ def ensure_columns():
                 columns = [col['name'] for col in inspector.get_columns('user')]
                 print(f"📋 Existing user columns: {', '.join(columns)}")
                 
-                added = []
+                user_added = []
                 
-                if 'is_suspended' not in columns:
-                    try:
-                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_suspended BOOLEAN DEFAULT FALSE'))
-                        added.append('is_suspended')
-                        print("✅ Added is_suspended to user")
-                    except Exception as e:
-                        print(f"⚠️ Could not add is_suspended: {e}")
+                for col in ['is_suspended', 'suspension_reason', 'suspended_at', 'phone', 'dob', 'profile_picture']:
+                    if col not in columns:
+                        try:
+                            col_type = 'BOOLEAN DEFAULT FALSE' if col == 'is_suspended' else 'TEXT' if col in ['suspension_reason', 'phone'] else 'TIMESTAMP' if col in ['suspended_at', 'dob'] else 'VARCHAR(200)'
+                            db.session.execute(text(f'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS {col} {col_type}'))
+                            user_added.append(col)
+                            print(f"✅ Added {col} to user")
+                        except Exception as e:
+                            print(f"⚠️ Could not add {col}: {e}")
                 
-                if 'suspension_reason' not in columns:
-                    try:
-                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspension_reason TEXT'))
-                        added.append('suspension_reason')
-                        print("✅ Added suspension_reason to user")
-                    except Exception as e:
-                        print(f"⚠️ Could not add suspension_reason: {e}")
-                
-                if 'suspended_at' not in columns:
-                    try:
-                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS suspended_at TIMESTAMP'))
-                        added.append('suspended_at')
-                        print("✅ Added suspended_at to user")
-                    except Exception as e:
-                        print(f"⚠️ Could not add suspended_at: {e}")
-                
-                if 'phone' not in columns:
-                    try:
-                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS phone VARCHAR(20)'))
-                        added.append('phone')
-                        print("✅ Added phone to user")
-                    except Exception as e:
-                        print(f"⚠️ Could not add phone: {e}")
-                
-                if 'dob' not in columns:
-                    try:
-                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS dob TIMESTAMP'))
-                        added.append('dob')
-                        print("✅ Added dob to user")
-                    except Exception as e:
-                        print(f"⚠️ Could not add dob: {e}")
-                
-                if 'profile_picture' not in columns:
-                    try:
-                        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS profile_picture VARCHAR(200)'))
-                        added.append('profile_picture')
-                        print("✅ Added profile_picture to user")
-                    except Exception as e:
-                        print(f"⚠️ Could not add profile_picture: {e}")
-                
-                if added:
+                if user_added:
                     db.session.commit()
-                    print(f"✅ Added to user: {', '.join(added)}")
+                    print(f"✅ Added to user: {', '.join(user_added)}")
             
             # ==========================================
             # 2. ANNOUNCEMENT TABLE COLUMNS
@@ -1488,8 +1408,30 @@ def ensure_columns():
                     db.session.commit()
                     print(f"✅ Added to announcement: {', '.join(ann_added)}")
             
-            if not added and not ann_added:
-                print("✅ All columns already exist!")
+            # ==========================================
+            # 3. ASSIGNMENT TABLE COLUMNS
+            # ==========================================
+            if 'assignment' in inspector.get_table_names():
+                assign_columns = [col['name'] for col in inspector.get_columns('assignment')]
+                print(f"📋 Existing assignment columns: {', '.join(assign_columns)}")
+                
+                assign_added = []
+                
+                for col in ['file_path', 'file_name', 'file_size']:
+                    if col not in assign_columns:
+                        try:
+                            col_type = 'VARCHAR(200)' if col == 'file_path' else 'VARCHAR(100)' if col == 'file_name' else 'VARCHAR(20)'
+                            db.session.execute(text(f'ALTER TABLE assignment ADD COLUMN IF NOT EXISTS {col} {col_type}'))
+                            assign_added.append(col)
+                            print(f"✅ Added {col} to assignment")
+                        except Exception as e:
+                            print(f"⚠️ Could not add {col}: {e}")
+                
+                if assign_added:
+                    db.session.commit()
+                    print(f"✅ Added to assignment: {', '.join(assign_added)}")
+            
+            print("✅ All columns verified!")
                 
         except ProgrammingError as e:
             db.session.rollback()
@@ -1502,73 +1444,29 @@ def ensure_columns():
 # CREATE ADMIN USER
 # ============================================================================
 
-# ============================================================================
-# CREATE ADMIN USER - FIXED VERSION
-# ============================================================================
-
 def create_initial_admin():
-    """Create initial admin user safely - handles existing data"""
-    from sqlalchemy import text
-    
     try:
-        # First, check if admin already exists
         admin = User.query.filter_by(username='admin').first()
-        
-        if admin:
+        if not admin:
+            admin = User(
+                username='admin',
+                email='admin@awwaludevs.com',
+                role='super_admin',
+                is_approved=True
+            )
+            admin.set_password('admin123')
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Default admin created: admin / admin123")
+        else:
             print("✅ Admin user already exists")
-            # Ensure password is correct
             admin.set_password('admin123')
             admin.is_approved = True
             admin.role = 'super_admin'
             db.session.commit()
-            print("✅ Admin password reset to: admin123")
-            return
-        
-        # Check if any user exists at all
-        any_user = User.query.first()
-        
-        # Get the next available ID
-        result = db.session.execute(text("SELECT nextval(pg_get_serial_sequence('user', 'id'))"))
-        next_id = result.scalar()
-        
-        # Create admin with explicit ID
-        admin = User(
-            id=next_id,
-            username='admin',
-            email='admin@awwaludevs.com',
-            role='super_admin',
-            is_approved=True
-        )
-        admin.set_password('admin123')
-        db.session.add(admin)
-        db.session.commit()
-        print("✅ Default admin created: admin / admin123")
-        
+            print("✅ Password reset to: admin123")
     except Exception as e:
-        db.session.rollback()
-        print(f"⚠️ Error creating admin: {e}")
-        # Try fallback method
-        try:
-            print("🔄 Trying fallback admin creation...")
-            # Check if admin exists by username
-            admin = User.query.filter_by(username='admin').first()
-            if not admin:
-                # Try to create without specifying ID
-                admin = User(
-                    username='admin',
-                    email='admin@awwaludevs.com',
-                    role='super_admin',
-                    is_approved=True
-                )
-                admin.set_password('admin123')
-                db.session.add(admin)
-                db.session.commit()
-                print("✅ Fallback admin created: admin / admin123")
-            else:
-                print("✅ Admin found during fallback")
-        except Exception as fallback_error:
-            db.session.rollback()
-            print(f"❌ Fallback also failed: {fallback_error}")
+        print(f"⚠️ Error: {e}")
 
 # ============================================================================
 # USER LOADER
@@ -1579,18 +1477,11 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # ============================================================================
-# CONTEXT PROCESSOR - COMPLETE WITH DYNAMIC SETTINGS
-# ============================================================================
-
-# ============================================================================
-# CONTEXT PROCESSOR - FIXED WITH ERROR HANDLING
+# CONTEXT PROCESSOR
 # ============================================================================
 
 @app.context_processor
 def inject_user():
-    """Inject variables into all templates - with error handling"""
-    
-    # Initialize defaults
     total_students = 0
     total_courses = 0
     total_notes = 0
@@ -1598,7 +1489,6 @@ def inject_user():
     total_assignments = 0
     
     try:
-        # Get site settings with error handling
         site_name = get_setting('site_name', 'A-Portal LMS')
         site_description = get_setting('site_description', 'Learning Management System')
         site_language = get_setting('default_language', 'en')
@@ -1610,9 +1500,7 @@ def inject_user():
         site_language = 'en'
         site_timezone = 'UTC'
     
-    # Get counts with error handling - ROLLBACK FIRST if needed
     try:
-        # Rollback any pending transactions first
         db.session.rollback()
         
         total_students = User.query.filter_by(role='student').count()
@@ -1622,7 +1510,6 @@ def inject_user():
         total_assignments = Assignment.query.count()
     except Exception as e:
         app.logger.error(f'Error getting counts in context: {e}')
-        # Rollback to clear any error state
         try:
             db.session.rollback()
         except:
@@ -1633,22 +1520,16 @@ def inject_user():
         'now': datetime.utcnow(),
         'get_courses': lambda: current_user.get_courses() if current_user.is_authenticated else [],
         'is_approved': lambda: current_user.is_approved if current_user.is_authenticated else False,
-        
-        # Dynamic system settings
         'site_name': site_name,
         'site_description': site_description,
         'site_language': site_language,
         'site_timezone': site_timezone,
         'get_setting': get_setting,
-        
-        # Statistics for home page
         'total_students': total_students,
         'total_courses': total_courses,
         'total_notes': total_notes,
         'total_quizzes': total_quizzes,
         'total_assignments': total_assignments,
-        
-        # Additional helper functions
         'get_bool_setting': get_bool_setting,
         'get_int_setting': get_int_setting,
         'get_str_setting': get_str_setting,
@@ -1660,7 +1541,6 @@ def inject_user():
 
 @app.template_filter('zfill')
 def zfill_filter(value, width):
-    """Pad a string with zeros to the specified width"""
     return str(value).zfill(width)
 
 # ============================================================================
@@ -1669,7 +1549,6 @@ def zfill_filter(value, width):
 
 @app.route('/')
 def index():
-    """Home page with dynamic stats"""
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -1686,7 +1565,6 @@ def login():
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.is_json
         
         if user and user.check_password(password):
-            # Check if account is suspended
             if user.is_suspended:
                 if is_ajax:
                     return jsonify({'error': f'Account suspended. Reason: {user.suspension_reason or "No reason provided."}'}), 403
@@ -1764,7 +1642,6 @@ def signup():
         db.session.add(student)
         db.session.flush()
         
-        # Create CourseEnrollment records for each selected course
         for course_id in selected_courses:
             course = Course.query.get(course_id)
             if course:
@@ -1799,7 +1676,6 @@ def dashboard():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Check if student is approved
     if not current_user.is_approved:
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
@@ -1812,32 +1688,24 @@ def student_dashboard():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Check if account is suspended
     if current_user.is_suspended:
         flash(f'Your account has been suspended. Reason: {current_user.suspension_reason or "No reason provided."}', 'error')
         logout_user()
         return redirect(url_for('login'))
     
-    # Check if student account is approved
     if not current_user.is_approved:
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # Get ONLY approved courses (where enrollment status is 'approved')
     approved_courses = current_user.get_enrolled_courses()
-    
-    # Get pending courses (where enrollment status is 'pending')
     pending_courses = current_user.get_pending_courses()
     
-    # If student has no approved courses but has pending ones
     if not approved_courses and pending_courses:
         flash('Your account is approved, but you are waiting for course access. Please contact an admin.', 'info')
     
-    # If student has no courses at all (approved or pending)
     if not approved_courses and not pending_courses:
         flash('You are not enrolled in any courses. Browse available courses to request access.', 'info')
     
-    # Calculate progress for approved courses only
     progress_data = []
     for course in approved_courses:
         progress_data.append({
@@ -1845,7 +1713,6 @@ def student_dashboard():
             'progress': course.get_progress_for_student(current_user.id)
         })
     
-    # Get quiz results from approved courses only
     quiz_results = []
     if approved_courses:
         approved_course_ids = [c.id for c in approved_courses]
@@ -1867,16 +1734,13 @@ def student_dashboard():
                         'score': score
                     })
     
-    # Get announcements
     announcements = Announcement.query.order_by(
         Announcement.is_pinned.desc(), 
         Announcement.created_at.desc()
     ).limit(5).all()
     
-    # Get pending course count for badge/notification
     pending_count = len(pending_courses)
     
-    # Calculate average progress
     avg_progress = 0
     if progress_data:
         total_progress = sum(data['progress'] for data in progress_data)
@@ -1897,21 +1761,16 @@ def student_dashboard():
 @login_required
 @admin_required
 def admin_dashboard():
-    """Enhanced admin dashboard with all features"""
-    # Existing data
     total_students = User.query.filter_by(role='student').count()
     
-    # Count students with pending course enrollments
     pending_students = db.session.query(CourseEnrollment.student_id).filter(
         CourseEnrollment.status == 'pending'
     ).distinct().all()
     pending_student_ids = [p[0] for p in pending_students]
     pending_approvals = len(pending_student_ids)
     
-    # Get the actual pending students with their enrollments
     pending = User.query.filter(User.id.in_(pending_student_ids)).all() if pending_student_ids else []
     
-    # For regular admins, count pending students in their courses
     pending_students_count = 0
     if not current_user.is_super_admin():
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -1921,10 +1780,8 @@ def admin_dashboard():
         ).distinct().count()
         pending_students_count = pending_in_admin_courses
     
-    # Get pending course enrollments (students waiting for course approval)
     pending_enrollments = CourseEnrollment.query.filter_by(status='pending').all()
     
-    # Group pending enrollments by student for display
     pending_course_requests = {}
     for enrollment in pending_enrollments:
         if enrollment.student_id not in pending_course_requests:
@@ -1934,10 +1791,8 @@ def admin_dashboard():
             }
         pending_course_requests[enrollment.student_id]['courses'].append(enrollment.course)
     
-    # Convert to list for template
     pending_course_requests_list = list(pending_course_requests.values())
     
-    # Get announcements count for badge
     announcements_count = Announcement.query.count()
     
     if current_user.is_super_admin():
@@ -1957,7 +1812,6 @@ def admin_dashboard():
         admin_count = 0
         tag_count = Tag.query.count()
     
-    # --- NEW DATA FOR ENHANCED FEATURES ---
     upcoming_deadlines = get_admin_upcoming_deadlines(current_user)
     quiz_results = get_admin_quiz_results(current_user)
     announcements_with_pins = get_admin_announcements_with_pins(current_user)
@@ -1965,12 +1819,10 @@ def admin_dashboard():
     enhanced_activity = get_admin_enhanced_activity(current_user)
     progress_visualization = get_student_progress_visualization(current_user)
     
-    # Existing recent data for backward compatibility
     recent_notes = Note.query.order_by(Note.created_at.desc()).limit(5).all()
     recent_quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(5).all()
     
     return render_template('admin/dashboard.html',
-                         # Existing data
                          total_students=total_students,
                          pending_approvals=pending_approvals,
                          pending=pending,
@@ -1987,8 +1839,6 @@ def admin_dashboard():
                          admin_count=admin_count,
                          tag_count=tag_count,
                          announcements_count=announcements_count,
-                         
-                         # NEW DATA
                          upcoming_deadlines=upcoming_deadlines,
                          quiz_results=quiz_results,
                          announcements_with_pins=announcements_with_pins,
@@ -2003,31 +1853,20 @@ def admin_dashboard():
 @app.route('/student/pending-approval')
 @login_required
 def student_pending_approval():
-    """Show pending approval page for students waiting for admin approval"""
-    # If user is admin, redirect to admin dashboard
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Check if account is suspended
     if current_user.is_suspended:
         flash(f'Your account has been suspended. Reason: {current_user.suspension_reason or "No reason provided."}', 'error')
         logout_user()
         return redirect(url_for('login'))
     
-    # If student is already approved, redirect to student dashboard
     if current_user.is_approved:
         return redirect(url_for('student_dashboard'))
     
-    # Get pending courses count and details
     pending_courses = current_user.get_pending_courses()
-    
-    # Get rejected courses if any
     rejected_courses = current_user.get_rejected_courses()
-    
-    # Get total pending count
     pending_count = len(pending_courses)
-    
-    # Check if student has any approved courses (should not happen if is_approved is False)
     approved_courses = current_user.get_enrolled_courses()
     
     return render_template('student/pending_approval.html', 
@@ -2049,18 +1888,14 @@ def profile():
 @app.route('/student/profile/edit', methods=['GET', 'POST'])
 @login_required
 def edit_student_profile():
-    """Edit student profile - Only for students"""
-    # Check if user is a student (not admin)
     if current_user.is_admin():
         flash('Admins cannot edit student profiles here. Please use the admin panel.', 'warning')
         return redirect(url_for('admin_dashboard'))
     
-    # Check if account is approved
     if not current_user.is_approved:
         flash('Your account is pending approval. You cannot edit your profile until approved.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # Check if account is suspended
     if current_user.is_suspended:
         flash('Your account is suspended. Please contact an admin.', 'error')
         logout_user()
@@ -2075,24 +1910,20 @@ def edit_student_profile():
         new_password = request.form.get('new_password')
         confirm_password = request.form.get('confirm_password')
         
-        # Validate
         if not username or not email:
             flash('Username and email are required.', 'error')
             return render_template('student/edit_profile.html')
         
-        # Check for duplicate username
         existing_user = User.query.filter(User.username == username, User.id != current_user.id).first()
         if existing_user:
             flash('Username already taken.', 'error')
             return render_template('student/edit_profile.html')
         
-        # Check for duplicate email
         existing_email = User.query.filter(User.email == email, User.id != current_user.id).first()
         if existing_email:
             flash('Email already registered.', 'error')
             return render_template('student/edit_profile.html')
         
-        # Update basic info
         current_user.username = username
         current_user.email = email
         current_user.phone = phone if phone else None
@@ -2103,18 +1934,15 @@ def edit_student_profile():
                 flash('Invalid date format.', 'error')
                 return render_template('student/edit_profile.html')
         
-        # Handle profile picture upload
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
             if file and file.filename:
                 if allowed_file(file.filename):
-                    # Delete old profile picture if exists
                     if current_user.profile_picture:
                         old_path = os.path.join(app.config['UPLOAD_FOLDER'], current_user.profile_picture)
                         if os.path.exists(old_path):
                             os.remove(old_path)
                     
-                    # Save new profile picture
                     filename = secure_filename(file.filename)
                     unique_filename = f"profile_{current_user.id}_{uuid.uuid4().hex[:8]}{os.path.splitext(filename)[1]}"
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
@@ -2123,7 +1951,6 @@ def edit_student_profile():
                 else:
                     flash('Invalid file format. Please upload JPG, PNG, or GIF.', 'error')
         
-        # Handle password change
         if new_password:
             if not current_password:
                 flash('Please enter your current password to change your password.', 'error')
@@ -2192,10 +2019,8 @@ def toggle_dark_mode():
 @login_required
 @admin_required
 def edit_student(student_id):
-    """Edit student profile"""
     student = User.query.get_or_404(student_id)
     
-    # Check if admin has permission
     if not current_user.is_super_admin():
         student_course_ids = [e.course_id for e in CourseEnrollment.query.filter_by(student_id=student.id).all()]
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -2205,7 +2030,6 @@ def edit_student(student_id):
     
     courses = Course.query.all()
     
-    # Get current enrollments
     enrollments = CourseEnrollment.query.filter_by(student_id=student.id).all()
     enrolled_course_ids = [e.course_id for e in enrollments]
     
@@ -2216,7 +2040,6 @@ def edit_student(student_id):
         is_approved = request.form.get('is_approved') == 'on'
         selected_courses = request.form.getlist('courses')
         
-        # Validate
         if not username or not email:
             flash('Username and email are required.', 'error')
             return render_template('admin/edit_student.html', 
@@ -2224,7 +2047,6 @@ def edit_student(student_id):
                                  courses=courses,
                                  enrolled_course_ids=enrolled_course_ids)
         
-        # Check for duplicate username
         existing_user = User.query.filter(User.username == username, User.id != student.id).first()
         if existing_user:
             flash('Username already taken.', 'error')
@@ -2233,7 +2055,6 @@ def edit_student(student_id):
                                  courses=courses,
                                  enrolled_course_ids=enrolled_course_ids)
         
-        # Check for duplicate email
         existing_email = User.query.filter(User.email == email, User.id != student.id).first()
         if existing_email:
             flash('Email already registered.', 'error')
@@ -2242,17 +2063,14 @@ def edit_student(student_id):
                                  courses=courses,
                                  enrolled_course_ids=enrolled_course_ids)
         
-        # Update student
         student.username = username
         student.email = email
         
-        # Only super admin can change role
         if current_user.is_super_admin():
             student.role = role
         
         student.is_approved = is_approved
         
-        # Update password if provided
         new_password = request.form.get('new_password')
         if new_password:
             if len(new_password) < 6:
@@ -2263,13 +2081,10 @@ def edit_student(student_id):
                                      enrolled_course_ids=enrolled_course_ids)
             student.set_password(new_password)
         
-        # Update course enrollments
         if current_user.is_super_admin():
-            # Get current enrollments
             current_enrollments = CourseEnrollment.query.filter_by(student_id=student.id).all()
             current_course_ids = [e.course_id for e in current_enrollments]
             
-            # Add new enrollments
             selected_course_ids = [int(c) for c in selected_courses]
             for course_id in selected_course_ids:
                 if course_id not in current_course_ids:
@@ -2280,12 +2095,10 @@ def edit_student(student_id):
                     )
                     db.session.add(enrollment)
             
-            # Remove unselected enrollments
             for enrollment in current_enrollments:
                 if enrollment.course_id not in selected_course_ids:
                     db.session.delete(enrollment)
         else:
-            # Regular admin can only manage their courses
             admin_course_ids = [c.id for c in current_user.managed_courses]
             for course_id in selected_courses:
                 course_id_int = int(course_id)
@@ -2303,6 +2116,18 @@ def edit_student(student_id):
                         db.session.add(enrollment)
         
         db.session.commit()
+        
+        # ✅ ADD NOTIFICATION - Profile Updated
+        create_notification(
+            user_id=student.id,
+            title='👤 Profile Updated',
+            message='Your profile has been updated by an administrator.',
+            type='info',
+            link=url_for('profile'),
+            icon='fa-user-edit',
+            icon_color='blue'
+        )
+        
         flash(f'Student {student.username} updated successfully!', 'success')
         return redirect(url_for('manage_students'))
     
@@ -2315,15 +2140,12 @@ def edit_student(student_id):
 @login_required
 @admin_required
 def suspend_student(student_id):
-    """Suspend a student account"""
     student = User.query.get_or_404(student_id)
     
-    # Prevent suspending admins
     if student.is_admin():
         flash('Cannot suspend admin accounts.', 'error')
         return redirect(url_for('manage_students'))
     
-    # Check if admin has permission
     if not current_user.is_super_admin():
         student_course_ids = [e.course_id for e in CourseEnrollment.query.filter_by(student_id=student.id).all()]
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -2337,11 +2159,10 @@ def suspend_student(student_id):
         student.is_suspended = True
         student.suspension_reason = reason
         student.suspended_at = datetime.utcnow()
-        student.is_approved = False  # Remove approval when suspended
+        student.is_approved = False
         
         db.session.commit()
         
-        # Notify student
         notify_student_suspended(student.id, reason)
         
         flash(f'{student.username} has been suspended. Reason: {reason}', 'warning')
@@ -2353,10 +2174,8 @@ def suspend_student(student_id):
 @login_required
 @admin_required
 def unsuspend_student(student_id):
-    """Unsuspend a student account"""
     student = User.query.get_or_404(student_id)
     
-    # Check if admin has permission
     if not current_user.is_super_admin():
         student_course_ids = [e.course_id for e in CourseEnrollment.query.filter_by(student_id=student.id).all()]
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -2367,12 +2186,10 @@ def unsuspend_student(student_id):
     student.is_suspended = False
     student.suspension_reason = None
     student.suspended_at = None
-    # Student needs to be re-approved after unsuspension
     student.is_approved = False
     
     db.session.commit()
     
-    # Notify student
     notify_student_unsuspended(student.id)
     
     flash(f'{student.username} has been unsuspended. They need to be re-approved to access courses.', 'success')
@@ -2382,17 +2199,14 @@ def unsuspend_student(student_id):
 @login_required
 @admin_required
 def delete_student(student_id):
-    """Permanently delete a student account"""
     from sqlalchemy import text
     
     student = User.query.get_or_404(student_id)
     
-    # Prevent deleting admins
     if student.is_admin():
         flash('Cannot delete admin accounts.', 'error')
         return redirect(url_for('manage_students'))
     
-    # Check if admin has permission
     if not current_user.is_super_admin():
         student_course_ids = [e.course_id for e in CourseEnrollment.query.filter_by(student_id=student.id).all()]
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -2401,17 +2215,27 @@ def delete_student(student_id):
             return redirect(url_for('manage_students'))
     
     try:
-        # Delete notifications FIRST (they have foreign key to user)
-        Notification.query.filter_by(user_id=student.id).delete()
+        # ✅ ADD NOTIFICATION BEFORE DELETING
+        try:
+            create_notification(
+                user_id=student.id,
+                title='⚠️ Account Deleted',
+                message='Your account has been permanently deleted from the system. If you believe this is a mistake, please contact the administrator.',
+                type='error',
+                link=None,
+                icon='fa-user-times',
+                icon_color='red'
+            )
+        except:
+            pass
         
-        # Delete related records using ORM
+        Notification.query.filter_by(user_id=student.id).delete()
         CourseEnrollment.query.filter_by(student_id=student.id).delete()
         RejectionMessage.query.filter_by(student_id=student.id).delete()
         QuizAnswer.query.filter_by(student_id=student.id).delete()
         StudentProgress.query.filter_by(student_id=student.id).delete()
         AssignmentSubmission.query.filter_by(student_id=student.id).delete()
         
-        # For many-to-many tables, use text() - these are association tables
         db.session.execute(
             text('DELETE FROM student_course WHERE student_id = :student_id'),
             {'student_id': student.id}
@@ -2421,7 +2245,6 @@ def delete_student(student_id):
             {'student_id': student.id}
         )
         
-        # Delete the user
         db.session.delete(student)
         db.session.commit()
         
@@ -2437,10 +2260,8 @@ def delete_student(student_id):
 @login_required
 @admin_required
 def reset_student_password(student_id):
-    """Reset student password to a random value"""
     student = User.query.get_or_404(student_id)
     
-    # Check if admin has permission
     if not current_user.is_super_admin():
         student_course_ids = [e.course_id for e in CourseEnrollment.query.filter_by(student_id=student.id).all()]
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -2451,10 +2272,20 @@ def reset_student_password(student_id):
     import random
     import string
     
-    # Generate random password
     new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
     student.set_password(new_password)
     db.session.commit()
+    
+    # ✅ ADD NOTIFICATION - Password Reset
+    create_notification(
+        user_id=student.id,
+        title='🔑 Password Reset',
+        message=f'Your password has been reset by an administrator. New password: {new_password}',
+        type='info',
+        link=url_for('login'),
+        icon='fa-key',
+        icon_color='gold'
+    )
     
     flash(f'Password for {student.username} has been reset to: {new_password}', 'info')
     return redirect(url_for('manage_students'))
@@ -2463,10 +2294,8 @@ def reset_student_password(student_id):
 @login_required
 @admin_required
 def unapprove_student(student_id):
-    """Unapprove a student - remove all course enrollments"""
     student = User.query.get_or_404(student_id)
     
-    # Check if admin has permission for this student's courses
     if not current_user.is_super_admin():
         student_course_ids = [e.course_id for e in CourseEnrollment.query.filter_by(student_id=student.id, status='approved').all()]
         admin_course_ids = [c.id for c in current_user.managed_courses]
@@ -2474,20 +2303,29 @@ def unapprove_student(student_id):
             flash('You do not have permission to unapprove this student.', 'error')
             return redirect(url_for('manage_students'))
     
-    # Remove all approved enrollments - change back to pending
     approved_enrollments = CourseEnrollment.query.filter_by(
         student_id=student.id,
         status='approved'
     ).all()
     
     for enrollment in approved_enrollments:
-        enrollment.status = 'pending'  # Change back to pending
+        enrollment.status = 'pending'
         enrollment.approved_at = None
     
-    # Also mark student as not approved
     student.is_approved = False
     
     db.session.commit()
+    
+    # ✅ ADD NOTIFICATION - Account Unapproved
+    create_notification(
+        user_id=student.id,
+        title='⚠️ Account Unapproved',
+        message='Your account has been unapproved. You no longer have access to courses.',
+        type='warning',
+        link=url_for('login'),
+        icon='fa-user-times',
+        icon_color='orange'
+    )
     
     flash(f'{student.username} has been unapproved. They will need to be re-approved to access courses.', 'warning')
     return redirect(url_for('manage_students'))
@@ -2496,16 +2334,13 @@ def unapprove_student(student_id):
 @login_required
 @admin_required
 def unapprove_course(student_id, course_id):
-    """Unapprove a student from a specific course"""
     student = User.query.get_or_404(student_id)
     course = Course.query.get_or_404(course_id)
     
-    # Check if admin has permission
     if not current_user.is_super_admin() and course not in current_user.managed_courses:
         flash('You do not have permission to unapprove this course.', 'error')
         return redirect(url_for('manage_students'))
     
-    # Find the enrollment
     enrollment = CourseEnrollment.query.filter_by(
         student_id=student.id,
         course_id=course.id,
@@ -2516,6 +2351,18 @@ def unapprove_course(student_id, course_id):
         enrollment.status = 'pending'
         enrollment.approved_at = None
         db.session.commit()
+        
+        # ✅ ADD NOTIFICATION - Course Unapproved
+        create_notification(
+            user_id=student.id,
+            title=f'⚠️ Course Unapproved: {course.name}',
+            message=f'You have been unapproved from {course.name}.',
+            type='warning',
+            link=url_for('student_courses'),
+            icon='fa-times-circle',
+            icon_color='orange'
+        )
+        
         flash(f'{student.username} unapproved from {course.name}.', 'warning')
     else:
         flash('Student is not approved for this course.', 'error')
@@ -2523,41 +2370,30 @@ def unapprove_course(student_id, course_id):
     return redirect(url_for('manage_students'))
 
 # ============================================================================
-# UPDATED: STUDENT APPROVAL - Regular admins can only approve if they manage the student's courses
+# STUDENT APPROVAL ROUTES
 # ============================================================================
 
 @app.route('/admin/students/<int:student_id>/approve', methods=['POST'])
 @login_required
 @admin_required
 def approve_student(student_id):
-    """Approve a student account. Super Admin: approve anyone. Regular Admin: only if they manage at least one of the student's courses."""
     student = User.query.get_or_404(student_id)
     
-    # Check if admin has permission
     if not current_user.is_super_admin():
-        # Get ALL enrollments for this student
         student_enrollments = CourseEnrollment.query.filter_by(student_id=student.id).all()
         admin_course_ids = [c.id for c in current_user.managed_courses]
-        
-        # Check if this admin manages at least ONE course this student is enrolled in
         has_permission = any(e.course_id in admin_course_ids for e in student_enrollments)
         
         if not has_permission:
             flash('You do not have permission to approve this student. You do not manage any of their courses.', 'error')
             return redirect(url_for('manage_students'))
     
-    # ONLY approve the student account - NOT the courses
     student.is_approved = True
-    
-    # Keep all enrollments as 'pending' - admin must approve each course separately
-    # Do NOT change enrollment statuses here
     
     db.session.commit()
     
-    # Notify student
     notify_student_approved(student.id)
     
-    # Get pending courses count for the message
     pending_courses = CourseEnrollment.query.filter_by(
         student_id=student.id,
         status='pending'
@@ -2566,24 +2402,17 @@ def approve_student(student_id):
     flash(f'{student.username} has been approved. They can now log in. ({pending_courses} course(s) pending approval)', 'success')
     return redirect(url_for('manage_students'))
 
-# ============================================================================
-# UPDATED: COURSE APPROVAL - Regular admins can only approve courses they manage
-# ============================================================================
-
 @app.route('/admin/students/<int:student_id>/approve-course/<int:course_id>', methods=['POST'])
 @login_required
 @admin_required
 def approve_course(student_id, course_id):
-    """Approve a student for a specific course. Super Admin: approve any. Regular Admin: only if they manage the course."""
     student = User.query.get_or_404(student_id)
     course = Course.query.get_or_404(course_id)
     
-    # Check if admin has permission - only super admin or admin who manages this course
     if not current_user.is_super_admin() and course not in current_user.managed_courses:
         flash('You do not have permission to approve this course.', 'error')
         return redirect(url_for('manage_students'))
     
-    # Find the enrollment
     enrollment = CourseEnrollment.query.filter_by(
         student_id=student.id,
         course_id=course.id,
@@ -2595,7 +2424,6 @@ def approve_course(student_id, course_id):
         enrollment.approved_at = datetime.utcnow()
         db.session.commit()
         
-        # Notify student
         notify_course_approved(student.id, course.name)
         
         flash(f'{student.username} approved for {course.name}.', 'success')
@@ -2604,34 +2432,37 @@ def approve_course(student_id, course_id):
     
     return redirect(url_for('manage_students'))
 
-# ============================================================================
-# UPDATED: APPROVE ALL COURSES - Super Admin only
-# ============================================================================
-
 @app.route('/admin/students/<int:student_id>/approve-all-courses', methods=['POST'])
 @login_required
 @admin_required
 def approve_all_courses(student_id):
-    """Approve all pending course enrollments for a student. SUPER ADMIN ONLY."""
-    # ONLY super admin can approve all courses
     if not current_user.is_super_admin():
         flash('Only Super Admin can approve all courses at once.', 'error')
         return redirect(url_for('manage_students'))
     
     student = User.query.get_or_404(student_id)
     
-    # Get all pending enrollments
     pending_enrollments = CourseEnrollment.query.filter_by(
         student_id=student.id,
         status='pending'
     ).all()
     
-    # Approve all pending enrollments
     for enrollment in pending_enrollments:
         enrollment.status = 'approved'
         enrollment.approved_at = datetime.utcnow()
     
     db.session.commit()
+    
+    # ✅ ADD NOTIFICATION - All Courses Approved
+    create_notification(
+        user_id=student.id,
+        title='✅ All Courses Approved!',
+        message=f'You have been approved for all requested courses. Start learning now!',
+        type='success',
+        link=url_for('student_dashboard'),
+        icon='fa-check-circle',
+        icon_color='green'
+    )
     
     flash(f'All {len(pending_enrollments)} course(s) approved for {student.username}.', 'success')
     return redirect(url_for('manage_students'))
@@ -2642,7 +2473,6 @@ def approve_all_courses(student_id):
 def reject_student(student_id):
     student = User.query.get_or_404(student_id)
     
-    # Get pending enrollments
     pending_enrollments = CourseEnrollment.query.filter_by(
         student_id=student.id,
         status='pending'
@@ -2656,7 +2486,6 @@ def reject_student(student_id):
             flash('Please select a course and provide a reason.', 'error')
             return render_template('admin/reject_user.html', student=student, enrollments=pending_enrollments)
         
-        # Find the enrollment
         enrollment = CourseEnrollment.query.filter_by(
             student_id=student.id,
             course_id=course_id,
@@ -2670,7 +2499,6 @@ def reject_student(student_id):
             enrollment.rejected_at = datetime.utcnow()
             enrollment.rejection_reason = message
         
-        # Save rejection message
         rejection = RejectionMessage(
             student_id=student.id,
             course_id=course_id,
@@ -2678,25 +2506,21 @@ def reject_student(student_id):
         )
         db.session.add(rejection)
         
-        # Check if student has any pending enrollments left
         remaining_pending = CourseEnrollment.query.filter_by(
             student_id=student.id,
             status='pending'
         ).count()
         
-        # Check if student has any approved enrollments
         approved_count = CourseEnrollment.query.filter_by(
             student_id=student.id,
             status='approved'
         ).count()
         
-        # If no pending and no approved courses, set student as not approved
         if remaining_pending == 0 and approved_count == 0:
             student.is_approved = False
         
         db.session.commit()
         
-        # Notify student
         notify_student_rejected(student.id, course_name, message)
         
         flash(f'Student {student.username} rejected from {course_name}.', 'warning')
@@ -2708,18 +2532,15 @@ def reject_student(student_id):
 @login_required
 @admin_required
 def reject_course(student_id, course_id):
-    """Reject a student from a specific course"""
     student = User.query.get_or_404(student_id)
     course = Course.query.get_or_404(course_id)
     
-    # Check if admin has permission
     if not current_user.is_super_admin() and course not in current_user.managed_courses:
         flash('You do not have permission to reject this course.', 'error')
         return redirect(url_for('manage_students'))
     
     message = request.form.get('message', 'No reason provided.')
     
-    # Find the enrollment
     enrollment = CourseEnrollment.query.filter_by(
         student_id=student.id,
         course_id=course.id
@@ -2730,7 +2551,6 @@ def reject_course(student_id, course_id):
         enrollment.rejected_at = datetime.utcnow()
         enrollment.rejection_reason = message
         
-        # Save rejection message
         rejection = RejectionMessage(
             student_id=student.id,
             course_id=course_id,
@@ -2739,7 +2559,6 @@ def reject_course(student_id, course_id):
         db.session.add(rejection)
         db.session.commit()
         
-        # Notify student
         notify_student_rejected(student.id, course.name, message)
         
         flash(f'{student.username} rejected from {course.name}.', 'warning')
@@ -2755,17 +2574,14 @@ def unreject_student(student_id, course_id):
     student = User.query.get_or_404(student_id)
     course = Course.query.get_or_404(course_id)
     
-    # Check if there's a rejection record
     rejection = RejectionMessage.query.filter_by(
         student_id=student.id,
         course_id=course_id
     ).first()
     
     if rejection:
-        # Remove rejection message
         db.session.delete(rejection)
     
-    # Check if there's an enrollment record
     enrollment = CourseEnrollment.query.filter_by(
         student_id=student.id,
         course_id=course_id
@@ -2776,7 +2592,6 @@ def unreject_student(student_id, course_id):
         enrollment.rejected_at = None
         enrollment.rejection_reason = None
     else:
-        # Create new enrollment
         enrollment = CourseEnrollment(
             student_id=student.id,
             course_id=course_id,
@@ -2785,6 +2600,18 @@ def unreject_student(student_id, course_id):
         db.session.add(enrollment)
     
     db.session.commit()
+    
+    # ✅ ADD NOTIFICATION - Student Reinstated
+    create_notification(
+        user_id=student.id,
+        title=f'✅ Reinstated: {course.name}',
+        message=f'You have been reinstated for {course.name}. Your request is now pending approval.',
+        type='success',
+        link=url_for('student_courses'),
+        icon='fa-undo',
+        icon_color='green'
+    )
+    
     flash(f'{student.username} has been restored to {course.name} (pending approval).', 'success')
     
     return redirect(url_for('manage_students'))
@@ -2793,7 +2620,6 @@ def unreject_student(student_id, course_id):
 @login_required
 @admin_required
 def bulk_approve_students():
-    """Bulk approve students - for super admin use only"""
     if not current_user.is_super_admin():
         flash('Only Super Admin can bulk approve students.', 'error')
         return redirect(url_for('manage_students'))
@@ -2808,7 +2634,6 @@ def bulk_approve_students():
     for sid in student_ids:
         student = User.query.get(sid)
         if student:
-            # Approve all pending enrollments
             pending_enrollments = CourseEnrollment.query.filter_by(
                 student_id=student.id,
                 status='pending'
@@ -2818,14 +2643,21 @@ def bulk_approve_students():
                 enrollment.approved_at = datetime.utcnow()
             student.is_approved = True
             approved_count += 1
+            
+            # ✅ ADD NOTIFICATION - Account Approved
+            create_notification(
+                user_id=student.id,
+                title='✅ Account Approved!',
+                message='Your account has been approved. You can now access all courses.',
+                type='success',
+                link=url_for('student_dashboard'),
+                icon='fa-check-circle',
+                icon_color='green'
+            )
     
     db.session.commit()
     flash(f'{approved_count} students approved successfully.', 'success')
     return redirect(url_for('manage_students'))
-
-# ============================================================================
-# UPDATED: MANAGE STUDENTS - Filters students based on admin role
-# ============================================================================
 
 @app.route('/admin/students')
 @login_required
@@ -2834,14 +2666,12 @@ def manage_students():
     if current_user.is_super_admin():
         students = User.query.filter_by(role='student').all()
         
-        # Get students with pending enrollments
         pending_student_ids = db.session.query(CourseEnrollment.student_id).filter(
             CourseEnrollment.status == 'pending'
         ).distinct().all()
         pending_student_ids = [p[0] for p in pending_student_ids]
         pending = User.query.filter(User.id.in_(pending_student_ids)).all() if pending_student_ids else []
     else:
-        # Regular admin: only see students enrolled in their courses
         course_ids = [c.id for c in current_user.managed_courses]
         students = User.query.filter(
             User.role == 'student',
@@ -2852,7 +2682,6 @@ def manage_students():
             )
         ).all()
         
-        # Get students with pending enrollments in admin's courses
         pending_student_ids = db.session.query(CourseEnrollment.student_id).filter(
             CourseEnrollment.status == 'pending',
             CourseEnrollment.course_id.in_(course_ids)
@@ -2860,7 +2689,6 @@ def manage_students():
         pending_student_ids = [p[0] for p in pending_student_ids]
         pending = User.query.filter(User.id.in_(pending_student_ids)).all() if pending_student_ids else []
     
-    # Get enrollment details for each student
     students_with_enrollments = []
     for student in students:
         enrollments = CourseEnrollment.query.filter_by(student_id=student.id).all()
@@ -2879,14 +2707,13 @@ def manage_students():
                          courses=courses)
 
 # ============================================================================
-# ROUTES - COURSE MANAGEMENT (Admin & Super Admin)
+# ROUTES - COURSE MANAGEMENT
 # ============================================================================
 
 @app.route('/admin/courses')
 @login_required
 @admin_required
 def admin_course_list():
-    """List all courses with their assigned admins and student counts"""
     if current_user.is_super_admin():
         courses = Course.query.all()
     else:
@@ -2894,13 +2721,11 @@ def admin_course_list():
     
     course_data = []
     for course in courses:
-        # Get assigned admins for this course
         assigned_admins = User.query.filter(
             User.role.in_(['admin', 'super_admin']),
             User.managed_courses.contains(course)
         ).all()
         
-        # Get enrolled students with their enrollment status
         enrollments = CourseEnrollment.query.filter_by(course_id=course.id).all()
         students = []
         for enrollment in enrollments:
@@ -2910,7 +2735,6 @@ def admin_course_list():
                 'enrolled_at': enrollment.requested_at
             })
         
-        # Count approved students
         approved_count = sum(1 for e in enrollments if e.status == 'approved')
         pending_count = sum(1 for e in enrollments if e.status == 'pending')
         
@@ -2934,21 +2758,17 @@ def admin_course_list():
 @login_required
 @admin_required
 def admin_course_detail(course_id):
-    """View detailed course information including students and admins"""
     course = Course.query.get_or_404(course_id)
     
-    # Check if admin has permission
     if not current_user.is_super_admin() and course not in current_user.managed_courses:
         flash('You do not have permission to view this course.', 'error')
         return redirect(url_for('admin_course_list'))
     
-    # Get assigned admins
     assigned_admins = User.query.filter(
         User.role.in_(['admin', 'super_admin']),
         User.managed_courses.contains(course)
     ).all()
     
-    # Get all students with their enrollment status
     enrollments = CourseEnrollment.query.filter_by(course_id=course.id).all()
     students_data = []
     for enrollment in enrollments:
@@ -2961,12 +2781,10 @@ def admin_course_detail(course_id):
             'rejection_reason': enrollment.rejection_reason
         })
     
-    # Get notes, quizzes, assignments
     notes = Note.query.filter_by(course_id=course.id).order_by(Note.created_at.desc()).all()
     quizzes = QuizGroup.query.filter_by(course_id=course.id).all()
     assignments = Assignment.query.filter_by(course_id=course.id).all()
     
-    # Statistics
     total_students = len(students_data)
     approved_count = sum(1 for s in students_data if s['status'] == 'approved')
     pending_count = sum(1 for s in students_data if s['status'] == 'pending')
@@ -2989,7 +2807,6 @@ def admin_course_detail(course_id):
 @login_required
 @super_admin_required
 def assign_admin_to_course(course_id, admin_id):
-    """Assign an admin to manage a course"""
     course = Course.query.get_or_404(course_id)
     admin = User.query.get_or_404(admin_id)
     
@@ -3002,6 +2819,18 @@ def assign_admin_to_course(course_id, admin_id):
     else:
         course.admins.append(admin)
         db.session.commit()
+        
+        # ✅ ADD NOTIFICATION - Admin Assigned
+        create_notification(
+            user_id=admin.id,
+            title='📋 Assigned to Course',
+            message=f'You have been assigned as an admin for {course.name}.',
+            type='info',
+            link=url_for('admin_course_detail', course_id=course.id),
+            icon='fa-user-plus',
+            icon_color='gold'
+        )
+        
         flash(f'{admin.username} has been assigned to {course.name}.', 'success')
     
     return redirect(url_for('admin_course_detail', course_id=course_id))
@@ -3010,11 +2839,9 @@ def assign_admin_to_course(course_id, admin_id):
 @login_required
 @super_admin_required
 def remove_admin_from_course(course_id, admin_id):
-    """Remove an admin from a course"""
     course = Course.query.get_or_404(course_id)
     admin = User.query.get_or_404(admin_id)
     
-    # Prevent removing the last admin
     if len(course.admins) <= 1:
         flash('Cannot remove the last admin from a course.', 'error')
         return redirect(url_for('admin_course_detail', course_id=course_id))
@@ -3022,6 +2849,18 @@ def remove_admin_from_course(course_id, admin_id):
     if admin in course.admins:
         course.admins.remove(admin)
         db.session.commit()
+        
+        # ✅ ADD NOTIFICATION - Admin Removed
+        create_notification(
+            user_id=admin.id,
+            title='📋 Removed from Course',
+            message=f'You have been removed as an admin from {course.name}.',
+            type='warning',
+            link=url_for('admin_dashboard'),
+            icon='fa-user-minus',
+            icon_color='orange'
+        )
+        
         flash(f'{admin.username} has been removed from {course.name}.', 'success')
     else:
         flash(f'{admin.username} is not assigned to this course.', 'warning')
@@ -3032,16 +2871,13 @@ def remove_admin_from_course(course_id, admin_id):
 @login_required
 @admin_required
 def view_student_in_course(course_id, student_id):
-    """View a student's details within a specific course"""
     course = Course.query.get_or_404(course_id)
     student = User.query.get_or_404(student_id)
     
-    # Check if admin has permission
     if not current_user.is_super_admin() and course not in current_user.managed_courses:
         flash('You do not have permission to view this course.', 'error')
         return redirect(url_for('admin_course_list'))
     
-    # Get enrollment status
     enrollment = CourseEnrollment.query.filter_by(
         student_id=student.id,
         course_id=course.id
@@ -3051,10 +2887,8 @@ def view_student_in_course(course_id, student_id):
         flash('Student is not enrolled in this course.', 'error')
         return redirect(url_for('admin_course_detail', course_id=course_id))
     
-    # Get student's progress in this course
     progress = course.get_progress_for_student(student.id)
     
-    # Get student's quiz results for this course
     quiz_answers = QuizAnswer.query.filter_by(student_id=student.id).all()
     quiz_results = []
     for answer in quiz_answers:
@@ -3066,7 +2900,6 @@ def view_student_in_course(course_id, student_id):
                     'score': score
                 })
     
-    # Get student's assignment submissions for this course
     submissions = AssignmentSubmission.query.filter_by(student_id=student.id).all()
     assignment_results = []
     for sub in submissions:
@@ -3112,6 +2945,19 @@ def create_course():
         db.session.add(course)
         db.session.commit()
         
+        # ✅ ADD NOTIFICATION - New Course Created
+        admins = User.query.filter(User.role.in_(['admin', 'super_admin'])).all()
+        for admin in admins:
+            create_notification(
+                user_id=admin.id,
+                title='📚 New Course Created',
+                message=f'A new course "{course.name}" has been created.',
+                type='info',
+                link=url_for('admin_course_detail', course_id=course.id),
+                icon='fa-book',
+                icon_color='gold'
+            )
+        
         flash(f'Course {name} created successfully!', 'success')
         return redirect(url_for('admin_course_list'))
     
@@ -3123,13 +2969,44 @@ def create_course():
 def delete_course(course_id):
     course = Course.query.get_or_404(course_id)
     
-    # Delete all rejection messages related to this course first
-    RejectionMessage.query.filter_by(course_id=course_id).delete()
+    # ✅ ADD NOTIFICATIONS BEFORE DELETING
+    # Notify all students enrolled
+    students = User.query.filter(
+        User.id.in_(
+            db.session.query(CourseEnrollment.student_id).filter(
+                CourseEnrollment.course_id == course_id,
+                CourseEnrollment.status == 'approved'
+            )
+        )
+    ).all()
     
-    # Delete all enrollments for this course
+    for student in students:
+        create_notification(
+            user_id=student.id,
+            title=f'🗑️ Course Removed: {course.name}',
+            message=f'The course "{course.name}" has been permanently removed.',
+            type='warning',
+            link=url_for('student_courses'),
+            icon='fa-trash',
+            icon_color='red'
+        )
+    
+    # Notify all admins
+    admins = User.query.filter(User.role.in_(['admin', 'super_admin'])).all()
+    for admin in admins:
+        create_notification(
+            user_id=admin.id,
+            title=f'🗑️ Course Deleted: {course.name}',
+            message=f'The course "{course.name}" has been permanently deleted.',
+            type='warning',
+            link=url_for('admin_course_list'),
+            icon='fa-trash',
+            icon_color='red'
+        )
+    
+    RejectionMessage.query.filter_by(course_id=course_id).delete()
     CourseEnrollment.query.filter_by(course_id=course_id).delete()
     
-    # Now delete the course
     db.session.delete(course)
     db.session.commit()
     
@@ -3144,19 +3021,17 @@ def delete_course(course_id):
 @login_required
 @admin_required
 def manage_announcements():
-    # Filter announcements based on admin role
     if current_user.is_super_admin():
         announcements = Announcement.query.order_by(
             Announcement.is_pinned.desc(), 
             Announcement.created_at.desc()
         ).all()
     else:
-        # Regular admin only sees announcements for their courses
         admin_course_ids = [c.id for c in current_user.managed_courses]
         announcements = Announcement.query.filter(
             db.or_(
                 Announcement.course_id.in_(admin_course_ids),
-                Announcement.course_id.is_(None)  # Also show global announcements
+                Announcement.course_id.is_(None)
             )
         ).order_by(
             Announcement.is_pinned.desc(), 
@@ -3169,7 +3044,6 @@ def manage_announcements():
 @login_required
 @admin_required
 def post_announcement():
-    # Get courses based on admin role
     if current_user.is_super_admin():
         courses = Course.query.all()
     else:
@@ -3185,7 +3059,6 @@ def post_announcement():
             flash('Title and content are required.', 'error')
             return render_template('admin/post_announcement.html', courses=courses)
         
-        # Validate course access for regular admins
         if course_id:
             course = Course.query.get(course_id)
             if not current_user.is_super_admin() and course not in current_user.managed_courses:
@@ -3204,7 +3077,7 @@ def post_announcement():
         db.session.add(announcement)
         db.session.commit()
         
-        # Notify students enrolled in the course
+        # Send notifications to students
         if course_id:
             course = Course.query.get(course_id)
             students = User.query.filter(
@@ -3227,7 +3100,6 @@ def post_announcement():
                     icon_color='purple'
                 )
         else:
-            # Global announcement - send to all students
             students = User.query.filter_by(role='student', is_approved=True).all()
             for student in students:
                 create_notification(
@@ -3252,11 +3124,32 @@ def post_announcement():
 def delete_announcement(announcement_id):
     announcement = Announcement.query.get_or_404(announcement_id)
     
-    # Check if admin has permission to delete
     if not current_user.is_super_admin():
         if announcement.course_id and announcement.course not in current_user.managed_courses:
             flash('You do not have permission to delete this announcement.', 'error')
             return redirect(url_for('manage_announcements'))
+    
+    # ✅ ADD NOTIFICATION - Announcement Deleted
+    if announcement.course_id:
+        students = User.query.filter(
+            User.id.in_(
+                db.session.query(CourseEnrollment.student_id).filter(
+                    CourseEnrollment.course_id == announcement.course_id,
+                    CourseEnrollment.status == 'approved'
+                )
+            )
+        ).all()
+        
+        for student in students:
+            create_notification(
+                user_id=student.id,
+                title=f'🗑️ Announcement Removed: {announcement.title}',
+                message=f'The announcement "{announcement.title}" has been removed from {announcement.course.name}.',
+                type='warning',
+                link=url_for('student_announcements'),
+                icon='fa-trash',
+                icon_color='red'
+            )
     
     db.session.delete(announcement)
     db.session.commit()
@@ -3270,6 +3163,29 @@ def toggle_pin_announcement(announcement_id):
     announcement = Announcement.query.get_or_404(announcement_id)
     announcement.is_pinned = not announcement.is_pinned
     db.session.commit()
+    
+    # ✅ ADD NOTIFICATION - Announcement Pinned
+    if announcement.is_pinned and announcement.course_id:
+        students = User.query.filter(
+            User.id.in_(
+                db.session.query(CourseEnrollment.student_id).filter(
+                    CourseEnrollment.course_id == announcement.course_id,
+                    CourseEnrollment.status == 'approved'
+                )
+            )
+        ).all()
+        
+        for student in students:
+            create_notification(
+                user_id=student.id,
+                title=f'📌 Announcement Pinned: {announcement.title}',
+                message=f'An announcement has been pinned in {announcement.course.name}.',
+                type='info',
+                link=url_for('student_announcements'),
+                icon='fa-thumbtack',
+                icon_color='gold'
+            )
+    
     status = 'pinned' if announcement.is_pinned else 'unpinned'
     flash(f'Announcement {status}.', 'success')
     return redirect(url_for('manage_announcements'))
@@ -3280,13 +3196,11 @@ def toggle_pin_announcement(announcement_id):
 def edit_announcement(announcement_id):
     announcement = Announcement.query.get_or_404(announcement_id)
     
-    # Check if admin has permission to edit
     if not current_user.is_super_admin():
         if announcement.course_id and announcement.course not in current_user.managed_courses:
             flash('You do not have permission to edit this announcement.', 'error')
             return redirect(url_for('manage_announcements'))
     
-    # Get courses based on admin role
     if current_user.is_super_admin():
         courses = Course.query.all()
     else:
@@ -3302,7 +3216,6 @@ def edit_announcement(announcement_id):
             flash('Title and content are required.', 'error')
             return render_template('admin/edit_announcement.html', announcement=announcement, courses=courses)
         
-        # Validate course access for regular admins
         if course_id:
             course = Course.query.get(course_id)
             if not current_user.is_super_admin() and course not in current_user.managed_courses:
@@ -3316,6 +3229,29 @@ def edit_announcement(announcement_id):
         announcement.updated_at = datetime.utcnow()
         
         db.session.commit()
+        
+        # ✅ ADD NOTIFICATION - Announcement Updated
+        if announcement.course_id:
+            students = User.query.filter(
+                User.id.in_(
+                    db.session.query(CourseEnrollment.student_id).filter(
+                        CourseEnrollment.course_id == announcement.course_id,
+                        CourseEnrollment.status == 'approved'
+                    )
+                )
+            ).all()
+            
+            for student in students:
+                create_notification(
+                    user_id=student.id,
+                    title=f'📢 Announcement Updated: {announcement.title}',
+                    message=f'An announcement has been updated in {announcement.course.name}.',
+                    type='info',
+                    link=url_for('student_announcements'),
+                    icon='fa-bullhorn',
+                    icon_color='purple'
+                )
+        
         flash('Announcement updated successfully!', 'success')
         return redirect(url_for('manage_announcements'))
     
@@ -3326,19 +3262,16 @@ def edit_announcement(announcement_id):
 @app.route('/student/announcements')
 @login_required
 def student_announcements():
-    # Check if student is approved
     if not current_user.is_admin() and not current_user.is_approved:
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # Get announcements for courses the student is enrolled in
     enrolled_course_ids = [c.id for c in current_user.get_enrolled_courses()]
     
-    # Get global announcements and course-specific announcements
     announcements = Announcement.query.filter(
         db.or_(
-            Announcement.course_id.is_(None),  # Global announcements
-            Announcement.course_id.in_(enrolled_course_ids)  # Course-specific announcements
+            Announcement.course_id.is_(None),
+            Announcement.course_id.in_(enrolled_course_ids)
         )
     ).order_by(
         Announcement.is_pinned.desc(), 
@@ -3595,7 +3528,6 @@ def post_note():
             if file and file.filename and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 unique_filename = get_upload_path(filename)
-                file_path = os.path.join('uploads', unique_filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
                 file_path = unique_filename
                 file_name = filename
@@ -3612,7 +3544,7 @@ def post_note():
         db.session.add(note)
         db.session.commit()
         
-        # Send notification to all students enrolled in this course
+        # Send notifications to students
         students = User.query.filter(
             User.id.in_(
                 db.session.query(CourseEnrollment.student_id).filter(
@@ -3687,7 +3619,7 @@ def edit_note(note_id):
         
         db.session.commit()
         
-        # Send notification to all students enrolled in this course about the update
+        # Send notification to students
         students = User.query.filter(
             User.id.in_(
                 db.session.query(CourseEnrollment.student_id).filter(
@@ -3723,12 +3655,32 @@ def delete_note(note_id):
         flash('You do not have permission to delete this note.', 'error')
         return redirect(url_for('admin_dashboard'))
     
+    # ✅ ADD NOTIFICATION - Note Deleted
+    students = User.query.filter(
+        User.id.in_(
+            db.session.query(CourseEnrollment.student_id).filter(
+                CourseEnrollment.course_id == note.course_id,
+                CourseEnrollment.status == 'approved'
+            )
+        )
+    ).all()
+    
+    for student in students:
+        create_notification(
+            user_id=student.id,
+            title=f'🗑️ Note Removed: {note.title}',
+            message=f'The note "{note.title}" has been removed from {note.course.name}.',
+            type='warning',
+            link=url_for('student_courses'),
+            icon='fa-trash',
+            icon_color='red'
+        )
+    
     if note.file_path:
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], note.file_path)
         if os.path.exists(file_path):
             os.remove(file_path)
     
-    # Delete student progress records first
     StudentProgress.query.filter_by(note_id=note.id).delete()
     
     db.session.delete(note)
@@ -3848,7 +3800,29 @@ def create_quiz_group():
                 db.session.add(question)
         
         db.session.commit()
-        flash(f'Quiz "{title}" created with {len(questions)} questions!', 'success')
+        
+        # ✅ ADD NOTIFICATION - New Quiz
+        students = User.query.filter(
+            User.id.in_(
+                db.session.query(CourseEnrollment.student_id).filter(
+                    CourseEnrollment.course_id == course_id,
+                    CourseEnrollment.status == 'approved'
+                )
+            )
+        ).all()
+        
+        for student in students:
+            create_notification(
+                user_id=student.id,
+                title=f'📝 New Quiz: {title}',
+                message=f'A new quiz "{title}" is available in {course.name}.',
+                type='info',
+                link=url_for('student_quizzes'),
+                icon='fa-puzzle-piece',
+                icon_color='gold'
+            )
+        
+        flash(f'Quiz "{title}" created with {len(questions)} questions! Notifications sent to {len(students)} students.', 'success')
         return redirect(url_for('manage_quizzes'))
     
     return render_template('admin/create_quiz_group.html', courses=courses)
@@ -3920,6 +3894,28 @@ def edit_quiz_group(quiz_id):
                 db.session.add(question)
         
         db.session.commit()
+        
+        # ✅ ADD NOTIFICATION - Quiz Updated
+        students = User.query.filter(
+            User.id.in_(
+                db.session.query(CourseEnrollment.student_id).filter(
+                    CourseEnrollment.course_id == quiz.course_id,
+                    CourseEnrollment.status == 'approved'
+                )
+            )
+        ).all()
+        
+        for student in students:
+            create_notification(
+                user_id=student.id,
+                title=f'📝 Quiz Updated: {quiz.title}',
+                message=f'The quiz "{quiz.title}" has been updated in {quiz.course.name}.',
+                type='info',
+                link=url_for('student_quizzes'),
+                icon='fa-edit',
+                icon_color='blue'
+            )
+        
         flash(f'Quiz "{title}" updated successfully!', 'success')
         return redirect(url_for('manage_quizzes'))
     
@@ -3935,13 +3931,30 @@ def delete_quiz_group(quiz_id):
         flash('You do not have permission to delete this quiz.', 'error')
         return redirect(url_for('manage_quizzes'))
     
-    # Delete all answers for this quiz first
-    QuizAnswer.query.filter_by(quiz_group_id=quiz.id).delete()
+    # ✅ ADD NOTIFICATION - Quiz Deleted
+    students = User.query.filter(
+        User.id.in_(
+            db.session.query(CourseEnrollment.student_id).filter(
+                CourseEnrollment.course_id == quiz.course_id,
+                CourseEnrollment.status == 'approved'
+            )
+        )
+    ).all()
     
-    # Delete all questions for this quiz
+    for student in students:
+        create_notification(
+            user_id=student.id,
+            title=f'🗑️ Quiz Removed: {quiz.title}',
+            message=f'The quiz "{quiz.title}" has been removed from {quiz.course.name}.',
+            type='warning',
+            link=url_for('student_quizzes'),
+            icon='fa-trash',
+            icon_color='red'
+        )
+    
+    QuizAnswer.query.filter_by(quiz_group_id=quiz.id).delete()
     QuizQuestion.query.filter_by(quiz_group_id=quiz.id).delete()
     
-    # Now delete the quiz
     db.session.delete(quiz)
     db.session.commit()
     
@@ -3971,36 +3984,6 @@ def manage_assignments():
         flash(f'Error loading assignments: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
 
-# ============================================================================
-# ASSIGNMENT FILE UPLOAD - ADD TO app.py
-# ============================================================================
-
-# Update the Assignment model to include file fields
-# Add these columns to the Assignment model (if not already present):
-# file_path = db.Column(db.String(200), nullable=True)
-# file_name = db.Column(db.String(100), nullable=True)
-# file_size = db.Column(db.String(20), nullable=True)
-
-# Helper function to validate file
-def validate_assignment_file(file):
-    """Validate uploaded assignment file"""
-    if not file or file.filename == '':
-        return None, "No file selected"
-    
-    if not allowed_file(file.filename):
-        return None, f"File type not allowed. Allowed: {', '.join(app.config['ALLOWED_EXTENSIONS'])}"
-    
-    # Check file size (max 16MB)
-    file.seek(0, 2)  # Seek to end
-    size = file.tell()
-    file.seek(0)  # Reset to beginning
-    
-    if size > app.config['MAX_CONTENT_LENGTH']:
-        return None, f"File too large. Maximum size: {app.config['MAX_CONTENT_LENGTH'] // (1024*1024)}MB"
-    
-    return True, None
-
-# Update the create_assignment route
 @app.route('/admin/assignments/create', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -4045,7 +4028,6 @@ def create_assignment():
                     flash(error, 'error')
                     return render_template('admin/create_assignment.html', courses=courses)
                 
-                # Save file
                 filename = secure_filename(file.filename)
                 unique_filename = get_upload_path(filename)
                 full_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
@@ -4069,7 +4051,7 @@ def create_assignment():
         db.session.add(assignment)
         db.session.commit()
         
-        # Send notifications
+        # Send notifications to students
         students = User.query.filter(
             User.id.in_(
                 db.session.query(CourseEnrollment.student_id).filter(
@@ -4095,7 +4077,6 @@ def create_assignment():
     
     return render_template('admin/create_assignment.html', courses=courses)
 
-# Update the edit_assignment route
 @app.route('/admin/assignments/<int:assignment_id>/edit', methods=['GET', 'POST'])
 @login_required
 @admin_required
@@ -4140,7 +4121,6 @@ def edit_assignment(assignment_id):
         if 'assignment_file' in request.files:
             file = request.files['assignment_file']
             if file and file.filename:
-                # Delete old file if exists
                 if assignment.file_path:
                     old_path = os.path.join(app.config['UPLOAD_FOLDER'], assignment.file_path)
                     if os.path.exists(old_path):
@@ -4170,33 +4150,32 @@ def edit_assignment(assignment_id):
             assignment.file_size = None
         
         db.session.commit()
+        
+        # ✅ ADD NOTIFICATION - Assignment Updated
+        students = User.query.filter(
+            User.id.in_(
+                db.session.query(CourseEnrollment.student_id).filter(
+                    CourseEnrollment.course_id == assignment.course_id,
+                    CourseEnrollment.status == 'approved'
+                )
+            )
+        ).all()
+        
+        for student in students:
+            create_notification(
+                user_id=student.id,
+                title=f'📝 Assignment Updated: {assignment.title}',
+                message=f'The assignment "{assignment.title}" has been updated in {assignment.course.name}.',
+                type='info',
+                link=url_for('student_assignments'),
+                icon='fa-edit',
+                icon_color='blue'
+            )
+        
         flash(f'Assignment "{title}" updated successfully!', 'success')
         return redirect(url_for('manage_assignments'))
     
     return render_template('admin/edit_assignment.html', assignment=assignment, courses=courses)
-
-# Add route to download assignment file
-@app.route('/admin/assignments/<int:assignment_id>/download')
-@login_required
-@admin_required
-def download_assignment_file(assignment_id):
-    assignment = Assignment.query.get_or_404(assignment_id)
-    
-    if not assignment.file_path:
-        flash('No file attached to this assignment.', 'warning')
-        return redirect(url_for('edit_assignment', assignment_id=assignment.id))
-    
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], assignment.file_path)
-    if not os.path.exists(file_path):
-        flash('File not found.', 'error')
-        return redirect(url_for('edit_assignment', assignment_id=assignment.id))
-    
-    return send_from_directory(
-        app.config['UPLOAD_FOLDER'],
-        assignment.file_path,
-        as_attachment=True,
-        download_name=assignment.file_name or 'assignment_file'
-    )
 
 @app.route('/admin/assignments/<int:assignment_id>/delete', methods=['POST'])
 @login_required
@@ -4207,6 +4186,27 @@ def delete_assignment(assignment_id):
     if not current_user.is_super_admin() and assignment.course not in current_user.managed_courses:
         flash('You do not have permission to delete this assignment.', 'error')
         return redirect(url_for('manage_assignments'))
+    
+    # ✅ ADD NOTIFICATION - Assignment Deleted
+    students = User.query.filter(
+        User.id.in_(
+            db.session.query(CourseEnrollment.student_id).filter(
+                CourseEnrollment.course_id == assignment.course_id,
+                CourseEnrollment.status == 'approved'
+            )
+        )
+    ).all()
+    
+    for student in students:
+        create_notification(
+            user_id=student.id,
+            title=f'🗑️ Assignment Removed: {assignment.title}',
+            message=f'The assignment "{assignment.title}" has been removed from {assignment.course.name}.',
+            type='warning',
+            link=url_for('student_assignments'),
+            icon='fa-trash',
+            icon_color='red'
+        )
     
     db.session.delete(assignment)
     db.session.commit()
@@ -4250,13 +4250,47 @@ def grade_submission(submission_id):
         submission.is_graded = True
         
         db.session.commit()
+        
+        # ✅ ADD NOTIFICATION - Assignment Graded
+        create_notification(
+            user_id=submission.student_id,
+            title=f'📊 Assignment Graded: {assignment.title}',
+            message=f'Your submission for "{assignment.title}" has been graded. Score: {score} out of {assignment.max_score}',
+            type='success',
+            link=url_for('student_assignments'),
+            icon='fa-check-circle',
+            icon_color='green'
+        )
+        
         flash(f'Submission graded with score {score}.', 'success')
         return redirect(url_for('view_submissions', assignment_id=assignment.id))
     
     return render_template('admin/grade_submission.html', submission=submission)
 
+@app.route('/admin/assignments/<int:assignment_id>/download')
+@login_required
+@admin_required
+def download_assignment_file(assignment_id):
+    assignment = Assignment.query.get_or_404(assignment_id)
+    
+    if not assignment.file_path:
+        flash('No file attached to this assignment.', 'warning')
+        return redirect(url_for('edit_assignment', assignment_id=assignment.id))
+    
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], assignment.file_path)
+    if not os.path.exists(file_path):
+        flash('File not found.', 'error')
+        return redirect(url_for('edit_assignment', assignment_id=assignment.id))
+    
+    return send_from_directory(
+        app.config['UPLOAD_FOLDER'],
+        assignment.file_path,
+        as_attachment=True,
+        download_name=assignment.file_name or 'assignment_file'
+    )
+
 # ============================================================================
-# ROUTES - STUDENT COURSE VIEWING (with Approval Check)
+# ROUTES - STUDENT COURSE VIEWING
 # ============================================================================
 
 @app.route('/student/courses')
@@ -4265,29 +4299,23 @@ def student_courses():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Check if account is suspended
     if current_user.is_suspended:
         flash(f'Your account has been suspended. Reason: {current_user.suspension_reason or "No reason provided."}', 'error')
         logout_user()
         return redirect(url_for('login'))
     
-    # Check if student is approved
     if not current_user.is_approved:
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # Get approved and pending courses
     approved_courses = current_user.get_enrolled_courses()
     pending_courses = current_user.get_pending_courses()
     
-    # Get available courses (not enrolled in any way)
     enrolled_course_ids = [c.id for c in approved_courses] + [c.id for c in pending_courses]
     
-    # Check for rejected courses
     rejections = RejectionMessage.query.filter_by(student_id=current_user.id).all()
     rejected_course_ids = [r.course_id for r in rejections]
     
-    # Get available courses (not enrolled, not rejected)
     if enrolled_course_ids or rejected_course_ids:
         exclude_ids = enrolled_course_ids + rejected_course_ids
         available_courses = Course.query.filter(~Course.id.in_(exclude_ids)).all()
@@ -4308,12 +4336,10 @@ def view_course(course_id):
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Check if student is approved
     if not current_user.is_approved:
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # Check if student is APPROVED for this course
     if not current_user.is_enrolled_in_course(course_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('student_courses'))
@@ -4333,7 +4359,6 @@ def request_course(course_id):
     
     course = Course.query.get_or_404(course_id)
     
-    # Check if already enrolled or pending
     existing_enrollment = CourseEnrollment.query.filter_by(
         student_id=current_user.id,
         course_id=course_id
@@ -4348,7 +4373,6 @@ def request_course(course_id):
             flash(f'Your request for this course was previously rejected.', 'error')
         return redirect(url_for('student_courses'))
     
-    # Create new enrollment request
     enrollment = CourseEnrollment(
         student_id=current_user.id,
         course_id=course_id,
@@ -4356,14 +4380,11 @@ def request_course(course_id):
     )
     db.session.add(enrollment)
     
-    # Update user approval status
     current_user.is_approved = False
     db.session.commit()
     
-    # Notify student
     notify_course_request(current_user.id, course.name)
     
-    # Notify all admins assigned to this course
     admins = User.query.filter(
         User.role.in_(['admin', 'super_admin']),
         User.managed_courses.contains(course)
@@ -4378,14 +4399,12 @@ def request_course(course_id):
 @app.route('/student/courses/<int:course_id>/reapply', methods=['POST'])
 @login_required
 def reapply_course(course_id):
-    """Re-apply for a course that was previously rejected"""
     if current_user.is_admin():
         flash('Admins cannot request courses.', 'warning')
         return redirect(url_for('student_dashboard'))
     
     course = Course.query.get_or_404(course_id)
     
-    # Check if there's a rejection
     enrollment = CourseEnrollment.query.filter_by(
         student_id=current_user.id,
         course_id=course_id,
@@ -4396,12 +4415,10 @@ def reapply_course(course_id):
         flash('You have not been rejected from this course.', 'info')
         return redirect(url_for('student_courses'))
     
-    # Update enrollment to pending
     enrollment.status = 'pending'
     enrollment.rejected_at = None
     enrollment.rejection_reason = None
     
-    # Remove rejection message
     RejectionMessage.query.filter_by(
         student_id=current_user.id,
         course_id=course_id
@@ -4419,20 +4436,16 @@ def view_note(note_id):
     note = Note.query.get_or_404(note_id)
     
     if current_user.is_admin():
-        # Admins can view notes directly
         return render_template('view_note.html', note=note)
     
-    # Check if student is approved
     if not current_user.is_approved:
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # Check if student has access to this note's course
     if not current_user.is_enrolled_in_course(note.course_id):
         flash('You do not have access to this note.', 'error')
         return redirect(url_for('student_dashboard'))
     
-    # Mark as read
     progress = StudentProgress.query.filter_by(
         student_id=current_user.id,
         note_id=note.id
@@ -4490,7 +4503,7 @@ def toggle_note_read(note_id):
     return jsonify({'success': True, 'is_read': progress.is_read})
 
 # ============================================================================
-# ROUTES - STUDENT QUIZZES (with Approval Check)
+# ROUTES - STUDENT QUIZZES
 # ============================================================================
 
 @app.route('/student/quizzes')
@@ -4499,12 +4512,10 @@ def student_quizzes():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Check if student is approved
     if not current_user.is_approved:
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # Get courses the student is approved for
     approved_courses = current_user.get_enrolled_courses()
     course_ids = [c.id for c in approved_courses]
     
@@ -4534,7 +4545,6 @@ def take_quiz(quiz_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('student_quizzes'))
     
-    # Check if already taken
     existing_answers = QuizAnswer.query.filter_by(
         student_id=current_user.id,
         quiz_group_id=quiz.id
@@ -4609,8 +4619,72 @@ def quiz_result(quiz_id):
                          correct=correct, 
                          score=score)
 
+@app.route('/student/quizzes/<int:quiz_id>/review')
+@login_required
+def quiz_review(quiz_id):
+    if current_user.is_admin():
+        flash('Admins cannot review quizzes.', 'warning')
+        return redirect(url_for('admin_dashboard'))
+    
+    quiz = QuizGroup.query.get_or_404(quiz_id)
+    
+    if not current_user.is_enrolled_in_course(quiz.course_id):
+        flash('You are not enrolled in this course.', 'error')
+        return redirect(url_for('student_quizzes'))
+    
+    answers = QuizAnswer.query.filter_by(
+        student_id=current_user.id,
+        quiz_group_id=quiz.id
+    ).all()
+    
+    if not answers:
+        flash('You have not taken this quiz yet.', 'info')
+        return redirect(url_for('student_quizzes'))
+    
+    questions = QuizQuestion.query.filter_by(quiz_group_id=quiz.id).order_by(QuizQuestion.order.asc()).all()
+    
+    question_reviews = []
+    correct_count = 0
+    incorrect_count = 0
+    
+    for question in questions:
+        answer = next((a for a in answers if a.question_id == question.id), None)
+        
+        if answer:
+            is_correct = answer.is_correct
+            if is_correct:
+                correct_count += 1
+            else:
+                incorrect_count += 1
+        else:
+            is_correct = False
+            incorrect_count += 1
+        
+        question_reviews.append({
+            'question_id': question.id,
+            'question_text': question.question_text,
+            'option_a': question.option_a,
+            'option_b': question.option_b,
+            'option_c': question.option_c,
+            'option_d': question.option_d,
+            'correct': question.correct_option,
+            'selected': answer.selected_option if answer else None,
+            'is_correct': is_correct
+        })
+    
+    total_questions = len(questions)
+    score = int((correct_count / total_questions) * 100) if total_questions > 0 else 0
+    
+    return render_template('quiz_review.html',
+                         quiz=quiz,
+                         question_reviews=question_reviews,
+                         correct_count=correct_count,
+                         incorrect_count=incorrect_count,
+                         total_questions=total_questions,
+                         score=score)
+
 # ============================================================================
-# ROUTES - STUDENT ASSIGNMENTS (with Approval Check)
+# ROUTES - STUDENT ASSIGNMENTS
 # ============================================================================
 
 @app.route('/student/assignments')
@@ -4619,12 +4693,10 @@ def student_assignments():
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Check if student is approved
     if not current_user.is_approved:
         flash('Your account is pending approval. Please wait for an admin to approve your account.', 'warning')
         return redirect(url_for('student_pending_approval'))
     
-    # Get courses the student is approved for
     approved_courses = current_user.get_enrolled_courses()
     course_ids = [c.id for c in approved_courses]
     
@@ -4699,7 +4771,7 @@ def submit_assignment(assignment_id):
     return render_template('student_submit_assignment.html', assignment=assignment)
 
 # ============================================================================
-# ROUTES - LEADERBOARD (Student & Admin)
+# ROUTES - LEADERBOARD
 # ============================================================================
 
 @app.route('/leaderboard')
@@ -4709,24 +4781,18 @@ def leaderboard():
         flash('Leaderboard is for students.', 'info')
         return redirect(url_for('admin_dashboard'))
     
-    # Get the student's enrolled courses (approved ones)
     enrolled_courses = current_user.get_enrolled_courses()
     enrolled_course_ids = [c.id for c in enrolled_courses]
     
-    # Get all students who are approved and have taken quizzes
-    # But only show students who share at least one course with the current user
     students = User.query.filter_by(role='student', is_approved=True).all()
     student_scores = []
     
     for student in students:
-        # Get the student's enrolled courses
         student_courses = student.get_enrolled_courses()
         student_course_ids = [c.id for c in student_courses]
         
-        # Check if they share any course with the current user
         shared_courses = set(enrolled_course_ids) & set(student_course_ids)
         
-        # Skip if no shared courses and not the current user
         if not shared_courses and student.id != current_user.id:
             continue
         
@@ -4743,10 +4809,7 @@ def leaderboard():
             'shared_courses': list(shared_courses)
         })
     
-    # Sort by score descending
     student_scores.sort(key=lambda x: x['score'], reverse=True)
-    
-    # Get course list for filter dropdown (only courses the student is enrolled in)
     courses = enrolled_courses
     
     return render_template('leaderboard.html', 
@@ -4761,15 +4824,12 @@ def leaderboard_by_course(course_id):
         flash('Leaderboard is for students.', 'info')
         return redirect(url_for('admin_dashboard'))
     
-    # Check if the student is enrolled in this course
     if not current_user.is_enrolled_in_course(course_id):
         flash('You are not enrolled in this course.', 'error')
         return redirect(url_for('leaderboard'))
     
     course = Course.query.get_or_404(course_id)
     
-    # Get all students who are approved and enrolled in this course
-    # Get the course's approved enrollments
     enrollments = CourseEnrollment.query.filter_by(
         course_id=course_id,
         status='approved'
@@ -4792,10 +4852,7 @@ def leaderboard_by_course(course_id):
             'course_count': len(student.get_enrolled_courses())
         })
     
-    # Sort by score descending
     student_scores.sort(key=lambda x: x['score'], reverse=True)
-    
-    # Get all courses for the filter dropdown
     courses = current_user.get_enrolled_courses()
     
     return render_template('leaderboard.html', 
@@ -4808,21 +4865,15 @@ def leaderboard_by_course(course_id):
 @login_required
 @admin_required
 def admin_leaderboard():
-    """Admin view of leaderboard with course filtering"""
-    
-    # Get all courses (or just the ones the admin manages)
     if current_user.is_super_admin():
         all_courses = Course.query.all()
     else:
         all_courses = current_user.managed_courses
     
-    # Get filter parameters
     course_id = request.args.get('course_id', type=int)
-    sort_by = request.args.get('sort_by', 'score')  # score, name, questions
+    sort_by = request.args.get('sort_by', 'score')
     
-    # Get students based on filter
     if course_id:
-        # Filter by specific course
         course = Course.query.get_or_404(course_id)
         enrollments = CourseEnrollment.query.filter_by(
             course_id=course_id,
@@ -4832,11 +4883,9 @@ def admin_leaderboard():
         students = User.query.filter(User.id.in_(student_ids)).all()
         selected_course = course
     else:
-        # Show all students (super admin) or students in admin's courses
         if current_user.is_super_admin():
             students = User.query.filter_by(role='student', is_approved=True).all()
         else:
-            # Regular admin: students in their managed courses
             admin_course_ids = [c.id for c in current_user.managed_courses]
             student_ids = db.session.query(CourseEnrollment.student_id).filter(
                 CourseEnrollment.course_id.in_(admin_course_ids),
@@ -4853,7 +4902,6 @@ def admin_leaderboard():
         total = len(answers)
         score = int((correct / total) * 100) if total > 0 else 0
         
-        # Get student's courses
         student_courses = student.get_enrolled_courses()
         
         student_scores.append({
@@ -4868,12 +4916,11 @@ def admin_leaderboard():
             'course_names': ', '.join([c.name for c in student_courses[:3]]) + ('...' if len(student_courses) > 3 else '')
         })
     
-    # Sort based on parameter
     if sort_by == 'name':
         student_scores.sort(key=lambda x: x['student'].username.lower())
     elif sort_by == 'questions':
         student_scores.sort(key=lambda x: x['total'], reverse=True)
-    else:  # score (default)
+    else:
         student_scores.sort(key=lambda x: x['score'], reverse=True)
     
     total_students = len(student_scores)
@@ -4894,7 +4941,6 @@ def admin_leaderboard():
 @login_required
 @admin_required
 def reset_student_scores(student_id):
-    """Reset a student's quiz scores"""
     student = User.query.get_or_404(student_id)
     
     QuizAnswer.query.filter_by(student_id=student_id).delete()
@@ -4907,7 +4953,6 @@ def reset_student_scores(student_id):
 @login_required
 @admin_required
 def reset_all_scores():
-    """Reset all students' quiz scores"""
     if not current_user.is_super_admin():
         flash('Only super admin can reset all scores.', 'error')
         return redirect(url_for('admin_leaderboard'))
@@ -4922,7 +4967,6 @@ def reset_all_scores():
 @login_required
 @admin_required
 def export_leaderboard():
-    """Export leaderboard data as CSV"""
     import csv
     from io import StringIO
     
@@ -4984,11 +5028,9 @@ def pending_approval():
 @login_required
 @admin_required
 def recent_activity():
-    """View recent activity across the platform"""
     try:
         activities = []
         
-        # Get recent notes
         notes = Note.query.order_by(Note.created_at.desc()).limit(20).all()
         for note in notes:
             activities.append({
@@ -5000,7 +5042,6 @@ def recent_activity():
                 'url': url_for('edit_note', note_id=note.id) if note.id else None
             })
         
-        # Get recent quizzes
         quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(20).all()
         for quiz in quizzes:
             activities.append({
@@ -5012,7 +5053,6 @@ def recent_activity():
                 'url': url_for('edit_quiz_group', quiz_id=quiz.id) if quiz.id else None
             })
         
-        # Get recent assignments
         assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(20).all()
         for assignment in assignments:
             activities.append({
@@ -5024,7 +5064,6 @@ def recent_activity():
                 'url': url_for('edit_assignment', assignment_id=assignment.id) if assignment.id else None
             })
         
-        # Get recent student signups (use created_at)
         students = User.query.filter_by(role='student').order_by(User.created_at.desc()).limit(10).all()
         for student in students:
             activities.append({
@@ -5036,7 +5075,6 @@ def recent_activity():
                 'url': url_for('edit_student', student_id=student.id) if student.id else None
             })
         
-        # Get recent announcements
         announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(10).all()
         for announcement in announcements:
             activities.append({
@@ -5048,7 +5086,6 @@ def recent_activity():
                 'url': url_for('edit_announcement', announcement_id=announcement.id) if announcement.id else None
             })
         
-        # Sort by timestamp (newest first)
         activities.sort(key=lambda x: x['created_at'], reverse=True)
         
         return render_template('admin/recent_activity.html', activities=activities[:50])
@@ -5092,43 +5129,32 @@ def bulk_delete_notes():
 # ROUTES - ADMIN COURSE ANALYTICS
 # ============================================================================
 
-@app.route('/admin/analytics')
+@app.route('/admin/course-analytics')
 @login_required
 @admin_required
 def admin_course_analytics():
-    """Course analytics dashboard for admins"""
-    # Get all courses (or just the ones the admin manages)
     if current_user.is_super_admin():
         courses = Course.query.all()
     else:
         courses = current_user.managed_courses
     
-    # Get analytics data for each course
     course_data = []
     for course in courses:
-        # Count students
         total_students = CourseEnrollment.query.filter_by(
             course_id=course.id,
             status='approved'
         ).count()
         
-        # Count notes
         notes_count = Note.query.filter_by(course_id=course.id).count()
-        
-        # Count quizzes
         quizzes_count = QuizGroup.query.filter_by(course_id=course.id).count()
-        
-        # Count assignments
         assignments_count = Assignment.query.filter_by(course_id=course.id).count()
         
-        # Count submissions
         submissions_count = AssignmentSubmission.query.filter(
             AssignmentSubmission.assignment_id.in_(
                 db.session.query(Assignment.id).filter_by(course_id=course.id)
             )
         ).count()
         
-        # Calculate average progress
         enrollments = CourseEnrollment.query.filter_by(
             course_id=course.id,
             status='approved'
@@ -5162,7 +5188,6 @@ def admin_course_analytics():
 @login_required
 @admin_required
 def bulk_actions():
-    """Bulk actions for students"""
     if request.method == 'POST':
         action = request.form.get('action')
         student_ids = request.form.getlist('student_ids')
@@ -5182,7 +5207,6 @@ def bulk_actions():
             flash(f'{approved_count} students approved successfully.', 'success')
             
         elif action == 'delete':
-            # Only super admin can delete
             if not current_user.is_super_admin():
                 flash('Only super admin can delete students.', 'error')
                 return redirect(url_for('bulk_actions'))
@@ -5191,7 +5215,6 @@ def bulk_actions():
             for sid in student_ids:
                 student = User.query.get(sid)
                 if student and student.role == 'student':
-                    # Delete related records
                     CourseEnrollment.query.filter_by(student_id=student.id).delete()
                     db.session.delete(student)
                     deleted_count += 1
@@ -5231,7 +5254,6 @@ def bulk_actions():
         
         return redirect(url_for('bulk_actions'))
     
-    # GET request - show bulk actions page
     students = User.query.filter_by(role='student').all()
     return render_template('admin/bulk_actions.html', students=students)
 
@@ -5243,8 +5265,6 @@ def bulk_actions():
 @login_required
 @admin_required
 def admin_messages():
-    """Admin messages/inbox"""
-    # Get all students (for sending messages)
     students = User.query.filter_by(role='student').all()
     return render_template('admin/admin_messages.html', students=students)
 
@@ -5256,38 +5276,31 @@ def admin_messages():
 @login_required
 @super_admin_required
 def system_settings():
-    """System settings configuration"""
-    
     if request.method == 'POST':
         try:
-            # General Settings
             save_setting('site_name', request.form.get('site_name', 'A-Portal LMS'), 'string', 'Site name displayed throughout the platform', 'general')
             save_setting('site_description', request.form.get('site_description', 'Learning Management System'), 'string', 'Meta description for SEO', 'general')
             save_setting('default_language', request.form.get('default_language', 'en'), 'string', 'Default user interface language', 'general')
             save_setting('maintenance_mode', request.form.get('maintenance_mode') == 'on', 'boolean', 'Show maintenance page to all users except admins', 'general')
             save_setting('timezone', request.form.get('timezone', 'UTC'), 'string', 'Default timezone for the system', 'general')
             
-            # Student Settings
             save_setting('auto_approve_students', request.form.get('auto_approve_students') == 'on', 'boolean', 'Automatically approve new student accounts', 'student')
             save_setting('max_courses_per_student', int(request.form.get('max_courses_per_student', 10)), 'integer', 'Maximum courses a student can enroll in', 'student')
             save_setting('allow_reapplications', request.form.get('allow_reapplications') == 'on', 'boolean', 'Allow students to reapply after rejection', 'student')
             save_setting('require_phone_number', request.form.get('require_phone_number') == 'on', 'boolean', 'Require phone number during registration', 'student')
             save_setting('student_registration_enabled', request.form.get('student_registration_enabled') == 'on', 'boolean', 'Enable student self-registration', 'student')
             
-            # Security Settings
             save_setting('session_timeout', int(request.form.get('session_timeout', 60)), 'integer', 'Minutes before auto-logout (0 = never)', 'security')
             save_setting('require_email_verification', request.form.get('require_email_verification') == 'on', 'boolean', 'Verify email before accessing content', 'security')
             save_setting('max_login_attempts', int(request.form.get('max_login_attempts', 5)), 'integer', 'Max login attempts before lockout', 'security')
             save_setting('lockout_duration', int(request.form.get('lockout_duration', 30)), 'integer', 'Minutes user is locked out', 'security')
             save_setting('force_ssl', request.form.get('force_ssl') == 'on', 'boolean', 'Redirect all HTTP to HTTPS', 'security')
             
-            # Content Settings
             save_setting('max_file_upload_size', int(request.form.get('max_file_upload_size', 16)), 'integer', 'Maximum file upload size in MB', 'content')
             save_setting('allowed_file_types', request.form.get('allowed_file_types', 'pdf,png,jpg,jpeg,gif,doc,docx,txt,zip'), 'string', 'Comma separated allowed file extensions', 'content')
             save_setting('enable_comments', request.form.get('enable_comments') == 'on', 'boolean', 'Allow comments on notes and assignments', 'content')
             save_setting('enable_ratings', request.form.get('enable_ratings') == 'on', 'boolean', 'Allow students to rate courses', 'content')
             
-            # Notification Settings
             save_setting('email_notifications', request.form.get('email_notifications') == 'on', 'boolean', 'Send email notifications for events', 'notification')
             save_setting('push_notifications', request.form.get('push_notifications') == 'on', 'boolean', 'Send in-app push notifications', 'notification')
             save_setting('assignment_reminders', request.form.get('assignment_reminders') == 'on', 'boolean', 'Send reminders before assignment due dates', 'notification')
@@ -5303,9 +5316,7 @@ def system_settings():
         
         return redirect(url_for('system_settings'))
     
-    # GET request - load all settings
     settings = get_all_settings()
-    
     return render_template('admin/system_settings.html', settings=settings)
 
 # ============================================================================
@@ -5316,11 +5327,9 @@ def system_settings():
 @login_required
 @super_admin_required
 def system_logs():
-    """View system logs with filtering and pagination"""
     try:
         logs = []
         
-        # Get recent notes
         notes = Note.query.order_by(Note.created_at.desc()).limit(30).all()
         for note in notes:
             logs.append({
@@ -5331,7 +5340,6 @@ def system_logs():
                 'details': f'Note ID: {note.id}'
             })
         
-        # Get recent quizzes
         quizzes = QuizGroup.query.order_by(QuizGroup.created_at.desc()).limit(30).all()
         for quiz in quizzes:
             logs.append({
@@ -5342,7 +5350,6 @@ def system_logs():
                 'details': f'Quiz ID: {quiz.id}'
             })
         
-        # Get recent assignments
         assignments = Assignment.query.order_by(Assignment.created_at.desc()).limit(30).all()
         for assignment in assignments:
             logs.append({
@@ -5353,7 +5360,6 @@ def system_logs():
                 'details': f'Assignment ID: {assignment.id}'
             })
         
-        # Get recent student registrations
         students = User.query.filter_by(role='student').order_by(User.created_at.desc()).limit(20).all()
         for student in students:
             logs.append({
@@ -5364,7 +5370,6 @@ def system_logs():
                 'details': f'Student ID: {student.id}'
             })
         
-        # Get recent course creations
         courses = Course.query.order_by(Course.created_at.desc()).limit(20).all()
         for course in courses:
             logs.append({
@@ -5375,7 +5380,6 @@ def system_logs():
                 'details': f'Course ID: {course.id}'
             })
         
-        # Get recent announcements
         announcements = Announcement.query.order_by(Announcement.created_at.desc()).limit(20).all()
         for announcement in announcements:
             logs.append({
@@ -5386,7 +5390,6 @@ def system_logs():
                 'details': f'Announcement ID: {announcement.id}'
             })
         
-        # Get recent student approvals
         approved_students = User.query.filter_by(role='student', is_approved=True).order_by(User.created_at.desc()).limit(10).all()
         for student in approved_students:
             logs.append({
@@ -5397,9 +5400,7 @@ def system_logs():
                 'details': f'Student ID: {student.id}'
             })
         
-        # Sort by timestamp (newest first)
         logs.sort(key=lambda x: x['timestamp'], reverse=True)
-        
         return render_template('admin/system_logs.html', logs=logs[:100])
         
     except Exception as e:
@@ -5415,8 +5416,6 @@ def system_logs():
 @login_required
 @super_admin_required
 def backup_restore():
-    """Backup and restore management page"""
-    # Get all backups
     backups = Backup.query.order_by(Backup.backup_date.desc()).all()
     return render_template('admin/backup_restore.html', backups=backups)
 
@@ -5424,13 +5423,10 @@ def backup_restore():
 @login_required
 @super_admin_required
 def create_backup():
-    """Create a full backup of the database"""
     try:
-        # Get current timestamp
         timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
         filename = f"backup_{timestamp}.json"
         
-        # Collect all data
         backup_data = {
             'backup_info': {
                 'created_at': datetime.utcnow().isoformat(),
@@ -5448,7 +5444,6 @@ def create_backup():
             }
         }
         
-        # Get all students (exclude admins)
         students = User.query.filter_by(role='student').all()
         for student in students:
             student_data = {
@@ -5466,7 +5461,6 @@ def create_backup():
             }
             backup_data['data']['users'].append(student_data)
         
-        # Get all courses
         courses = Course.query.all()
         for course in courses:
             course_data = {
@@ -5478,7 +5472,6 @@ def create_backup():
             }
             backup_data['data']['courses'].append(course_data)
         
-        # Get all notes
         notes = Note.query.all()
         for note in notes:
             note_data = {
@@ -5494,7 +5487,6 @@ def create_backup():
             }
             backup_data['data']['notes'].append(note_data)
         
-        # Get all quiz groups
         quizzes = QuizGroup.query.all()
         for quiz in quizzes:
             quiz_data = {
@@ -5507,7 +5499,6 @@ def create_backup():
             }
             backup_data['data']['quizzes'].append(quiz_data)
         
-        # Get all assignments
         assignments = Assignment.query.all()
         for assignment in assignments:
             assignment_data = {
@@ -5521,7 +5512,6 @@ def create_backup():
             }
             backup_data['data']['assignments'].append(assignment_data)
         
-        # Get all enrollments
         enrollments = CourseEnrollment.query.all()
         for enrollment in enrollments:
             enrollment_data = {
@@ -5536,7 +5526,6 @@ def create_backup():
             }
             backup_data['data']['enrollments'].append(enrollment_data)
         
-        # Get all announcements
         announcements = Announcement.query.all()
         for announcement in announcements:
             announcement_data = {
@@ -5550,12 +5539,10 @@ def create_backup():
             }
             backup_data['data']['announcements'].append(announcement_data)
         
-        # Save backup to database
         backup_file = f"/tmp/{filename}"
         with open(backup_file, 'w') as f:
             json.dump(backup_data, f, indent=2)
         
-        # Save backup record to database
         total_records = (
             len(backup_data['data']['users']) +
             len(backup_data['data']['courses']) +
@@ -5590,7 +5577,6 @@ def create_backup():
 @login_required
 @super_admin_required
 def download_backup(backup_id):
-    """Download a backup file"""
     backup = Backup.query.get_or_404(backup_id)
     
     try:
@@ -5612,7 +5598,6 @@ def download_backup(backup_id):
 @login_required
 @super_admin_required
 def restore_backup(backup_id):
-    """Restore from a backup file"""
     backup = Backup.query.get_or_404(backup_id)
     
     try:
@@ -5625,21 +5610,13 @@ def restore_backup(backup_id):
         
         data = backup_data.get('data', {})
         
-        # Delete existing student data (keep admins)
-        # Delete notifications first (foreign key constraints)
         Notification.query.delete()
-        
-        # Delete all student-related data
         AssignmentSubmission.query.delete()
         QuizAnswer.query.delete()
         StudentProgress.query.delete()
         RejectionMessage.query.delete()
         CourseEnrollment.query.delete()
-        
-        # Delete all non-admin users (students)
         User.query.filter_by(role='student').delete()
-        
-        # Delete content
         Announcement.query.delete()
         Assignment.query.delete()
         QuizQuestion.query.delete()
@@ -5647,9 +5624,7 @@ def restore_backup(backup_id):
         Note.query.delete()
         Course.query.delete()
         
-        # Restore users (students)
         for user_data in data.get('users', []):
-            # Check if user already exists (skip if admin)
             existing = User.query.filter_by(username=user_data['username']).first()
             if not existing:
                 user = User(
@@ -5670,7 +5645,6 @@ def restore_backup(backup_id):
         
         db.session.flush()
         
-        # Restore courses
         for course_data in data.get('courses', []):
             course = Course(
                 name=course_data['name'],
@@ -5683,7 +5657,6 @@ def restore_backup(backup_id):
         
         db.session.flush()
         
-        # Restore notes
         for note_data in data.get('notes', []):
             note = Note(
                 title=note_data['title'],
@@ -5698,7 +5671,6 @@ def restore_backup(backup_id):
                 note.created_at = datetime.fromisoformat(note_data['created_at'])
             db.session.add(note)
         
-        # Restore quizzes
         for quiz_data in data.get('quizzes', []):
             quiz = QuizGroup(
                 title=quiz_data['title'],
@@ -5710,7 +5682,6 @@ def restore_backup(backup_id):
                 quiz.created_at = datetime.fromisoformat(quiz_data['created_at'])
             db.session.add(quiz)
         
-        # Restore assignments
         for assignment_data in data.get('assignments', []):
             assignment = Assignment(
                 title=assignment_data['title'],
@@ -5724,7 +5695,6 @@ def restore_backup(backup_id):
                 assignment.created_at = datetime.fromisoformat(assignment_data['created_at'])
             db.session.add(assignment)
         
-        # Restore enrollments
         for enrollment_data in data.get('enrollments', []):
             enrollment = CourseEnrollment(
                 student_id=enrollment_data['student_id'],
@@ -5740,7 +5710,6 @@ def restore_backup(backup_id):
                 enrollment.rejected_at = datetime.fromisoformat(enrollment_data['rejected_at'])
             db.session.add(enrollment)
         
-        # Restore announcements
         for announcement_data in data.get('announcements', []):
             announcement = Announcement(
                 title=announcement_data['title'],
@@ -5754,7 +5723,6 @@ def restore_backup(backup_id):
             db.session.add(announcement)
         
         db.session.commit()
-        
         flash(f'✅ Backup "{backup.filename}" restored successfully!', 'success')
         
     except Exception as e:
@@ -5768,17 +5736,14 @@ def restore_backup(backup_id):
 @login_required
 @super_admin_required
 def delete_backup(backup_id):
-    """Delete a backup file"""
     backup = Backup.query.get_or_404(backup_id)
     
     try:
-        # Delete the file if it exists
         if os.path.exists(backup.file_path):
             os.remove(backup.file_path)
         
         db.session.delete(backup)
         db.session.commit()
-        
         flash(f'Backup "{backup.filename}" deleted.', 'success')
     except Exception as e:
         db.session.rollback()
@@ -5794,42 +5759,28 @@ def delete_backup(backup_id):
 @login_required
 @admin_required
 def student_directory():
-    """View all students with profile pictures and course filtering"""
-    
-    # Get filter parameters
     course_id = request.args.get('course_id', type=int)
     search = request.args.get('search', '')
-    sort_by = request.args.get('sort_by', 'name')  # name, date, courses
+    sort_by = request.args.get('sort_by', 'name')
     
-    # Get students based on admin role
     if current_user.is_super_admin():
-        # Super admin sees all students
         students = User.query.filter_by(role='student').all()
         available_courses = Course.query.all()
     else:
-        # Regular admin only sees students in their courses
         course_ids = [c.id for c in current_user.managed_courses]
-        
-        # Get student IDs enrolled in admin's courses
         student_ids = db.session.query(CourseEnrollment.student_id).filter(
             CourseEnrollment.course_id.in_(course_ids)
         ).distinct().all()
         student_ids = [s[0] for s in student_ids]
-        
         students = User.query.filter(
             User.role == 'student',
             User.id.in_(student_ids)
         ).all() if student_ids else []
-        
         available_courses = current_user.managed_courses
     
-    # Build student data with enrollment info
     student_data = []
     for student in students:
-        # Get all enrollments for this student
         enrollments = CourseEnrollment.query.filter_by(student_id=student.id).all()
-        
-        # Get enrolled course names
         enrolled_courses = []
         for enrollment in enrollments:
             if enrollment.course:
@@ -5840,11 +5791,8 @@ def student_directory():
                     'status': enrollment.status
                 })
         
-        # Count approved courses
         approved_count = sum(1 for e in enrollments if e.status == 'approved')
         pending_count = sum(1 for e in enrollments if e.status == 'pending')
-        
-        # Check if student has profile picture
         has_profile_pic = bool(student.profile_picture)
         
         student_data.append({
@@ -5858,7 +5806,6 @@ def student_directory():
             'is_suspended': student.is_suspended
         })
     
-    # Apply course filter
     if course_id:
         filtered_data = []
         for data in student_data:
@@ -5866,26 +5813,21 @@ def student_directory():
                 filtered_data.append(data)
         student_data = filtered_data
     
-    # Apply search filter
     if search:
         search_lower = search.lower()
         filtered_data = []
         for data in student_data:
             student = data['student']
-            if (search_lower in student.username.lower() or 
-                search_lower in student.email.lower()):
+            if search_lower in student.username.lower() or search_lower in student.email.lower():
                 filtered_data.append(data)
         student_data = filtered_data
     
-    # Apply sorting
     if sort_by == 'name':
         student_data.sort(key=lambda x: x['student'].username.lower())
     elif sort_by == 'date':
         student_data.sort(key=lambda x: x['student'].created_at, reverse=True)
     elif sort_by == 'courses':
         student_data.sort(key=lambda x: x['total_courses'], reverse=True)
-    else:  # name default
-        student_data.sort(key=lambda x: x['student'].username.lower())
     
     return render_template('admin/student_directory.html',
                          student_data=student_data,
@@ -5902,7 +5844,6 @@ def student_directory():
 @login_required
 @super_admin_required
 def email_templates():
-    """Manage email templates"""
     templates = EmailTemplate.query.order_by(EmailTemplate.name.asc()).all()
     return render_template('admin/email_templates.html', templates=templates)
 
@@ -5910,7 +5851,6 @@ def email_templates():
 @login_required
 @super_admin_required
 def create_email_template():
-    """Create a new email template"""
     if request.method == 'POST':
         name = request.form.get('name')
         subject = request.form.get('subject')
@@ -5922,7 +5862,6 @@ def create_email_template():
             flash('Name, subject, and body are required.', 'error')
             return render_template('admin/create_email_template.html')
         
-        # Check if template name already exists
         existing = EmailTemplate.query.filter_by(name=name).first()
         if existing:
             flash(f'Template "{name}" already exists.', 'error')
@@ -5947,7 +5886,6 @@ def create_email_template():
 @login_required
 @super_admin_required
 def edit_email_template(template_id):
-    """Edit an email template"""
     template = EmailTemplate.query.get_or_404(template_id)
     
     if request.method == 'POST':
@@ -5961,7 +5899,6 @@ def edit_email_template(template_id):
             flash('Name, subject, and body are required.', 'error')
             return render_template('admin/edit_email_template.html', template=template)
         
-        # Check if another template has this name
         existing = EmailTemplate.query.filter(
             EmailTemplate.name == name,
             EmailTemplate.id != template.id
@@ -5978,7 +5915,6 @@ def edit_email_template(template_id):
         template.updated_at = datetime.utcnow()
         
         db.session.commit()
-        
         flash(f'Email template "{name}" updated successfully!', 'success')
         return redirect(url_for('email_templates'))
     
@@ -5988,7 +5924,6 @@ def edit_email_template(template_id):
 @login_required
 @super_admin_required
 def delete_email_template(template_id):
-    """Delete an email template"""
     template = EmailTemplate.query.get_or_404(template_id)
     
     try:
@@ -6006,7 +5941,6 @@ def delete_email_template(template_id):
 @login_required
 @super_admin_required
 def toggle_email_template(template_id):
-    """Toggle template active status"""
     template = EmailTemplate.query.get_or_404(template_id)
     
     template.is_active = not template.is_active
@@ -6020,7 +5954,6 @@ def toggle_email_template(template_id):
 @login_required
 @super_admin_required
 def preview_email_template(template_id):
-    """Preview an email template"""
     template = EmailTemplate.query.get_or_404(template_id)
     return render_template('admin/preview_email_template.html', template=template)
 
@@ -6031,14 +5964,11 @@ def preview_email_template(template_id):
 @app.route('/student/progress')
 @login_required
 def my_progress():
-    """Student progress tracking"""
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Get enrolled courses
     enrolled_courses = current_user.get_enrolled_courses()
     
-    # Calculate progress for each course
     course_progress = []
     total_progress = 0
     completed_notes = []
@@ -6051,7 +5981,6 @@ def my_progress():
         })
         total_progress += progress
         
-        # Get completed notes for this course
         notes = Note.query.filter_by(course_id=course.id).all()
         for note in notes:
             progress_entry = StudentProgress.query.filter_by(
@@ -6078,45 +6007,31 @@ def my_progress():
 @app.route('/student/notifications')
 @login_required
 def student_notifications():
-    """View all notifications for student"""
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Get all notifications for the current user
     notifications = Notification.query.filter_by(
         user_id=current_user.id
     ).order_by(Notification.created_at.desc()).all()
     
     return render_template('student/notifications.html', notifications=notifications)
 
-# ============================================================================
-# ROUTES - STUDENT MESSAGES
-# ============================================================================
-
 @app.route('/student/messages')
 @login_required
 def student_messages():
-    """Student messages/inbox"""
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
     return render_template('student/messages.html')
 
-# ============================================================================
-# ROUTES - STUDENT ACHIEVEMENTS
-# ============================================================================
-
 @app.route('/student/achievements')
 @login_required
 def my_achievements():
-    """Student achievements and badges"""
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Calculate achievements based on activity
     achievements = []
     
-    # Achievement 1: First Quiz
     quiz_count = QuizAnswer.query.filter_by(student_id=current_user.id).count()
     if quiz_count > 0:
         achievements.append({
@@ -6135,7 +6050,6 @@ def my_achievements():
             'date': None
         })
     
-    # Achievement 2: Perfect Score
     answers = QuizAnswer.query.filter_by(student_id=current_user.id).all()
     if answers:
         correct = sum(1 for a in answers if a.is_correct)
@@ -6157,7 +6071,6 @@ def my_achievements():
                 'date': None
             })
     
-    # Achievement 3: Course Master
     enrolled_courses = current_user.get_enrolled_courses()
     completed_courses = 0
     for course in enrolled_courses:
@@ -6180,7 +6093,6 @@ def my_achievements():
             'date': None
         })
     
-    # Achievement 4: Assignment Submitted
     submissions = AssignmentSubmission.query.filter_by(student_id=current_user.id).count()
     if submissions > 0:
         achievements.append({
@@ -6199,7 +6111,6 @@ def my_achievements():
             'date': None
         })
     
-    # Count earned achievements
     earned_count = sum(1 for a in achievements if a['earned'])
     
     return render_template('student/achievements.html', 
@@ -6207,18 +6118,12 @@ def my_achievements():
                          earned_count=earned_count,
                          total_achievements=len(achievements))
 
-# ============================================================================
-# ROUTES - STUDENT CALENDAR
-# ============================================================================
-
 @app.route('/student/calendar')
 @login_required
 def course_calendar():
-    """Course calendar with upcoming deadlines"""
     if current_user.is_admin():
         return redirect(url_for('admin_dashboard'))
     
-    # Get all assignments for enrolled courses
     enrolled_courses = current_user.get_enrolled_courses()
     course_ids = [c.id for c in enrolled_courses]
     
@@ -6226,7 +6131,6 @@ def course_calendar():
         Assignment.course_id.in_(course_ids)
     ).order_by(Assignment.due_date.asc()).all()
     
-    # Get quiz deadlines (optional)
     quizzes = QuizGroup.query.filter(
         QuizGroup.course_id.in_(course_ids)
     ).all()
@@ -6236,7 +6140,7 @@ def course_calendar():
                          quizzes=quizzes)
 
 # ============================================================================
-# NOTIFICATION API ENDPOINT
+# NOTIFICATION API ENDPOINTS
 # ============================================================================
 
 @app.route('/api/notifications')
@@ -6244,7 +6148,6 @@ def course_calendar():
 def get_notifications():
     notifications = []
     
-    # Get user-specific notifications from database
     user_notifications = Notification.query.filter_by(
         user_id=current_user.id,
         is_read=False
@@ -6263,7 +6166,6 @@ def get_notifications():
             'is_read': notif.is_read
         })
     
-    # If user has no notifications, add system notifications based on status
     if not notifications:
         if current_user.is_admin():
             pending_count = User.query.filter_by(role='student', is_approved=False).count()
@@ -6280,7 +6182,6 @@ def get_notifications():
                     'is_read': False
                 })
             
-            # Check for pending course requests
             pending_enrollments = CourseEnrollment.query.filter_by(status='pending').count()
             if pending_enrollments > 0:
                 notifications.append({
@@ -6295,7 +6196,6 @@ def get_notifications():
                     'is_read': False
                 })
         else:
-            # Student notifications
             if not current_user.is_approved and not current_user.is_suspended:
                 notifications.append({
                     'id': 'pending_approval',
@@ -6327,7 +6227,6 @@ def get_notifications():
 @app.route('/api/notifications/mark-read', methods=['POST'])
 @login_required
 def mark_notifications_read():
-    """Mark all notifications as read for the current user"""
     notifications = Notification.query.filter_by(
         user_id=current_user.id,
         is_read=False
@@ -6343,7 +6242,6 @@ def mark_notifications_read():
 @app.route('/api/notifications/<int:notification_id>/mark-read', methods=['POST'])
 @login_required
 def mark_single_notification_read(notification_id):
-    """Mark a single notification as read"""
     notification = Notification.query.get_or_404(notification_id)
     
     if notification.user_id != current_user.id:
@@ -6362,9 +6260,7 @@ def mark_single_notification_read(notification_id):
 @login_required
 @admin_required
 def admin_dashboard_api():
-    """API endpoint for admin dashboard data"""
     try:
-        # Get all data
         data = {
             'upcoming_deadlines': get_admin_upcoming_deadlines(current_user),
             'quiz_results': get_admin_quiz_results(current_user),
@@ -6386,81 +6282,7 @@ def admin_dashboard_api():
         }), 500
 
 # ============================================================================
-# ROUTE - QUIZ REVIEW
-# ============================================================================
-
-@app.route('/student/quizzes/<int:quiz_id>/review')
-@login_required
-def quiz_review(quiz_id):
-    """Review a quiz with correct/incorrect answers"""
-    if current_user.is_admin():
-        flash('Admins cannot review quizzes.', 'warning')
-        return redirect(url_for('admin_dashboard'))
-    
-    quiz = QuizGroup.query.get_or_404(quiz_id)
-    
-    # Check if student is enrolled in the course
-    if not current_user.is_enrolled_in_course(quiz.course_id):
-        flash('You are not enrolled in this course.', 'error')
-        return redirect(url_for('student_quizzes'))
-    
-    # Get all answers for this student for this quiz
-    answers = QuizAnswer.query.filter_by(
-        student_id=current_user.id,
-        quiz_group_id=quiz.id
-    ).all()
-    
-    if not answers:
-        flash('You have not taken this quiz yet.', 'info')
-        return redirect(url_for('student_quizzes'))
-    
-    # Get all questions
-    questions = QuizQuestion.query.filter_by(quiz_group_id=quiz.id).order_by(QuizQuestion.order.asc()).all()
-    
-    # Build review data
-    question_reviews = []
-    correct_count = 0
-    incorrect_count = 0
-    
-    for question in questions:
-        # Find the student's answer for this question
-        answer = next((a for a in answers if a.question_id == question.id), None)
-        
-        if answer:
-            is_correct = answer.is_correct
-            if is_correct:
-                correct_count += 1
-            else:
-                incorrect_count += 1
-        else:
-            is_correct = False
-            incorrect_count += 1
-        
-        question_reviews.append({
-            'question_id': question.id,
-            'question_text': question.question_text,
-            'option_a': question.option_a,
-            'option_b': question.option_b,
-            'option_c': question.option_c,
-            'option_d': question.option_d,
-            'correct': question.correct_option,
-            'selected': answer.selected_option if answer else None,
-            'is_correct': is_correct
-        })
-    
-    total_questions = len(questions)
-    score = int((correct_count / total_questions) * 100) if total_questions > 0 else 0
-    
-    return render_template('quiz_review.html',
-                         quiz=quiz,
-                         question_reviews=question_reviews,
-                         correct_count=correct_count,
-                         incorrect_count=incorrect_count,
-                         total_questions=total_questions,
-                         score=score)
-
-# ============================================================================
-# HEALTH CHECK FOR RENDER
+# HEALTH CHECK
 # ============================================================================
 
 @app.route('/health')
@@ -6477,23 +6299,17 @@ def health_check():
 
 @app.before_request
 def check_maintenance_mode():
-    """Check if maintenance mode is enabled and redirect if needed"""
-    # Skip maintenance check for these endpoints
     public_endpoints = ['static', 'login', 'logout', 'health', 'maintenance']
     
-    # Skip if user is admin or super_admin
     if current_user and current_user.is_authenticated and current_user.is_admin():
         return None
     
-    # Skip if the request is for a public endpoint
     if request.endpoint in public_endpoints:
         return None
     
-    # Check if maintenance mode is enabled
     maintenance_mode = get_bool_setting('maintenance_mode', False)
     
     if maintenance_mode:
-        # If it's an API request, return JSON
         if request.path.startswith('/api/'):
             return jsonify({
                 'error': 'Maintenance mode is enabled',
@@ -6501,7 +6317,6 @@ def check_maintenance_mode():
                 'message': 'The system is currently under maintenance. Please try again later.'
             }), 503
         
-        # For regular requests, show maintenance page
         return render_template('maintenance.html'), 503
     
     return None
@@ -6522,13 +6337,8 @@ def server_error(error):
 # INITIALIZE DATABASE AND CREATE ADMIN
 # ============================================================================
 
-# ============================================================================
-# INITIALIZE DATABASE AND CREATE ADMIN - FIXED
-# ============================================================================
-
 with app.app_context():
     try:
-        # Rollback any pending transactions first
         db.session.rollback()
         print("🔄 Database session reset")
     except:
