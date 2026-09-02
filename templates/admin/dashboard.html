@@ -195,7 +195,7 @@
   }
 
   /* ============================================
-     NOTICE/ALERTS SYSTEM - NEW
+     NOTICE/ALERTS SYSTEM
      ============================================ */
   .notices-container {
     display: flex;
@@ -356,29 +356,12 @@
     display: block;
   }
 
-  .stat-card:nth-child(1) {
-    animation-delay: 0.05s;
-  }
-
-  .stat-card:nth-child(2) {
-    animation-delay: 0.10s;
-  }
-
-  .stat-card:nth-child(3) {
-    animation-delay: 0.15s;
-  }
-
-  .stat-card:nth-child(4) {
-    animation-delay: 0.20s;
-  }
-
-  .stat-card:nth-child(5) {
-    animation-delay: 0.25s;
-  }
-
-  .stat-card:nth-child(6) {
-    animation-delay: 0.30s;
-  }
+  .stat-card:nth-child(1) { animation-delay: 0.05s; }
+  .stat-card:nth-child(2) { animation-delay: 0.10s; }
+  .stat-card:nth-child(3) { animation-delay: 0.15s; }
+  .stat-card:nth-child(4) { animation-delay: 0.20s; }
+  .stat-card:nth-child(5) { animation-delay: 0.25s; }
+  .stat-card:nth-child(6) { animation-delay: 0.30s; }
 
   .stat-card::before {
     content: '';
@@ -415,17 +398,8 @@
   }
 
   @keyframes pulse-dot {
-
-    0%,
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    50% {
-      opacity: 0.5;
-      transform: scale(0.8);
-    }
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
   }
 
   .stat-icon {
@@ -434,29 +408,12 @@
     display: inline-block;
   }
 
-  .stat-card:nth-child(1) .stat-icon {
-    color: var(--primary-gold);
-  }
-
-  .stat-card:nth-child(2) .stat-icon {
-    color: #EF4444;
-  }
-
-  .stat-card:nth-child(3) .stat-icon {
-    color: var(--primary-gold);
-  }
-
-  .stat-card:nth-child(4) .stat-icon {
-    color: var(--primary-gold);
-  }
-
-  .stat-card:nth-child(5) .stat-icon {
-    color: var(--primary-gold);
-  }
-
-  .stat-card:nth-child(6) .stat-icon {
-    color: var(--primary-gold);
-  }
+  .stat-card:nth-child(1) .stat-icon { color: var(--primary-gold); }
+  .stat-card:nth-child(2) .stat-icon { color: #EF4444; }
+  .stat-card:nth-child(3) .stat-icon { color: var(--primary-gold); }
+  .stat-card:nth-child(4) .stat-icon { color: var(--primary-gold); }
+  .stat-card:nth-child(5) .stat-icon { color: var(--primary-gold); }
+  .stat-card:nth-child(6) .stat-icon { color: var(--primary-gold); }
 
   .stat-number {
     font-size: 1.7rem;
@@ -503,15 +460,8 @@
   }
 
   @keyframes pulse-text {
-
-    0%,
-    100% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0.6;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
   }
 
   .stat-view-all {
@@ -671,15 +621,8 @@
   }
 
   @keyframes pulse-badge {
-
-    0%,
-    100% {
-      transform: scale(1);
-    }
-
-    50% {
-      transform: scale(1.1);
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
   }
 
   /* ============================================
@@ -718,35 +661,12 @@
     font-size: 0.9rem;
   }
 
-  .activity-item .activity-icon-wrap.blue {
-    background: rgba(59, 130, 246, 0.08);
-    color: #3B82F6;
-  }
-
-  .activity-item .activity-icon-wrap.gold {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold);
-  }
-
-  .activity-item .activity-icon-wrap.green {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-  }
-
-  .activity-item .activity-icon-wrap.purple {
-    background: rgba(139, 92, 246, 0.08);
-    color: #8B5CF6;
-  }
-
-  .activity-item .activity-icon-wrap.orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-  }
-
-  .activity-item .activity-icon-wrap.red {
-    background: rgba(239, 68, 68, 0.08);
-    color: #EF4444;
-  }
+  .activity-item .activity-icon-wrap.blue { background: rgba(59, 130, 246, 0.08); color: #3B82F6; }
+  .activity-item .activity-icon-wrap.gold { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); }
+  .activity-item .activity-icon-wrap.green { background: rgba(5, 150, 105, 0.08); color: #059669; }
+  .activity-item .activity-icon-wrap.purple { background: rgba(139, 92, 246, 0.08); color: #8B5CF6; }
+  .activity-item .activity-icon-wrap.orange { background: rgba(245, 158, 11, 0.08); color: #F59E0B; }
+  .activity-item .activity-icon-wrap.red { background: rgba(239, 68, 68, 0.08); color: #EF4444; }
 
   .activity-item .activity-info {
     flex: 1;
@@ -793,30 +713,11 @@
     letter-spacing: 0.04em;
   }
 
-  .tag-new {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-  }
-
-  .tag-pending {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-  }
-
-  .tag-gold {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold);
-  }
-
-  .tag-orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #F59E0B;
-  }
-
-  .tag-green {
-    background: rgba(5, 150, 105, 0.08);
-    color: #059669;
-  }
+  .tag-new { background: rgba(5, 150, 105, 0.08); color: #059669; }
+  .tag-pending { background: rgba(245, 158, 11, 0.08); color: #F59E0B; }
+  .tag-gold { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); }
+  .tag-orange { background: rgba(245, 158, 11, 0.08); color: #F59E0B; }
+  .tag-green { background: rgba(5, 150, 105, 0.08); color: #059669; }
 
   .activity-item .activity-time {
     font-size: 0.7rem;
@@ -826,7 +727,7 @@
   }
 
   /* ============================================
-     UPCOMING DEADLINES - NEW
+     UPCOMING DEADLINES
      ============================================ */
   .deadline-list {
     display: flex;
@@ -1078,7 +979,7 @@
   }
 
   /* ============================================
-     STUDENT PROGRESS VISUALIZATION - NEW
+     STUDENT PROGRESS VISUALIZATION
      ============================================ */
   .progress-viz-grid {
     display: flex;
@@ -1452,21 +1353,10 @@
     line-height: 1.2;
   }
 
-  .super-stat .number.gold {
-    color: var(--primary-gold);
-  }
-
-  .super-stat .number.green {
-    color: #059669;
-  }
-
-  .super-stat .number.orange {
-    color: #F59E0B;
-  }
-
-  .super-stat .number.purple {
-    color: #7C3AED;
-  }
+  .super-stat .number.gold { color: var(--primary-gold); }
+  .super-stat .number.green { color: #059669; }
+  .super-stat .number.orange { color: #F59E0B; }
+  .super-stat .number.purple { color: #7C3AED; }
 
   .super-stat .label {
     font-size: 0.7rem;
@@ -1505,527 +1395,140 @@
      ANIMATIONS
      ============================================ */
   @keyframes fadeSlideUp {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
   /* ============================================
      RESPONSIVE
      ============================================ */
   @media (max-width: 1200px) {
-    .stats-row {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    .stats-row { grid-template-columns: repeat(3, 1fr); }
   }
 
   @media (max-width: 992px) {
-    .dashboard-grid {
-      grid-template-columns: 1fr;
-    }
+    .dashboard-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 768px) {
-    .admin-dashboard {
-      padding: 16px 12px 40px;
-    }
-
-    .welcome-banner {
-      padding: 24px 20px;
-    }
-
-    .welcome-content {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .welcome-left {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .welcome-text h1 {
-      font-size: 1.3rem;
-    }
-
-    .welcome-actions {
-      justify-content: center;
-    }
-
-    .btn-welcome {
-      font-size: 0.8rem;
-      padding: 8px 16px;
-    }
-
-    .stats-row {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .stat-card {
-      padding: 14px 10px 12px;
-    }
-
-    .stat-number {
-      font-size: 1.3rem;
-    }
-
-    .quick-actions {
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .quick-action {
-      padding: 14px 8px 12px;
-    }
-
-    .quick-action i {
-      font-size: 1.2rem;
-    }
-
-    .card {
-      padding: 18px 16px 20px;
-    }
-
-    .pending-header-actions {
-      flex-wrap: wrap;
-    }
-
-    .notice-card {
-      flex-wrap: wrap;
-      padding: 12px 16px;
-    }
-
-    .notice-card .notice-cta {
-      width: 100%;
-      text-align: center;
-      justify-content: center;
-    }
-
-    .deadline-item {
-      flex-wrap: wrap;
-      padding: 10px 12px;
-    }
-
-    .deadline-item .deadline-status {
-      margin-left: auto;
-    }
-
-    .quiz-result-item {
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .quiz-result-item .quiz-score {
-      margin-left: auto;
-    }
-
-    .progress-viz-item .viz-stats {
-      gap: 8px;
-    }
-
-    .progress-viz-item .viz-header {
-      flex-wrap: wrap;
-      gap: 4px;
-    }
+    .admin-dashboard { padding: 16px 12px 40px; }
+    .welcome-banner { padding: 24px 20px; }
+    .welcome-content { flex-direction: column; align-items: stretch; }
+    .welcome-left { flex-direction: column; text-align: center; }
+    .welcome-text h1 { font-size: 1.3rem; }
+    .welcome-actions { justify-content: center; }
+    .btn-welcome { font-size: 0.8rem; padding: 8px 16px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat-card { padding: 14px 10px 12px; }
+    .stat-number { font-size: 1.3rem; }
+    .quick-actions { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .quick-action { padding: 14px 8px 12px; }
+    .quick-action i { font-size: 1.2rem; }
+    .card { padding: 18px 16px 20px; }
+    .pending-header-actions { flex-wrap: wrap; }
+    .notice-card { flex-wrap: wrap; padding: 12px 16px; }
+    .notice-card .notice-cta { width: 100%; text-align: center; justify-content: center; }
+    .deadline-item { flex-wrap: wrap; padding: 10px 12px; }
+    .deadline-item .deadline-status { margin-left: auto; }
+    .quiz-result-item { flex-wrap: wrap; gap: 4px; }
+    .quiz-result-item .quiz-score { margin-left: auto; }
+    .progress-viz-item .viz-stats { gap: 8px; }
+    .progress-viz-item .viz-header { flex-wrap: wrap; gap: 4px; }
   }
 
   @media (max-width: 480px) {
-    .stats-row {
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .quick-actions {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .super-panel-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .welcome-avatar {
-      width: 44px;
-      height: 44px;
-      font-size: 1rem;
-    }
-
-    .welcome-text h1 {
-      font-size: 1.1rem;
-    }
-
-    .stat-card .stat-number {
-      font-size: 1.1rem;
-    }
-
-    .notices-container {
-      gap: 6px;
-    }
-
-    .notice-card {
-      padding: 10px 12px;
-    }
-
-    .notice-card .notice-icon {
-      font-size: 1.1rem;
-    }
-
-    .notice-card .notice-content .notice-title {
-      font-size: 0.85rem;
-    }
-
-    .notice-card .notice-content .notice-message {
-      font-size: 0.78rem;
-    }
-
-    .deadline-item .deadline-date {
-      min-width: 36px;
-    }
-
-    .deadline-item .deadline-date .day {
-      font-size: 0.8rem;
-    }
-
-    .deadline-item .deadline-info .title {
-      font-size: 0.8rem;
-    }
-
-    .deadline-item .deadline-status {
-      font-size: 0.55rem;
-      padding: 1px 10px;
-    }
-
-    .quiz-result-item .quiz-title {
-      font-size: 0.82rem;
-    }
-
-    .quiz-result-item .quiz-score {
-      font-size: 0.78rem;
-      padding: 1px 10px;
-    }
-
-    .announcement-preview {
-      padding: 10px 12px;
-    }
-
-    .announcement-preview-header h4 {
-      font-size: 0.82rem;
-    }
-
-    .announcement-preview p {
-      font-size: 0.78rem;
-    }
-
-    .progress-viz-item {
-      padding: 10px 12px;
-    }
-
-    .progress-viz-item .viz-header .course-name {
-      font-size: 0.82rem;
-    }
-
-    .progress-viz-item .viz-stats .stat {
-      font-size: 0.7rem;
-    }
+    .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .quick-actions { grid-template-columns: 1fr 1fr; }
+    .super-panel-grid { grid-template-columns: 1fr 1fr; }
+    .welcome-avatar { width: 44px; height: 44px; font-size: 1rem; }
+    .welcome-text h1 { font-size: 1.1rem; }
+    .stat-card .stat-number { font-size: 1.1rem; }
+    .notices-container { gap: 6px; }
+    .notice-card { padding: 10px 12px; }
+    .notice-card .notice-icon { font-size: 1.1rem; }
+    .notice-card .notice-content .notice-title { font-size: 0.85rem; }
+    .notice-card .notice-content .notice-message { font-size: 0.78rem; }
+    .deadline-item .deadline-date { min-width: 36px; }
+    .deadline-item .deadline-date .day { font-size: 0.8rem; }
+    .deadline-item .deadline-info .title { font-size: 0.8rem; }
+    .deadline-item .deadline-status { font-size: 0.55rem; padding: 1px 10px; }
+    .quiz-result-item .quiz-title { font-size: 0.82rem; }
+    .quiz-result-item .quiz-score { font-size: 0.78rem; padding: 1px 10px; }
+    .announcement-preview { padding: 10px 12px; }
+    .announcement-preview-header h4 { font-size: 0.82rem; }
+    .announcement-preview p { font-size: 0.78rem; }
+    .progress-viz-item { padding: 10px 12px; }
+    .progress-viz-item .viz-header .course-name { font-size: 0.82rem; }
+    .progress-viz-item .viz-stats .stat { font-size: 0.7rem; }
   }
 
   /* ============================================
      DARK MODE OVERRIDES
      ============================================ */
-  [data-theme="dark"] .admin-dashboard {
-    background: var(--primary-bg);
-  }
-
-  [data-theme="dark"] .stat-card {
-    background: var(--secondary-bg);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .stat-card .stat-number {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .card {
-    background: var(--secondary-bg);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .card-header h3 {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .quick-action {
-    background: rgba(201, 168, 75, 0.02);
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .quick-action:hover {
-    background: rgba(201, 168, 75, 0.06);
-    border-color: rgba(201, 168, 75, 0.1);
-  }
-
-  [data-theme="dark"] .quick-action .action-title {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .activity-item {
-    background: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .activity-item:hover {
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .activity-item .activity-info .title {
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .activity-item .activity-info .title a {
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .activity-item .activity-info .title a:hover {
-    color: var(--primary-gold);
-  }
-
-  [data-theme="dark"] .pending-item {
-    background: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .pending-item:hover {
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .pending-info .name {
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .course-request-item {
-    background: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .course-request-item:hover {
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .course-request-item .request-info .student-name {
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .super-stat {
-    background: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .super-stat:hover {
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .super-stat .number {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .empty-state p {
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .stat-change.neutral {
-    color: var(--text-muted);
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .deadline-item {
-    background: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .deadline-item:hover {
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .deadline-item .deadline-info .title {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .quiz-result-item {
-    background: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .quiz-result-item:hover {
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .quiz-result-item .quiz-title {
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .announcement-preview {
-    background: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .announcement-preview:hover {
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .announcement-preview-header h4 {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .announcement-preview p {
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .progress-viz-item {
-    background: rgba(201, 168, 75, 0.02);
-  }
-
-  [data-theme="dark"] .progress-viz-item:hover {
-    background: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .progress-viz-item .viz-header .course-name {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .progress-viz-item .viz-stats .stat {
-    color: var(--text-muted);
-  }
-
-  [data-theme="dark"] .progress-viz-item .viz-stats .stat strong {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .progress-viz-item .viz-stats .stat.gold strong {
-    color: var(--primary-gold);
-  }
-
-  [data-theme="dark"] .notice-card {
-    background: var(--secondary-bg);
-    border-color: rgba(201, 168, 75, 0.06);
-  }
-
-  [data-theme="dark"] .notice-card.type-error {
-    background: rgba(239, 68, 68, 0.04);
-    border-color: rgba(239, 68, 68, 0.08);
-  }
-
-  [data-theme="dark"] .notice-card.type-warning {
-    background: rgba(245, 158, 11, 0.04);
-    border-color: rgba(245, 158, 11, 0.08);
-  }
-
-  [data-theme="dark"] .notice-card.type-info {
-    background: rgba(59, 130, 246, 0.04);
-    border-color: rgba(59, 130, 246, 0.08);
-  }
-
-  [data-theme="dark"] .notice-card.type-success {
-    background: rgba(5, 150, 105, 0.04);
-    border-color: rgba(5, 150, 105, 0.08);
-  }
-
-  [data-theme="dark"] .notice-card .notice-content .notice-title {
-    color: var(--white);
-  }
-
-  [data-theme="dark"] .notice-card .notice-content .notice-message {
-    color: var(--text-gray);
-  }
-
-  [data-theme="dark"] .btn-bulk-approve {
-    background: rgba(5, 150, 105, 0.08);
-    color: #34D399;
-    border-color: rgba(5, 150, 105, 0.06);
-  }
-
-  [data-theme="dark"] .btn-bulk-approve:hover {
-    background: #059669;
-    color: white;
-  }
-
-  [data-theme="dark"] .stat-card .stat-change.alert {
-    color: #EF4444;
-    background: rgba(239, 68, 68, 0.08);
-  }
-
-  [data-theme="dark"] .quick-action .badge-count {
-    border-color: var(--secondary-bg);
-  }
-
-  [data-theme="dark"] .welcome-banner {
-    border-color: rgba(201, 168, 75, 0.06);
-  }
-
-  [data-theme="dark"] .deadline-item .deadline-status.upcoming {
-    background: rgba(5, 150, 105, 0.08);
-    color: #34D399;
-    border-color: rgba(5, 150, 105, 0.04);
-  }
-
-  [data-theme="dark"] .deadline-item .deadline-status.overdue {
-    background: rgba(239, 68, 68, 0.08);
-    color: #F87171;
-    border-color: rgba(239, 68, 68, 0.04);
-  }
-
-  [data-theme="dark"] .deadline-item .deadline-status.today {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .deadline-item .deadline-status.soon {
-    background: rgba(245, 158, 11, 0.08);
-    color: #FBBF24;
-    border-color: rgba(245, 158, 11, 0.04);
-  }
-
-  [data-theme="dark"] .quiz-result-item .quiz-score.high {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold);
-    border-color: rgba(201, 168, 75, 0.04);
-  }
-
-  [data-theme="dark"] .quiz-result-item .quiz-score.medium {
-    background: rgba(245, 158, 11, 0.08);
-    color: #FBBF24;
-    border-color: rgba(245, 158, 11, 0.04);
-  }
-
-  [data-theme="dark"] .quiz-result-item .quiz-score.low {
-    background: rgba(239, 68, 68, 0.08);
-    color: #F87171;
-    border-color: rgba(239, 68, 68, 0.04);
-  }
-
-  [data-theme="dark"] .tag-new {
-    background: rgba(5, 150, 105, 0.08);
-    color: #34D399;
-  }
-
-  [data-theme="dark"] .tag-pending {
-    background: rgba(245, 158, 11, 0.08);
-    color: #FBBF24;
-  }
-
-  [data-theme="dark"] .tag-gold {
-    background: rgba(201, 168, 75, 0.08);
-    color: var(--primary-gold);
-  }
-
-  [data-theme="dark"] .tag-orange {
-    background: rgba(245, 158, 11, 0.08);
-    color: #FBBF24;
-  }
-
-  [data-theme="dark"] .tag-green {
-    background: rgba(5, 150, 105, 0.08);
-    color: #34D399;
-  }
+  [data-theme="dark"] .admin-dashboard { background: var(--primary-bg); }
+  [data-theme="dark"] .stat-card { background: var(--secondary-bg); border-color: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .stat-card .stat-number { color: var(--white); }
+  [data-theme="dark"] .card { background: var(--secondary-bg); border-color: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .card-header h3 { color: var(--white); }
+  [data-theme="dark"] .quick-action { background: rgba(201, 168, 75, 0.02); color: var(--text-gray); }
+  [data-theme="dark"] .quick-action:hover { background: rgba(201, 168, 75, 0.06); border-color: rgba(201, 168, 75, 0.1); }
+  [data-theme="dark"] .quick-action .action-title { color: var(--white); }
+  [data-theme="dark"] .activity-item { background: rgba(201, 168, 75, 0.02); }
+  [data-theme="dark"] .activity-item:hover { background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .activity-item .activity-info .title { color: var(--text-gray); }
+  [data-theme="dark"] .activity-item .activity-info .title a { color: var(--text-gray); }
+  [data-theme="dark"] .activity-item .activity-info .title a:hover { color: var(--primary-gold); }
+  [data-theme="dark"] .pending-item { background: rgba(201, 168, 75, 0.02); }
+  [data-theme="dark"] .pending-item:hover { background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .pending-info .name { color: var(--text-gray); }
+  [data-theme="dark"] .course-request-item { background: rgba(201, 168, 75, 0.02); }
+  [data-theme="dark"] .course-request-item:hover { background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .course-request-item .request-info .student-name { color: var(--text-gray); }
+  [data-theme="dark"] .super-stat { background: rgba(201, 168, 75, 0.02); }
+  [data-theme="dark"] .super-stat:hover { background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .super-stat .number { color: var(--white); }
+  [data-theme="dark"] .empty-state p { color: var(--text-gray); }
+  [data-theme="dark"] .stat-change.neutral { color: var(--text-muted); background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .deadline-item { background: rgba(201, 168, 75, 0.02); }
+  [data-theme="dark"] .deadline-item:hover { background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .deadline-item .deadline-info .title { color: var(--white); }
+  [data-theme="dark"] .quiz-result-item { background: rgba(201, 168, 75, 0.02); }
+  [data-theme="dark"] .quiz-result-item:hover { background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .quiz-result-item .quiz-title { color: var(--text-gray); }
+  [data-theme="dark"] .announcement-preview { background: rgba(201, 168, 75, 0.02); }
+  [data-theme="dark"] .announcement-preview:hover { background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .announcement-preview-header h4 { color: var(--white); }
+  [data-theme="dark"] .announcement-preview p { color: var(--text-gray); }
+  [data-theme="dark"] .progress-viz-item { background: rgba(201, 168, 75, 0.02); }
+  [data-theme="dark"] .progress-viz-item:hover { background: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .progress-viz-item .viz-header .course-name { color: var(--white); }
+  [data-theme="dark"] .progress-viz-item .viz-stats .stat { color: var(--text-muted); }
+  [data-theme="dark"] .progress-viz-item .viz-stats .stat strong { color: var(--white); }
+  [data-theme="dark"] .progress-viz-item .viz-stats .stat.gold strong { color: var(--primary-gold); }
+  [data-theme="dark"] .notice-card { background: var(--secondary-bg); border-color: rgba(201, 168, 75, 0.06); }
+  [data-theme="dark"] .notice-card.type-error { background: rgba(239, 68, 68, 0.04); border-color: rgba(239, 68, 68, 0.08); }
+  [data-theme="dark"] .notice-card.type-warning { background: rgba(245, 158, 11, 0.04); border-color: rgba(245, 158, 11, 0.08); }
+  [data-theme="dark"] .notice-card.type-info { background: rgba(59, 130, 246, 0.04); border-color: rgba(59, 130, 246, 0.08); }
+  [data-theme="dark"] .notice-card.type-success { background: rgba(5, 150, 105, 0.04); border-color: rgba(5, 150, 105, 0.08); }
+  [data-theme="dark"] .notice-card .notice-content .notice-title { color: var(--white); }
+  [data-theme="dark"] .notice-card .notice-content .notice-message { color: var(--text-gray); }
+  [data-theme="dark"] .btn-bulk-approve { background: rgba(5, 150, 105, 0.08); color: #34D399; border-color: rgba(5, 150, 105, 0.06); }
+  [data-theme="dark"] .btn-bulk-approve:hover { background: #059669; color: white; }
+  [data-theme="dark"] .stat-card .stat-change.alert { color: #EF4444; background: rgba(239, 68, 68, 0.08); }
+  [data-theme="dark"] .quick-action .badge-count { border-color: var(--secondary-bg); }
+  [data-theme="dark"] .welcome-banner { border-color: rgba(201, 168, 75, 0.06); }
+  [data-theme="dark"] .deadline-item .deadline-status.upcoming { background: rgba(5, 150, 105, 0.08); color: #34D399; border-color: rgba(5, 150, 105, 0.04); }
+  [data-theme="dark"] .deadline-item .deadline-status.overdue { background: rgba(239, 68, 68, 0.08); color: #F87171; border-color: rgba(239, 68, 68, 0.04); }
+  [data-theme="dark"] .deadline-item .deadline-status.today { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); border-color: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .deadline-item .deadline-status.soon { background: rgba(245, 158, 11, 0.08); color: #FBBF24; border-color: rgba(245, 158, 11, 0.04); }
+  [data-theme="dark"] .quiz-result-item .quiz-score.high { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); border-color: rgba(201, 168, 75, 0.04); }
+  [data-theme="dark"] .quiz-result-item .quiz-score.medium { background: rgba(245, 158, 11, 0.08); color: #FBBF24; border-color: rgba(245, 158, 11, 0.04); }
+  [data-theme="dark"] .quiz-result-item .quiz-score.low { background: rgba(239, 68, 68, 0.08); color: #F87171; border-color: rgba(239, 68, 68, 0.04); }
+  [data-theme="dark"] .tag-new { background: rgba(5, 150, 105, 0.08); color: #34D399; }
+  [data-theme="dark"] .tag-pending { background: rgba(245, 158, 11, 0.08); color: #FBBF24; }
+  [data-theme="dark"] .tag-gold { background: rgba(201, 168, 75, 0.08); color: var(--primary-gold); }
+  [data-theme="dark"] .tag-orange { background: rgba(245, 158, 11, 0.08); color: #FBBF24; }
+  [data-theme="dark"] .tag-green { background: rgba(5, 150, 105, 0.08); color: #34D399; }
 </style>
 {% endblock %}
 
@@ -2073,9 +1576,6 @@
   </div>
 
   <!-- ============================== -->
-  <!-- NOTICE/ALERT SYSTEM - NEW -->
-  <!-- ============================== -->
-    <!-- ============================== -->
   <!-- NOTICE/ALERT SYSTEM -->
   <!-- ============================== -->
   {% if notices %}
@@ -2109,552 +1609,542 @@
   </div>
   {% endif %}
 
-<!-- ============================== -->
-<!-- STATS ROW - Clickable with View All -->
-<!-- ============================== -->
-<div class="stats-row">
-  <a href="{{ url_for('manage_students') }}" class="stat-card">
-    <div class="stat-icon"><i class="fas fa-users"></i></div>
-    <div class="stat-number">{{ total_students }}</div>
-    <div class="stat-label">Total Students</div>
-    <div class="stat-change positive"><i class="fas fa-arrow-up"></i> Active</div>
-    <div class="stat-view-all">View All <i class="fas fa-arrow-right"></i></div>
-  </a>
-  <a href="{{ url_for('manage_students') }}" class="stat-card {% if pending_approvals > 0 %}has-alert{% endif %}">
-    <div class="stat-icon"><i class="fas fa-clock"></i></div>
-    <div class="stat-number">{{ pending_approvals }}</div>
-    <div class="stat-label">Pending Approvals</div>
-    <div class="stat-change {% if pending_approvals > 0 %}alert{% else %}neutral{% endif %}">
-      {% if pending_approvals > 0 %}
-      <i class="fas fa-exclamation-circle"></i> Needs action
-      {% else %}
-      <i class="fas fa-check-circle"></i> All clear
-      {% endif %}
-    </div>
-    <div class="stat-view-all">Review <i class="fas fa-arrow-right"></i></div>
-  </a>
-  <a href="{{ url_for('manage_students') }}"
-    class="stat-card {% if pending_course_requests_count > 0 %}has-alert{% endif %}">
-    <div class="stat-icon"><i class="fas fa-book-open"></i></div>
-    <div class="stat-number">{{ pending_course_requests_count }}</div>
-    <div class="stat-label">Course Requests</div>
-    <div class="stat-change {% if pending_course_requests_count > 0 %}alert{% else %}neutral{% endif %}">
-      {% if pending_course_requests_count > 0 %}
-      <i class="fas fa-exclamation-circle"></i> Needs action
-      {% else %}
-      <i class="fas fa-check-circle"></i> All clear
-      {% endif %}
-    </div>
-    <div class="stat-view-all">Review <i class="fas fa-arrow-right"></i></div>
-  </a>
-  <a href="{{ url_for('admin_course_list') }}" class="stat-card">
-    <div class="stat-icon"><i class="fas fa-book"></i></div>
-    <div class="stat-number">{{ total_courses }}</div>
-    <div class="stat-label">Active Courses</div>
-    <div class="stat-change positive"><i class="fas fa-check"></i> {{ courses|length if courses else 0 }} managed</div>
-    <div class="stat-view-all">View All <i class="fas fa-arrow-right"></i></div>
-  </a>
-  <a href="{{ url_for('manage_notes') }}" class="stat-card">
-    <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
-    <div class="stat-number">{{ total_notes }}</div>
-    <div class="stat-label">Notes Published</div>
-    <div class="stat-change positive"><i class="fas fa-file"></i> Active</div>
-    <div class="stat-view-all">View All <i class="fas fa-arrow-right"></i></div>
-  </a>
-  <a href="{{ url_for('manage_quizzes') }}" class="stat-card">
-    <div class="stat-icon"><i class="fas fa-puzzle-piece"></i></div>
-    <div class="stat-number">{{ total_quizzes }}</div>
-    <div class="stat-label">Quizzes</div>
-    <div class="stat-change neutral"><i class="fas fa-check"></i> Active</div>
-    <div class="stat-view-all">View All <i class="fas fa-arrow-right"></i></div>
-  </a>
-</div>
-
-<!-- ============================== -->
-<!-- MAIN GRID -->
-<!-- ============================== -->
-<div class="dashboard-grid">
-  <!-- LEFT COLUMN -->
-  <div>
-    <!-- ============================== -->
-    <!-- QUICK ACTIONS - Redesigned with Subtitles -->
-    <!-- ============================== -->
-    <div class="card" style="margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Click to perform</span>
-      </div>
-      <div class="quick-actions">
-        <!-- Create/Post Actions -->
-        <a href="{{ url_for('post_note') }}" class="quick-action">
-          <i class="fas fa-plus-circle"></i>
-          <span class="action-title">Post Note</span>
-          <span class="action-subtitle">Share study material</span>
-        </a>
-        <a href="{{ url_for('create_quiz_group') }}" class="quick-action">
-          <i class="fas fa-plus-circle"></i>
-          <span class="action-title">Create Quiz</span>
-          <span class="action-subtitle">Test student knowledge</span>
-        </a>
-        <a href="{{ url_for('create_assignment') }}" class="quick-action">
-          <i class="fas fa-plus-circle"></i>
-          <span class="action-title">Create Assignment</span>
-          <span class="action-subtitle">Give homework tasks</span>
-        </a>
-
-        <!-- Manage Actions -->
-        <a href="{{ url_for('admin_course_list') }}" class="quick-action">
-          <i class="fas fa-book"></i>
-          <span class="action-title">Courses</span>
-          <span class="action-subtitle">{{ total_courses }} active</span>
-        </a>
-        <a href="{{ url_for('manage_notes') }}" class="quick-action">
-          <i class="fas fa-file-alt"></i>
-          <span class="action-title">Manage Notes</span>
-          <span class="action-subtitle">{{ total_notes }} published</span>
-          {% if total_notes > 0 %}
-          <span class="badge-count">{{ total_notes }}</span>
-          {% endif %}
-        </a>
-        <a href="{{ url_for('manage_quizzes') }}" class="quick-action">
-          <i class="fas fa-list"></i>
-          <span class="action-title">Manage Quizzes</span>
-          <span class="action-subtitle">{{ total_quizzes }} available</span>
-        </a>
-        <a href="{{ url_for('manage_assignments') }}" class="quick-action">
-          <i class="fas fa-list-ul"></i>
-          <span class="action-title">Manage Assignments</span>
-          <span class="action-subtitle">{{ total_assignments }} active</span>
-        </a>
-        <a href="{{ url_for('manage_students') }}" class="quick-action">
-          <i class="fas fa-users"></i>
-          <span class="action-title">Manage Students</span>
-          <span class="action-subtitle">{{ total_students }} enrolled</span>
-          {% if pending_approvals > 0 %}
-          <span class="badge-count">{{ pending_approvals }}</span>
-          {% endif %}
-        </a>
-
-        <!-- Announcements & Export -->
-        <a href="{{ url_for('manage_announcements') }}" class="quick-action">
-          <i class="fas fa-bullhorn"></i>
-          <span class="action-title">Announcements</span>
-          <span class="action-subtitle">{{ announcements_count }} posted</span>
-          {% if announcements_count is defined and announcements_count > 0 %}
-          <span class="badge-count">{{ announcements_count }}</span>
-          {% endif %}
-        </a>
-        <a href="{{ url_for('export_page') }}" class="quick-action">
-          <i class="fas fa-file-export"></i>
-          <span class="action-title">Export Reports</span>
-          <span class="action-subtitle">Download data</span>
-        </a>
-
-        <!-- Super Admin Actions -->
-        {% if current_user.is_super_admin() %}
-        <a href="{{ url_for('manage_admins') }}" class="quick-action">
-          <i class="fas fa-users-cog"></i>
-          <span class="action-title">Manage Admins</span>
-          <span class="action-subtitle">{{ admin_count }} admins</span>
-        </a>
-        <a href="{{ url_for('create_course') }}" class="quick-action">
-          <i class="fas fa-plus-circle"></i>
-          <span class="action-title">Create Course</span>
-          <span class="action-subtitle">New learning path</span>
-        </a>
-        {% endif %}
-
-        <!-- Settings Actions -->
-        <a href="{{ url_for('manage_tags') }}" class="quick-action">
-          <i class="fas fa-tags"></i>
-          <span class="action-title">Manage Tags</span>
-          <span class="action-subtitle">{{ tag_count }} tags</span>
-          {% if tag_count is defined and tag_count > 0 %}
-          <span class="badge-count">{{ tag_count }}</span>
-          {% endif %}
-        </a>
-        <a href="{{ url_for('admin_leaderboard') }}" class="quick-action">
-          <i class="fas fa-trophy"></i>
-          <span class="action-title">Leaderboard</span>
-          <span class="action-subtitle">View rankings</span>
-          {% if total_students > 0 %}
-          <span class="badge-count">{{ total_students }}</span>
-          {% endif %}
-        </a>
-        <a href="{{ url_for('change_password') }}" class="quick-action">
-          <i class="fas fa-key"></i>
-          <span class="action-title">Change Password</span>
-          <span class="action-subtitle">Security settings</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- ============================== -->
-    <!-- UPCOMING DEADLINES - NEW -->
-    <!-- ============================== -->
-    <div class="card" style="margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-calendar-alt"></i> Upcoming Deadlines</h3>
-        <span class="badge-count">{{ upcoming_deadlines|length }}</span>
-        <a href="{{ url_for('manage_assignments') }}" class="card-link">
-          View All <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-      <div class="deadline-list">
-        {% if upcoming_deadlines %}
-        {% for deadline in upcoming_deadlines[:5] %}
-        <div class="deadline-item">
-          <div class="deadline-date">
-            <span class="day">{{ deadline.due_date.strftime('%d') }}</span>
-            <span class="month">{{ deadline.due_date.strftime('%b') }}</span>
-          </div>
-          <div class="deadline-info">
-            <div class="title">{{ deadline.title }}</div>
-            <div class="course">{{ deadline.course_name }}</div>
-            <div class="submissions">
-              <i class="fas fa-user-graduate"></i>
-              {{ deadline.submissions_count }}/{{ deadline.total_students }} submitted
-            </div>
-          </div>
-          <span class="deadline-status {{ deadline.status }}">
-            {{ deadline.status_text }}
-          </span>
-        </div>
-        {% endfor %}
+  <!-- ============================== -->
+  <!-- STATS ROW - Clickable with View All -->
+  <!-- ============================== -->
+  <div class="stats-row">
+    <a href="{{ url_for('manage_students') }}" class="stat-card">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-number">{{ total_students }}</div>
+      <div class="stat-label">Total Students</div>
+      <div class="stat-change positive"><i class="fas fa-arrow-up"></i> Active</div>
+      <div class="stat-view-all">View All <i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="{{ url_for('manage_students') }}" class="stat-card {% if pending_approvals > 0 %}has-alert{% endif %}">
+      <div class="stat-icon"><i class="fas fa-clock"></i></div>
+      <div class="stat-number">{{ pending_approvals }}</div>
+      <div class="stat-label">Pending Approvals</div>
+      <div class="stat-change {% if pending_approvals > 0 %}alert{% else %}neutral{% endif %}">
+        {% if pending_approvals > 0 %}
+        <i class="fas fa-exclamation-circle"></i> Needs action
         {% else %}
-        <div class="empty-state">
-          <i class="fas fa-calendar-check"></i>
-          <p>No upcoming deadlines</p>
-          <p class="empty-sub">Everything is on track! 🎉</p>
-        </div>
+        <i class="fas fa-check-circle"></i> All clear
         {% endif %}
       </div>
-    </div>
-
-    <!-- ============================== -->
-    <!-- RECENT QUIZ RESULTS - NEW -->
-    <!-- ============================== -->
-    <div class="card" style="margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-puzzle-piece"></i> Recent Quiz Results</h3>
-        <span class="badge-count">{{ quiz_results|length }}</span>
-        <a href="{{ url_for('manage_quizzes') }}" class="card-link">
-          View All <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-      <div class="quiz-results-list">
-        {% if quiz_results %}
-        {% for result in quiz_results[:5] %}
-        <div class="quiz-result-item">
-          <div class="quiz-info">
-            <span class="quiz-title">{{ result.title }}</span>
-            <span class="quiz-course">{{ result.course_name }} · {{ result.total_students }} students</span>
-          </div>
-          <span class="quiz-score {{ result.color_class }}">
-            {{ result.avg_score }}%
-          </span>
-        </div>
-        {% endfor %}
+      <div class="stat-view-all">Review <i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="{{ url_for('manage_students') }}" class="stat-card {% if pending_course_requests_count > 0 %}has-alert{% endif %}">
+      <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+      <div class="stat-number">{{ pending_course_requests_count }}</div>
+      <div class="stat-label">Course Requests</div>
+      <div class="stat-change {% if pending_course_requests_count > 0 %}alert{% else %}neutral{% endif %}">
+        {% if pending_course_requests_count > 0 %}
+        <i class="fas fa-exclamation-circle"></i> Needs action
         {% else %}
-        <div class="empty-state">
-          <i class="fas fa-puzzle-piece"></i>
-          <p>No quiz results yet</p>
-          <p class="empty-sub">Quizzes will appear here once students start taking them</p>
-        </div>
+        <i class="fas fa-check-circle"></i> All clear
         {% endif %}
       </div>
-    </div>
-
-    <!-- ============================== -->
-    <!-- STUDENT PROGRESS VISUALIZATION - NEW -->
-    <!-- ============================== -->
-    <div class="card" style="margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-chart-line"></i> Student Progress Overview</h3>
-        <span class="badge-count">{{ progress_visualization|length }} courses</span>
-        <a href="{{ url_for('admin_course_analytics') }}" class="card-link">
-          Analytics <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-      <div class="progress-viz-grid">
-        {% if progress_visualization %}
-        {% for viz in progress_visualization[:4] %}
-        <div class="progress-viz-item">
-          <div class="viz-header">
-            <span class="course-name">{{ viz.course_name }}</span>
-            <span class="course-code">{{ viz.course_code }}</span>
-          </div>
-          <div class="viz-stats">
-            <span class="stat"><i class="fas fa-users"></i> <strong>{{ viz.total_students }}</strong> students</span>
-            <span class="stat gold"><i class="fas fa-star"></i> <strong>{{ viz.avg_progress }}%</strong> avg</span>
-            <span class="stat"><i class="fas fa-trophy"></i> <strong>{{ viz.completed_count }}</strong> completed</span>
-          </div>
-          <div class="viz-bar-container">
-            <div class="viz-bar">
-              <div class="fill" style="width: {{ viz.avg_progress }}%;"></div>
-            </div>
-            <span class="viz-bar-label">{{ viz.avg_progress }}%</span>
-          </div>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="empty-state">
-          <i class="fas fa-chart-line"></i>
-          <p>No progress data available</p>
-          <p class="empty-sub">Students will appear here once they start learning</p>
-        </div>
-        {% endif %}
-      </div>
-    </div>
+      <div class="stat-view-all">Review <i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="{{ url_for('admin_course_list') }}" class="stat-card">
+      <div class="stat-icon"><i class="fas fa-book"></i></div>
+      <div class="stat-number">{{ total_courses }}</div>
+      <div class="stat-label">Active Courses</div>
+      <div class="stat-change positive"><i class="fas fa-check"></i> {{ courses|length if courses else 0 }} managed</div>
+      <div class="stat-view-all">View All <i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="{{ url_for('manage_notes') }}" class="stat-card">
+      <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+      <div class="stat-number">{{ total_notes }}</div>
+      <div class="stat-label">Notes Published</div>
+      <div class="stat-change positive"><i class="fas fa-file"></i> Active</div>
+      <div class="stat-view-all">View All <i class="fas fa-arrow-right"></i></div>
+    </a>
+    <a href="{{ url_for('manage_quizzes') }}" class="stat-card">
+      <div class="stat-icon"><i class="fas fa-puzzle-piece"></i></div>
+      <div class="stat-number">{{ total_quizzes }}</div>
+      <div class="stat-label">Quizzes</div>
+      <div class="stat-change neutral"><i class="fas fa-check"></i> Active</div>
+      <div class="stat-view-all">View All <i class="fas fa-arrow-right"></i></div>
+    </a>
   </div>
 
-  <!-- RIGHT COLUMN -->
-  <div>
-    <!-- ============================== -->
-    <!-- LATEST ANNOUNCEMENTS - NEW -->
-    <!-- ============================== -->
-    <div class="card" style="margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-bullhorn"></i> Latest Announcements</h3>
-        <span class="badge-count">{{ announcements_with_pins|length }}</span>
-        <a href="{{ url_for('manage_announcements') }}" class="card-link">
-          View All <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-      <div class="announcement-list">
-        {% if announcements_with_pins %}
-        {% for ann in announcements_with_pins[:4] %}
-        <div class="announcement-preview {% if ann.is_pinned %}pinned{% endif %}">
-          <div class="announcement-preview-header">
-            <h4>{{ ann.title }}</h4>
-            {% if ann.is_pinned %}
-            <span class="pin-badge"><i class="fas fa-thumbtack"></i> Pinned</span>
+  <!-- ============================== -->
+  <!-- MAIN GRID -->
+  <!-- ============================== -->
+  <div class="dashboard-grid">
+    <!-- LEFT COLUMN -->
+    <div>
+      <!-- ============================== -->
+      <!-- QUICK ACTIONS - Redesigned with Subtitles -->
+      <!-- ============================== -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Click to perform</span>
+        </div>
+        <div class="quick-actions">
+          <!-- Create/Post Actions -->
+          <a href="{{ url_for('post_note') }}" class="quick-action">
+            <i class="fas fa-plus-circle"></i>
+            <span class="action-title">Post Note</span>
+            <span class="action-subtitle">Share study material</span>
+          </a>
+          <a href="{{ url_for('create_quiz_group') }}" class="quick-action">
+            <i class="fas fa-plus-circle"></i>
+            <span class="action-title">Create Quiz</span>
+            <span class="action-subtitle">Test student knowledge</span>
+          </a>
+          <a href="{{ url_for('create_assignment') }}" class="quick-action">
+            <i class="fas fa-plus-circle"></i>
+            <span class="action-title">Create Assignment</span>
+            <span class="action-subtitle">Give homework tasks</span>
+          </a>
+
+          <!-- Manage Actions -->
+          <a href="{{ url_for('admin_course_list') }}" class="quick-action">
+            <i class="fas fa-book"></i>
+            <span class="action-title">Courses</span>
+            <span class="action-subtitle">{{ total_courses }} active</span>
+          </a>
+          <a href="{{ url_for('manage_notes') }}" class="quick-action">
+            <i class="fas fa-file-alt"></i>
+            <span class="action-title">Manage Notes</span>
+            <span class="action-subtitle">{{ total_notes }} published</span>
+            {% if total_notes > 0 %}
+            <span class="badge-count">{{ total_notes }}</span>
             {% endif %}
-            <span class="announcement-course">{{ ann.course_name }}</span>
-          </div>
-          <p>{{ ann.content|truncate(100)|safe }}</p>
-          <span class="announcement-date">{{ ann.created_at.strftime('%b %d, %Y') }} · by {{ ann.author }}</span>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="empty-state">
-          <i class="fas fa-bullhorn"></i>
-          <p>No announcements yet</p>
-          <p class="empty-sub">Create your first announcement to engage students</p>
-        </div>
-        {% endif %}
-      </div>
-    </div>
+          </a>
+          <a href="{{ url_for('manage_quizzes') }}" class="quick-action">
+            <i class="fas fa-list"></i>
+            <span class="action-title">Manage Quizzes</span>
+            <span class="action-subtitle">{{ total_quizzes }} available</span>
+          </a>
+          <a href="{{ url_for('manage_assignments') }}" class="quick-action">
+            <i class="fas fa-list-ul"></i>
+            <span class="action-title">Manage Assignments</span>
+            <span class="action-subtitle">{{ total_assignments }} active</span>
+          </a>
+          <a href="{{ url_for('manage_students') }}" class="quick-action">
+            <i class="fas fa-users"></i>
+            <span class="action-title">Manage Students</span>
+            <span class="action-subtitle">{{ total_students }} enrolled</span>
+            {% if pending_approvals > 0 %}
+            <span class="badge-count">{{ pending_approvals }}</span>
+            {% endif %}
+          </a>
 
-    <!-- ============================== -->
-    <!-- ENHANCED RECENT ACTIVITY - With Icons & Colors -->
-    <!-- ============================== -->
-    <div class="card" style="margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-history"></i> Recent Activity</h3>
-        <span class="badge-count">{{ enhanced_activity|length }}</span>
-        <a href="{{ url_for('recent_activity') }}" class="card-link">
-          View All <i class="fas fa-arrow-right"></i>
-        </a>
-      </div>
-      <div class="activity-list">
-        {% if enhanced_activity %}
-        {% for activity in enhanced_activity[:8] %}
-        <div class="activity-item">
-          <div class="activity-icon-wrap {{ activity.color }}">
-            <i class="fas {{ activity.icon }}"></i>
-          </div>
-          <div class="activity-info">
-            <div class="title">
-              {% if activity.url %}
-              <a href="{{ activity.url }}">{{ activity.title|safe }}</a>
-              {% else %}
-              {{ activity.title|safe }}
-              {% endif %}
-            </div>
-            <div class="description">{{ activity.description }}</div>
-            <div class="meta">
-              <span>{{ activity.user }}</span>
-              {% if activity.badge %}
-              <span class="tag tag-{{ activity.badge_color }}">{{ activity.badge }}</span>
-              {% endif %}
-            </div>
-          </div>
-          <div class="activity-time">{{ activity.time.strftime('%b %d, %I:%M %p') }}</div>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="empty-state">
-          <i class="fas fa-clock"></i>
-          <p>No recent activity</p>
-          <p class="empty-sub">Activity will appear here as students interact with content</p>
-        </div>
-        {% endif %}
-      </div>
-    </div>
+          <!-- Announcements & Export -->
+          <a href="{{ url_for('manage_announcements') }}" class="quick-action">
+            <i class="fas fa-bullhorn"></i>
+            <span class="action-title">Announcements</span>
+            <span class="action-subtitle">{{ announcements_count }} posted</span>
+            {% if announcements_count is defined and announcements_count > 0 %}
+            <span class="badge-count">{{ announcements_count }}</span>
+            {% endif %}
+          </a>
+          <a href="{{ url_for('export_page') }}" class="quick-action">
+            <i class="fas fa-file-export"></i>
+            <span class="action-title">Export Reports</span>
+            <span class="action-subtitle">Download data</span>
+          </a>
 
-    <!-- ============================== -->
-    <!-- PENDING COURSE REQUESTS -->
-    <!-- ============================== -->
-    {% if pending_course_requests and pending_course_requests|length > 0 %}
-    <div class="card" style="border-color: rgba(201, 168, 75, 0.12); margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-book-open" style="color: var(--primary-gold);"></i> Pending Course Requests</h3>
-        <div class="pending-header-actions">
-          <span style="font-size:0.75rem; color:var(--text-muted);">{{ pending_course_requests|length }} student{{ 's'
-            if
-            pending_course_requests|length > 1 }} waiting</span>
-          <a href="{{ url_for('manage_students') }}" class="card-link">
-            View All <i class="fas fa-arrow-right"></i>
+          <!-- Super Admin Actions -->
+          {% if current_user.is_super_admin() %}
+          <a href="{{ url_for('manage_admins') }}" class="quick-action">
+            <i class="fas fa-users-cog"></i>
+            <span class="action-title">Manage Admins</span>
+            <span class="action-subtitle">{{ admin_count }} admins</span>
+          </a>
+          <a href="{{ url_for('create_course') }}" class="quick-action">
+            <i class="fas fa-plus-circle"></i>
+            <span class="action-title">Create Course</span>
+            <span class="action-subtitle">New learning path</span>
+          </a>
+          {% endif %}
+
+          <!-- Settings Actions -->
+          <a href="{{ url_for('manage_tags') }}" class="quick-action">
+            <i class="fas fa-tags"></i>
+            <span class="action-title">Manage Tags</span>
+            <span class="action-subtitle">{{ tag_count }} tags</span>
+            {% if tag_count is defined and tag_count > 0 %}
+            <span class="badge-count">{{ tag_count }}</span>
+            {% endif %}
+          </a>
+          <a href="{{ url_for('admin_leaderboard') }}" class="quick-action">
+            <i class="fas fa-trophy"></i>
+            <span class="action-title">Leaderboard</span>
+            <span class="action-subtitle">View rankings</span>
+            {% if total_students > 0 %}
+            <span class="badge-count">{{ total_students }}</span>
+            {% endif %}
+          </a>
+          <a href="{{ url_for('change_password') }}" class="quick-action">
+            <i class="fas fa-key"></i>
+            <span class="action-title">Change Password</span>
+            <span class="action-subtitle">Security settings</span>
           </a>
         </div>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        {% for request in pending_course_requests[:5] %}
-        <div class="course-request-item">
-          <div class="request-avatar">{{ request.student.username[0]|upper }}</div>
-          <div class="request-info">
-            <div class="student-name">{{ request.student.username }}</div>
-            <div class="requested-courses">
-              {% for course in request.courses[:3] %}
-              <span class="course-tag">{{ course.name }}</span>
-              {% endfor %}
-              {% if request.courses|length > 3 %}
-              <span class="course-tag">+{{ request.courses|length - 3 }} more</span>
-              {% endif %}
+
+      <!-- ============================== -->
+      <!-- UPCOMING DEADLINES -->
+      <!-- ============================== -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-calendar-alt"></i> Upcoming Deadlines</h3>
+          <span class="badge-count">{{ upcoming_deadlines|length }}</span>
+          <a href="{{ url_for('manage_assignments') }}" class="card-link">
+            View All <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="deadline-list">
+          {% if upcoming_deadlines %}
+          {% for deadline in upcoming_deadlines[:5] %}
+          <div class="deadline-item">
+            <div class="deadline-date">
+              <span class="day">{{ deadline.due_date.strftime('%d') }}</span>
+              <span class="month">{{ deadline.due_date.strftime('%b') }}</span>
+            </div>
+            <div class="deadline-info">
+              <div class="title">{{ deadline.title }}</div>
+              <div class="course">{{ deadline.course_name }}</div>
+              <div class="submissions">
+                <i class="fas fa-user-graduate"></i>
+                {{ deadline.submissions_count }}/{{ deadline.total_students }} submitted
+              </div>
+            </div>
+            <span class="deadline-status {{ deadline.status }}">
+              {{ deadline.status_text }}
+            </span>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="empty-state">
+            <i class="fas fa-calendar-check"></i>
+            <p>No upcoming deadlines</p>
+            <p class="empty-sub">Everything is on track! 🎉</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- RECENT QUIZ RESULTS -->
+      <!-- ============================== -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-puzzle-piece"></i> Recent Quiz Results</h3>
+          <span class="badge-count">{{ quiz_results|length }}</span>
+          <a href="{{ url_for('manage_quizzes') }}" class="card-link">
+            View All <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="quiz-results-list">
+          {% if quiz_results %}
+          {% for result in quiz_results[:5] %}
+          <div class="quiz-result-item">
+            <div class="quiz-info">
+              <span class="quiz-title">{{ result.title }}</span>
+              <span class="quiz-course">{{ result.course_name }} · {{ result.total_students }} students</span>
+            </div>
+            <span class="quiz-score {{ result.color_class }}">
+              {{ result.avg_score }}%
+            </span>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="empty-state">
+            <i class="fas fa-puzzle-piece"></i>
+            <p>No quiz results yet</p>
+            <p class="empty-sub">Quizzes will appear here once students start taking them</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- STUDENT PROGRESS VISUALIZATION -->
+      <!-- ============================== -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-chart-line"></i> Student Progress Overview</h3>
+          <span class="badge-count">{{ progress_visualization|length }} courses</span>
+          <a href="{{ url_for('admin_course_analytics') }}" class="card-link">
+            Analytics <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="progress-viz-grid">
+          {% if progress_visualization %}
+          {% for viz in progress_visualization[:4] %}
+          <div class="progress-viz-item">
+            <div class="viz-header">
+              <span class="course-name">{{ viz.course_name }}</span>
+              <span class="course-code">{{ viz.course_code }}</span>
+            </div>
+            <div class="viz-stats">
+              <span class="stat"><i class="fas fa-users"></i> <strong>{{ viz.total_students }}</strong> students</span>
+              <span class="stat gold"><i class="fas fa-star"></i> <strong>{{ viz.avg_progress }}%</strong> avg</span>
+              <span class="stat"><i class="fas fa-trophy"></i> <strong>{{ viz.completed_count }}</strong> completed</span>
+            </div>
+            <div class="viz-bar-container">
+              <div class="viz-bar">
+                <div class="fill" style="width: {{ viz.avg_progress }}%;"></div>
+              </div>
+              <span class="viz-bar-label">{{ viz.avg_progress }}%</span>
             </div>
           </div>
-          <div class="request-actions">
-            <form method="POST" action="{{ url_for('approve_student', student_id=request.student.id) }}"
-              style="display:inline;">
-              <button type="submit" class="btn-icon btn-approve-all" title="Approve All Courses">
-                <i class="fas fa-check-double"></i>
-              </button>
-            </form>
-            {% for course in request.courses[:2] %}
-            <form method="POST"
-              action="{{ url_for('approve_course', student_id=request.student.id, course_id=course.id) }}"
-              style="display:inline;">
-              <button type="submit" class="btn-icon btn-approve-one" title="Approve {{ course.name }}">
-                <i class="fas fa-check"></i>
-              </button>
-            </form>
-            {% endfor %}
-            <a href="{{ url_for('reject_student', student_id=request.student.id) }}" class="btn-icon btn-reject-all"
-              title="Reject All">
-              <i class="fas fa-times"></i>
+          {% endfor %}
+          {% else %}
+          <div class="empty-state">
+            <i class="fas fa-chart-line"></i>
+            <p>No progress data available</p>
+            <p class="empty-sub">Students will appear here once they start learning</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <!-- ============================== -->
+      <!-- LATEST ANNOUNCEMENTS -->
+      <!-- ============================== -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-bullhorn"></i> Latest Announcements</h3>
+          <span class="badge-count">{{ announcements_with_pins|length }}</span>
+          <a href="{{ url_for('manage_announcements') }}" class="card-link">
+            View All <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="announcement-list">
+          {% if announcements_with_pins %}
+          {% for ann in announcements_with_pins[:4] %}
+          <div class="announcement-preview {% if ann.is_pinned %}pinned{% endif %}">
+            <div class="announcement-preview-header">
+              <h4>{{ ann.title }}</h4>
+              {% if ann.is_pinned %}
+              <span class="pin-badge"><i class="fas fa-thumbtack"></i> Pinned</span>
+              {% endif %}
+              <span class="announcement-course">{{ ann.course_name }}</span>
+            </div>
+            <p>{{ ann.content|truncate(100)|safe }}</p>
+            <!-- ✅ FIX: Use local_date filter for consistent date display -->
+            <span class="announcement-date">{{ ann.created_at | local_date }} · by {{ ann.author }}</span>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="empty-state">
+            <i class="fas fa-bullhorn"></i>
+            <p>No announcements yet</p>
+            <p class="empty-sub">Create your first announcement to engage students</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- ENHANCED RECENT ACTIVITY - With Icons & Colors -->
+      <!-- ============================== -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-history"></i> Recent Activity</h3>
+          <span class="badge-count">{{ enhanced_activity|length }}</span>
+          <a href="{{ url_for('recent_activity') }}" class="card-link">
+            View All <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="activity-list">
+          {% if enhanced_activity %}
+          {% for activity in enhanced_activity[:8] %}
+          <div class="activity-item">
+            <div class="activity-icon-wrap {{ activity.color }}">
+              <i class="fas {{ activity.icon }}"></i>
+            </div>
+            <div class="activity-info">
+              <div class="title">
+                {% if activity.url %}
+                <a href="{{ activity.url }}">{{ activity.title|safe }}</a>
+                {% else %}
+                {{ activity.title|safe }}
+                {% endif %}
+              </div>
+              <div class="description">{{ activity.description }}</div>
+              <div class="meta">
+                <span>{{ activity.user }}</span>
+                {% if activity.badge %}
+                <span class="tag tag-{{ activity.badge_color }}">{{ activity.badge }}</span>
+                {% endif %}
+              </div>
+            </div>
+            <!-- ✅ FIX: Use time_ago filter for relative time -->
+            <div class="activity-time">{{ activity.time | time_ago }}</div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="empty-state">
+            <i class="fas fa-clock"></i>
+            <p>No recent activity</p>
+            <p class="empty-sub">Activity will appear here as students interact with content</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- PENDING COURSE REQUESTS -->
+      <!-- ============================== -->
+      {% if pending_course_requests and pending_course_requests|length > 0 %}
+      <div class="card" style="border-color: rgba(201, 168, 75, 0.12); margin-bottom: 20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-book-open" style="color: var(--primary-gold);"></i> Pending Course Requests</h3>
+          <div class="pending-header-actions">
+            <span style="font-size:0.75rem; color:var(--text-muted);">{{ pending_course_requests|length }} student{{ 's' if pending_course_requests|length > 1 }} waiting</span>
+            <a href="{{ url_for('manage_students') }}" class="card-link">
+              View All <i class="fas fa-arrow-right"></i>
             </a>
           </div>
         </div>
-        {% endfor %}
-        {% if pending_course_requests|length > 5 %}
-        <div style="text-align:center; margin-top:6px;">
-          <a href="{{ url_for('manage_students') }}"
-            style="font-size:0.8rem; color:var(--primary-gold); text-decoration:none;">
-            View all {{ pending_course_requests|length }} pending requests →
-          </a>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-    {% endif %}
-
-    <!-- ============================== -->
-    <!-- PENDING STUDENT APPROVALS -->
-    <!-- ============================== -->
-    {% if pending_approvals > 0 %}
-    <div class="card" style="border-color: rgba(239, 68, 68, 0.12); margin-bottom: 20px;">
-      <div class="card-header">
-        <h3><i class="fas fa-user-clock" style="color: #EF4444;"></i> Pending Student Approvals</h3>
-        <div class="pending-header-actions">
-          {% if current_user.is_super_admin() %}
-          <form method="POST" action="{{ url_for('bulk_approve_students') }}" style="display:inline;">
-            <button type="submit" class="btn-bulk-approve" onclick="return confirm('Approve all pending students?')">
-              <i class="fas fa-check-double"></i> Bulk Approve
-            </button>
-          </form>
-          {% endif %}
-          <a href="{{ url_for('manage_students') }}" class="card-link">
-            View All <i class="fas fa-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-      <div class="pending-list">
-        {% for student in pending[:5] %}
-        <div class="pending-item">
-          <div class="pending-avatar">{{ student.username[0]|upper }}</div>
-          <div class="pending-info">
-            <div class="name">{{ student.username }}</div>
-            <div class="course">
-              {% set pending_enrollments = student.enrollments|selectattr('status', 'equalto', 'pending')|list %}
-              {% if pending_enrollments %}
-              {% for enrollment in pending_enrollments[:3] %}
-              <span class="course-tag-pending">{{ enrollment.course.name }}</span>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          {% for request in pending_course_requests[:5] %}
+          <div class="course-request-item">
+            <div class="request-avatar">{{ request.student.username[0]|upper }}</div>
+            <div class="request-info">
+              <div class="student-name">{{ request.student.username }}</div>
+              <div class="requested-courses">
+                {% for course in request.courses[:3] %}
+                <span class="course-tag">{{ course.name }}</span>
+                {% endfor %}
+                {% if request.courses|length > 3 %}
+                <span class="course-tag">+{{ request.courses|length - 3 }} more</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="request-actions">
+              <form method="POST" action="{{ url_for('approve_student', student_id=request.student.id) }}" style="display:inline;">
+                <button type="submit" class="btn-icon btn-approve-all" title="Approve All Courses">
+                  <i class="fas fa-check-double"></i>
+                </button>
+              </form>
+              {% for course in request.courses[:2] %}
+              <form method="POST" action="{{ url_for('approve_course', student_id=request.student.id, course_id=course.id) }}" style="display:inline;">
+                <button type="submit" class="btn-icon btn-approve-one" title="Approve {{ course.name }}">
+                  <i class="fas fa-check"></i>
+                </button>
+              </form>
               {% endfor %}
-              {% if pending_enrollments|length > 3 %}
-              <span class="course-tag-pending">+{{ pending_enrollments|length - 3 }} more</span>
-              {% endif %}
-              {% else %}
-              <span style="color: var(--text-muted); font-size: 0.75rem;">No pending courses</span>
-              {% endif %}
+              <a href="{{ url_for('reject_student', student_id=request.student.id) }}" class="btn-icon btn-reject-all" title="Reject All">
+                <i class="fas fa-times"></i>
+              </a>
             </div>
           </div>
-          <div class="pending-actions">
-            <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}"
-              style="display:inline;">
-              <button type="submit" class="btn-sm btn-approve"><i class="fas fa-check"></i></button>
+          {% endfor %}
+          {% if pending_course_requests|length > 5 %}
+          <div style="text-align:center; margin-top:6px;">
+            <a href="{{ url_for('manage_students') }}" style="font-size:0.8rem; color:var(--primary-gold); text-decoration:none;">
+              View all {{ pending_course_requests|length }} pending requests →
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ============================== -->
+      <!-- PENDING STUDENT APPROVALS -->
+      <!-- ============================== -->
+      {% if pending_approvals > 0 %}
+      <div class="card" style="border-color: rgba(239, 68, 68, 0.12); margin-bottom: 20px;">
+        <div class="card-header">
+          <h3><i class="fas fa-user-clock" style="color: #EF4444;"></i> Pending Student Approvals</h3>
+          <div class="pending-header-actions">
+            {% if current_user.is_super_admin() %}
+            <form method="POST" action="{{ url_for('bulk_approve_students') }}" style="display:inline;">
+              <button type="submit" class="btn-bulk-approve" onclick="return confirm('Approve all pending students?')">
+                <i class="fas fa-check-double"></i> Bulk Approve
+              </button>
             </form>
-            <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-sm btn-reject"><i
-                class="fas fa-times"></i></a>
+            {% endif %}
+            <a href="{{ url_for('manage_students') }}" class="card-link">
+              View All <i class="fas fa-arrow-right"></i>
+            </a>
           </div>
         </div>
-        {% endfor %}
-        {% if pending|length > 5 %}
-        <div style="text-align:center; margin-top:6px;">
-          <a href="{{ url_for('manage_students') }}"
-            style="font-size:0.8rem; color:var(--primary-gold); text-decoration:none;">
-            View all {{ pending|length }} pending approvals →
+        <div class="pending-list">
+          {% for student in pending[:5] %}
+          <div class="pending-item">
+            <div class="pending-avatar">{{ student.username[0]|upper }}</div>
+            <div class="pending-info">
+              <div class="name">{{ student.username }}</div>
+              <div class="course">
+                {% set pending_enrollments = student.enrollments|selectattr('status', 'equalto', 'pending')|list %}
+                {% if pending_enrollments %}
+                {% for enrollment in pending_enrollments[:3] %}
+                <span class="course-tag-pending">{{ enrollment.course.name }}</span>
+                {% endfor %}
+                {% if pending_enrollments|length > 3 %}
+                <span class="course-tag-pending">+{{ pending_enrollments|length - 3 }} more</span>
+                {% endif %}
+                {% else %}
+                <span style="color: var(--text-muted); font-size: 0.75rem;">No pending courses</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="pending-actions">
+              <form method="POST" action="{{ url_for('approve_student', student_id=student.id) }}" style="display:inline;">
+                <button type="submit" class="btn-sm btn-approve"><i class="fas fa-check"></i></button>
+              </form>
+              <a href="{{ url_for('reject_student', student_id=student.id) }}" class="btn-sm btn-reject"><i class="fas fa-times"></i></a>
+            </div>
+          </div>
+          {% endfor %}
+          {% if pending|length > 5 %}
+          <div style="text-align:center; margin-top:6px;">
+            <a href="{{ url_for('manage_students') }}" style="font-size:0.8rem; color:var(--primary-gold); text-decoration:none;">
+              View all {{ pending|length }} pending approvals →
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ============================== -->
+      <!-- SUPER ADMIN PANEL -->
+      <!-- ============================== -->
+      {% if current_user.is_super_admin() %}
+      <div class="card" style="border-color: rgba(201, 168, 75, 0.08);">
+        <div class="card-header">
+          <h3><i class="fas fa-crown" style="color: var(--primary-gold);"></i> Super Admin Panel</h3>
+          <span style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-gold); background:rgba(201,168,75,0.08); padding:4px 14px; border-radius:100px; border:1px solid rgba(201,168,75,0.06);">
+            <i class="fas fa-crown"></i> Super Admin
+          </span>
+        </div>
+        <div class="super-panel-grid">
+          <a href="{{ url_for('manage_admins') }}" class="super-stat" style="text-decoration:none; cursor:pointer;">
+            <div class="number gold">{{ admin_count if admin_count is defined else 0 }}</div>
+            <div class="label">Admins</div>
+          </a>
+          <a href="{{ url_for('admin_course_list') }}" class="super-stat" style="text-decoration:none; cursor:pointer;">
+            <div class="number green">{{ total_courses }}</div>
+            <div class="label">Total Courses</div>
+          </a>
+          <a href="{{ url_for('manage_notes') }}" class="super-stat" style="text-decoration:none; cursor:pointer;">
+            <div class="number orange">{{ total_notes }}</div>
+            <div class="label">Total Notes</div>
+          </a>
+          <a href="{{ url_for('manage_tags') }}" class="super-stat" style="text-decoration:none; cursor:pointer;">
+            <div class="number purple">{{ tag_count if tag_count is defined else 0 }}</div>
+            <div class="label">Tags</div>
           </a>
         </div>
-        {% endif %}
       </div>
+      {% endif %}
     </div>
-    {% endif %}
-
-    <!-- ============================== -->
-    <!-- SUPER ADMIN PANEL -->
-    <!-- ============================== -->
-    {% if current_user.is_super_admin() %}
-    <div class="card" style="border-color: rgba(201, 168, 75, 0.08);">
-      <div class="card-header">
-        <h3><i class="fas fa-crown" style="color: var(--primary-gold);"></i> Super Admin Panel</h3>
-        <span
-          style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary-gold); background:rgba(201,168,75,0.08); padding:4px 14px; border-radius:100px; border:1px solid rgba(201,168,75,0.06);">
-          <i class="fas fa-crown"></i> Super Admin
-        </span>
-      </div>
-      <div class="super-panel-grid">
-        <a href="{{ url_for('manage_admins') }}" class="super-stat" style="text-decoration:none; cursor:pointer;">
-          <div class="number gold">{{ admin_count if admin_count is defined else 0 }}</div>
-          <div class="label">Admins</div>
-        </a>
-        <a href="{{ url_for('admin_course_list') }}" class="super-stat" style="text-decoration:none; cursor:pointer;">
-          <div class="number green">{{ total_courses }}</div>
-          <div class="label">Total Courses</div>
-        </a>
-        <a href="{{ url_for('manage_notes') }}" class="super-stat" style="text-decoration:none; cursor:pointer;">
-          <div class="number orange">{{ total_notes }}</div>
-          <div class="label">Total Notes</div>
-        </a>
-        <a href="{{ url_for('manage_tags') }}" class="super-stat" style="text-decoration:none; cursor:pointer;">
-          <div class="number purple">{{ tag_count if tag_count is defined else 0 }}</div>
-          <div class="label">Tags</div>
-        </a>
-      </div>
-    </div>
-    {% endif %}
   </div>
-</div>
 </div>
 {% endblock %}
 

@@ -2,7 +2,9 @@
 # Complete backend with all features in one file
 import json
 import os
+import pytz
 import uuid
+from datetime import datetime, timedelta
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_from_directory, make_response
@@ -153,6 +155,92 @@ def validate_assignment_file(file):
         return None, f"File too large. Maximum size: {app.config['MAX_CONTENT_LENGTH'] // (1024*1024)}MB"
     
     return True, None
+
+def get_system_timezone():
+    """Get the configured timezone from settings, fallback to UTC"""
+    timezone_str = get_setting('timezone', 'UTC')
+    try:
+        return pytz.timezone(timezone_str)
+    except:
+        return pytz.UTC
+
+def utc_to_local(utc_dt):
+    """Convert UTC datetime to local timezone"""
+    if utc_dt is None:
+        return None
+    if utc_dt.tzinfo is None:
+        utc_dt = pytz.UTC.localize(utc_dt)
+    local_tz = get_system_timezone()
+    return utc_dt.astimezone(local_tz)
+
+def format_relative_time(dt):
+    """
+    Convert datetime to human-readable relative time.
+    Example: "Just now", "5 minutes ago", "2 hours ago", "Yesterday"
+    """
+    if dt is None:
+        return ''
+    
+    # Ensure datetime is timezone-aware
+    if dt.tzinfo is None:
+        dt = pytz.UTC.localize(dt)
+    
+    now = datetime.now(pytz.UTC)
+    diff = now - dt
+    seconds = diff.total_seconds()
+    
+    if seconds < 60:
+        return 'Just now'
+    elif seconds < 120:
+        return '1 minute ago'
+    elif seconds < 3600:
+        minutes = int(seconds // 60)
+        return f'{minutes} minutes ago'
+    elif seconds < 7200:
+        return '1 hour ago'
+    elif seconds < 86400:
+        hours = int(seconds // 3600)
+        return f'{hours} hours ago'
+    elif seconds < 172800:
+        return 'Yesterday'
+    elif seconds < 2592000:  # 30 days
+        days = int(seconds // 86400)
+        return f'{days} days ago'
+    else:
+        # For older items, show the date
+        local_dt = utc_to_local(dt)
+        return local_dt.strftime('%b %d, %Y')
+
+def format_local_time(dt, format_str='%b %d, %Y at %I:%M %p'):
+    """Format datetime in local timezone with custom format"""
+    if dt is None:
+        return ''
+    local_dt = utc_to_local(dt)
+    return local_dt.strftime(format_str)
+
+# ============================================================================
+# CUSTOM JINJA2 FILTERS - ADD TO app.py
+# ============================================================================
+
+@app.template_filter('time_ago')
+def time_ago_filter(dt):
+    """Jinja2 filter: {{ created_at | time_ago }}"""
+    return format_relative_time(dt)
+
+@app.template_filter('local_time')
+def local_time_filter(dt, format_str='%b %d, %Y at %I:%M %p'):
+    """Jinja2 filter: {{ created_at | local_time }}"""
+    return format_local_time(dt, format_str)
+
+@app.template_filter('local_date')
+def local_date_filter(dt):
+    """Jinja2 filter: {{ created_at | local_date }}"""
+    return format_local_time(dt, '%b %d, %Y')
+
+@app.template_filter('local_time_short')
+def local_time_short_filter(dt):
+    """Jinja2 filter: {{ created_at | local_time_short }}"""
+    return format_local_time(dt, '%I:%M %p')
 
 # ============================================================================
 # NOTIFICATION HELPER FUNCTIONS
@@ -1480,14 +1568,22 @@ def load_user(user_id):
 # CONTEXT PROCESSOR
 # ============================================================================
 
+# ============================================================================
+# CONTEXT PROCESSOR - COMPLETE WITH TIMEZONE HELPERS
+# ============================================================================
+
 @app.context_processor
 def inject_user():
+    """Inject variables into all templates with timezone support"""
+    
+    # Initialize defaults
     total_students = 0
     total_courses = 0
     total_notes = 0
     total_quizzes = 0
     total_assignments = 0
     
+    # Get site settings with error handling
     try:
         site_name = get_setting('site_name', 'A-Portal LMS')
         site_description = get_setting('site_description', 'Learning Management System')
@@ -1500,7 +1596,9 @@ def inject_user():
         site_language = 'en'
         site_timezone = 'UTC'
     
+    # Get counts with error handling - ROLLBACK FIRST if needed
     try:
+        # Rollback any pending transactions first
         db.session.rollback()
         
         total_students = User.query.filter_by(role='student').count()
@@ -1510,29 +1608,53 @@ def inject_user():
         total_assignments = Assignment.query.count()
     except Exception as e:
         app.logger.error(f'Error getting counts in context: {e}')
+        # Rollback to clear any error state
         try:
             db.session.rollback()
         except:
             pass
     
     return {
+        # ============================================
+        # USER DATA
+        # ============================================
         'current_user': current_user,
         'now': datetime.utcnow(),
         'get_courses': lambda: current_user.get_courses() if current_user.is_authenticated else [],
         'is_approved': lambda: current_user.is_approved if current_user.is_authenticated else False,
+        
+        # ============================================
+        # DYNAMIC SYSTEM SETTINGS
+        # ============================================
         'site_name': site_name,
         'site_description': site_description,
         'site_language': site_language,
         'site_timezone': site_timezone,
         'get_setting': get_setting,
+        
+        # ============================================
+        # STATISTICS FOR HOME PAGE
+        # ============================================
         'total_students': total_students,
         'total_courses': total_courses,
         'total_notes': total_notes,
         'total_quizzes': total_quizzes,
         'total_assignments': total_assignments,
+        
+        # ============================================
+        # ADDITIONAL HELPER FUNCTIONS
+        # ============================================
         'get_bool_setting': get_bool_setting,
         'get_int_setting': get_int_setting,
         'get_str_setting': get_str_setting,
+        
+        # ============================================
+        # ✅ TIMEZONE HELPERS - FIX FOR "1 HOUR AGO" ISSUE
+        # ============================================
+        'utc_to_local': utc_to_local,
+        'format_relative_time': format_relative_time,
+        'format_local_time': format_local_time,
+        'get_system_timezone': get_system_timezone,
     }
 
 # ============================================================================

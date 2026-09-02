@@ -746,7 +746,7 @@
   }
 
   /* ============================================
-     UPCOMING DEADLINES - NEW
+     UPCOMING DEADLINES
      ============================================ */
   .deadline-list {
     display: flex;
@@ -838,7 +838,7 @@
   }
 
   /* ============================================
-     RECENT ACTIVITY - NEW
+     RECENT ACTIVITY
      ============================================ */
   .activity-list {
     display: flex;
@@ -1696,7 +1696,7 @@
         </div>
       </div>
 
-      <!-- ✅ NEW: Recent Activity -->
+      <!-- ✅ Recent Activity -->
       <div class="dashboard-section">
         <div class="section-header">
           <i class="fas fa-history"></i>
@@ -1713,7 +1713,8 @@
                 </div>
                 <div class="activity-content">
                   <div class="text">{{ activity.text|safe }}</div>
-                  <div class="time">{{ activity.time }}</div>
+                  <!-- ✅ FIX: Use time_ago filter for relative time -->
+                  <div class="time">{{ activity.time | time_ago }}</div>
                 </div>
               </div>
             {% endfor %}
@@ -1730,7 +1731,7 @@
 
     <!-- Right Column -->
     <div>
-      <!-- ✅ NEW: Upcoming Deadlines -->
+      <!-- ✅ Upcoming Deadlines -->
       <div class="dashboard-section" style="margin-bottom: 20px;">
         <div class="section-header">
           <i class="fas fa-calendar-alt"></i>
@@ -1825,7 +1826,8 @@
                   {% endif %}
                 </div>
                 <p>{{ announcement.content|truncate(120)|safe }}</p>
-                <span class="announcement-date">{{ announcement.created_at.strftime('%b %d, %Y') }}</span>
+                <!-- ✅ FIX: Use local_date filter for consistent date display -->
+                <span class="announcement-date">{{ announcement.created_at | local_date }}</span>
               </div>
             {% endfor %}
           {% else %}
@@ -1890,7 +1892,7 @@
       }, 150 + index * 60);
     });
 
-    console.log('✨ Student Dashboard - Gold Theme Loaded!');
+    console.log('✨ Student Dashboard - Gold Theme with Timezone Fix Loaded!');
   });
 </script>
 {% endblock %}
