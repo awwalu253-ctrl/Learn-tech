@@ -182,10 +182,9 @@ def format_relative_time(dt):
         return ''
     
     # Ensure datetime is timezone-aware
-    if dt.tzinfo is None:
-        dt = pytz.UTC.localize(dt)
+    dt = make_aware(dt)
     
-    now = datetime.now(pytz.UTC)
+    now = datetime.now(timezone.utc)
     diff = now - dt
     seconds = diff.total_seconds()
     
@@ -225,7 +224,35 @@ def format_local_time(dt, format_str='%b %d, %Y at %I:%M %p'):
 @app.template_filter('time_ago')
 def time_ago_filter(dt):
     """Jinja2 filter: {{ created_at | time_ago }}"""
+    # If it's None, return empty
+    if dt is None:
+        return ''
+    
+    # If it's a string, try to parse it
+    if isinstance(dt, str):
+        try:
+            # Try common formats
+            from dateutil import parser
+            dt = parser.parse(dt)
+        except:
+            return dt  # Return the string if we can't parse it
+    
+    # If it's still not a datetime, return as is
+    if not hasattr(dt, 'tzinfo'):
+        return str(dt)
+    
     return format_relative_time(dt)
+
+def utcnow():
+    """Get current UTC time with timezone"""
+    return datetime.now(timezone.utc)
+
+def make_aware(dt):
+    """Make a naive datetime timezone-aware"""
+    if dt and dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
 
 @app.template_filter('local_time')
 def local_time_filter(dt, format_str='%b %d, %Y at %I:%M %p'):
@@ -1244,13 +1271,16 @@ def get_admin_notices_with_ctas(admin_user):
     return notices
 
 def get_admin_enhanced_activity(admin_user, limit=15):
+    """Get enhanced recent activity feed with icons and colors"""
     activities = []
     
+    # Get course IDs
     if admin_user.is_super_admin():
         course_ids = [c.id for c in Course.query.all()]
     else:
         course_ids = [c.id for c in admin_user.managed_courses]
     
+    # 1. New notes
     notes = Note.query.filter(
         Note.course_id.in_(course_ids),
         Note.created_at >= (datetime.utcnow() - timedelta(days=30))
@@ -1263,13 +1293,14 @@ def get_admin_enhanced_activity(admin_user, limit=15):
             'color': 'blue',
             'title': f'📝 New Note: "{note.title}"',
             'description': f'Posted in {note.course.name}',
-            'time': note.created_at,
+            'time': note.created_at,  # ✅ Pass datetime object, NOT string
             'user': note.author.username if note.author else 'System',
             'url': url_for('edit_note', note_id=note.id) if note.id else None,
             'badge': 'New' if note.is_new() else None,
             'badge_color': 'green'
         })
     
+    # 2. New quiz results
     quiz_answers = QuizAnswer.query.filter(
         QuizAnswer.answered_at >= (datetime.utcnow() - timedelta(days=30))
     ).order_by(QuizAnswer.answered_at.desc()).limit(10).all()
@@ -1283,13 +1314,14 @@ def get_admin_enhanced_activity(admin_user, limit=15):
                 'color': 'gold',
                 'title': f'🎯 Quiz Completed: "{answer.quiz_group.title}"',
                 'description': f'{student.username if student else "Student"} scored {"✓" if answer.is_correct else "✗"}',
-                'time': answer.answered_at,
+                'time': answer.answered_at,  # ✅ Pass datetime object
                 'user': student.username if student else 'Unknown',
                 'url': url_for('edit_quiz_group', quiz_id=answer.quiz_group.id) if answer.quiz_group.id else None,
                 'badge': 'New' if (datetime.utcnow() - answer.answered_at).days <= 1 else None,
                 'badge_color': 'gold'
             })
     
+    # 3. New assignment submissions
     submissions = AssignmentSubmission.query.filter(
         AssignmentSubmission.submitted_at >= (datetime.utcnow() - timedelta(days=30))
     ).order_by(AssignmentSubmission.submitted_at.desc()).limit(10).all()
@@ -1303,13 +1335,14 @@ def get_admin_enhanced_activity(admin_user, limit=15):
                 'color': 'green',
                 'title': f'📋 Assignment Submitted: "{sub.assignment.title}"',
                 'description': f'{student.username if student else "Student"} submitted work',
-                'time': sub.submitted_at,
+                'time': sub.submitted_at,  # ✅ Pass datetime object
                 'user': student.username if student else 'Unknown',
                 'url': url_for('view_submissions', assignment_id=sub.assignment.id) if sub.assignment.id else None,
                 'badge': 'Needs Grading' if not sub.is_graded else None,
                 'badge_color': 'orange'
             })
     
+    # 4. New students
     new_students = User.query.filter(
         User.role == 'student',
         User.created_at >= (datetime.utcnow() - timedelta(days=30))
@@ -1322,13 +1355,14 @@ def get_admin_enhanced_activity(admin_user, limit=15):
             'color': 'purple',
             'title': f'👤 New Student Registered',
             'description': f'{student.username} ({student.email})',
-            'time': student.created_at,
+            'time': student.created_at,  # ✅ Pass datetime object
             'user': student.username,
             'url': url_for('edit_student', student_id=student.id) if student.id else None,
             'badge': 'Pending' if not student.is_approved else 'Approved',
             'badge_color': 'orange' if not student.is_approved else 'green'
         })
     
+    # 5. New announcements
     anns = Announcement.query.filter(
         Announcement.created_at >= (datetime.utcnow() - timedelta(days=30))
     ).order_by(Announcement.created_at.desc()).limit(5).all()
@@ -1341,19 +1375,21 @@ def get_admin_enhanced_activity(admin_user, limit=15):
                 'color': 'gold',
                 'title': f'📢 New Announcement: "{ann.title}"',
                 'description': f'By {ann.author.username if ann.author else "System"}',
-                'time': ann.created_at,
+                'time': ann.created_at,  # ✅ Pass datetime object
                 'user': ann.author.username if ann.author else 'System',
                 'url': url_for('edit_announcement', announcement_id=ann.id) if ann.id else None,
                 'badge': 'Pinned' if ann.is_pinned else None,
                 'badge_color': 'gold'
             })
     
+    # Sort by time (newest first) and remove duplicates
     activities.sort(key=lambda x: x['time'], reverse=True)
     
+    # Remove duplicates based on title and time (keep unique)
     seen = set()
     unique_activities = []
     for act in activities:
-        key = (act['title'], act['time'].strftime('%Y-%m-%d %H:%M'))
+        key = (act['title'], act['time'].strftime('%Y-%m-%d %H:%M') if act['time'] else '')
         if key not in seen:
             seen.add(key)
             unique_activities.append(act)

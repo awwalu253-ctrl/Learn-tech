@@ -375,8 +375,8 @@
                         {% endif %}
                     </h2>
                     <div class="meta">
-                        <span><i class="fas fa-calendar"></i> {{ announcement.created_at.strftime('%b %d, %Y') }}</span>
-                        <span><i class="fas fa-clock"></i> {{ announcement.created_at.strftime('%I:%M %p') }}</span>
+                        <!-- ✅ FIX: Use time_ago filter for relative time -->
+                        <span><i class="fas fa-clock"></i> {{ announcement.created_at | time_ago }}</span>
                     </div>
                 </div>
                 <div class="content">
@@ -417,7 +417,7 @@
             });
         });
 
-        console.log('✨ Announcements - Gold Theme Loaded!');
+        console.log('✨ Announcements - Gold Theme with Timezone Fix Loaded!');
     });
 </script>
 {% endblock %}
